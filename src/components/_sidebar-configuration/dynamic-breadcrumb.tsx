@@ -1,3 +1,6 @@
+import React from "react";
+import { capitalize } from "lodash";
+
 import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
@@ -7,9 +10,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
-import React from "react";
-
-import { capitalize } from "lodash";
 
 export const DynamicBreadcrumb = () => {
   const pathname = usePathname();

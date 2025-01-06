@@ -14,7 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: metaConfig.title,
+  title: {
+    default: metaConfig.title,
+    template: `%s | ${metaConfig.title}`,
+  },
   description: metaConfig.description,
   icons: metaConfig.icon,
 };

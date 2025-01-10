@@ -17,11 +17,12 @@ import {
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  login: React.ReactNode;
+  test: React.ReactNode;
 }
-export default function AdminLayout({ children, login }: AdminLayoutProps) {
+export default function AdminLayout({ children, test }: AdminLayoutProps) {
   return (
     <>
+      {test}
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

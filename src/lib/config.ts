@@ -6,7 +6,7 @@ export const metaConfig = {
   icon: [
     {
       rel: "icon",
-      url: "/dried-fruit.webp",
+      url: "/icon.ico",
     },
   ],
 };

@@ -4,7 +4,7 @@ const ClientPage = () => {
   return (
     <div className="text-center flex items-center justify-center bg-yellow-100">
       <Image
-        src="/dried-fruit.webp"
+        src="/images/dried-fruit.webp"
         alt="Picture of the author"
         width={500}
         height={500}

@@ -21,7 +21,6 @@ export const metadata = {
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  auth: React.ReactNode;
 }
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (

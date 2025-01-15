@@ -10,6 +10,9 @@ export default {
   ],
   theme: {
     extend: {
+      textShadow: {
+        sm: "rgba(255, 255, 255, 0.35) 1px 1px 12px",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

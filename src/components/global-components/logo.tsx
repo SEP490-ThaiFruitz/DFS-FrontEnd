@@ -1,15 +1,20 @@
 import Image from "next/image";
 
-export const Logo = () => {
+interface LogoProps {
+  className?: string;
+  height?: number;
+  width?: number;
+}
+export const Logo = ({ className, height = 50, width = 50 }: LogoProps) => {
   return (
-    <div className="flex flex-col items-center gap-1 mr-2">
+    <div className="flex flex-col items-center ">
       <Image
         src="/images/dried-fruit.webp"
         alt="Picture of the author"
-        width={50}
-        height={50}
+        width={width}
+        height={height}
       />
-      <h1 className="text-slate-700 font-serif italic">ThaiFruitz</h1>
+      <h1 className="text-slate-700 text-lg font-serif italic">ThaiFruitz</h1>
     </div>
   );
 };

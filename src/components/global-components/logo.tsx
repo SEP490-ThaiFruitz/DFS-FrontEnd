@@ -1,11 +1,16 @@
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 interface LogoProps {
-  className?: string;
+  classNameLabel?: string;
   height?: number;
   width?: number;
 }
-export const Logo = ({ className, height = 50, width = 50 }: LogoProps) => {
+export const Logo = ({
+  classNameLabel,
+  height = 50,
+  width = 50,
+}: LogoProps) => {
   return (
     <div className="flex flex-col items-center ">
       <Image
@@ -14,7 +19,14 @@ export const Logo = ({ className, height = 50, width = 50 }: LogoProps) => {
         width={width}
         height={height}
       />
-      <h1 className="text-slate-700 text-lg font-serif italic">ThaiFruitz</h1>
+      <h1
+        className={cn(
+          "text-slate-700 text-base font-serif italic",
+          classNameLabel
+        )}
+      >
+        ThaiFruitz
+      </h1>
     </div>
   );
 };

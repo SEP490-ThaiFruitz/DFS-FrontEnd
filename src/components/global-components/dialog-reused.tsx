@@ -1,4 +1,6 @@
-import { JSX } from "react";
+"use client";
+
+import { JSX, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,35 +11,36 @@ import {
 import { LucideIcon } from "lucide-react";
 
 interface DialogReusedProps {
-  title: string;
-  description: string;
+  title: string | JSX.Element;
+  description: string | JSX.Element;
   trigger: React.ReactNode | string | number | JSX.Element;
 
+  content: string | JSX.Element;
+
   icon?: LucideIcon | React.ReactNode;
+
+  open?: boolean;
 }
 
 export const DialogReused = ({
   title,
   description,
   trigger,
+  content,
+  open = false,
 }: DialogReusedProps) => {
+  const [isOpen, setIsOpen] = useState<boolean>(open);
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogHeader>{title}</DialogHeader>
-          <DialogDescription>
-            <p>
-              This is a reusable dialog component. It can be used to display
-              important messages to the user.
-            </p>
-          </DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <div>
-          <button className="btn btn-primary">Close</button>
-        </div>
+        {content}
       </DialogContent>
     </Dialog>
   );

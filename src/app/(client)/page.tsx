@@ -1,10 +1,5 @@
 import { ImagesSlider } from "@/components/global-components/images-slider";
-import Image from "next/image";
-
-import firstBackground from "/images/first-background.jpg";
-import thirdBackground from "/images/third-background.png";
-import secondBackground from "/images/second-background.webp";
-import fourthBackground from "/images/fourth-background.png";
+import { BannerText } from "@/components/global-components/banner-text";
 
 const ClientPage = () => {
   const images = [
@@ -15,9 +10,9 @@ const ClientPage = () => {
   ];
 
   return (
-    <div className="flex flex-col  h-full">
+    <div className="flex flex-col h-full">
       <ImagesSlider images={images} className="h-[85vh]">
-        <div>test</div>
+        <BannerText />
       </ImagesSlider>
     </div>
   );

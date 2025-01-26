@@ -4,19 +4,19 @@ import Navigate from "@/components/global-components/navigate";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
-  test1: React.ReactNode;
+  filter: React.ReactNode;
   test2: React.ReactNode;
 }
 
-const ClientLayout = ({ children, test1, test2 }: ClientLayoutProps) => {
+const ClientLayout = ({ children, filter, test2 }: ClientLayoutProps) => {
   return (
     <>
       <Navbar />
       <>
         {children}
 
-        {/* <div>{test1}</div>
-        <div>{test2}</div> */}
+        <div>{filter}</div>
+        <div>{test2}</div>
       </>
     </>
   );

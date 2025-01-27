@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { CardProduct } from "@/components/global-components/card/card-product";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const items = [
   {
@@ -71,7 +72,7 @@ export function SidebarFilter() {
     // <Form {...form}>
 
     // <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-    <div className="flex gap-x-4  p-4 rounded-xl shadow-xl hover:shadow-2xl duration-300 transition">
+    <div className="flex p-4 rounded-xl shadow-xl hover:shadow-2xl duration-300 transition">
       <FormValues form={form} onSubmit={onSubmit} classNameForm="space-y-8  ">
         <FormField
           control={form.control}
@@ -123,7 +124,13 @@ export function SidebarFilter() {
         />
       </FormValues>
 
-      <CardProduct />
+      <div className="h-[600px] overflow-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <CardProduct />
+        <CardProduct />
+        <CardProduct />
+        <CardProduct />
+        <CardProduct />
+      </div>
     </div>
   );
 }

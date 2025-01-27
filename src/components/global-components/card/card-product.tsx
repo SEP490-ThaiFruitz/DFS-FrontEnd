@@ -17,8 +17,13 @@ interface CardProductProps {
 }
 export const CardProduct = ({}: CardProductProps) => {
   return (
-    <CardContainer className="inter-var cursor-pointer">
-      <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border">
+    <CardContainer
+      className="inter-var cursor-pointer w-96 motion-preset-pop
+    "
+      containerClassName="py-4"
+    >
+      <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border transition duration-300">
+        {/* <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto max-h-[350px] rounded-xl p-6 border transition duration-300"> */}
         <CardItem translateY={6} translateZ={6}>
           <Image
             src="/images/third-background.png"
@@ -63,7 +68,7 @@ export const CardProduct = ({}: CardProductProps) => {
               translateY={10}
               translateZ={10}
               as="h2"
-              className="text-lg font-bold text-sky-500/70"
+              className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
             >
               {formatVND(10000)}
             </CardItem>

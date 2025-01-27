@@ -6,7 +6,7 @@ export const Navigate = () => {
   return (
     <NavbarContainer className="w-full rounded-none">
       <div className="pl-4">
-        <Logo height={60} width={60} />
+        <Logo height={70} width={70} />
       </div>
       <NavbarLink href="#">Icons</NavbarLink>
       <NavbarLink href="#">App</NavbarLink>

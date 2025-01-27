@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { FormValues } from "@/components/global-components/form/form-values";
+import { CardProduct } from "@/components/global-components/card/card-product";
 
 const items = [
   {
@@ -70,7 +71,7 @@ export function SidebarFilter() {
     // <Form {...form}>
 
     // <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-    <div className="w-72  p-4 rounded-xl shadow-xl hover:shadow-2xl duration-300 transition">
+    <div className="flex gap-x-4  p-4 rounded-xl shadow-xl hover:shadow-2xl duration-300 transition">
       <FormValues form={form} onSubmit={onSubmit} classNameForm="space-y-8  ">
         <FormField
           control={form.control}
@@ -121,6 +122,8 @@ export function SidebarFilter() {
           )}
         />
       </FormValues>
+
+      <CardProduct />
     </div>
   );
 }

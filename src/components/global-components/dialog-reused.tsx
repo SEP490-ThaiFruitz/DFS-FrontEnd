@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
 import { LucideIcon } from "lucide-react";
@@ -36,7 +37,7 @@ export const DialogReused = ({
       <DialogTrigger>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogHeader>{title}</DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 

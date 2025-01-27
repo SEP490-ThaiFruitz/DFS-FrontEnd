@@ -15,38 +15,42 @@ import Image from "next/image";
 interface CardProductProps {
   // handleAddToCart: (e: React.MouseEvent) => void;
 }
+
 export const CardProduct = ({}: CardProductProps) => {
   return (
     <CardContainer
-      className="inter-var cursor-pointer w-96 motion-preset-pop
+      className="inter-var cursor-pointer w-92 lg:w-80 motion-preset-pop hover:shadow-xl hover:scale-105 rounded-xl transition duration-300
     "
-      containerClassName="py-4"
+      containerClassName="py-0"
     >
       <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border transition duration-300">
         {/* <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto max-h-[350px] rounded-xl p-6 border transition duration-300"> */}
-        <CardItem translateY={6} translateZ={6}>
+        <CardItem translateY={6} translateZ={6} className="">
           <Image
             src="/images/third-background.png"
             alt="Picture of the author"
             height="1000"
             width="1000"
-            className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl cursor-pointer transition duration-300"
+            className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl group-hover/card:scale-105 cursor-pointer transition duration-300"
           />
         </CardItem>
 
         <CardItem
           translateX={10}
           translateY={10}
-          className="text-violet-700/75 text-xl font-semibold mt-2 dark:text-neutral-300"
+          className="text-violet-700/75 text-lg font-semibold mt-2 dark:text-neutral-300 h-12"
           as="h1"
         >
-          Hover over this card to unleash the power of CSS perspective
+          {truncate(
+            "Hover over this card to unleash the power of CSS perspective",
+            { length: 60 }
+          )}
         </CardItem>
 
         <CardItem
           translateX={10}
           translateY={15}
-          className="text-neutral-500  mt-2 dark:text-neutral-300"
+          className="text-neutral-500 mt-2 h-14 dark:text-neutral-300"
           as="h1"
         >
           {truncate(

@@ -65,7 +65,7 @@ export const FloatingButton = () => {
       </GooeyMenuBefore>
 
       <GooeyMenuTrigger>
-        <MessageCircleMoreIcon size={30} />
+        <MessageCircleMoreIcon size={25} />
       </GooeyMenuTrigger>
     </GooeyMenu>
   );

@@ -1,19 +1,31 @@
 import { cn } from "@/lib/utils";
 import type { ComponentProps } from "react";
 import { Logo } from "./logo";
+import { LogIn } from "lucide-react";
 
 export const Navigate = () => {
   return (
-    <NavbarContainer className="w-full rounded-none">
-      <div className="pl-4">
-        <Logo height={70} width={70} />
+    <NavbarContainer className="w-full rounded-none list-none flex items-center justify-between">
+      {/* <div className="flex items-center justify-between "> */}
+      <div className="flex items-center gap-x-1  ">
+        <div className="pl-4">
+          <Logo height={70} width={70} />
+        </div>
+        <NavbarLink href="#">Icons</NavbarLink>
+        <NavbarLink href="#">App</NavbarLink>
+        <NavbarLink href="#">Pricing</NavbarLink>
+        <NavbarLink href="#" isHighlighted={true}>
+          Buy Icons
+        </NavbarLink>
       </div>
-      <NavbarLink href="#">Icons</NavbarLink>
-      <NavbarLink href="#">App</NavbarLink>
-      <NavbarLink href="#">Pricing</NavbarLink>
-      <NavbarLink href="#" isHighlighted={true}>
-        Buy Icons
-      </NavbarLink>
+      <div className="flex items-center gap-x-1 mr-8">
+        <NavbarLink href="#">
+          <LogIn className="size-4 mr-1" /> Login
+        </NavbarLink>
+        <NavbarLink href="#">Sign Up</NavbarLink>
+      </div>
+
+      {/* </div> */}
     </NavbarContainer>
   );
 };
@@ -33,9 +45,9 @@ export const NavbarContainer = ({
       )}
       {...props}
     >
-      <ul className="gap-2 flex w-fit items-center justify-between">
-        {children}
-      </ul>
+      {/* <ul className="gap-2 flex w-fit items-center justify-between"> */}
+      {children}
+      {/* </ul> */}
     </nav>
   );
 };

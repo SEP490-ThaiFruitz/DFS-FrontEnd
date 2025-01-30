@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import type { ComponentProps } from "react";
 import { Logo } from "./logo";
 import { LogIn } from "lucide-react";
+import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 
 export const Navigate = () => {
   return (
@@ -19,9 +20,10 @@ export const Navigate = () => {
         </NavbarLink>
       </div>
       <div className="flex items-center gap-x-1 mr-8">
-        <NavbarLink href="#">
+        {/* <NavbarLink href="#" onClick={() => {}}>
           <LogIn className="size-4 mr-1" /> Login
-        </NavbarLink>
+        </NavbarLink> */}
+        <LoginDialog />
         <NavbarLink href="#">Sign Up</NavbarLink>
       </div>
 

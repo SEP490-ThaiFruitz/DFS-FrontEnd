@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { JSX } from "react";
 
 interface ButtonCustomizedProps {
-  label: string;
+  label: string | JSX.Element;
   onClick?: () => void;
   className?: string;
   type?: "button" | "submit" | "reset";

@@ -3,8 +3,10 @@
 import { JSX, useState } from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,6 +23,10 @@ interface DialogReusedProps {
   icon?: LucideIcon | React.ReactNode;
 
   open?: boolean;
+
+  asChild?: boolean;
+
+  confirmButton?: string | JSX.Element;
 }
 
 export const DialogReused = ({
@@ -29,12 +35,14 @@ export const DialogReused = ({
   trigger,
   content,
   open = false,
+  asChild,
+  confirmButton,
 }: DialogReusedProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(open);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogTrigger asChild={asChild}>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

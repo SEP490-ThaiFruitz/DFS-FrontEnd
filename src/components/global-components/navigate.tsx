@@ -3,6 +3,7 @@ import type { ComponentProps } from "react";
 import { Logo } from "./logo";
 import { LogIn } from "lucide-react";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
+import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
 
 export const Navigate = () => {
   return (
@@ -23,8 +24,9 @@ export const Navigate = () => {
         {/* <NavbarLink href="#" onClick={() => {}}>
           <LogIn className="size-4 mr-1" /> Login
         </NavbarLink> */}
+        {/* <NavbarLink href="#">Sign Up</NavbarLink> */}
         <LoginDialog />
-        <NavbarLink href="#">Sign Up</NavbarLink>
+        <RegisterDialog />
       </div>
 
       {/* </div> */}

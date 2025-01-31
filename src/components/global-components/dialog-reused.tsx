@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DialogReusedProps {
   title: string | JSX.Element;
@@ -24,9 +25,10 @@ interface DialogReusedProps {
 
   open?: boolean;
 
-  asChild?: boolean;
+  className?: string;
+  onOpen?: (state: boolean) => void;
 
-  confirmButton?: string | JSX.Element;
+  asChild?: boolean;
 }
 
 export const DialogReused = ({
@@ -36,17 +38,18 @@ export const DialogReused = ({
   content,
   open = false,
   asChild,
-  confirmButton,
+  onOpen,
+  className,
 }: DialogReusedProps) => {
-  const [isOpen, setIsOpen] = useState<boolean>(open);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={open ?? isOpen} onOpenChange={onOpen ?? setIsOpen}>
       <DialogTrigger asChild={asChild}>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className={cn("", className)}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription>`{description}</DialogDescription>
         </DialogHeader>
 
         {content}

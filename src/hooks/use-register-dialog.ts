@@ -1,15 +1,14 @@
 import { create } from "zustand";
 
-interface UseLoginDialogProps {
+interface UseRegisterDialogProps {
   isOpen: boolean;
 
   onOpen: () => void;
   onClose: () => void;
-
   onChange: (state: boolean) => void;
 }
 
-export const useLoginDialog = create<UseLoginDialogProps>((set) => ({
+export const useRegisterDialog = create<UseRegisterDialogProps>((set) => ({
   isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),

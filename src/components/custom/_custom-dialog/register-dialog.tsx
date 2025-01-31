@@ -19,9 +19,11 @@ import { ButtonCustomized } from "../_custom-button/button-customized";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useRegisterDialog } from "@/hooks/use-register-dialog";
+import { useLoginDialog } from "@/hooks/use-login-dialog";
 
 export const RegisterDialog = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { isOpen, onOpen, onChange } = useLoginDialog();
 
   console.log({ isOpen });
 
@@ -105,7 +107,10 @@ export const RegisterDialog = () => {
         <div className="my-2">
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
             Already have an account?{" "}
-            <h3 className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500">
+            <h3
+              onClick={onOpen}
+              className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
+            >
               Login here
             </h3>
           </h2>
@@ -117,7 +122,7 @@ export const RegisterDialog = () => {
   return (
     <DialogReused
       content={body}
-      open={isOpen}
+      onOpen={onChange}
       asChild
       trigger={trigger}
       title={title}

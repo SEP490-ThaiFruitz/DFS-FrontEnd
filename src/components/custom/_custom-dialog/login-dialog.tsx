@@ -14,11 +14,14 @@ import { z } from "zod";
 import { ButtonCustomized } from "../_custom-button/button-customized";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { useLoginDialog } from "@/hooks/use-login-dialog";
 
 export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypes>>({
     resolver: zodResolver(LoginSafeTypes),
   });
+
+  const { isOpen, onOpen, onChange } = useLoginDialog();
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypes>) => {
     try {
@@ -97,7 +100,10 @@ export const LoginDialog = () => {
         <div className="my-2">
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
             Already have an account?{" "}
-            <h3 className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500">
+            <h3
+              onClick={onOpen}
+              className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
+            >
               Register here
             </h3>
           </h2>
@@ -112,6 +118,8 @@ export const LoginDialog = () => {
       asChild
       trigger={trigger}
       title={title}
+      open={isOpen}
+      onOpen={onChange}
       description="Lets login to get sale!"
     />
   );

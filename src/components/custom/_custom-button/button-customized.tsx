@@ -7,6 +7,8 @@ interface ButtonCustomizedProps {
   onClick?: () => void;
   className?: string;
   type?: "button" | "submit" | "reset";
+
+  disabled?: boolean;
   variant?:
     | "default"
     | "destructive"
@@ -21,11 +23,13 @@ export const ButtonCustomized = ({
   onClick,
   className,
   type = "button",
+  disabled
 }: ButtonCustomizedProps) => {
   return (
     <Button
       onClick={onClick}
       variant={variant}
+      disabled={disabled}
       className={cn(
         "inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-neutral-900 px-5 py-3 font-medium text-white duration-200 hover:bg-neutral-700 focus:ring-2 focus:ring-black focus:ring-offset-2",
         className

@@ -14,6 +14,14 @@ export const LoginSafeTypes = z.object({
   password: z.string().min(8).max(32),
 });
 
+export const LoginSafeTypesHaveEmail = z.object({
+  // phone: z.string().refine(isValidPhone, {
+  //   message: "Số điện thoại không hợp lệ",
+  // }),
+  email: z.string().email(),
+  password: z.string().min(8).max(32),
+});
+
 export const RegisterSafeTypes = LoginSafeTypes.extend({
   confirmPassword: z.string().min(8).max(32),
 }).refine((data) => data.password === data.confirmPassword, {

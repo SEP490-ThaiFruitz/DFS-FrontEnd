@@ -6,7 +6,10 @@ import { FormPassword } from "@/components/global-components/form/form-password"
 import { FormValues } from "@/components/global-components/form/form-values";
 import { Logo } from "@/components/global-components/logo";
 import { NavbarLink } from "@/components/global-components/navigate";
-import { LoginSafeTypes } from "@/zod-safe-types/auth-safe-types";
+import {
+  LoginSafeTypes,
+  LoginSafeTypesHaveEmail,
+} from "@/zod-safe-types/auth-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -15,17 +18,25 @@ import { ButtonCustomized } from "../_custom-button/button-customized";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
+import { loginAction } from "@/actions/login";
 
 export const LoginDialog = () => {
-  const form = useForm<z.infer<typeof LoginSafeTypes>>({
-    resolver: zodResolver(LoginSafeTypes),
+  const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
+    resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
 
   const { isOpen, onOpen, onChange } = useLoginDialog();
 
-  const onSubmit = async (values: z.infer<typeof LoginSafeTypes>) => {
+  const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
     try {
       console.log({ values });
+
+      const response = await loginAction({
+        username: values.email,
+        ...values,
+      });
+
+      console.log({ response });
     } catch (error) {
       console.log({ error });
     }
@@ -46,12 +57,20 @@ export const LoginDialog = () => {
   const body = (
     <div>
       <FormValues form={form} onSubmit={onSubmit}>
-        <FormInputControl
+        {/* <FormInputControl
           form={form}
           name="phone"
           disabled={form.formState.isSubmitting}
           label="Phone"
           placeholder="+84..."
+        /> */}
+
+        <FormInputControl
+          form={form}
+          name="email"
+          disabled={form.formState.isSubmitting}
+          label="Email"
+          placeholder="mail@example.com."
         />
 
         <FormPassword
@@ -75,6 +94,7 @@ export const LoginDialog = () => {
             type="submit"
             className="max-w-32 bg-sky-500 hover:bg-sky-700"
             variant="secondary"
+            disabled={form.formState.isSubmitting}
             label={
               form.formState.isSubmitting ? (
                 <WaitingSpinner

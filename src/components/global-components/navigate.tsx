@@ -4,6 +4,7 @@ import { Logo } from "./logo";
 import { LogIn } from "lucide-react";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
+import { ShoppingBagSheet } from "../custom/_custom-sheet/shopping-bag-sheet";
 
 export const Navigate = () => {
   return (
@@ -27,6 +28,7 @@ export const Navigate = () => {
         {/* <NavbarLink href="#">Sign Up</NavbarLink> */}
         <LoginDialog />
         <RegisterDialog />
+        <ShoppingBagSheet />
       </div>
 
       {/* </div> */}

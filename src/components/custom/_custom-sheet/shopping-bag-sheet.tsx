@@ -33,7 +33,7 @@ export const ShoppingBagSheet = () => {
         </div>
       </SheetTrigger>
 
-      <SheetContent>
+      <SheetContent className="min-w-full md:min-w-[600px] lg:min-w-[50%] rounded-2xl">
         <SheetHeader>
           <SheetTitle>
             <div className="text-center">

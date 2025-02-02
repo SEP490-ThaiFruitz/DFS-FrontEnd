@@ -19,7 +19,7 @@ interface CardProductProps {
 export const CardProduct = ({}: CardProductProps) => {
   return (
     <CardContainer
-      className="inter-var cursor-pointer w-92 lg:w-80 motion-preset-pop hover:shadow-xl hover:scale-105 rounded-xl transition duration-300
+      className="inter-var cursor-pointer w-96 lg:w-80 2xl:w-96 motion-preset-pop hover:shadow-xl hover:scale-105 rounded-xl transition duration-300
     "
       containerClassName="py-0"
     >

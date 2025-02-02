@@ -124,12 +124,10 @@ export function SidebarFilter() {
         />
       </FormValues>
 
-      <div className="h-[600px] w-full p-8 overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 lg:gap-4 ">
-        <CardProduct />
-        <CardProduct />
-        <CardProduct />
-        <CardProduct />
-        <CardProduct />
+      <div className="h-[600px] w-full p-8 overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-0 lg:gap-4 2xl:gap-6 ">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <CardProduct key={index} />
+        ))}
       </div>
     </div>
   );

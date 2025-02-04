@@ -22,7 +22,7 @@ const AdminRouteLayout = ({ children, auth, test }: AdminRouteLayoutProps) => {
   //   </>
   // );
 
-  let isAdmin = false;
+  let isAdmin = true;
 
   return (
     <>
@@ -39,9 +39,11 @@ const AdminRouteLayout = ({ children, auth, test }: AdminRouteLayoutProps) => {
             </header>
 
             <div className="flex flex-col">
-              <h1 className="text-rose-500">{children}</h1>
+              {children}
               {/* {auth} */}
             </div>
+
+            {/* <div>{test}</div> */}
           </SidebarInset>
         </SidebarProvider>
       ) : (

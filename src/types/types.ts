@@ -31,3 +31,13 @@ export type Filter<TData> = Prettify<
     id: StringKeyOf<TData>;
   }
 >;
+
+export type PageResult<T> = {
+  totalCount: number,
+  pageSize: number,
+  pageIndex: number,
+  totalPages: number,
+  hasNextPage: boolean,
+  hasPreviousPage: boolean,
+  items: T[];
+};

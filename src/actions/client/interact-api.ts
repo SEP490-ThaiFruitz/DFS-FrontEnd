@@ -66,30 +66,40 @@ const get = async (
     }
 
     const data = await response.json();
+    return data;
   } catch (error) {
     console.log("Error in fetching data:", error);
   }
 };
 
 const create = async <TValues>(endpoint: string, body: TValues) => {
+  // const tokenData = await getToken();
+  // if (!tokenData) {
+  //   console.log("Access token not found.");
+  //   return;
+  // }
+
+  const  accessToken  = "";
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": body instanceof FormData ? {} as any : "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(body),
+        body: body instanceof FormData ? body as FormData : JSON.stringify(body),
       }
     );
-
+    console.log(response)
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
 
     const data = await response.json();
-    console.log(data);
+            console.log(response)
+    return data;
   } catch (error) {
     console.log("Error in creating data:", error);
   }

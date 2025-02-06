@@ -49,7 +49,7 @@ export const DialogReused = ({
       <DialogContent className={cn("", className)}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>`{description}</DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         {content}

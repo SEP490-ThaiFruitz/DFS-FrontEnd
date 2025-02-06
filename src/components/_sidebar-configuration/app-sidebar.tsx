@@ -5,6 +5,7 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  ChartBarStacked,
   Command,
   Frame,
   GalleryVerticalEnd,
@@ -25,6 +26,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { title } from "process";
+import { url } from "inspector";
 
 // This is sample data.
 const data = {
@@ -70,6 +73,18 @@ const data = {
           url: "#",
         },
       ],
+    },
+    {
+      title: "Loại sản phẩm",
+      url: "#",
+      icon: ChartBarStacked,
+      isActive: false,
+      items: [
+        {
+          title: "Danh sách",
+          url: "/admin/category"
+        }
+      ]
     },
     {
       title: "Models",

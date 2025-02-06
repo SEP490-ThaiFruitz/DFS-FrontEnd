@@ -35,7 +35,7 @@ export default function StatusButton({
     // console.log("loading 1");
     await wait(700);
     handleAddToCart(e);
-    // toast.success("Added to cart");
+    toast.success("Added to cart");
     setStatus("Added to cart");
     // console.log("Added to cart 2");
 

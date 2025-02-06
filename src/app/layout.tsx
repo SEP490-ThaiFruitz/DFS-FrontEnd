@@ -4,6 +4,7 @@ import "./globals.css";
 import { metaConfig } from "@/lib/config";
 import Head from "next/head";
 import { FloatingButton } from "@/components/global-components/floating-menu";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,11 +31,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-     
+    <html lang="en" suppressHydrationWarning={true}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster richColors position="top-right" />
         {children}
         <FloatingButton />
       </body>

@@ -49,9 +49,9 @@ export const LoginDialog = () => {
   );
 
   const trigger = (
-    <NavbarLink href="#">
+    <div className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
       <LogIn className="size-4 mr-1" /> Login
-    </NavbarLink>
+    </div>
   );
 
   const body = (

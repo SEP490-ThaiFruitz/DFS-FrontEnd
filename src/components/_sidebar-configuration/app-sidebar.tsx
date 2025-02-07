@@ -67,6 +67,19 @@ const data = {
       ],
     },
 
+    {
+      title: "Category Management",
+      url: "#",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "Categories",
+          url: "/admin/category",
+        },
+      ],
+    },
+
     // {
     //   title: "Playground",
     //   url: "#",

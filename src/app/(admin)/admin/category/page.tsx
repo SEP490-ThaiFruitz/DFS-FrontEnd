@@ -1,25 +1,40 @@
-"use client"
-import { getCategories } from '@/actions/category'
-import { CreateCategoryDialog } from '@/components/custom/_custom-dialog/create-category-dialog'
+"use client";
+import { getCategories } from "@/actions/category";
+import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-category-dialog";
 
-import { Category, columns } from '@/features/admin/category/column'
-import { DataTable } from '@/features/admin/category/data-table'
-import { PageResult } from '@/types/types'
-import React, { useEffect, useState } from 'react'
+import { Category, columns } from "@/features/admin/category/column";
+import { DataTable } from "@/features/admin/category/data-table";
+import { PageResult } from "@/types/types";
+import React, { useEffect, useState } from "react";
+
+import Cookies from "js-cookie";
+
+export const testGetCookies = () => {
+  const token = Cookies.get("access_token");
+
+  console.log({ token });
+
+  return token;
+};
 
 const CategoryPage = () => {
   const [data, setData] = useState<PageResult<Category>>();
 
+  const token = testGetCookies();
+
+  console.log(token);
+
   useEffect(() => {
-    getCategories()
-      .then((response: PageResult<Category>) => {
-        setData(response)
-        console.log(response)
-      })
-  }, [])
+    getCategories().then((response: PageResult<Category>) => {
+      setData(response);
+      console.log(response);
+    });
+  }, []);
+
+  console.log({ data });
 
   return (
-    <div className='mx-4 lg:mx-20'>
+    <div className="mx-4 lg:mx-20">
       <div className="flex justify-end">
         <CreateCategoryDialog />
       </div>
@@ -27,7 +42,7 @@ const CategoryPage = () => {
         <DataTable data={data?.items || []} columns={columns} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CategoryPage
+export default CategoryPage;

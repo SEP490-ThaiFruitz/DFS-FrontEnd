@@ -48,9 +48,6 @@ export const loginAction = async <TValues>(values: TValues) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 24 * 7,
-
-        // sameSite: "strict",
-        // path: "/",
       });
 
       // console.log("set cookie: ", response.value.accessToken);

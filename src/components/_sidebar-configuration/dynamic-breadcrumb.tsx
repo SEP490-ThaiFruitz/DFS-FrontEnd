@@ -26,9 +26,9 @@ export const DynamicBreadcrumb = () => {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem className="hidden md:block">
+        {/* <BreadcrumbItem className="hidden md:block">
           <BreadcrumbLink href="#">Admin sidebar</BreadcrumbLink>
-        </BreadcrumbItem>
+        </BreadcrumbItem> */}
         {breadcrumbs.map((breadcrumb, index) => {
           return (
             <React.Fragment key={breadcrumb + index}>

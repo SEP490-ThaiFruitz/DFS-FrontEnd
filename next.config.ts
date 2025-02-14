@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
 
+  images: {
+    remotePatterns: [
+      {
+        hostname: "assets.aceternity.com",
+        protocol: "https",
+      },
+    ],
+  },
+
   rules: {
     "no-console": "off", // Example: Disable `no-console` rule
     "react/no-unescaped-entities": "off", // Disable warning for unescaped entities

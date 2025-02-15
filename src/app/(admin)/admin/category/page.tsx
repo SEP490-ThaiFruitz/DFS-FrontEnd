@@ -7,22 +7,8 @@ import { DataTable } from "@/features/admin/category/data-table";
 import { PageResult } from "@/types/types";
 import React, { useEffect, useState } from "react";
 
-import Cookies from "js-cookie";
-
-export const testGetCookies = () => {
-  const token = Cookies.get("access_token");
-
-  console.log({ token });
-
-  return token;
-};
-
 const CategoryPage = () => {
   const [data, setData] = useState<PageResult<Category>>();
-
-  const token = testGetCookies();
-
-  console.log(token);
 
   useEffect(() => {
     getCategories().then((response: PageResult<Category>) => {

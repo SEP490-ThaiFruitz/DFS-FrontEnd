@@ -1,3 +1,4 @@
+import { getF } from "@/actions/interact";
 import { DataTable } from "@/components/global-components/data-table/data-table";
 import { Payment, columns } from "@/features/admin/dashboard/column";
 
@@ -36,7 +37,11 @@ const data: Payment[] = [
   },
 ];
 
-const DashboardPage = () => {
+const DashboardPage = async () => {
+  const testData = await getF("/Categories");
+
+  console.log({ testData });
+
   return (
     <div className="p-4">
       <DataTable data={data} columns={columns} />

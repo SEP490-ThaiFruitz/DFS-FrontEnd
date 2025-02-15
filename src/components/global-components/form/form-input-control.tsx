@@ -24,6 +24,7 @@ interface FormInputControlProps<T extends FieldValues, K> {
   classNameInput?: string;
   // value?: string | PathValue<T, Path<T>> | undefined;
   value?: any;
+  defaultValue?: any,
   icon?: React.ReactElement;
 }
 
@@ -38,19 +39,18 @@ export const FormInputControl = <T extends FieldValues, K>({
   classNameInput,
   value,
   icon,
+  defaultValue
 }: FormInputControlProps<T, K>) => {
-  // console.log({ value });
+
   return (
     <FormField
       control={form.control}
       name={name}
+      defaultValue={defaultValue ?? ""}
       render={({ field, fieldState, formState }) => {
         if (value !== undefined && value !== null && field.value !== value) {
           form.setValue(name, value);
         }
-
-        // console.log({ field, fieldState });
-
         return (
           <FormItem>
             <FormLabel className={cn("text-text-foreground", classNameLabel)}>

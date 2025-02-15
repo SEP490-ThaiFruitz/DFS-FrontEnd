@@ -10,20 +10,28 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-
-  images: {
-    remotePatterns: [
-      {
-        hostname: "assets.aceternity.com",
-        protocol: "https",
-      },
-    ],
-  },
-
+  
   rules: {
     "no-console": "off", // Example: Disable `no-console` rule
     "react/no-unescaped-entities": "off", // Disable warning for unescaped entities
     // Add or modify rules as needed
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**", // allow all domain
+      },
+      {
+        protocol: "http",
+        hostname: "**", //  allow  HTTP
+      }
+    ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
   },
 };
 

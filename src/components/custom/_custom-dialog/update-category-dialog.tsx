@@ -1,29 +1,36 @@
 "use client"
-import { createCategory } from '@/actions/category';
+import { updateCategory } from '@/actions/category';
 import { DialogReused } from '@/components/global-components/dialog-reused';
 import { FormValues } from '@/components/global-components/form/form-values';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { DialogClose, DialogFooter } from '@/components/ui/dialog';
-import { CreateCategorySafeTypes } from '@/zod-safe-types/category-safe-types';
+import { UpdateCategorySafeTypes } from '@/zod-safe-types/category-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ButtonCustomized } from '../_custom-button/button-customized';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
-import { CirclePlus } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control';
 import { FormFileControl } from '@/components/global-components/form/form-file-control';
+import { Category } from '@/features/admin/category/column';
 
-export const CreateCategoryDialog = () => {
+interface UpdateCategoryDialogProps {
+    category: Category;
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+export const UpdateCategoryDialog = ({ category, isOpen, onClose }: UpdateCategoryDialogProps) => {
     const [file, setFile] = useState<File>();
-    const [isOpen, setIsOpen] = useState(false);
-    const form = useForm<z.infer<typeof CreateCategorySafeTypes>>({
-        resolver: zodResolver(CreateCategorySafeTypes),
+    const form = useForm<z.infer<typeof UpdateCategorySafeTypes>>({
+        resolver: zodResolver(UpdateCategorySafeTypes),
     });
 
-    const onSubmit = async (values: z.infer<typeof CreateCategorySafeTypes>) => {
+
+    const onSubmit = async (values: z.infer<typeof UpdateCategorySafeTypes>) => {
         try {
             const formData = new FormData();
             formData.append("name", values.name);
@@ -32,13 +39,7 @@ export const CreateCategoryDialog = () => {
                 formData.append("thumbnail", file);
             }
 
-            const response = await createCategory(formData);
-
-            if (response.success) {
-                form.reset();
-                setFile(undefined);
-                setIsOpen(false);
-            }
+            const response = await updateCategory(formData);
 
             console.log({ response });
         } catch (error) {
@@ -49,14 +50,13 @@ export const CreateCategoryDialog = () => {
 
     const title = (
         <div className="text-center">
-            Tạo mới loại sản phẩm
+            Cập nhật loại sản phẩm
         </div>
     );
 
     const trigger = (
-        <Button variant="outline">
-            <CirclePlus />
-            Tạo mới
+        <Button className='h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white' variant="outline">
+            <Pencil />
         </Button>
     );
 
@@ -67,6 +67,7 @@ export const CreateCategoryDialog = () => {
                     form={form}
                     name="name"
                     disabled={form.formState.isSubmitting}
+                    defaultValue={category.name}
                     label="Tên loại sản phẩm"
                 />
 
@@ -74,13 +75,14 @@ export const CreateCategoryDialog = () => {
                     form={form}
                     row={4}
                     name="description"
+                    defaultValue={category.description}
                     disabled={form.formState.isSubmitting}
                     label="Mô tả loại sản phẩm"
                 />
 
                 <FormFileControl
                     form={form}
-                    name="image"
+                    name='image'
                     classNameInput='h-30 w-full'
                     mutiple={false}
                     onChooseFile={(value: File[]) => setFile(value[0])}
@@ -111,7 +113,7 @@ export const CreateCategoryDialog = () => {
                                     classNameLabel="font-semibold text-sm"
                                 />
                             ) : (
-                                "Lưu"
+                                "Cập nhật"
                             )
                         }
                     />
@@ -126,8 +128,8 @@ export const CreateCategoryDialog = () => {
             trigger={trigger}
             title={title}
             open={isOpen}
-            onOpen={() => setIsOpen(!isOpen)}
-            description="Vui lòng nhập thông tin để tạo mới loại sản phẩm. Nhấn lưu để hoàn tất."
+            onOpen={onClose}
+            description="Vui lòng nhập thông tin để cập nhật loại sản phẩm. Nhấn cập nhật để hoàn tất."
         />
     )
 }

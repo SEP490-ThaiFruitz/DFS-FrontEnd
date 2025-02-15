@@ -7,9 +7,10 @@ import { DataTable } from "@/features/admin/category/data-table";
 import { PageResult } from "@/types/types";
 import React, { useEffect, useState } from "react";
 
+
+
 const CategoryPage = () => {
   const [data, setData] = useState<PageResult<Category>>();
-
   useEffect(() => {
     getCategories().then((response: PageResult<Category>) => {
       setData(response);

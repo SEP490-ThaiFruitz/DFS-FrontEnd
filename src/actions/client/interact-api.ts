@@ -1,8 +1,6 @@
 import { cookies } from "next/headers";
 import { ApiResponse } from "../login";
 
-import Cookies from "js-cookie";
-
 const getToken = async (): Promise<{ accessToken: string } | null> => {
   try {
     const cookieStore = await cookies();
@@ -55,14 +53,12 @@ const getWithToken = async (endpoint: string) => {
 
 const get = async (
   endpoint: string,
-  config: RequestInit = { cache: "force-cache" }
 ) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      config
+      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`
     );
-
+    
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -83,26 +79,29 @@ const create = async <TValues>(endpoint: string, body: TValues) => {
 
   const accessToken = "";
   try {
+    let headers = { 'Content-Type': 'application/json' } as any;
+    if (body instanceof FormData) {
+      headers = {};
+    }
+    if (accessToken) {
+      headers.Authorization = 'Bearer ' + accessToken
+    }
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type":
-            body instanceof FormData ? ({} as any) : "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
+        headers: headers,
         body:
-          body instanceof FormData ? (body as FormData) : JSON.stringify(body),
+          body instanceof FormData ? (body) : JSON.stringify(body),
       }
     );
-    console.log(response);
+    console.log(await response.json())
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
 
     const data = await response.json();
-    console.log(response);
+    console.log(response)
     return data;
   } catch (error) {
     console.log("Error in creating data:", error);

@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";;
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -35,6 +35,12 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [dateRange, setDateRange] = React.useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({ from: undefined, to: undefined });
+
+  console.log({ dateRange });
 
   const table = useReactTable({
     data,
@@ -54,6 +60,16 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
       rowSelection,
     },
   });
+
+  const handleDateRangeApply = () => {
+    const dateColumn = table.getColumn("date");
+    if (dateColumn && dateRange.from && dateRange.to) {
+      dateColumn.setFilterValue({
+        start: dateRange.from,
+        end: dateRange.to,
+      });
+    }
+  };
 
   return (
     <div className="w-full">

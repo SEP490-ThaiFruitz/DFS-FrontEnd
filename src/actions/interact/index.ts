@@ -1,5 +1,6 @@
 export const getF = async <T>(endpoint: string): Promise<T | any> => {
   try {
+    console.log("API URL:", process.env.NEXT_PUBLIC_URL_API);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`
     );

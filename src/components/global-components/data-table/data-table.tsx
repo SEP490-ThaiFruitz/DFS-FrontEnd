@@ -1,8 +1,11 @@
 "use client";
 import * as React from "react";
 import {
+  Cell,
+  Column,
   ColumnDef,
   ColumnFiltersState,
+  Header,
   SortingState,
   VisibilityState,
   flexRender,
@@ -12,12 +15,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
+  ChevronDown,
+  ChevronUp,
+  Ellipsis,
+  GripVertical,
+  PinOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -38,10 +50,56 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
+import {
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import {
+  SortableContext,
+  arrayMove,
+  horizontalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 interface DataTableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
 }
+
+// type Item = {
+//   id: string;
+//   name: string;
+//   email: string;
+//   location: string;
+//   flag: string;
+//   status: "Active" | "Inactive" | "Pending";
+//   balance: number;
+//   department: string;
+//   role: string;
+//   joinDate: string;
+//   lastActive: string;
+//   performance: "Good" | "Very Good" | "Excellent" | "Outstanding";
+// };
+
+const getPinningStyles = <T,>(column: Column<T>): React.CSSProperties => {
+  const isPinned = column.getIsPinned();
+  return {
+    left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
+    right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
+    position: isPinned ? "sticky" : "relative",
+    width: column.getSize(),
+    zIndex: isPinned ? 1 : 0,
+  };
+};
 
 export function DataTable<T>({ data, columns }: DataTableProps<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -56,6 +114,8 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
 
+  const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
+
   console.log({ dateRange });
 
   const table = useReactTable({
@@ -69,6 +129,7 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onColumnOrderChange: setColumnOrder,
     state: {
       sorting,
       columnFilters,
@@ -87,8 +148,30 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
     }
   };
 
+  const handleDragEnd = React.useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (active && over && active.id !== over.id) {
+        setColumnOrder((columnOrder) => {
+          const oldIndex = columnOrder.indexOf(active.id as string);
+          const newIndex = columnOrder.indexOf(over.id as string);
+
+          return arrayMove(columnOrder, oldIndex, newIndex);
+        });
+      }
+    },
+    [setColumnOrder]
+  );
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {})
+  );
+
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <div className="flex items-center py-4 space-x-4">
         {/* Email Filter */}
         <Input
@@ -168,21 +251,156 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
         </DropdownMenu>
       </div>
 
-      {/* Table */}
-      <div className="rounded-md border">
-        <Table>
+      {/* <DndContext
+        id={React.useId()}
+        collisionDetection={closestCenter}
+        modifiers={[restrictToHorizontalAxis]}
+        sensors={sensors}
+        onDragEnd={handleDragEnd}
+      > */}
+      <div className="min-w-full max-w-6xl">
+        {/* <div className="bg-background w-full"> */}
+        <Table
+          className="table-fixed border-separate border-spacing-0 [&_td]:border-border [&_tfoot_td]:border-t [&_th]:border-b [&_th]:border-border [&_tr:not(:last-child)_td]:border-b [&_tr]:border-none min-w-full flex-1"
+          style={{
+            width: table.getTotalSize(),
+          }}
+        >
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-muted/50">
                 {headerGroup.headers.map((header) => {
+                  const { column } = header;
+                  const isPinned = column.getIsPinned();
+                  const isLastLeftPinned =
+                    isPinned === "left" && column.getIsLastColumn("left");
+                  const isFirstRightPinned =
+                    isPinned === "right" && column.getIsFirstColumn("right");
+
+                  // return (
+                  //   <SortableContext
+                  //     items={columnOrder}
+                  //     strategy={horizontalListSortingStrategy}
+                  //   >
+
+                  //     <DraggableTableHeader
+                  //       key={header.id}
+                  //       isPinned={isPinned}
+                  //       header={header as Header<unknown, unknown>}
+                  //       isLastLeftPinned={isLastLeftPinned}
+                  //       isFirstRightPinned={isFirstRightPinned}
+                  //       column={column as Column<unknown, unknown>}
+                  //     />
+                  //   </SortableContext>
+                  // );
+
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                    <TableHead
+                      key={header.id}
+                      className="relative h-10 truncate border-t [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-muted/90 [&[data-pinned]]:backdrop-blur-sm"
+                      colSpan={header.colSpan}
+                      style={{ ...getPinningStyles(column) }}
+                      data-pinned={isPinned || undefined}
+                      data-last-col={
+                        isLastLeftPinned
+                          ? "left"
+                          : isFirstRightPinned
+                          ? "right"
+                          : undefined
+                      }
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </span>
+                        {/* Pin/Unpin column controls with enhanced accessibility */}
+                        {!header.isPlaceholder &&
+                          header.column.getCanPin() &&
+                          (header.column.getIsPinned() ? (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="-mr-1 size-7 shadow-none"
+                              onClick={() => header.column.pin(false)}
+                              aria-label={`Unpin ${
+                                header.column.columnDef.header as string
+                              } column`}
+                              title={`Unpin ${
+                                header.column.columnDef.header as string
+                              } column`}
+                            >
+                              <PinOff
+                                className="opacity-60"
+                                size={16}
+                                strokeWidth={2}
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          ) : (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="-mr-1 size-7 shadow-none"
+                                  aria-label={`Pin options for ${
+                                    header.column.columnDef.header as string
+                                  } column`}
+                                  title={`Pin options for ${
+                                    header.column.columnDef.header as string
+                                  } column`}
+                                >
+                                  <Ellipsis
+                                    className="opacity-60"
+                                    size={16}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                  />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => header.column.pin("left")}
+                                >
+                                  <ArrowLeftToLine
+                                    size={16}
+                                    strokeWidth={2}
+                                    className="opacity-60"
+                                    aria-hidden="true"
+                                  />
+                                  Stick to left
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => header.column.pin("right")}
+                                >
+                                  <ArrowRightToLine
+                                    size={16}
+                                    strokeWidth={2}
+                                    className="opacity-60"
+                                    aria-hidden="true"
+                                  />
+                                  Stick to right
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          ))}
+                        {header.column.getCanResize() && (
+                          <div
+                            {...{
+                              onDoubleClick: () => header.column.resetSize(),
+                              onMouseDown: header.getResizeHandler(),
+                              onTouchStart: header.getResizeHandler(),
+                              className:
+                                "absolute top-0 h-full w-4 cursor-col-resize user-select-none touch-none -right-2 z-10 flex justify-center before:absolute before:w-px before:inset-y-0 before:bg-border before:-translate-x-px",
+                            }}
+                          />
+                        )}
+                      </div>
                     </TableHead>
                   );
                 })}
@@ -196,14 +414,49 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const { column } = cell;
+                    const isPinned = column.getIsPinned();
+                    const isLastLeftPinned =
+                      isPinned === "left" && column.getIsLastColumn("left");
+                    const isFirstRightPinned =
+                      isPinned === "right" && column.getIsFirstColumn("right");
+
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className="truncate [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-background/90 [&[data-pinned]]:backdrop-blur-sm"
+                        style={{ ...getPinningStyles(column) }}
+                        data-pinned={isPinned || undefined}
+                        data-last-col={
+                          isLastLeftPinned
+                            ? "left"
+                            : isFirstRightPinned
+                            ? "right"
+                            : undefined
+                        }
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                      // <SortableContext
+                      //   key={cell.id}
+                      //   items={columnOrder}
+                      //   strategy={horizontalListSortingStrategy}
+                      // >
+                      //   <DragAlongCell
+                      //     key={cell.id}
+                      //     cell={cell as Cell<unknown, unknown>}
+                      //     isLastLeftPinned={isLastLeftPinned}
+                      //     isFirstRightPinned={isFirstRightPinned}
+                      //     isPinned={isPinned}
+                      //     column={column as Column<unknown, unknown>}
+                      //   />
+                      // </SortableContext>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -218,7 +471,19 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
             )}
           </TableBody>
         </Table>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Pinnable columns made with{" "}
+          <a
+            className="underline hover:text-foreground"
+            href="https://tanstack.com/table"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            TanStack Table
+          </a>
+        </p>
       </div>
+      {/* </DndContext> */}
 
       {/* Pagination Controls */}
       <div className="flex items-center justify-end space-x-2 py-4">
@@ -248,3 +513,255 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
     </div>
   );
 }
+
+const DraggableTableHeader = React.memo(
+  <T,>({
+    header,
+    isLastLeftPinned,
+    isFirstRightPinned,
+    column,
+    isPinned,
+  }: {
+    header: Header<unknown, unknown>;
+    isLastLeftPinned: boolean;
+    isFirstRightPinned: boolean;
+    column: Column<T, unknown>;
+    isPinned: boolean | string;
+  }) => {
+    const {
+      attributes,
+      isDragging,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+    } = useSortable({
+      id: header.column.id,
+    });
+
+    const style: React.CSSProperties = {
+      opacity: isDragging ? 0.8 : 1,
+      position: "relative",
+      transform: CSS.Translate.toString(transform),
+      transition,
+      whiteSpace: "nowrap",
+      width: header.column.getSize(),
+      zIndex: isDragging ? 1 : 0,
+    };
+
+    const mergedStyle = { ...style, ...getPinningStyles(column) };
+
+    return (
+      <TableHead
+        key={header.id}
+        ref={setNodeRef}
+        className="relative h-10 truncate border-t [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-muted/90 [&[data-pinned]]:backdrop-blur-sm"
+        style={mergedStyle}
+        data-pinned={isPinned || undefined}
+        data-last-col={
+          isLastLeftPinned ? "left" : isFirstRightPinned ? "right" : undefined
+        }
+        colSpan={header.colSpan}
+        aria-sort={
+          header.column.getIsSorted() === "asc"
+            ? "ascending"
+            : header.column.getIsSorted() === "desc"
+            ? "descending"
+            : "none"
+        }
+      >
+        <div className="flex items-center justify-start gap-0.5">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="-ml-2 size-7 shadow-none"
+            {...attributes}
+            {...listeners}
+            aria-label="Drag to reorder"
+          >
+            <GripVertical
+              className="opacity-60"
+              size={16}
+              strokeWidth={16}
+              aria-hidden="true"
+            />
+          </Button>
+
+          <span className="grow truncate">
+            {header.isPlaceholder
+              ? null
+              : flexRender(header.column.columnDef.header, header.getContext())}
+          </span>
+
+          <Button
+            size="icon"
+            variant="ghost"
+            className="group -mr-1 size-7 shadow-none"
+            onClick={header.column.getToggleSortingHandler()}
+            onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
+              if (
+                header.column.getCanSort() &&
+                (e.key === "Enter" || e.key === " ")
+              ) {
+                e.preventDefault();
+                header.column.getToggleSortingHandler()?.(e);
+              }
+            }}
+          >
+            {{
+              asc: (
+                <ChevronUp
+                  className="shrink-0 opacity-60"
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+              ),
+
+              desc: (
+                <ChevronDown
+                  className="shrink-0 opacity-60"
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+              ),
+            }[header.column.getIsSorted() as string] ?? (
+              <ChevronUp
+                className="shrink-0 opacity-0 group-hover:opacity-60"
+                size={16}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            )}
+          </Button>
+
+          {!header.isPlaceholder &&
+            header.column.getCanPin() &&
+            (header.column.getIsPinned() ? (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="-mr-1 size-7 shadow-none"
+                onClick={() => header.column.pin(false)}
+                aria-label={`Unpin ${
+                  header.column.columnDef.header as string
+                } column`}
+                title={`Unpin ${
+                  header.column.columnDef.header as string
+                } column`}
+              >
+                <PinOff
+                  className="opacity-60"
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="-mr-1 size-7 shadow-none"
+                    aria-label={`Pin options for ${
+                      header.column.columnDef.header as string
+                    } column`}
+                    title={`Pin options for ${
+                      header.column.columnDef.header as string
+                    } column`}
+                  >
+                    <Ellipsis
+                      className="opacity-60"
+                      size={16}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => header.column.pin("left")}>
+                    <ArrowLeftToLine
+                      size={16}
+                      strokeWidth={2}
+                      className="opacity-60"
+                      aria-hidden="true"
+                    />
+                    Stick to left
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => header.column.pin("right")}>
+                    <ArrowRightToLine
+                      size={16}
+                      strokeWidth={2}
+                      className="opacity-60"
+                      aria-hidden="true"
+                    />
+                    Stick to right
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ))}
+          {header.column.getCanResize() && (
+            <div
+              {...{
+                onDoubleClick: () => header.column.resetSize(),
+                onMouseDown: header.getResizeHandler(),
+                onTouchStart: header.getResizeHandler(),
+                className:
+                  "absolute top-0 h-full w-4 cursor-col-resize user-select-none touch-none -right-2 z-10 flex justify-center before:absolute before:w-px before:inset-y-0 before:bg-border before:-translate-x-px",
+              }}
+            />
+          )}
+        </div>
+      </TableHead>
+    );
+  }
+);
+
+const DragAlongCell = React.memo(
+  <T,>({
+    cell,
+    column,
+    isLastLeftPinned,
+    isFirstRightPinned,
+    isPinned,
+  }: {
+    cell: Cell<T, unknown>;
+    column: Column<T, unknown>;
+    isLastLeftPinned: boolean;
+    isFirstRightPinned: boolean;
+    isPinned: boolean | string;
+  }) => {
+    const { isDragging, setNodeRef, transform, transition } = useSortable({
+      id: cell.column.id,
+    });
+
+    const style: React.CSSProperties = {
+      opacity: isDragging ? 0.8 : 1,
+      position: "relative",
+      transform: CSS.Translate.toString(transform),
+      transition,
+      width: cell.column.getSize(),
+      zIndex: isDragging ? 1 : 0,
+    };
+
+    const mergedStyle = { ...style, ...getPinningStyles(column) };
+
+    return (
+      <TableCell
+        ref={setNodeRef}
+        key={cell.id}
+        className="truncate [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&[data-pinned]]:bg-background/90 [&[data-pinned]]:backdrop-blur-sm"
+        style={mergedStyle}
+        data-pinned={isPinned || undefined}
+        data-last-col={
+          isLastLeftPinned ? "left" : isFirstRightPinned ? "right" : undefined
+        }
+      >
+        {/* {flexRender(cell.column.columnDef.cell, cell.getContext())} */}
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </TableCell>
+    );
+  }
+);

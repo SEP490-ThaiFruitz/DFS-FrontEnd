@@ -1,15 +1,9 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { deleteCategory } from '@/actions/category';
+import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog';
+import { UpdateCategoryDialog } from '@/components/custom/_custom-dialog/update-category-dialog';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
 
 export type Category = {
     id: string,
@@ -22,9 +16,11 @@ export type Category = {
 export const columns: ColumnDef<Category>[] = [
     {
         header: "STT",
-        cell: ({ row }) => (
-            <p>1</p>
-        ),
+        cell: ({ row, table }) => {
+            const pageSize = table.getState().pagination.pageSize;
+            const pageIndex = table.getState().pagination.pageIndex;
+            return <p>{row.index + 1 + pageIndex * pageSize}</p>;
+        },
     },
     {
         accessorKey: "name",
@@ -42,55 +38,36 @@ export const columns: ColumnDef<Category>[] = [
         accessorKey: "thumbnail",
         header: "Ảnh",
         cell: ({ row }) => {
-            const thumbnailUrl = row.getValue("thumbnail");
+            const thumbnail = `${process.env.NEXT_PUBLIC_URL_IMAGE}/${row.getValue("thumbnail")}`;
             const name = row.getValue("name");
             return (
                 <Image
-                    src={`/images/dried-fruit.webp`}
+                    src={thumbnail || `/images/dried-fruit.webp`}
                     height={100}
                     width={100}
-                    alt={`${name}`}
+                    alt={name as string}
                 />
             );
         },
     },
     {
-        accessorKey: "active",
-        header: "Trạng thái",
+        accessorKey: "actions",
+        header: "Hành động",
         cell: ({ row }) => {
-            const isActive = row.getValue("isActive");
-            return (
-                <Badge className={`border ${isActive ? 'border-green-400 text-green-700' : 'border-red-400 text-red-700'}`} variant="outline">
-                    {isActive ? "Hoạt động" : "Đã ngưng"}
-                </Badge>
-            );
+            const category = row.original;
+            return <ActionButtons category={category} />;
         },
     },
-    {
-        accessorKey: "action",
-        header: "",
-        cell: ({ row }) => {
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-                        <DropdownMenuItem className='hover:cursor-pointer'>
-                            <Pencil /> Chỉnh sửa
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className='hover:cursor-pointer'>
-                            <Trash2 /> Xóa
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    }
 ]
+
+const ActionButtons = ({ category }: { category: Category }) => {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <div className="flex gap-2">
+            <UpdateCategoryDialog isOpen={open} onClose={() => setOpen(!open)} category={category} />
+            <DeleteDialog id={category.id} name={category.name} deleteFunction={deleteCategory} />
+        </div>
+    );
+};
 

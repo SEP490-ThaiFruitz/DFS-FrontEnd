@@ -23,6 +23,7 @@ interface FormTextareaControlProps<T extends FieldValues, K> {
   classNameInput?: string;
   // value?: string | PathValue<T, Path<T>> | undefined;
   value?: any;
+  defaultValue?: any,
   icon?: React.ReactElement;
   row?: number
 }
@@ -37,13 +38,15 @@ export const FormTextareaControl = <T extends FieldValues, K>({
   classNameInput,
   value,
   icon,
-  row
+  row,
+  defaultValue
 }: FormTextareaControlProps<T, K>) => {
   // console.log({ value });
   return (
     <FormField
       control={form.control}
       name={name}
+      defaultValue={defaultValue ?? ""}
       render={({ field, fieldState, formState }) => {
         if (value !== undefined && value !== null && field.value !== value) {
           form.setValue(name, value);

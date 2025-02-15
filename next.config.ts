@@ -16,6 +16,23 @@ const nextConfig: NextConfig = {
     "react/no-unescaped-entities": "off", // Disable warning for unescaped entities
     // Add or modify rules as needed
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**", // allow all domain
+      },
+      {
+        protocol: "http",
+        hostname: "**", //  allow  HTTP
+      }
+    ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
+  },
 };
 
 export default nextConfig;

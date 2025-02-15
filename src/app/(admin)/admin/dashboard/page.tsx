@@ -1,6 +1,9 @@
+import { interactApi } from "@/actions/client/interact-api";
 import { getF } from "@/actions/interact";
 import { DataTable } from "@/components/global-components/data-table/data-table";
 import { Payment, columns } from "@/features/admin/dashboard/column";
+
+import Cookies from "js-cookie";
 
 //* this data will be fetched from the server, for now, we will use this dummy data
 //* you can replace this with your own data
@@ -38,9 +41,9 @@ const data: Payment[] = [
 ];
 
 const DashboardPage = async () => {
-  const testData = await getF("/Categories");
+  // const categoriesData = await interactApi.get("/Categories");
 
-  console.log({ testData });
+  // console.log({categoriesData})
 
   return (
     <div className="p-4 overflow-hidden">

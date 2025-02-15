@@ -69,63 +69,68 @@ export function SidebarFilter() {
   console.log({ watchAllValues });
 
   return (
-    // <Form {...form}>
-
-    // <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
     <div className="flex p-4 rounded-xl shadow-xl hover:shadow-2xl duration-300 transition">
-      <FormValues form={form} onSubmit={onSubmit} classNameForm="space-y-8  ">
-        <FormField
-          control={form.control}
-          name="items"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">Sidebar</FormLabel>
-                <FormDescription>
-                  Select the items you want to display in the sidebar.
-                </FormDescription>
-              </div>
-              {items.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name="items"
-                  render={({ field }) => {
-                    return (
-                      <FormItem
-                        key={item.id}
-                        className="flex flex-row items-start space-x-3 space-y-0"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.id])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.id
-                                    )
-                                  );
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    );
-                  }}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </FormValues>
+      {/* Sidebar */}
+      <div className="w-64 pr-8 sticky top-4 h-[calc(100vh-32px)] overflow-y-auto">
+        <FormValues
+          form={form}
+          onSubmit={onSubmit}
+          classNameForm="space-y-8 relative"
+        >
+          <FormField
+            control={form.control}
+            name="items"
+            render={() => (
+              <FormItem>
+                <div className="mb-4">
+                  <FormLabel className="text-base">Sidebar</FormLabel>
+                  <FormDescription>
+                    Select the items you want to display in the sidebar.
+                  </FormDescription>
+                </div>
+                {items.map((item) => (
+                  <FormField
+                    key={item.id}
+                    control={form.control}
+                    name="items"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={item.id}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(item.id)}
+                              onCheckedChange={(checked) => {
+                                return checked
+                                  ? field.onChange([...field.value, item.id])
+                                  : field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== item.id
+                                      )
+                                    );
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            {item.label}
+                          </FormLabel>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </FormValues>
+      </div>
 
-      <div className="h-[600px] w-full p-8 overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-0 lg:gap-4 2xl:gap-6 ">
-        {Array.from({ length: 10 }).map((_, index) => (
+      {/* Main Content */}
+      <div className="flex-1 h-full overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-0 lg:gap-4 2xl:gap-6">
+        {Array.from({ length: 20 }).map((_, index) => (
           <CardProduct key={index} />
         ))}
       </div>

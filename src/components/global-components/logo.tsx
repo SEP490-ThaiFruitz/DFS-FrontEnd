@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { TextShimmerWave } from "../custom/_customize-text/text-shummer-wave";
 
 interface LogoProps {
   classNameLabel?: string;
@@ -25,7 +26,13 @@ export const Logo = ({
           classNameLabel
         )}
       >
-        ThaiFruitz
+        <TextShimmerWave
+          spread={0.3}
+          rotateYDistance={5}
+          className="text-black"
+        >
+          ThaiFruitz
+        </TextShimmerWave>
       </h1>
     </div>
   );

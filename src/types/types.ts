@@ -1,5 +1,6 @@
 import { filterSchema } from "@/lib/parser";
 import { ColumnSort } from "@tanstack/react-table";
+import { AriaAttributes, DOMAttributes } from "react";
 import { z } from "zod";
 
 export type StringKeyOf<TData> = Extract<keyof TData, string>;
@@ -33,11 +34,15 @@ export type Filter<TData> = Prettify<
 >;
 
 export type PageResult<T> = {
-  totalCount: number,
-  pageSize: number,
-  pageIndex: number,
-  totalPages: number,
-  hasNextPage: boolean,
-  hasPreviousPage: boolean,
+  totalCount: number;
+  pageSize: number;
+  pageIndex: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
   items: T[];
 };
+
+export interface ClassNameType<T> extends AriaAttributes, DOMAttributes<T> {
+  className?: string;
+}

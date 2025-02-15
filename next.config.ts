@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-
+  
   rules: {
     "no-console": "off", // Example: Disable `no-console` rule
     "react/no-unescaped-entities": "off", // Disable warning for unescaped entities

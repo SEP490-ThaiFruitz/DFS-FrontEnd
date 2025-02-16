@@ -12,12 +12,15 @@ import {
   GooeyMenuTrigger,
 } from "./gooey/gooey-menu-floating";
 import { DialogReused } from "./dialog-reused";
+import { useState } from "react";
 
 type ChatDemoProps = {
   initialMessages?: UseChatOptions["initialMessages"];
 };
 
 export const FloatingButton = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const iconStyle =
     "size-6 hover:scale-125 transition-transform duration-300 ease-in-out";
 
@@ -43,7 +46,7 @@ export const FloatingButton = () => {
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
         isGenerating={isLoading}
-        stop={stop}
+        // stop={stop}
       />
     );
   };
@@ -55,10 +58,12 @@ export const FloatingButton = () => {
     >
       <GooeyMenuBefore>
         <DialogReused
-          trigger={<PhoneCall className={iconStyle} />}
+          trigger={<PhoneCall onClick={() => setIsOpen(true)} className={iconStyle} />}
           description={"Call Us"}
           title={"Call Us"}
           content={<SpaceChat />}
+          open={isOpen}
+          onClose={setIsOpen}
         />
 
         <PhoneMissed className={iconStyle} />

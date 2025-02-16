@@ -125,16 +125,14 @@ export const Navigate = () => {
             item="Control"
             className={styleClassName}
           >
-            <div className="flex items-center gap-x-1 mr-8">
-              {/* <NavbarLink href="#" onClick={() => {}}>
-         <LogIn className="size-4 mr-1" /> Login
-       </NavbarLink> */}
-              {/* <NavbarLink href="#">Sign Up</NavbarLink> */}
-              <LoginDialog />
-              <RegisterDialog />
-              <ShoppingBagSheet />
-            </div>
+            <HoveredLink href="/individual">Individual</HoveredLink>
           </MenuItem>
+        </div>
+
+        <div>
+          <LoginDialog />
+          <RegisterDialog />
+          <ShoppingBagSheet />
         </div>
 
         <div />

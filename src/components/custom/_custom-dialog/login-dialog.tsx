@@ -19,13 +19,12 @@ import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { loginAction } from "@/actions/login";
+import { useRegisterDialog } from "@/hooks/use-register-dialog";
 
 export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
     resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
-
-  const { isOpen, onOpen, onChange } = useLoginDialog();
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
     try {
@@ -42,6 +41,9 @@ export const LoginDialog = () => {
     }
   };
 
+  const registerDialog = useRegisterDialog();
+  const loginDialog = useLoginDialog();
+
   const title = (
     <div className="text-center">
       <Logo height={50} width={50} />
@@ -49,10 +51,20 @@ export const LoginDialog = () => {
   );
 
   const trigger = (
-    <div className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
+    <div
+      onClick={loginDialog.onOpen}
+      className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
+    >
       <LogIn className="size-4 mr-1" /> Login
     </div>
   );
+
+  const toggle = () => {
+    loginDialog.onClose();
+    registerDialog.onOpen();
+  };
+
+  console.log("login dialog: ", loginDialog.isOpen);
 
   const body = (
     <div>
@@ -121,7 +133,8 @@ export const LoginDialog = () => {
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
             Already have an account?{" "}
             <h3
-              onClick={onOpen}
+              // onClick={handleOpenRegister}
+              onClick={toggle}
               className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
             >
               Register here
@@ -138,8 +151,11 @@ export const LoginDialog = () => {
       asChild
       trigger={trigger}
       title={title}
-      open={isOpen}
-      onOpen={onChange}
+      // open={isLoginOpen}
+
+      open={loginDialog.isOpen}
+      onClose={loginDialog.onClose}
+      // onOpen={onOpenLogin}
       description="Lets login to get sale!"
     />
   );

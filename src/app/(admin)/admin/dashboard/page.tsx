@@ -3,8 +3,6 @@ import { getF } from "@/actions/interact";
 import { DataTable } from "@/components/global-components/data-table/data-table";
 import { Payment, columns } from "@/features/admin/dashboard/column";
 
-import Cookies from "js-cookie";
-
 //* this data will be fetched from the server, for now, we will use this dummy data
 //* you can replace this with your own data
 const data: Payment[] = [
@@ -33,7 +31,55 @@ const data: Payment[] = [
     email: "Silas22@gmail.com",
   },
   {
-    id: "bhqecj4p",
+    id: "bhqecj5p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "bhqecj2p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "bhqecj23p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "bhqecj123p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "123bhqecj4p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "123bhqe3cj4p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "123bhqe412cj4p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "123bhqec3j4p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@hotmail.com",
+  },
+  {
+    id: "123b3hqecj4p",
     amount: 721,
     status: "failed",
     email: "carmella@hotmail.com",
@@ -47,7 +93,7 @@ const DashboardPage = async () => {
 
   return (
     <div className="p-4 overflow-hidden">
-      <DataTable data={data} columns={columns} />
+      <DataTable data={data || []} columns={columns} />
     </div>
   );
 };

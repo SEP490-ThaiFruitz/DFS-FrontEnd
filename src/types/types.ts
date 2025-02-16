@@ -33,6 +33,10 @@ export type Filter<TData> = Prettify<
   }
 >;
 
+export interface SearchParams {
+  [key: string]: string | string[] | undefined;
+}
+
 export type PageResult<T> = {
   totalCount: number;
   pageSize: number;
@@ -77,4 +81,5 @@ export type ResponseData<T> = {
 //     "code": "",
 //     "message": ""
 //   }
+
 // }

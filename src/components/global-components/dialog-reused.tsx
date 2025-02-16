@@ -26,7 +26,7 @@ interface DialogReusedProps {
   open?: boolean;
 
   className?: string;
-  onOpen?: (state: boolean) => void;
+  onClose?: (state: boolean) => void;
 
   asChild?: boolean;
 }
@@ -38,14 +38,15 @@ export const DialogReused = ({
   content,
   open = false,
   asChild,
-  onOpen,
+  onClose,
   className,
 }: DialogReusedProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
-    <Dialog open={open ?? isOpen} onOpenChange={onOpen ?? setIsOpen}>
-      <DialogTrigger asChild={asChild}>{trigger}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onClose}>
+      {/* <DialogTrigger asChild={asChild}>{trigger}</DialogTrigger> */}
+      {trigger}
       <DialogContent className={cn("", className)}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

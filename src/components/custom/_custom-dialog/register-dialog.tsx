@@ -23,13 +23,12 @@ import { useRegisterDialog } from "@/hooks/use-register-dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 
 export const RegisterDialog = () => {
-  const { isOpen, onOpen, onChange } = useLoginDialog();
-
-  console.log({ isOpen });
-
   const form = useForm<z.infer<typeof RegisterSafeTypes>>({
     resolver: zodResolver(RegisterSafeTypes),
   });
+
+  const registerDialog = useRegisterDialog();
+  const loginDialog = useLoginDialog();
 
   const onSubmit = async (values: z.infer<typeof RegisterSafeTypes>) => {
     try {
@@ -41,6 +40,11 @@ export const RegisterDialog = () => {
     }
   };
 
+  const toggle = () => {
+    registerDialog.onClose();
+    loginDialog.onOpen();
+  };
+
   const title = (
     <div className="text-center">
       <Logo height={50} width={50} />
@@ -48,7 +52,10 @@ export const RegisterDialog = () => {
   );
 
   const trigger = (
-    <div className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
+    <div
+      onClick={registerDialog.onOpen}
+      className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
+    >
       Sign Up
     </div>
   );
@@ -112,7 +119,8 @@ export const RegisterDialog = () => {
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
             Already have an account?{" "}
             <h3
-              onClick={onOpen}
+              // onClick={handleOpenLogin}
+              onClick={toggle}
               className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
             >
               Login here
@@ -126,7 +134,9 @@ export const RegisterDialog = () => {
   return (
     <DialogReused
       content={body}
-      onOpen={onChange}
+      open={registerDialog.isOpen}
+      onClose={registerDialog.onClose}
+      // open={isRegisterOpen}
       asChild
       trigger={trigger}
       title={title}

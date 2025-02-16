@@ -3,14 +3,14 @@ import { DataTable } from "@/components/global-components/data-table/data-table"
 import { columns } from "@/features/admin/category/column";
 
 const CategoryPage = async () => {
-  const { value: categories } = await interactApi.get("/Categories");
+  const categories = await interactApi.get("/Categories");
 
   console.log(categories);
 
   return (
     <div className="p-4">
       <DataTable
-        data={categories?.items || []}
+        data={categories?.value?.items || []}
         columns={columns}
         searchFiled="name"
       />

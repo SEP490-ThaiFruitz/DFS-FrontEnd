@@ -1,11 +1,14 @@
 import { interactApi } from "@/actions/client/interact-api";
 import { DataTable } from "@/components/global-components/data-table/data-table";
-import { columns } from "@/features/admin/category/column";
+import { Category, columns } from "@/features/admin/category/column";
+import { ResponseData } from "@/types/types";
 
 const CategoryPage = async () => {
-  const categories = await interactApi.get("/Categories");
+  const categories = (await interactApi.get(
+    "/Categories"
+  )) as ResponseData<Category>;
 
-  console.log(categories);
+  // console.log("data: ", categories.value.items);
 
   return (
     <div className="p-4">

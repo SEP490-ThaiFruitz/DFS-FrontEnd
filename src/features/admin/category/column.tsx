@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +55,7 @@ export const columns: ColumnDef<Category>[] = [
     },
   },
   {
-    accessorKey: "active",
+    accessorKey: "isActive",
     header: "Trạng thái",
     cell: ({ row }) => {
       const isActive = row.getValue("isActive");

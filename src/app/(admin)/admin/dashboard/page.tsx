@@ -93,7 +93,7 @@ const DashboardPage = async () => {
 
   return (
     <div className="p-4 overflow-hidden">
-      <DataTable data={data || []} columns={columns} />
+      <DataTable data={data || []} columns={columns} searchFiled="email" />
     </div>
   );
 };

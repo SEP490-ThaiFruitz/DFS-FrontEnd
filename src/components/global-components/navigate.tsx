@@ -52,7 +52,7 @@ export const Navigate = () => {
         setActive={setActive}
         className="h-full flex items-center justify-between w-full rounded-none "
       >
-        <div className="pl-4 py-4">
+        <div className="pl-4 py-4 ">
           <Logo height={60} width={60} />
         </div>
 
@@ -135,7 +135,7 @@ export const Navigate = () => {
           <ShoppingBagSheet />
         </div>
 
-        <div />
+        {/* <div /> */}
       </Menu>
     </div>
   );

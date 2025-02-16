@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+
   rules: {
     "no-console": "off", // Example: Disable `no-console` rule
     "react/no-unescaped-entities": "off", // Disable warning for unescaped entities
@@ -25,12 +25,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "http",
         hostname: "**", //  allow  HTTP
-      }
+      },
     ],
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '5mb',
+      bodySizeLimit: "5mb",
     },
   },
 };

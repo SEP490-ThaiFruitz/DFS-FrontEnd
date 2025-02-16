@@ -90,6 +90,8 @@ import {
 interface DataTableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
+
+  searchFiled: string;
 }
 
 const getPinningStyles = <T,>(column: Column<T>): React.CSSProperties => {
@@ -103,7 +105,11 @@ const getPinningStyles = <T,>(column: Column<T>): React.CSSProperties => {
   };
 };
 
-export function DataTable<T>({ data, columns }: DataTableProps<T>) {
+export function DataTable<T>({
+  data,
+  columns,
+  searchFiled,
+}: DataTableProps<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -180,9 +186,11 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
         {/* Email Filter */}
         <Input
           placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn(searchFiled)?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn(searchFiled)?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

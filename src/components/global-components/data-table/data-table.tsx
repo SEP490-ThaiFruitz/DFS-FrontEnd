@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Download,
   Ellipsis,
   GripVertical,
   PinOff,
@@ -86,6 +87,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { exportTableToCSV } from "@/lib/export-excel";
 
 interface DataTableProps<T> {
   data: T[];
@@ -261,6 +263,21 @@ export function DataTable<T>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button
+        variant="outline"
+        size="sm"
+        onClick={() =>
+          exportTableToCSV(table, {
+            filename: "tasks",
+            excludeColumns: ["select", "actions"],
+          })
+        }
+        className="gap-2"
+      >
+        <Download className="size-4" aria-hidden="true" />
+        Export
+      </Button>
       </div>
 
       {/* <DndContext

@@ -23,13 +23,10 @@ export type Category = {
 
 export const columns: ColumnDef<Category>[] = [
   {
-    header: "STT",
-    cell: ({ row }) => <p>1</p>,
-  },
-  {
     accessorKey: "name",
     header: "Tên",
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    enableSorting: true,
   },
   {
     accessorKey: "description",
@@ -37,6 +34,7 @@ export const columns: ColumnDef<Category>[] = [
     cell: ({ row }) => (
       <div className="lowercase">{row.getValue("description")}</div>
     ),
+    enableSorting: true,
   },
   {
     accessorKey: "thumbnail",
@@ -46,7 +44,7 @@ export const columns: ColumnDef<Category>[] = [
       const name = row.getValue("name");
       return (
         <Image
-          src={`/images/dried-fruit.webp`}
+          src={thumbnailUrl as string ||`/images/dried-fruit.webp`}
           height={100}
           width={100}
           alt={`${name}`}
@@ -72,6 +70,7 @@ export const columns: ColumnDef<Category>[] = [
         </Badge>
       );
     },
+    enableSorting: true,
   },
   {
     accessorKey: "action",

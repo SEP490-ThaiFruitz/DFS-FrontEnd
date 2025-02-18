@@ -1,55 +1,38 @@
-import { interactApi } from "@/actions/client/interact-api";
-import { DataTable } from "@/components/global-components/data-table/data-table";
-import { columns } from "@/features/admin/category/column";
+"use client";
+import { getCategories } from "@/actions/category";
+import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-category-dialog";
 
-const CategoryPage = async () => {
-  const categories = await interactApi.get("/Categories");
+import { Category, columns } from "@/features/admin/category/column";
+import { DataTable } from "@/features/admin/category/data-table";
+import { PageResult, ResponseData } from "@/types/types";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-  console.log(categories);
+const CategoryPage = () => {
+  const [data, setData] = useState<PageResult<Category>>();
+  useEffect(() => {
+    getCategories().then((response: any) => {
+      if (response?.success) {
+        const data = response?.data as ResponseData<PageResult<Category>>
+        setData(data?.value);
+      } else {
+        toast.error(response.message)
+      }
+    });
+  }, []);
+
+  console.log({ data });
 
   return (
-    <div className="p-4">
-      <DataTable
-        data={categories?.value?.items || []}
-        columns={columns}
-        searchFiled="name"
-      />
+    <div className="mx-4 lg:mx-20">
+      <div className="flex justify-end">
+        <CreateCategoryDialog />
+      </div>
+      <div className="py-4">
+        <DataTable data={data?.items || []} columns={columns} />
+      </div>
     </div>
   );
 };
 
 export default CategoryPage;
-
-// "use client";
-// import { getCategories } from "@/actions/category";
-// import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-category-dialog";
-// import { DataTable } from "@/components/global-components/data-table/data-table";
-
-// import { Category, columns } from "@/features/admin/category/column";
-// import { PageResult } from "@/types/types";
-// import React, { useEffect, useState } from "react";
-
-// const CategoryPage = () => {
-//   const [data, setData] = useState<PageResult<Category>>();
-//   useEffect(() => {
-//     getCategories().then((response: PageResult<Category>) => {
-//       setData(response);
-//       console.log(response);
-//     });
-//   }, []);
-
-//   console.log({ data });
-
-//   return (
-//     <div className="mx-4 lg:mx-20">
-//       <div className="flex justify-end">
-//         <CreateCategoryDialog />
-//       </div>
-//       <div className="py-4">
-//         <DataTable data={data?.items || []} columns={columns} />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CategoryPage;

@@ -95,7 +95,7 @@ const create = async <TValues>(endpoint: string, body: TValues) => {
           body instanceof FormData ? (body) : JSON.stringify(body),
       }
     );
-    console.log(await response.json())
+
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -136,6 +136,7 @@ const update = async <TValues>(endpoint: string, body: TValues) => {
 
     const data = await response.json();
     console.log(data);
+    return data;
   } catch (error) {
     console.log("Error in updating data:", error);
   }
@@ -156,6 +157,7 @@ const remove = async (endpoint: string) => {
 
     const data = await response.json();
     console.log(data);
+    return data;
   } catch (error) {
     console.log("Error in deleting data:", error);
   }
@@ -190,6 +192,21 @@ const login = async <TValues, TResponse>(
     return undefined;
   }
 };
+
+async function handleResponse(response: Response) {
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text)
+  } catch {
+    data = text
+  }
+  const res = {
+    status: response.status,
+    data: data,
+  }
+  return res;
+}
 
 export const interactApi = {
   get,

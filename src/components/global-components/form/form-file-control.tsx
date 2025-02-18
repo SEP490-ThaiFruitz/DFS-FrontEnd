@@ -24,7 +24,6 @@ interface FormFileControlProps<T extends FieldValues> {
     name: Path<T>;
     placeholder?: string;
     onSubmit?: (data: T) => void;
-    onChooseFile: (data: File[]) => void;
     label?: string;
     formSubmit?: React.ReactNode;
     classNameLabel?: string;
@@ -47,7 +46,6 @@ export const FormFileControl = <T extends FieldValues>({
     icon,
     type,
     mutiple,
-    onChooseFile
 }: FormFileControlProps<T>) => {
     const [files, setFiles] = useState<FileWithPreview[]>([]);
     const [isDragActive, setIsDragActive] = useState(false);
@@ -80,30 +78,25 @@ export const FormFileControl = <T extends FieldValues>({
     };
 
     const handleFiles = (fileList: File[]) => {
-        form.clearErrors();
+        form.clearErrors(name);
         if (!mutiple && fileList?.length > 1) {
             form.setError(name, {
                 message: "Vui lòng chọn 1 file"
             })
             return;
         }
-        const newFiles = fileList.map((file) => {
+        const newFiles = fileList.reduce<FileWithPreview[]>((acc, file) => {
             if (!type.includes(file.type)) {
-                form.setError(name, {
-                    message: `Vui lòng chọn file ${type}`
-                })
+                form.setError(name, { message: `Vui lòng chọn file ${type}` });
+                return acc;
             }
-            return Object.assign(file, {
-                preview: URL.createObjectURL(file),
-            })
-        }
-        );
-        if (mutiple) {
-            setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-        } else {
-            setFiles(newFiles);
-            onChooseFile(newFiles)
-        }
+            acc.push(Object.assign(file, { preview: URL.createObjectURL(file) }));
+            return acc;
+        }, []);
+        const updatedFiles = mutiple ? [...files, ...newFiles] : newFiles;
+        setFiles(updatedFiles);
+        form.setValue(name as Path<T>, updatedFiles as PathValue<T, Path<T>>)
+
     };
 
     const handleButtonClick = () => {
@@ -120,10 +113,9 @@ export const FormFileControl = <T extends FieldValues>({
         const newFiles: FileWithPreview[] = files.filter((file) => file !== fileToDelete);
         setFiles(newFiles);
         if (newFiles.length == 0)
-            form.setValue(name as Path<T>, null as PathValue<T, Path<T>>);
+            form.setValue(name as Path<T>, undefined as PathValue<T, Path<T>>);
 
         URL.revokeObjectURL(fileToDelete.preview);
-        onChooseFile(newFiles)
     };
     return (
         <FormField
@@ -160,8 +152,8 @@ export const FormFileControl = <T extends FieldValues>({
                                         className="hidden"
                                         multiple={mutiple}
                                         disabled={disabled}
-                                        {...field}
-                                        onInput={handleFileInputChange}
+                                        name={field.name}
+                                        onChange={handleFileInputChange}
                                         ref={fileInputRef}
                                         type="file"
                                     />

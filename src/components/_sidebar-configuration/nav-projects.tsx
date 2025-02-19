@@ -35,7 +35,7 @@ export function NavProjects({
     url: string;
     icon: LucideIcon;
   }[];
-  label: string;
+  label?: string;
 }) {
   const { isMobile } = useSidebar();
 
@@ -43,7 +43,7 @@ export function NavProjects({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      {label && (<SidebarGroupLabel>{label}</SidebarGroupLabel>)}
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -53,7 +53,7 @@ export function NavProjects({
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
-            <DropdownMenu>
+            <DropdownMenu >
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
                   <MoreHorizontal />

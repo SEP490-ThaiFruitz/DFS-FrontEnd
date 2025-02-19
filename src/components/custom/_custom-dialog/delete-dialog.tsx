@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Trash2 } from 'lucide-react';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
+import { toast } from 'sonner';
 
 interface DeleteDialogProps {
     name: string,
@@ -10,26 +11,32 @@ interface DeleteDialogProps {
         success: boolean;
         message: string;
     } | undefined>;
+    isOpen: boolean;
+    onClose: (value: boolean) => void
     id: string
 }
 
 
-export function DeleteDialog({ name, deleteFunction, id }: DeleteDialogProps) {
-    const [open, setOpen] = useState(false);
-    const [submiting, setSubmitting] = useState(false);
+export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen }: Readonly<DeleteDialogProps>) {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const onSubmit = async () => {
-        setSubmitting(true)
+        setIsSubmitting(true)
         try {
-            await deleteFunction(id);
-            setOpen(false);
+            const response = await deleteFunction(id);
+            if (response?.success) {
+                toast.success(response.message)
+                onClose(false);
+            } else {
+                toast.error(response?.message)
+            }
         } catch (error) {
             console.log({ error });
         }
 
-        setSubmitting(false)
+        setIsSubmitting(false)
     };
 
-    return (<Dialog open={open} onOpenChange={setOpen}>
+    return (<Dialog open={isOpen} onOpenChange={onClose}>
         <DialogTrigger asChild>
             <Button
                 variant="outline"
@@ -42,14 +49,14 @@ export function DeleteDialog({ name, deleteFunction, id }: DeleteDialogProps) {
             <DialogHeader>
                 <DialogTitle>Bạn có chắc chắn không?</DialogTitle>
                 <DialogDescription>
-                    Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa {name}?
+                    Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa {name} không?
                 </DialogDescription>
             </DialogHeader>
             <DialogFooter>
                 <DialogTrigger asChild>
                     <Button variant="outline" type="button">Hủy</Button>
                 </DialogTrigger>
-                <Button disabled={submiting} onClick={onSubmit} variant="destructive" type="submit">{submiting ? <WaitingSpinner
+                <Button disabled={isSubmitting} onClick={onSubmit} variant="destructive" type="submit">{isSubmitting ? <WaitingSpinner
                     variant="pinwheel"
                     label="Đang xóa..."
                     className="font-semibold "

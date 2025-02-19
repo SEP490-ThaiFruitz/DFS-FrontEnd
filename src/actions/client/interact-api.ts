@@ -96,10 +96,6 @@ const create = async <TValues>(endpoint: string, body: TValues) => {
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
     const data = await response.json();
     console.log(response)
     return data;
@@ -109,33 +105,33 @@ const create = async <TValues>(endpoint: string, body: TValues) => {
 };
 
 const update = async <TValues>(endpoint: string, body: TValues) => {
-  const tokenData = await getToken();
-  if (!tokenData) {
-    console.log("Access token not found.");
-    return;
-  }
+  // const tokenData = await getToken();
+  // if (!tokenData) {
+  //   console.log("Access token not found.");
+  //   return;
+  // }
 
-  const { accessToken } = tokenData;
-
+  const accessToken = "";
   try {
+    let headers = { 'Content-Type': 'application/json' } as any;
+    if (body instanceof FormData) {
+      headers = {};
+    }
+    if (accessToken) {
+      headers.Authorization = 'Bearer ' + accessToken
+    }
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
       {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(body),
+        headers: headers,
+        body:
+          body instanceof FormData ? (body) : JSON.stringify(body),
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
     const data = await response.json();
-    console.log(data);
+    console.log(response)
     return data;
   } catch (error) {
     console.log("Error in updating data:", error);

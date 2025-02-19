@@ -1,13 +1,12 @@
 import {
-  parseAsFloat,
   createLoader,
   parseAsString,
-  parseAsNumberLiteral,
+  parseAsInteger,
 } from "nuqs/server";
 
 export const filterParams = {
-  pageSize: parseAsFloat.withDefault(10),
-  pageIndex: parseAsFloat.withDefault(10),
+  pageSize: parseAsInteger.withDefault(10),
+  pageIndex: parseAsInteger.withDefault(1),
   searchTerm: parseAsString.withDefault(""),
 };
 

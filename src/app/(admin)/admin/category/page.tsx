@@ -4,7 +4,6 @@ import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-
 import { UpdateCategoryDialog } from "@/components/custom/_custom-dialog/update-category-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/features/admin/category/data-table";
 import { PageResult, ResponseData } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
@@ -12,6 +11,16 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
+import { DataTable } from "@/components/global-components/data-table/data-table";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+
+type Category = {
+  id: string;
+  name: string;
+  description: string;
+  thumbnail: string;
+  isActive: boolean;
+};
 
 const CategoryPage = () => {
   const [data, setData] = useState<PageResult<Category>>();
@@ -35,13 +44,14 @@ const CategoryPage = () => {
     });
   }, []);
 
-  type Category = {
-    id: string;
-    name: string;
-    description: string;
-    thumbnail: string;
-    isActive: boolean;
-  };
+  const {
+    isPending,
+    data: categories,
+    isError,
+    isFetching,
+  } = useFetch("/Categories", ["test"]);
+
+  console.log({ data });
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -132,12 +142,18 @@ const CategoryPage = () => {
     setOpenDelete(true);
   };
   return (
-    <div className="mx-4 lg:mx-20">
+    <div className="p-4">
       <div className="flex justify-end">
         <CreateCategoryDialog />
       </div>
       <div className="py-4">
-        <DataTable data={data?.items || []} columns={columns} />
+        {/* <DataTable data={data?.items || []} columns={columns} /> */}
+
+        <DataTable
+          data={data?.items || []}
+          columns={columns}
+          searchFiled="name"
+        />
       </div>
       {selectedCategoryUpdate && (
         <UpdateCategoryDialog

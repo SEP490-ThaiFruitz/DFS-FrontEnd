@@ -48,10 +48,10 @@ export const UpdateCategoryDialog = ({
 
       const response = await updateCategory(formData);
       if (response.success) {
-        toast.success(response.message)
+        toast.success(response.message);
         onClose();
       } else {
-        toast.error(response.message)
+        toast.error(response.message);
       }
 
       console.log({ response });
@@ -99,8 +99,8 @@ export const UpdateCategoryDialog = ({
               <p className="text-sm font-medium">Trạng thái loại sản phẩm</p>
               <FormControl>
                 <Switch
-                  className={`${(field.value) ? "!bg-green-500" : "!bg-red-500"}`}
-                  checked={field.value ?? false} 
+                  className={`${field.value ? "!bg-green-500" : "!bg-red-500"}`}
+                  checked={field.value ?? false}
                   onCheckedChange={(checked) => field.onChange(checked)}
                 />
               </FormControl>
@@ -157,6 +157,7 @@ export const UpdateCategoryDialog = ({
       open={isOpen}
       onClose={onClose}
       description="Vui lòng nhập thông tin để cập nhật loại sản phẩm. Nhấn cập nhật để hoàn tất."
+      className="min-w-4xl"
     />
   );
 };

@@ -1,6 +1,11 @@
 import { cookies } from "next/headers";
 import { ApiResponse } from "../login";
 
+const handleError = (error: unknown, message: string) => {
+  console.error(`${message}:`, error);
+  throw error; // Re-throw để React Query hoặc caller xử lý
+};
+
 const getToken = async (): Promise<{ accessToken: string } | null> => {
   try {
     const cookieStore = await cookies();
@@ -15,6 +20,7 @@ const getToken = async (): Promise<{ accessToken: string } | null> => {
     };
   } catch (error) {
     console.log({ error });
+
     return null;
   }
 };
@@ -51,14 +57,14 @@ const getWithToken = async (endpoint: string) => {
   }
 };
 
-const get = async (
-  endpoint: string,
-) => {
+const get = async (endpoint: string, params?: Record<string, any>) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`
+      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}${
+        params ? `?${new URLSearchParams(params)}` : ""
+      }`
     );
-    
+
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -79,28 +85,27 @@ const create = async <TValues>(endpoint: string, body: TValues) => {
 
   const accessToken = "";
   try {
-    let headers = { 'Content-Type': 'application/json' } as any;
+    let headers = { "Content-Type": "application/json" } as any;
     if (body instanceof FormData) {
       headers = {};
     }
     if (accessToken) {
-      headers.Authorization = 'Bearer ' + accessToken
+      headers.Authorization = "Bearer " + accessToken;
     }
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
       {
         method: "POST",
         headers: headers,
-        body:
-          body instanceof FormData ? (body) : JSON.stringify(body),
+        body: body instanceof FormData ? body : JSON.stringify(body),
       }
     );
-
     const data = await response.json();
-    console.log(response)
+    console.log(response);
     return data;
   } catch (error) {
     console.log("Error in creating data:", error);
+    handleError(error, "Error in creating data");
   }
 };
 
@@ -135,6 +140,7 @@ const update = async <TValues>(endpoint: string, body: TValues) => {
     return data;
   } catch (error) {
     console.log("Error in updating data:", error);
+    handleError(error, "Error in updating data");
   }
 };
 
@@ -156,6 +162,7 @@ const remove = async (endpoint: string) => {
     return data;
   } catch (error) {
     console.log("Error in deleting data:", error);
+    handleError(error, "Error in deleting data");
   }
 };
 

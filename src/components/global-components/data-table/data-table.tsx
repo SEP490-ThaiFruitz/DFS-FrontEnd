@@ -15,6 +15,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+
+import { useReactToPrint } from "react-to-print";
 import {
   ArrowLeftToLine,
   ArrowRightToLine,
@@ -28,6 +30,7 @@ import {
   Ellipsis,
   GripVertical,
   PinOff,
+  Printer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -182,6 +185,9 @@ export function DataTable<T>({
     useSensor(KeyboardSensor, {})
   );
 
+  const contentRef = React.useRef<HTMLDivElement | null>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef, copyShadowRoots: true });
+
   return (
     <div className="w-full overflow-x-auto">
       <div className="flex items-center py-4 space-x-4">
@@ -265,19 +271,29 @@ export function DataTable<T>({
         </DropdownMenu>
 
         <Button
-        variant="outline"
-        size="sm"
-        onClick={() =>
-          exportTableToCSV(table, {
-            filename: "tasks",
-            excludeColumns: ["select", "actions"],
-          })
-        }
-        className="gap-2"
-      >
-        <Download className="size-4" aria-hidden="true" />
-        Export
-      </Button>
+          variant="outline"
+          size="sm"
+          onClick={() =>
+            exportTableToCSV(table, {
+              filename: "tasks",
+              excludeColumns: ["select", "actions"],
+            })
+          }
+          className="gap-2"
+        >
+          <Download className="size-4" aria-hidden="true" />
+          Export
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => reactToPrintFn()}
+          className="gap-2"
+        >
+          <Printer className="size-4" aria-hidden="true" />
+          Print
+        </Button>
       </div>
 
       {/* <DndContext
@@ -294,6 +310,7 @@ export function DataTable<T>({
           style={{
             width: table.getTotalSize(),
           }}
+          ref={contentRef as any}
         >
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

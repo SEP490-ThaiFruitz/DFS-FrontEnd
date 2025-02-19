@@ -78,6 +78,14 @@ body {
   }
 }
 
+.printContent {
+  display: none;
+
+  @media print {
+    display: block;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

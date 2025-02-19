@@ -91,6 +91,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { exportTableToCSV } from "@/lib/export-excel";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { useQuery } from "@tanstack/react-query";
 
 interface DataTableProps<T> {
   data: T[];
@@ -187,6 +189,44 @@ export function DataTable<T>({
 
   const contentRef = React.useRef<HTMLDivElement | null>(null);
   const reactToPrintFn = useReactToPrint({ contentRef, copyShadowRoots: true });
+
+  // const {
+  //   data: categories,
+  //   isLoading,
+  //   isError,
+  //   error,
+  // } = useFetch<any>("/Categories", ["categories"]);
+
+  // if (isLoading) return <div>Loading...</div>;
+  // if (isError) return <div>Error: {error?.message}</div>;
+
+  // const { data: categories2, isLoading } = useQuery({
+  //   queryKey: ["categories"],
+  //   queryFn: async () => {
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_URL_API}/Categories`,
+  //       {
+  //         headers: {
+  //           accept: "*/*",
+  //           "accept-language":
+  //             "vi-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5",
+  //         },
+  //       }
+  //     );
+
+  //     console.log({ response });
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+  //     return data;
+  //   },
+  // });
+
+  // if (isLoading) return <div>Loading...</div>;
+
+  // console.log(!isLoading && categories2);
 
   return (
     <div className="w-full overflow-x-auto">

@@ -8,6 +8,8 @@ const CategoryPage = async () => {
     "/Categories"
   )) as ResponseData<Category>;
 
+  console.log("categories: ", categories);
+
   // console.log("data: ", categories.value.items);
 
   return (

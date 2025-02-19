@@ -102,7 +102,7 @@ export function DataTable<T>({ data, columns }: DataTableProps<T>) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                 Danh sách trống.
                 </TableCell>
               </TableRow>
             )}

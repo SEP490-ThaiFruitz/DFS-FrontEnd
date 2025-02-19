@@ -15,9 +15,9 @@ import { CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control";
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
+import { toast } from "sonner";
 
 export const CreateCategoryDialog = () => {
-  const [file, setFile] = useState<File>();
   const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof CreateCategorySafeTypes>>({
     resolver: zodResolver(CreateCategorySafeTypes),
@@ -28,16 +28,17 @@ export const CreateCategoryDialog = () => {
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("description", values.description);
-      if (file) {
-        formData.append("thumbnail", file);
+      if (values.image) {
+        formData.append("thumbnail", values.image[0]);
       }
-
       const response = await createCategory(formData);
 
       if (response.success) {
         form.reset();
-        setFile(undefined);
         setIsOpen(false);
+        toast.success(response.message)
+      }else{
+        toast.error(response.message)
       }
 
       console.log({ response });
@@ -49,7 +50,7 @@ export const CreateCategoryDialog = () => {
   const title = <div className="text-center">Tạo mới loại sản phẩm</div>;
 
   const trigger = (
-    <Button onClick={() => setIsOpen(true)} variant="outline" asChild>
+    <Button onClick={() => setIsOpen(true)} variant="outline">
       <CirclePlus />
       Tạo mới
     </Button>
@@ -78,7 +79,6 @@ export const CreateCategoryDialog = () => {
           name="image"
           classNameInput="h-30 w-full"
           mutiple={false}
-          onChooseFile={(value: File[]) => setFile(value[0])}
           type={"image/jpeg, image/jpg, image/png, image/webp"}
           disabled={form.formState.isSubmitting}
           label="Ảnh loại sản phẩm"

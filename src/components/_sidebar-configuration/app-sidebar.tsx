@@ -9,10 +9,12 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
+  LayoutList,
   Map,
   PieChart,
   Settings2,
   SquareTerminal,
+  TableProperties,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -28,13 +30,15 @@ import {
 } from "@/components/ui/sidebar";
 import { title } from "process";
 import { url } from "inspector";
+import { Logo } from "../global-components/logo";
 
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Manger",
+    email: "Manger@gmail.com",
+    avatar: "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i.png",
+    role: "Quản trị viên"
   },
   teams: [
     {
@@ -55,122 +59,28 @@ const data = {
   ],
   navMain: [
     {
-      title: "Product Management",
+      title: "Sản phẩm",
       url: "#",
-      icon: SquareTerminal,
+      icon: LayoutList,
       isActive: true,
       items: [
         {
-          title: "Products",
-          url: "/admin/dashboard",
+          title: "Danh sách",
+          url: "/admin/product",
+        },
+        {
+          title: "Thêm mới",
+          url: "/admin/product/create",
         },
       ],
     },
 
-    {
-      title: "Category Management",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Categories",
-          url: "/admin/category",
-        },
-      ],
-    },
-
-    // {
-    //   title: "Playground",
-    //   url: "#",
-    //   icon: SquareTerminal,
-    //   isActive: true,
-    //   items: [
-    //     {
-    //       title: "History",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Starred",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Settings",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Models",
-    //   url: "#",
-    //   icon: Bot,
-    //   items: [
-    //     {
-    //       title: "Genesis",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Explorer",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Quantum",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: "Loại sản phẩm",
+      url: "/admin/category",
+      icon: TableProperties,
     },
     {
       name: "Sales & Marketing",
@@ -189,11 +99,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <Logo />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} label="Managements" />
-        <NavProjects projects={data.projects} label="Projects" />
+        <NavMain items={data.navMain} />
+        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

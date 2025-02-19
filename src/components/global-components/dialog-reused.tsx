@@ -41,7 +41,6 @@ export const DialogReused = ({
   onClose,
   className,
 }: DialogReusedProps) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

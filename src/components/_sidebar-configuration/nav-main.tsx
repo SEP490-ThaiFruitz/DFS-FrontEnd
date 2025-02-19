@@ -35,13 +35,13 @@ export function NavMain({
     }[];
   }[];
 
-  label: string;
+  label?: string;
 }) {
   const pathname = usePathname();
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      {label && (<SidebarGroupLabel>{label}</SidebarGroupLabel>)}
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible

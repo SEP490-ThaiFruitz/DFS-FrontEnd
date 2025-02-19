@@ -100,11 +100,6 @@ const create = async <TValues>(endpoint: string, body: TValues) => {
         body: body instanceof FormData ? body : JSON.stringify(body),
       }
     );
-    console.log(await response.json());
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
     const data = await response.json();
     console.log(response);
     return data;
@@ -115,33 +110,34 @@ const create = async <TValues>(endpoint: string, body: TValues) => {
 };
 
 const update = async <TValues>(endpoint: string, body: TValues) => {
-  const tokenData = await getToken();
-  if (!tokenData) {
-    console.log("Access token not found.");
-    return;
-  }
+  // const tokenData = await getToken();
+  // if (!tokenData) {
+  //   console.log("Access token not found.");
+  //   return;
+  // }
 
-  const { accessToken } = tokenData;
-
+  const accessToken = "";
   try {
+    let headers = { 'Content-Type': 'application/json' } as any;
+    if (body instanceof FormData) {
+      headers = {};
+    }
+    if (accessToken) {
+      headers.Authorization = 'Bearer ' + accessToken
+    }
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
       {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(body),
+        headers: headers,
+        body:
+          body instanceof FormData ? (body) : JSON.stringify(body),
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
     const data = await response.json();
-    console.log(data);
+    console.log(response)
+    return data;
   } catch (error) {
     console.log("Error in updating data:", error);
     handleError(error, "Error in updating data");
@@ -163,6 +159,7 @@ const remove = async (endpoint: string) => {
 
     const data = await response.json();
     console.log(data);
+    return data;
   } catch (error) {
     console.log("Error in deleting data:", error);
     handleError(error, "Error in deleting data");
@@ -198,6 +195,21 @@ const login = async <TValues, TResponse>(
     return undefined;
   }
 };
+
+async function handleResponse(response: Response) {
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text)
+  } catch {
+    data = text
+  }
+  const res = {
+    status: response.status,
+    data: data,
+  }
+  return res;
+}
 
 export const interactApi = {
   get,

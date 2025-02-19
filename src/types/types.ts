@@ -52,14 +52,7 @@ export interface ClassNameType<T> extends AriaAttributes, DOMAttributes<T> {
 }
 
 export type ResponseData<T> = {
-  value: {
-    items: T[];
-    pageIndex: number;
-    pageSize: number;
-    totalCount: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
+  value?: T
   isSuccess: boolean;
   error: {
     code: string;
@@ -67,19 +60,3 @@ export type ResponseData<T> = {
   };
 };
 
-// {
-//   "value": {
-//     "items": [],
-//     "pageIndex": 1,
-//     "pageSize": 10,
-//     "totalCount": 0,
-//     "hasNextPage": false,
-//     "hasPreviousPage": false
-//   },
-//   "isSuccess": true,
-//   "error": {
-//     "code": "",
-//     "message": ""
-//   }
-
-// }

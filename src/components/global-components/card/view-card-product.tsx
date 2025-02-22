@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface ViewCardProductProps {}
 
 interface ViewCardProductProps {
@@ -5,15 +7,18 @@ interface ViewCardProductProps {
   productPrice: number;
   productQuantity: number;
   productImage: string;
+
+  className?: string;
 }
 export const ViewCardProduct = ({
   productName,
   productImage,
   productPrice,
   productQuantity,
+  className,
 }: ViewCardProductProps) => {
   return (
-    <div className="flex items-center gap-4">
+    <div className={cn("flex items-center gap-4 my-2", className)}>
       <img
         src={productImage}
         alt={productName}
@@ -22,7 +27,7 @@ export const ViewCardProduct = ({
       <div className="flex-1">
         <h3 className="font-medium">{productName}</h3>
         <p className="text-sm text-muted-foreground">
-          Quantity: {productQuantity}
+          Số lượng: {productQuantity}
         </p>
       </div>
       <p className="font-medium">

@@ -28,6 +28,9 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { OrderTrackingClientPage } from "./order-tracking/order-tracking-client";
+import { OrderTrackingPage } from "./order-tracking/order-tracking-page";
+import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 
 const TAB_TRIGGER = [
   { value: "profile", label: "Thông tin cá nhân", icon: User },
@@ -37,11 +40,11 @@ const TAB_TRIGGER = [
 
 const TAB_CONTENT: { value: string; component: JSX.Element }[] = [
   { value: "profile", component: <div>Profile</div> },
-  { value: "order-tracking", component: <div>Order Tracking</div> },
+  { value: "order-tracking", component: <OrderTrackingPage /> },
   { value: "statistic", component: <div>Statistic</div> },
 ];
 
-const MotionCard = motion(Card);
+export const MotionCard = motion(Card);
 
 export const ProfileClientPage = () => {
   const [tab, setTab] = React.useState("profile");
@@ -62,7 +65,7 @@ export const ProfileClientPage = () => {
           ))}
         </TabsList>
 
-        <TabsContent value="profile">
+        <TabsContent value="profile" className=" p-4">
           <MotionCard
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -79,7 +82,7 @@ export const ProfileClientPage = () => {
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="p-6">
+            <CardContent className="p-6 bg-slate-100/90">
               <ResizablePanelGroup
                 direction="horizontal"
                 className="min-h-[600px] rounded-lg border bg-card"
@@ -100,22 +103,20 @@ export const ProfileClientPage = () => {
                         </div>
                       </div>
                       <h3 className="text-2xl font-semibold mb-1 text-purple-700">
-                        John Doe
+                        Hữu Phúc
                       </h3>
-                      <p className="text-muted-foreground">
-                        john.doe@example.com
-                      </p>
+                      <p className="text-muted-foreground">phucdh@gmail.com</p>
                     </div>
 
                     <Separator className="bg-purple-200" />
 
                     <div className="space-y-4">
                       <h4 className="text-lg font-semibold mb-2 flex items-center gap-2 text-purple-700">
-                        <Lock className="h-5 w-5" /> Change Password
+                        <Lock className="h-5 w-5" /> Thay đổi mật khẩu
                       </h4>
                       <div className="space-y-2">
                         <Label htmlFor="current-password">
-                          Current Password
+                          Mật khẩu hiện tại
                         </Label>
                         <Input
                           id="current-password"
@@ -124,7 +125,7 @@ export const ProfileClientPage = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="new-password">New Password</Label>
+                        <Label htmlFor="new-password">Mật khẩu mới</Label>
                         <Input
                           id="new-password"
                           type="password"
@@ -133,7 +134,7 @@ export const ProfileClientPage = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="confirm-password">
-                          Confirm New Password
+                          Xác nhận mật khẩu
                         </Label>
                         <Input
                           id="confirm-password"
@@ -141,9 +142,14 @@ export const ProfileClientPage = () => {
                           className="border-purple-200 focus:border-purple-500"
                         />
                       </div>
-                      <Button className="w-full bg-purple-500 hover:bg-purple-600">
-                        Update Password
-                      </Button>
+
+                      <ButtonCustomized
+                        label="Cập nhật mật khẩu"
+                        className="w-full"
+                      />
+                      {/* <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                          
+                      </Button> */}
                     </div>
                   </div>
                 </ResizablePanel>
@@ -152,16 +158,16 @@ export const ProfileClientPage = () => {
 
                 <ResizablePanel defaultSize={60} minSize={40} className="p-4">
                   <h4 className="text-xl font-semibold mb-6 text-purple-700">
-                    Personal Information
+                    Thông tin cá nhân
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="full-name" className="text-purple-700">
-                        Full Name
+                        Tên của bạn
                       </Label>
                       <Input
                         id="full-name"
-                        placeholder="John Doe"
+                        placeholder="Nguyễn Văn A"
                         className="border-purple-200 focus:border-purple-500"
                       />
                     </div>
@@ -172,38 +178,38 @@ export const ProfileClientPage = () => {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="john.doe@example.com"
+                        placeholder="phucdh@gmail.com"
                         className="border-purple-200 focus:border-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone" className="text-purple-700">
-                        Phone Number
+                        Số điện thoại
                       </Label>
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+84 123 456 789"
                         className="border-purple-200 focus:border-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="address" className="text-purple-700">
-                        Address
+                        Địa chỉ
                       </Label>
                       <Input
                         id="address"
-                        placeholder="123 Main St"
+                        placeholder="FPT University, HCMC"
                         className="border-purple-200 focus:border-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="city" className="text-purple-700">
-                        City
+                        Thành phố
                       </Label>
                       <Input
                         id="city"
-                        placeholder="New York"
+                        placeholder="HCMC"
                         className="border-purple-200 focus:border-purple-500"
                       />
                     </div>
@@ -213,13 +219,13 @@ export const ProfileClientPage = () => {
                       </Label>
                       <Input
                         id="country"
-                        placeholder="United States"
+                        placeholder="Việt Nam"
                         className="border-purple-200 focus:border-purple-500"
                       />
                     </div>
                   </div>
                   <Button className="mt-8 w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-                    Save Changes <ChevronRight className="ml-2 h-4 w-4" />
+                    Lưu thay đổi <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </ResizablePanel>
               </ResizablePanelGroup>

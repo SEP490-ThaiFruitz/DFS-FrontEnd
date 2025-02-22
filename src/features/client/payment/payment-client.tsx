@@ -46,56 +46,49 @@ function PaymentClientPage() {
       name: "Dried Mango Slices",
       price: 12.99,
       quantity: 2,
-      image:
-        "https://images.unsplash.com/photo-1626697556651-67ebdcb8ffd3?w=300&h=300&fit=crop",
+      image: "/images/third-background.png",
     },
     {
       id: 2,
       name: "Mixed Dried Berries",
       price: 15.99,
       quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1543158181-e6f9f6712055?w=300&h=300&fit=crop",
+      image: "/images/third-background.png",
     },
     {
       id: 3,
       name: "Mixed Dried Berries",
       price: 15.99,
       quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1543158181-e6f9f6712055?w=300&h=300&fit=crop",
+      image: "/images/third-background.png",
     },
     {
       id: 4,
       name: "Mixed Dried Berries",
       price: 15.99,
       quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1543158181-e6f9f6712055?w=300&h=300&fit=crop",
+      image: "/images/third-background.png",
     },
     {
       id: 5,
       name: "Mixed Dried Berries",
       price: 15.99,
       quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1543158181-e6f9f6712055?w=300&h=300&fit=crop",
+      image: "/images/third-background.png",
     },
     {
       id: 6,
       name: "Mixed Dried Berries",
       price: 15.99,
       quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1543158181-e6f9f6712055?w=300&h=300&fit=crop",
+      image: "/images/third-background.png",
     },
     {
       id: 7,
       name: "Mixed Dried Berries",
       price: 15.99,
       quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1543158181-e6f9f6712055?w=300&h=300&fit=crop",
+      image: "/images/third-background.png",
     },
   ];
 
@@ -171,7 +164,7 @@ function PaymentClientPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Truck className="w-5 h-5" />
-                  Delivery Method
+                  Phương thức giao hàng
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -207,7 +200,7 @@ function PaymentClientPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="w-5 h-5" />
-                  Payment Method
+                  Phương thức thanh toán
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -261,7 +254,7 @@ function PaymentClientPage() {
                   {cartItems.map((item) => (
                     <ViewCardProduct
                       key={item.id}
-                      productImage={item.name}
+                      productImage={item.image}
                       productName={item.name}
                       productPrice={item.price}
                       productQuantity={item.quantity}
@@ -274,7 +267,7 @@ function PaymentClientPage() {
                     <div className="flex-1 space-y-2">
                       <Label className="flex items-center gap-1">
                         <Tag className="w-4 h-4" />
-                        Promo Code
+                        Mã giảm giá
                       </Label>
                       <Input
                         value={promoCode}
@@ -289,30 +282,30 @@ function PaymentClientPage() {
                   </div>
                   {promoCode === "FRUIT10" && (
                     <p className="text-green-600 text-sm">
-                      10% discount applied!
+                      10% áp dụng khi có mã giảm giá
                     </p>
                   )}
                 </div>
 
                 <div className="mt-6 space-y-2 border-t pt-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">Tạm tính</span>
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Delivery</span>
+                    <span className="text-muted-foreground">Vận chuyển</span>
                     <span className="font-medium">
                       ${deliveryPrice.toFixed(2)}
                     </span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-sm text-green-600">
-                      <span>Discount</span>
+                      <span>Giảm giá</span>
                       <span>-${discount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-lg font-semibold pt-2">
-                    <span>Total</span>
+                    <span>Tổng</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
                 </div>

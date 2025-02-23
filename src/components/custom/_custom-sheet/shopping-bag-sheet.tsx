@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/global-components/empty-state";
 import { Logo } from "@/components/global-components/logo";
 import {
   Sheet,
@@ -7,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingBagIcon } from "lucide-react";
+import { ShoppingBagIcon, ShoppingBasket, ShoppingCart } from "lucide-react";
 
 export const ShoppingBagSheet = () => {
   return (
@@ -43,15 +44,27 @@ export const ShoppingBagSheet = () => {
             </div>
           </SheetTitle>
           <SheetDescription>
-            <span className="text-center">Your shopping bag is empty</span>
+            <div className="w-full">
+              <div className="flex items-center justify-center h-full pt-10">
+                <EmptyState
+                  icons={[ShoppingCart, ShoppingBasket]}
+                  title="Giỏ hàng của bạn"
+                  description="Có vẻ như giỏ hàng của bạn đang trống"
+                  action={{
+                    label: "Mua ngay nào",
+                    onClick: () => {},
+                  }}
+                />
+              </div>
+            </div>
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex items-center justify-center">
+        {/* <div className="flex items-center justify-center">
           <div className="flex justify-center">
             <div>Add some items</div>
           </div>
-        </div>
+        </div> */}
       </SheetContent>
     </Sheet>
   );

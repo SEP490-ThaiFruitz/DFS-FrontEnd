@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { interactApi } from "./client/interact-api";
 

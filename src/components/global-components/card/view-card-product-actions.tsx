@@ -18,7 +18,7 @@ export const ViewCardProductActions = ({
   className,
 }: ViewCardProductActionsProps) => {
   return (
-    <div className={cn("flex items-center gap-4 my-2", className)}>
+    <div className={cn("flex  gap-4 my-2", className)}>
       <img
         src={productImage}
         alt={productName}
@@ -31,7 +31,7 @@ export const ViewCardProductActions = ({
         </p>
       </div>
       <p className="font-medium">
-        ${(productPrice * productQuantity).toFixed(2)}
+        {(productPrice * productQuantity).toFixed(2)}đ
       </p>
     </div>
   );

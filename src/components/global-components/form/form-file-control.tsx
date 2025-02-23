@@ -10,7 +10,7 @@ import {
 import { File, Trash2, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
-import { type DragEvent, useRef, useState } from "react";
+import { type DragEvent, useEffect, useRef, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -50,6 +50,13 @@ export const FormFileControl = <T extends FieldValues>({
     const [files, setFiles] = useState<FileWithPreview[]>([]);
     const [isDragActive, setIsDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const formValue = form.watch(name);
+
+    useEffect(() => {
+        if (formValue === undefined) {
+            setFiles([])
+        }
+    }, [formValue])
 
     const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();

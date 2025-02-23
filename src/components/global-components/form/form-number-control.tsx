@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { formatVND } from "@/lib/format-currency";
 import { cn } from "@/lib/utils";
+import { KeyboardCode } from "@dnd-kit/core";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 interface FormNumberInputControlProps<T extends FieldValues, K> {
@@ -60,13 +61,19 @@ export const FormNumberInputControl = <T extends FieldValues, K>({
                 {...field}
                 type={"text"}
                 value={isMoney ? formatVND(field.value) : formatVND(field.value).replace("₫", "")}
+                onKeyDown={(e) => {
+                  if (e.key === "Backspace") {
+                    const newValue = field.value.slice(0, -1);
+                    field.onChange(newValue);
+                  }
+                }}
                 onChange={(e) => {
                   const cleanValue = e.target.value.replace(/\D/g, "");
                   field.onChange(cleanValue);
                 }}
               />
             </FormControl>
-            <FormMessage>{fieldState.error?.message}</FormMessage>
+            <FormMessage>{fieldState.error?.message}</FormMessage>  
           </FormItem>
         );
       }}

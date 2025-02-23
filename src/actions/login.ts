@@ -4,15 +4,6 @@ import { cookies } from "next/headers";
 import { interactApi } from "./client/interact-api";
 import { setCookie } from "./cookie-interactive";
 
-export interface ApiResponse<T> {
-  value: T;
-  isSuccess: boolean;
-  error: {
-    code: string;
-    message: string;
-  };
-}
-
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
@@ -32,7 +23,7 @@ export const loginAction = async <TValues>(values: TValues) => {
       throw new Error("No response from server");
     }
 
-    if (response.isSuccess && response.value.accessToken) {
+    if (response.isSuccess && response.value?.accessToken) {
       const cookieStore = await cookies();
 
       cookieStore.set("accessToken", response.value.accessToken, {

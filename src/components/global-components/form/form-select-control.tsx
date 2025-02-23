@@ -83,19 +83,17 @@ export const FormSelectControl = <T extends FieldValues, K>({
               {label}
             </FormLabel>
             <FormControl>
-              <Select disabled={disabled} onValueChange={(value) => field.onChange(value)}>
+              <Select disabled={disabled} {...field} onValueChange={(value) => field.onChange(value)}>
                 <SelectTrigger className={cn("", classNameInput)}>
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  {search && items.length > 0 && (
-                    <Input
-                      className="min-w-fit"
-                      value={inputValue}
-                      placeholder="Tìm kiếm..."
-                      onChange={handleInputChange}
-                    />
-                  )}
+                  <Input
+                    className="min-w-fit"
+                    value={inputValue}
+                    placeholder="Tìm kiếm..."
+                    onChange={handleInputChange}
+                  />
                   <SelectGroup>
                     {filteredItems.map((data: SelectData) => isImage ? (
                       <SelectItem key={data.id} value={data.id} className="block w-full text-left cursor-pointer">
@@ -109,6 +107,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
                         {data.name}
                       </SelectItem>
                     ))}
+                    {inputValue && filteredItems.length === 0 && (<div className="p-3 text-center">Không tìm thấy.</div>)}
                   </SelectGroup>
                 </SelectContent>
               </Select>

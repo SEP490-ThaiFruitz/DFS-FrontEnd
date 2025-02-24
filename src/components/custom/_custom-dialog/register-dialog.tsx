@@ -21,6 +21,7 @@ import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useRegisterDialog } from "@/hooks/use-register-dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
+import { registerAction } from "@/actions/login";
 
 export const RegisterDialog = () => {
   const form = useForm<z.infer<typeof RegisterSafeTypes>>({
@@ -33,6 +34,11 @@ export const RegisterDialog = () => {
   const onSubmit = async (values: z.infer<typeof RegisterSafeTypes>) => {
     try {
       console.log({ values });
+
+      const response: any = await registerAction({
+        username: values.phone,
+        password: values.password,
+      });
 
       toast.success("Register successfully!");
     } catch (error) {
@@ -117,13 +123,13 @@ export const RegisterDialog = () => {
 
         <div className="my-2">
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
-            Already have an account?{" "}
+            Bạn đã có tài khoản?
             <h3
               // onClick={handleOpenLogin}
               onClick={toggle}
-              className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
+              className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti text-violet-500"
             >
-              Login here
+              Đăng ký
             </h3>
           </h2>
         </div>

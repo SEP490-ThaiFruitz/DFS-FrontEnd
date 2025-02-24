@@ -17,10 +17,9 @@ export const loginAction = async <TValues>(values: TValues) => {
       values
     );
 
-    // console.log({ firstResponse: response });
-
-    if (!response) {
-      throw new Error("No response from server");
+    if (!response?.isSuccess) {
+      return response;
+      // throw new Error("No response from server");
     }
 
     if (response.isSuccess && response.value?.accessToken) {
@@ -49,17 +48,22 @@ export const loginAction = async <TValues>(values: TValues) => {
       //   // sameSite: "strict",
       // });
 
-      return { success: true, message: "Login successful" };
+      return {
+        isSuccess: true,
+        message: "Login successful",
+        token: response.value.accessToken,
+        refreshToken: response.value.refreshToken,
+      };
     } else {
       console.error("Login failed. Error:", response.error?.message);
       return {
-        success: false,
+        isSuccess: false,
         message: response.error?.message || "Invalid credentials",
       };
     }
   } catch (error) {
     console.error("Error during login:", error);
-    return { success: false, message: "An error occurred during login" };
+    return { isSuccess: false, message: "An error occurred during login" };
   }
 };
 

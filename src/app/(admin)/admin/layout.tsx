@@ -1,3 +1,4 @@
+import { ROLES, checkRole } from "@/actions/checkrole";
 import { AppSidebar } from "@/components/_sidebar-configuration/app-sidebar";
 import { DynamicBreadcrumb } from "@/components/_sidebar-configuration/dynamic-breadcrumb";
 import { Separator } from "@/components/ui/separator";
@@ -6,6 +7,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { redirect } from "next/navigation";
 
 interface AdminRouteLayoutProps {
   children: React.ReactNode;
@@ -13,16 +15,12 @@ interface AdminRouteLayoutProps {
   test: React.ReactNode;
 }
 
-const AdminRouteLayout = ({ children, auth, test }: AdminRouteLayoutProps) => {
-  // return (
-  //   <>
-  //     {/* {children} */}
-  //     {auth}
-  //     {test}
-  //   </>
-  // );
-
-  let isAdmin = true;
+const AdminRouteLayout = async ({
+  children,
+  auth,
+  test,
+}: AdminRouteLayoutProps) => {
+  const isAdmin = await checkRole(ROLES.Administrator);
 
   return (
     <>
@@ -52,6 +50,8 @@ const AdminRouteLayout = ({ children, auth, test }: AdminRouteLayoutProps) => {
         </div>
       )}
     </>
+
+    // <div className="absolute size-full h-screen overflow-hidden ">{auth}</div>
   );
 };
 

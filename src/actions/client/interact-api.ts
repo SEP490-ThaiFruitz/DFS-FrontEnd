@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ApiResponse } from "@/types/types";
 import { cookies } from "next/headers";
 
@@ -6,10 +7,10 @@ const handleError = (error: unknown, message: string) => {
   throw error; // Re-throw để React Query hoặc caller xử lý
 };
 
-const getToken = async (): Promise<{ accessToken: string } | null> => {
+export const getToken = async (): Promise<{ accessToken: string } | null> => {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       throw new Error("Token not found");
@@ -118,25 +119,24 @@ const update = async <TValues>(endpoint: string, body: TValues) => {
 
   const accessToken = "";
   try {
-    let headers = { 'Content-Type': 'application/json' } as any;
+    let headers = { "Content-Type": "application/json" } as any;
     if (body instanceof FormData) {
       headers = {};
     }
     if (accessToken) {
-      headers.Authorization = 'Bearer ' + accessToken
+      headers.Authorization = "Bearer " + accessToken;
     }
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
       {
         method: "PUT",
         headers: headers,
-        body:
-          body instanceof FormData ? (body) : JSON.stringify(body),
+        body: body instanceof FormData ? body : JSON.stringify(body),
       }
     );
 
     const data = await response.json();
-    console.log(response)
+    console.log(response);
     return data;
   } catch (error) {
     console.log("Error in updating data:", error);
@@ -170,6 +170,7 @@ const login = async <TValues, TResponse>(
   endpoint: string,
   body: TValues
 ): Promise<ApiResponse<TResponse> | undefined> => {
+  console.log(`${process.env.NEXT_PUBLIC_URL_API}${endpoint}`);
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
@@ -185,11 +186,45 @@ const login = async <TValues, TResponse>(
     // console.log({ response });
 
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      return response.json();
     }
 
     const data: ApiResponse<TResponse> = await response.json();
     return data;
+  } catch (error) {
+    console.error("Error in creating data:", error);
+    return undefined;
+  }
+};
+
+const register = async <TValues, TResponse>(
+  endpoint: string,
+  body: TValues
+): Promise<ApiResponse<TResponse> | undefined> => {
+  console.log(`${process.env.NEXT_PUBLIC_URL_API}${endpoint}`);
+  try {
+    // const response = await fetch(
+    //   `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(body),
+    //   }
+    // );
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
+      body
+    );
+
+    // console.log({ response });
+
+    if (response.status === 200) {
+      const data: ApiResponse<TResponse> = await response.data;
+      return data;
+    }
+    return response.data;
   } catch (error) {
     console.error("Error in creating data:", error);
     return undefined;

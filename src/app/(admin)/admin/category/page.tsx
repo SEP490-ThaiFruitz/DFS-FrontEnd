@@ -4,7 +4,6 @@ import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-
 import { UpdateCategoryDialog } from "@/components/custom/_custom-dialog/update-category-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/features/admin/category/data-table";
 import { PageResult, ApiResponse } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";

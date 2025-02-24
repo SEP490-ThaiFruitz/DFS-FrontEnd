@@ -1,8 +1,8 @@
 "use client"
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
+import { DataTable } from '@/components/global-components/data-table/data-table'
 import { Button } from '@/components/ui/button'
 import { columns, Product } from '@/features/admin/product/column'
-import { DataTable } from '@/features/admin/product/data-table'
 import { PageResult, ApiResponse } from '@/types/types'
 import { CirclePlus } from 'lucide-react'
 import Link from 'next/link'
@@ -22,7 +22,7 @@ function ProductPage() {
                 </Link>
             </div>
             <div className="py-4">
-                <DataTable data={products?.value?.items || []} columns={columns} />
+                <DataTable data={products?.value?.items || []} columns={columns} searchFiled='name' />
             </div>
         </div>
     )

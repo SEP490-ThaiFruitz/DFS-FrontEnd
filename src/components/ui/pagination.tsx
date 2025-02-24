@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { ButtonProps, buttonVariants } from "@/components/ui/button"
+import { boolean } from "zod"
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
@@ -35,7 +36,8 @@ const PaginationItem = React.forwardRef<
 PaginationItem.displayName = "PaginationItem"
 
 type PaginationLinkProps = {
-  isActive?: boolean
+  isActive?: boolean,
+  disabled?: boolean,
 } & Pick<ButtonProps, "size"> &
   React.ComponentProps<"a">
 
@@ -43,11 +45,13 @@ const PaginationLink = ({
   className,
   isActive,
   size = "icon",
+  disabled,
   ...props
 }: PaginationLinkProps) => (
   <a
     aria-current={isActive ? "page" : undefined}
     className={cn(
+      `${disabled ? "pointer-events-none hover:cursor-none" : "hover:cursor-pointer"}  text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-primary-400 dark:focus:ring-offset-gray-900 dark:focus:ring-offset-2 dark:focus:ring-offset-opacity-50 dark:focus:ring-opacity-50 dark:focus:ring-offset-opacity-50 dark:focus:ring-opacity-50`,
       buttonVariants({
         variant: isActive ? "outline" : "ghost",
         size,
@@ -70,7 +74,7 @@ const PaginationPrevious = ({
     {...props}
   >
     <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
+    <span>Trang trước</span>
   </PaginationLink>
 )
 PaginationPrevious.displayName = "PaginationPrevious"
@@ -85,7 +89,7 @@ const PaginationNext = ({
     className={cn("gap-1 pr-2.5", className)}
     {...props}
   >
-    <span>Next</span>
+    <span>Trang sau</span>
     <ChevronRight className="h-4 w-4" />
   </PaginationLink>
 )

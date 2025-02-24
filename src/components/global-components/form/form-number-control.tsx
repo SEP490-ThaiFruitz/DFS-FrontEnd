@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { formatVND } from "@/lib/format-currency";
+import { formatNumberWithUnit, formatVND } from "@/lib/format-currency";
 import { cn } from "@/lib/utils";
 import { KeyboardCode } from "@dnd-kit/core";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
@@ -24,6 +24,7 @@ interface FormNumberInputControlProps<T extends FieldValues, K> {
   isMoney?: boolean;
   defaultValue?: any;
   icon?: React.ReactElement;
+  unit?: string;
 }
 
 export const FormNumberInputControl = <T extends FieldValues, K>({
@@ -37,6 +38,7 @@ export const FormNumberInputControl = <T extends FieldValues, K>({
   icon,
   isMoney,
   defaultValue,
+  unit,
 }: FormNumberInputControlProps<T, K>) => {
   return (
     <FormField
@@ -60,7 +62,7 @@ export const FormNumberInputControl = <T extends FieldValues, K>({
                 disabled={disabled}
                 {...field}
                 type={"text"}
-                value={isMoney ? formatVND(field.value) : formatVND(field.value).replace("₫", "")}
+                value={isMoney ? formatVND(field.value) : formatNumberWithUnit(field.value, unit)}
                 onKeyDown={(e) => {
                   if (e.key === "Backspace") {
                     const newValue = field.value.slice(0, -1);
@@ -73,7 +75,7 @@ export const FormNumberInputControl = <T extends FieldValues, K>({
                 }}
               />
             </FormControl>
-            <FormMessage>{fieldState.error?.message}</FormMessage>  
+            <FormMessage>{fieldState.error?.message}</FormMessage>
           </FormItem>
         );
       }}

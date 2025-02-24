@@ -88,12 +88,14 @@ export const FormSelectControl = <T extends FieldValues, K>({
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <Input
-                    className="min-w-fit"
-                    value={inputValue}
-                    placeholder="Tìm kiếm..."
-                    onChange={handleInputChange}
-                  />
+                  {search && (
+                    <Input
+                      className="min-w-fit"
+                      value={inputValue}
+                      placeholder="Tìm kiếm..."
+                      onChange={handleInputChange}
+                    />
+                  )}
                   <SelectGroup>
                     {filteredItems.map((data: SelectData) => isImage ? (
                       <SelectItem key={data.id} value={data.id} className="block w-full text-left cursor-pointer">

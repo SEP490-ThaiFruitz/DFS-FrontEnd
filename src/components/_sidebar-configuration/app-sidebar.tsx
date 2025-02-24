@@ -3,18 +3,14 @@
 import * as React from "react";
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
-  ChartBarStacked,
+  Settings,
   Command,
-  Frame,
   GalleryVerticalEnd,
   LayoutList,
-  Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
   TableProperties,
+  TicketPercent,
+  icons,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -83,14 +79,14 @@ const data = {
       icon: TableProperties,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: "Mã giảm giá",
+      url: "/admin/voucher",
+      icon: TicketPercent,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Cài đặt",
+      url: "/admin/setting",
+      icon: Settings,
     },
   ],
 };

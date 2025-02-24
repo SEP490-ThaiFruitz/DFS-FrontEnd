@@ -30,9 +30,11 @@ export const ViewCardProductActions = ({
           Số lượng: {productQuantity}
         </p>
       </div>
-      <p className="font-medium">
-        {(productPrice * productQuantity).toFixed(2)}đ
-      </p>
+      <div className="flex flex-col items-center gap-x-1">
+        <span>110.000đ</span>
+
+        <del>99.000đ</del>
+      </div>
     </div>
   );
 };

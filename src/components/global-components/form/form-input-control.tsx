@@ -26,6 +26,8 @@ interface FormInputControlProps<T extends FieldValues, K> {
   value?: any;
   defaultValue?: any,
   icon?: React.ReactElement;
+  isMinDate?: boolean;
+  require?: boolean
 }
 
 export const FormInputControl = <T extends FieldValues, K>({
@@ -39,7 +41,9 @@ export const FormInputControl = <T extends FieldValues, K>({
   classNameInput,
   value,
   icon,
-  defaultValue
+  defaultValue,
+  isMinDate,
+  require
 }: FormInputControlProps<T, K>) => {
 
   return (
@@ -53,7 +57,7 @@ export const FormInputControl = <T extends FieldValues, K>({
         }
         return (
           <FormItem>
-            <FormLabel className={cn("text-text-foreground", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", require ? "after:content-['(*)'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
               {icon}
               {label}
             </FormLabel>
@@ -64,6 +68,7 @@ export const FormInputControl = <T extends FieldValues, K>({
                 disabled={disabled}
                 {...field}
                 type={type}
+                min={isMinDate ? new Date().toISOString().split('T')[0] : undefined}
               />
             </FormControl>
             <FormMessage>{fieldState.error?.message}</FormMessage>

@@ -32,6 +32,7 @@ export function NavMain({
     items?: {
       title: string;
       url: string;
+      icon?: LucideIcon;
     }[];
   }[];
 
@@ -71,6 +72,7 @@ export function NavMain({
                         className="group-hover:bg-slate-100 my-2"
                       >
                         <Link href={subItem.url}>
+                          {subItem.icon && <subItem.icon />}
                           <span>{subItem.title}</span>
                         </Link>
                       </SidebarMenuSubButton>

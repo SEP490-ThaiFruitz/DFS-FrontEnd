@@ -1,5 +1,5 @@
+import { ApiResponse } from "@/types/types";
 import { cookies } from "next/headers";
-import { ApiResponse } from "../login";
 
 const handleError = (error: unknown, message: string) => {
   console.error(`${message}:`, error);
@@ -195,21 +195,6 @@ const login = async <TValues, TResponse>(
     return undefined;
   }
 };
-
-async function handleResponse(response: Response) {
-  const text = await response.text();
-  let data;
-  try {
-    data = JSON.parse(text)
-  } catch {
-    data = text
-  }
-  const res = {
-    status: response.status,
-    data: data,
-  }
-  return res;
-}
 
 export const interactApi = {
   get,

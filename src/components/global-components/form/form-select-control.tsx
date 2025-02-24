@@ -83,12 +83,12 @@ export const FormSelectControl = <T extends FieldValues, K>({
               {label}
             </FormLabel>
             <FormControl>
-              <Select disabled={disabled} onValueChange={(value) => field.onChange(value)}>
+              <Select disabled={disabled} {...field} onValueChange={(value) => field.onChange(value)}>
                 <SelectTrigger className={cn("", classNameInput)}>
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  {search && items.length > 0 && (
+                  {search && (
                     <Input
                       className="min-w-fit"
                       value={inputValue}
@@ -109,6 +109,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
                         {data.name}
                       </SelectItem>
                     ))}
+                    {inputValue && filteredItems.length === 0 && (<div className="p-3 text-center">Không tìm thấy.</div>)}
                   </SelectGroup>
                 </SelectContent>
               </Select>

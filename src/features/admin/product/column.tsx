@@ -1,10 +1,10 @@
 import { ColumnDef } from '@tanstack/react-table';
-import React from 'react'
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { Category } from '../category/column';
+import Link from 'next/link';
 
 export type Product = {
     id: string;
@@ -24,14 +24,6 @@ export type Product = {
 
 export const columns: ColumnDef<Product>[] = [
     {
-        header: "STT",
-        cell: ({ row, table }) => {
-            const pageSize = table.getState().pagination.pageSize;
-            const pageIndex = table.getState().pagination.pageIndex;
-            return <p>{row.index + 1 + pageIndex * pageSize}</p>;
-        },
-    },
-    {
         accessorKey: "name",
         header: "Tên",
         cell: ({ row }) => (
@@ -44,7 +36,7 @@ export const columns: ColumnDef<Product>[] = [
         cell: ({ row }) => {
             const category = row.getValue<Category>("category");
             return (
-                <p>{category.name}</p>
+                <p>{category?.name}</p>
             )
         },
     },
@@ -56,7 +48,7 @@ export const columns: ColumnDef<Product>[] = [
             const name = row.getValue("name");
             return (
                 <Image
-                    src={`/images/dried-fruit.webp`}
+                    src={thumbnailUrl as string ?? "/images/dried-fruit.webp"}
                     height={100}
                     width={100}
                     alt={`${name}`}
@@ -83,13 +75,14 @@ export const columns: ColumnDef<Product>[] = [
             const product = row.original;
             return (
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        className="h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
-                        onClick={() => console.log("Xem:", product)}
-                    >
-                        <Eye />
-                    </Button>
+                    <Link href={`/admin/product/${product.id}`} >
+                        <Button
+                            variant="outline"
+                            className="h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                        >
+                            <Eye />
+                        </Button>
+                    </Link>
                     <Button
                         variant="outline"
                         className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"

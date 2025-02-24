@@ -53,7 +53,7 @@ export const FloatingButton = () => {
 
   return (
     <GooeyMenu
-      className="fixed -bottom-12 -right-32 z-20 "
+      className="fixed h-10 w-10 bottom-28 right-10 z-20 "
       direction="horizontal"
     >
       <GooeyMenuBefore>

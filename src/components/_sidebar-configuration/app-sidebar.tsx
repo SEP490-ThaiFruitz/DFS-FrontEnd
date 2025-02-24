@@ -3,18 +3,15 @@
 import * as React from "react";
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
-  ChartBarStacked,
+  Settings,
   Command,
-  Frame,
   GalleryVerticalEnd,
   LayoutList,
-  Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
   TableProperties,
+  TicketPercent,
+  icons,
+  GalleryHorizontal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -74,7 +71,18 @@ const data = {
         },
       ],
     },
-
+    {
+      title: "Cài đặt",
+      url: "/admin/settings",
+      icon: Settings,
+      items: [
+        {
+          title: "Thanh trượt",
+          url: "/admin/settings/sliders",
+          icon: GalleryHorizontal
+        },
+      ]
+    },
   ],
   projects: [
     {
@@ -83,14 +91,9 @@ const data = {
       icon: TableProperties,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Mã giảm giá",
+      url: "/admin/voucher",
+      icon: TicketPercent,
     },
   ],
 };
@@ -102,8 +105,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Logo />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

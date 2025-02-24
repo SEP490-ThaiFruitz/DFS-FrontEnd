@@ -4,7 +4,7 @@ import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-
 import { UpdateCategoryDialog } from "@/components/custom/_custom-dialog/update-category-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PageResult, ResponseData } from "@/types/types";
+import { PageResult, ApiResponse } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -36,7 +36,8 @@ const CategoryPage = () => {
   useEffect(() => {
     getCategories().then((response: any) => {
       if (response?.success) {
-        const data = response?.data as ResponseData<PageResult<Category>>;
+        const data = response?.data as ApiResponse<PageResult<Category>>;
+        console.log({data})
         setData(data?.value);
       } else {
         toast.error(response.message);

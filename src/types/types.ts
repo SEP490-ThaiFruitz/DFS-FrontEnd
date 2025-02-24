@@ -51,7 +51,7 @@ export interface ClassNameType<T> extends AriaAttributes, DOMAttributes<T> {
   className?: string;
 }
 
-export type ResponseData<T> = {
+export type ApiResponse<T = undefined> = {
   value?: T
   isSuccess: boolean;
   error: {

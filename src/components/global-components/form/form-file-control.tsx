@@ -10,7 +10,7 @@ import {
 import { File, Trash2, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
-import { type DragEvent, useRef, useState } from "react";
+import { type DragEvent, useEffect, useRef, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -32,6 +32,7 @@ interface FormFileControlProps<T extends FieldValues> {
   icon?: React.ReactElement;
   type: string;
   mutiple: boolean;
+  require?: boolean
 }
 
 export const FormFileControl = <T extends FieldValues>({
@@ -45,10 +46,18 @@ export const FormFileControl = <T extends FieldValues>({
   icon,
   type,
   mutiple,
+  require
 }: FormFileControlProps<T>) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formValue = form.watch(name);
+
+  useEffect(() => {
+    if (formValue === undefined) {
+      setFiles([])
+    }
+  }, [formValue])
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -128,18 +137,17 @@ export const FormFileControl = <T extends FieldValues>({
 
         return (
           <FormItem>
-            <FormLabel className={cn("text-text-foreground", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", require ? "after:content-['(*)'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
               {icon}
               {label}
             </FormLabel>
             <FormControl>
               <div className={classNameInput}>
                 <motion.div
-                  className={`relative size-full cursor-pointer rounded-xl border-2 border-dashed p-12 text-center transition-colors ${
-                    isDragActive
-                      ? "border-blue-500 bg-blue-500/5"
-                      : "border-neutral-300 hover:border-neutral-400 dark:border-neutral-700 dark:hover:border-neutral-500"
-                  }`}
+                  className={`relative size-full cursor-pointer rounded-xl border-2 border-dashed p-12 text-center transition-colors ${isDragActive
+                    ? "border-blue-500 bg-blue-500/5"
+                    : "border-neutral-300 hover:border-neutral-400 dark:border-neutral-700 dark:hover:border-neutral-500"
+                    }`}
                   onClick={handleButtonClick}
                   onDragEnter={handleDragEnter}
                   onDragLeave={handleDragLeave}
@@ -221,8 +229,8 @@ export const FormFileControl = <T extends FieldValues>({
                               {file.size < 1024 * 1024
                                 ? `${(file.size / 1024).toFixed(2)} KB`
                                 : `${(file.size / (1024 * 1024)).toFixed(
-                                    2
-                                  )} MB`}
+                                  2
+                                )} MB`}
                             </span>
                             <Trash2
                               className="mr-2 size-5 cursor-pointer text-red-500 transition-colors hover:text-red-600"

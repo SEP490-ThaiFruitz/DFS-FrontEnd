@@ -1,5 +1,6 @@
 "use client";
-import { getCategories } from '@/actions/category';
+import { createProduct } from '@/actions/product';
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
 import { FormFileControl } from '@/components/global-components/form/form-file-control';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
@@ -9,12 +10,12 @@ import { FormValues } from '@/components/global-components/form/form-values';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Category } from '@/features/admin/category/column';
-import { PageResult, ResponseData } from '@/types/types';
+import { ApiResponse } from '@/types/types';
 import { CreateProductSafeTypes } from '@/zod-safe-types/product-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { CirclePlus, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -27,30 +28,60 @@ interface ProductSize {
 
 function CreateProductPage() {
   const [productSizes, setProductSizes] = useState<ProductSize[]>([{ size: 0, quantity: 0, price: 0 }]);
-  const [categories, setCategories] = useState<SelectData[]>();
 
-
-  useEffect(() => {
-    getCategories().then((response: any) => {
-      if (response?.success) {
-        const data = response?.data as ResponseData<PageResult<Category>>
-        setCategories(data?.value?.items);
+  const { data: categories } = useFetch<ApiResponse<SelectData[]>>("/Categories/get-all-non-paging", ["categories"],{},{
+    staleTime: 1000 * 60 * 1,
+  })
+  const { mutate: createProductMutation, isPending } = useMutation({
+    mutationFn: async (values: FormData) => {
+      const response = await createProduct(values);
+      if (response.success) {
+        return response.message
       } else {
-        toast.error(response.message)
+        throw new Error(response.message);
       }
-    });
-  }, []);
+    },
+    onSuccess: (value) => {
+      form.reset();
+      toast.success(value)
+    },
+    onError: (value) => {
+      toast.error(value.message)
+    }
+  })
 
   const form = useForm<z.infer<typeof CreateProductSafeTypes>>({
     resolver: zodResolver(CreateProductSafeTypes),
   });
 
   const onSubmit = async (values: z.infer<typeof CreateProductSafeTypes>) => {
-    try {
-      console.log({ values, productSizes });
-    } catch (error) {
-      console.log({ error });
-    }
+    const formData = new FormData();
+    debugger
+    formData.append("name", values.name);
+    formData.append("categoryId", values.categoryId);
+    formData.append("description", values.description);
+
+    const images = [values.image, ...values.other]
+
+    images.forEach(image => {
+      formData.append("thumbnail", image);
+    });
+
+    // values.sizes.forEach((size, index) => {
+    //   formData.append(`productSize[${index}][size]`, size.size.toString());
+    //   formData.append(`productSize[${index}][quantity]`, size.quantity.toString());
+    //   formData.append(`productSize[${index}][price]`, size.price.toString());
+    // });
+
+    values.sizes.forEach((size) => {
+      formData.append(`productSize.size`, size.size.toString());
+      formData.append(`productSize.quantity`, size.quantity.toString());
+      formData.append(`productSize.price`, size.price.toString());
+    });
+
+    console.log({ formData })
+    createProductMutation(formData);
+
   };
 
   const handleAddSize = () => {
@@ -58,11 +89,12 @@ function CreateProductPage() {
   };
 
   const handleRemoveSize = (rowId: number) => {
-    const updatedProducts = productSizes.filter((_, index) => index !== rowId + 2);
-    setProductSizes(updatedProducts);
+    const sizes = form.getValues().sizes
+    const updatedProducts = sizes.filter((_, index) => index !== rowId);
     form.reset({ sizes: updatedProducts });
-    form.unregister(`sizes.${rowId + 2}`);
-    form.clearErrors(`sizes.${rowId + 2}`);
+    setProductSizes(updatedProducts);
+    form.unregister(`sizes.${rowId}`);
+    form.clearErrors(`sizes.${rowId}`);
   };
 
   return (
@@ -77,7 +109,7 @@ function CreateProductPage() {
               <FormInputControl
                 form={form}
                 name="name"
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 label="Tên sản phẩm"
               />
               <FormSelectControl
@@ -86,15 +118,15 @@ function CreateProductPage() {
                 classNameInput='h-fit'
                 placeholder='Chọn một loại sản phẩm'
                 search={true}
-                items={categories}
+                items={categories?.value}
                 isImage
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 label="Loại sản phẩm"
               />
               <FormInputControl
                 form={form}
                 name="description"
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 label="Mô tả sản phẩm"
               />
             </div>
@@ -105,7 +137,7 @@ function CreateProductPage() {
                 classNameInput="h-30 w-full"
                 mutiple={false}
                 type={"image/jpeg, image/jpg, image/png, image/webp"}
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 label="Ảnh chính sản phẩm"
               />
               <FormFileControl
@@ -114,7 +146,7 @@ function CreateProductPage() {
                 classNameInput="h-30 w-full"
                 mutiple={true}
                 type={"image/jpeg, image/jpg, image/png, image/webp"}
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 label="Ảnh phụ sản phẩm"
               />
             </div>
@@ -128,24 +160,24 @@ function CreateProductPage() {
         </CardHeader>
         <CardContent className='w-fit'>
           {productSizes.map((_, index) => (
-            <div key={index} className={`flex space-x-4 items-center mb-4 ${productSizes.length - 1 > index ? 'border-b-2 pb-4' : ''}`}>
+            <div key={index + 1} className={`flex space-x-4 items-center mb-4 ${productSizes.length - 1 > index ? 'border-b-2 pb-4' : ''}`}>
               <div className='p-3 font-black'>{index + 1}</div>
               <FormNumberInputControl
                 form={form}
                 name={`sizes.${index}.size`}
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 label="Khối lượng"
               />
               <FormNumberInputControl
                 form={form}
                 name={`sizes.${index}.quantity`}
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 label="Số lượng"
               />
               <FormNumberInputControl
                 form={form}
                 name={`sizes.${index}.price`}
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
                 isMoney
                 label="Giá"
               />
@@ -179,9 +211,9 @@ function CreateProductPage() {
         type="submit"
         className="max-w-32 bg-green-500 hover:bg-green-700"
         variant="secondary"
-        disabled={form.formState.isSubmitting}
+        disabled={isPending}
         label={
-          form.formState.isSubmitting ? (
+          isPending ? (
             <WaitingSpinner
               variant="pinwheel"
               label="Đang tạo..."

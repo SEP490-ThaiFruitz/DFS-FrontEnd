@@ -25,6 +25,7 @@ interface FormNumberInputControlProps<T extends FieldValues, K> {
   defaultValue?: any;
   icon?: React.ReactElement;
   unit?: string;
+  require?: boolean
 }
 
 export const FormNumberInputControl = <T extends FieldValues, K>({
@@ -39,6 +40,7 @@ export const FormNumberInputControl = <T extends FieldValues, K>({
   isMoney,
   defaultValue,
   unit,
+  require
 }: FormNumberInputControlProps<T, K>) => {
   return (
     <FormField
@@ -52,7 +54,7 @@ export const FormNumberInputControl = <T extends FieldValues, K>({
 
         return (
           <FormItem>
-            <FormLabel className={cn("text-text-foreground", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", require ? "after:content-['(*)'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
               {icon}
               {label}
             </FormLabel>

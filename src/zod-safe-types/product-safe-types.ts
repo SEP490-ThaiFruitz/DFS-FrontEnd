@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { z } from "zod";
 
 export const CreateProductSafeTypes = z.object({

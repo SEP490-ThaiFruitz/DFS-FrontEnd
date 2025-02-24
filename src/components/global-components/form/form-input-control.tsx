@@ -27,6 +27,7 @@ interface FormInputControlProps<T extends FieldValues, K> {
   defaultValue?: any,
   icon?: React.ReactElement;
   isMinDate?: boolean;
+  require?: boolean
 }
 
 export const FormInputControl = <T extends FieldValues, K>({
@@ -42,6 +43,7 @@ export const FormInputControl = <T extends FieldValues, K>({
   icon,
   defaultValue,
   isMinDate,
+  require
 }: FormInputControlProps<T, K>) => {
 
   return (
@@ -55,7 +57,7 @@ export const FormInputControl = <T extends FieldValues, K>({
         }
         return (
           <FormItem>
-            <FormLabel className={cn("text-text-foreground", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", require ? "after:content-['(*)'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
               {icon}
               {label}
             </FormLabel>

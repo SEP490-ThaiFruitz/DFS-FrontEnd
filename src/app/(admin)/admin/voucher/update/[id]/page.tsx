@@ -10,12 +10,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CreateVoucherSafeTypes } from '@/zod-safe-types/voucher-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-function CreateVoucherPage() {
-
+function UpdateVoucherPage() {
+  const { id } = useParams();
+  const [coupon] = useState({ name: 'Ưu Đãi Mua Số Lượng Lớn', code: 'bulk50', discount: '50.00', discountType: 'Fixed', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-25T12:00:00+00:00' });
   const { isPending } = useMutation({
     // mutationFn: async (values: FormData) => {
     //   const response = await createVoucher(values);
@@ -36,6 +39,18 @@ function CreateVoucherPage() {
 
   const form = useForm<z.infer<typeof CreateVoucherSafeTypes>>({
     resolver: zodResolver(CreateVoucherSafeTypes),
+    defaultValues: {
+      name: coupon.name,
+      code: coupon.code,
+      discountType: coupon.discountType === 'Fixed' ? 'Fixed' : 'Percentage',
+      moneyDiscount: coupon.discountType === 'Fixed' ? coupon.discount : undefined,
+      percentDiscount: coupon.discountType === 'Percentage' ? coupon.discount : undefined,
+      startDate: new Date(coupon.startDate).toISOString().split('T')[0],
+      endDate: new Date(coupon.endDate).toISOString().split('T')[0],
+      minimumOrderAmount: "0",
+      maximumDiscount: "0",
+      quantity: "0"
+    }
   });
 
   const onSubmit = async (values: z.infer<typeof CreateVoucherSafeTypes>) => {
@@ -47,7 +62,7 @@ function CreateVoucherPage() {
     <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
       <Card>
         <CardHeader>
-          <CardTitle>Tạo mã giảm giá</CardTitle>
+          <CardTitle>Cập nhật mã giảm giá</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-2 gap-6 sm:gap-20">
@@ -159,7 +174,7 @@ function CreateVoucherPage() {
               classNameLabel="font-semibold text-sm"
             />
           ) : (
-            "Tạo mới"
+            "Cập nhật"
           )
         }
       />
@@ -167,4 +182,4 @@ function CreateVoucherPage() {
   );
 }
 
-export default CreateVoucherPage;
+export default UpdateVoucherPage;

@@ -13,11 +13,12 @@ interface DeleteDialogProps {
     } | undefined>;
     isOpen: boolean;
     onClose: (value: boolean) => void
-    id: string
+    id: string,
+    isIcon?: boolean
 }
 
 
-export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen }: Readonly<DeleteDialogProps>) {
+export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen, isIcon }: Readonly<DeleteDialogProps>) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const onSubmit = async () => {
         setIsSubmitting(true)
@@ -37,14 +38,11 @@ export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen }: Read
     };
 
     return (<Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogTrigger asChild>
-            <Button
-                variant="outline"
-                className="h-6 w-6 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-            >
-                <Trash2 />
+        {isIcon && <DialogTrigger asChild>
+            <Button variant="outline" type="button">
+                <Trash2 size={20} />
             </Button>
-        </DialogTrigger>
+        </DialogTrigger>}
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Bạn có chắc chắn không?</DialogTitle>

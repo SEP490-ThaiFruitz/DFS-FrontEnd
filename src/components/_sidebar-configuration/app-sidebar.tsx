@@ -11,6 +11,7 @@ import {
   TableProperties,
   TicketPercent,
   icons,
+  GalleryHorizontal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -70,7 +71,18 @@ const data = {
         },
       ],
     },
-
+    {
+      title: "Cài đặt",
+      url: "/admin/settings",
+      icon: Settings,
+      items: [
+        {
+          title: "Thanh trượt",
+          url: "/admin/settings/sliders",
+          icon: GalleryHorizontal
+        },
+      ]
+    },
   ],
   projects: [
     {
@@ -83,11 +95,6 @@ const data = {
       url: "/admin/voucher",
       icon: TicketPercent,
     },
-    {
-      name: "Cài đặt",
-      url: "/admin/setting",
-      icon: Settings,
-    },
   ],
 };
 
@@ -98,8 +105,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Logo />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

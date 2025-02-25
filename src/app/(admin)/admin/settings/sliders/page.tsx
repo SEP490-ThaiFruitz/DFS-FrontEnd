@@ -52,12 +52,13 @@ function SliderPage() {
         console.log(values)
     };
     return (
-        <div className='m-10 border rounded-lg shadow-sm h-fit'>
-            <div className='flex justify-between items-center border-b-2 p-4'>
+        <div className='m-10'>
+            <div className='flex justify-between items-center'>
                 <p className='text-2xl font-semibold leading-none tracking-tight'>Thanh trượt</p>
                 <Dialog open={isOpen} onOpenChange={() => {
                     setIsOpen(!isOpen)
                     setSlider(undefined)
+                    form.reset()
                 }}>
                     <DialogTrigger asChild>
                         <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
@@ -65,78 +66,80 @@ function SliderPage() {
                             Tạo thanh trượt
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>{slider ? "Cập nhật " : "Tạo "}thanh trượt</DialogTitle>
-                        </DialogHeader>
-                        <FormValues form={form} onSubmit={onSubmit} classNameForm="grid gap-4 py-4">
-                            <FormInputControl
-                                form={form}
-                                name="name"
-                                disabled={form.formState.isSubmitting}
-                                label="Tên thanh trượt"
-                                defaultValue={slider?.title}
-                                require
-                            />
-                            <Controller
-                                name="isActive"
-                                control={form.control}
-                                defaultValue={slider?.isActive ?? true}
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between">
-                                        <p className="text-sm font-medium">Trạng thái</p>
-                                        <FormControl>
-                                            <Switch
-                                                className={`${field.value ? "!bg-green-500" : "!bg-red-500"}`}
-                                                checked={field.value ?? false}
-                                                onCheckedChange={(checked) => field.onChange(checked)}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormFileControl
-                                form={form}
-                                name="image"
-                                disabled={form.formState.isSubmitting}
-                                label="Ảnh thanh trượt"
-                                type={"image/jpeg, image/jpg, image/png, image/webp"}
-                                require
-                                mutiple={false}
-                            />
-                            <DialogFooter>
-                                <DialogClose asChild>
-                                    <ButtonCustomized
-                                        className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-                                        variant="outline"
-                                        label="Hủy"
-                                    />
-                                </DialogClose>
-
-                                <ButtonCustomized
-                                    type="submit"
-                                    className="max-w-32 bg-green-500 hover:bg-green-700"
-                                    variant="secondary"
+                    {isOpen && (
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>{slider ? "Cập nhật " : "Tạo "}thanh trượt</DialogTitle>
+                            </DialogHeader>
+                            <FormValues form={form} onSubmit={onSubmit} classNameForm="grid gap-4 py-4">
+                                <FormInputControl
+                                    form={form}
+                                    name="name"
                                     disabled={form.formState.isSubmitting}
-                                    label={
-                                        form.formState.isSubmitting ? (
-                                            <WaitingSpinner
-                                                variant="pinwheel"
-                                                label="Đang tạo..."
-                                                className="font-semibold "
-                                                classNameLabel="font-semibold text-sm"
-                                            />
-                                        ) : (
-                                            "Lưu"
-                                        )
-                                    }
+                                    label="Tên thanh trượt"
+                                    defaultValue={slider?.title}
+                                    require
                                 />
-                            </DialogFooter>
-                        </FormValues>
-                    </DialogContent>
+                                <Controller
+                                    name="isActive"
+                                    control={form.control}
+                                    defaultValue={slider?.isActive ?? true}
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center justify-between">
+                                            <p className="text-sm font-medium">Trạng thái</p>
+                                            <FormControl>
+                                                <Switch
+                                                    className={`${field.value ? "!bg-green-500" : "!bg-red-500"}`}
+                                                    checked={field.value ?? false}
+                                                    onCheckedChange={(checked) => field.onChange(checked)}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormFileControl
+                                    form={form}
+                                    name="image"
+                                    disabled={form.formState.isSubmitting}
+                                    label="Ảnh thanh trượt"
+                                    type={"image/jpeg, image/jpg, image/png, image/webp"}
+                                    require
+                                    mutiple={false}
+                                />
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <ButtonCustomized
+                                            className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
+                                            variant="outline"
+                                            label="Hủy"
+                                        />
+                                    </DialogClose>
+
+                                    <ButtonCustomized
+                                        type="submit"
+                                        className="max-w-32 bg-green-500 hover:bg-green-700"
+                                        variant="secondary"
+                                        disabled={form.formState.isSubmitting}
+                                        label={
+                                            form.formState.isSubmitting ? (
+                                                <WaitingSpinner
+                                                    variant="pinwheel"
+                                                    label="Đang tạo..."
+                                                    className="font-semibold "
+                                                    classNameLabel="font-semibold text-sm"
+                                                />
+                                            ) : (
+                                                "Lưu"
+                                            )
+                                        }
+                                    />
+                                </DialogFooter>
+                            </FormValues>
+                        </DialogContent>
+                    )}
                 </Dialog>
             </div>
-            <div className="min-w-full max-w-6xl overflow-x-auto">
+            <div className="mt-10 border rounded-lg shadow-sm h-fit min-w-full max-w-6xl overflow-x-auto">
                 <Table className='overflow-x-auto'>
                     <TableHeader>
                         <TableRow>

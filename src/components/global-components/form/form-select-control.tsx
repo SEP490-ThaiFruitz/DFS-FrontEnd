@@ -38,6 +38,7 @@ interface FormSelectControlProps<T extends FieldValues, K> {
   value?: any;
   defaultValue?: any,
   icon?: React.ReactElement;
+  require?: boolean,
 }
 
 export const FormSelectControl = <T extends FieldValues, K>({
@@ -53,7 +54,8 @@ export const FormSelectControl = <T extends FieldValues, K>({
   defaultValue,
   items = [],
   search,
-  isImage
+  isImage,
+  require,
 }: FormSelectControlProps<T, K>) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -78,7 +80,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
 
         return (
           <FormItem>
-            <FormLabel className={cn("text-text-foreground", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", require ? "after:content-['(*)'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
               {icon}
               {label}
             </FormLabel>

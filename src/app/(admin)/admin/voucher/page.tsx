@@ -22,26 +22,26 @@ function VoucherPage() {
     const [coupons, setCoupons] = useState({
         value: {
             items: [
-                { name: 'Ưu Đãi Mua Số Lượng Lớn', code: 'bulk50', discount: '50.00', discountType: 'Fixed', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-25T12:00:00+00:00' },
-                { name: 'Nhu Yếu Phẩm Hàng Tuần', code: 'weekly10', discount: '10.00', discountType: 'Percentage', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-19T12:00:00+00:00' },
-                { name: 'Ưu Đãi Đặc Biệt Tiết Kiệm Tủ Bếp', code: 'pantry25', discount: '25.00', discountType: 'Fixed', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-19T12:00:00+00:00' },
-                { name: 'Khuấy Động Sản Phẩm Tươi Sống', code: 'fresh15', discount: '15.00', discountType: 'Percentage', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-19T12:00:00+00:00' },
-                { name: 'Khuyến Mãi Giảm Giá Đặc Biệt', code: 'special30', discount: '30.00', discountType: 'Fixed', startDate: '2025-02-01T00:00:00+00:00', endDate: '2025-02-10T23:59:59+00:00' },
-                { name: 'Mua Sắm Cuối Tuần', code: 'weekend20', discount: '20.00', discountType: 'Percentage', startDate: '2025-02-03T00:00:00+00:00', endDate: '2025-02-05T23:59:59+00:00' },
-                { name: 'Giảm Giá Đơn Hàng Đầu Tiên', code: 'first5', discount: '5.00', discountType: 'Fixed', startDate: '2025-02-01T00:00:00+00:00', endDate: '2025-02-28T23:59:59+00:00' },
-                { name: 'Ưu Đãi Độc Quyền Khách VIP', code: 'vip40', discount: '40.00', discountType: 'Percentage', startDate: '2025-03-01T00:00:00+00:00', endDate: '2025-03-15T23:59:59+00:00' },
-                { name: 'Flash Sale 24H', code: 'flash24', discount: '24.00', discountType: 'Fixed', startDate: '2025-04-01T00:00:00+00:00', endDate: '2025-04-01T23:59:59+00:00' },
-                { name: 'Giảm Giá Tích Lũy', code: 'save10', discount: '10.00', discountType: 'Percentage', startDate: '2025-04-05T00:00:00+00:00', endDate: '2025-04-10T23:59:59+00:00' },
-                { name: 'Tháng 5 May Mắn', code: 'lucky5', discount: '5.00', discountType: 'Fixed', startDate: '2025-05-01T00:00:00+00:00', endDate: '2025-05-31T23:59:59+00:00' },
-                { name: 'Giảm Giá Hè Rực Rỡ', code: 'summer30', discount: '30.00', discountType: 'Percentage', startDate: '2025-06-01T00:00:00+00:00', endDate: '2025-06-15T23:59:59+00:00' },
-                { name: 'Combo Siêu Tiết Kiệm', code: 'combo25', discount: '25.00', discountType: 'Fixed', startDate: '2025-07-01T00:00:00+00:00', endDate: '2025-07-10T23:59:59+00:00' },
-                { name: 'Khuyến Mãi Tân Sinh Viên', code: 'student15', discount: '15.00', discountType: 'Percentage', startDate: '2025-08-01T00:00:00+00:00', endDate: '2025-08-31T23:59:59+00:00' },
-                { name: 'Siêu Deal Mùa Thu', code: 'fall50', discount: '50.00', discountType: 'Fixed', startDate: '2025-09-01T00:00:00+00:00', endDate: '2025-09-30T23:59:59+00:00' },
-                { name: 'Ngày Đặc Biệt 10.10', code: 'october10', discount: '10.00', discountType: 'Percentage', startDate: '2025-10-10T00:00:00+00:00', endDate: '2025-10-10T23:59:59+00:00' },
-                { name: 'Lễ Hội Giáng Sinh', code: 'xmas20', discount: '20.00', discountType: 'Fixed', startDate: '2025-12-20T00:00:00+00:00', endDate: '2025-12-25T23:59:59+00:00' },
-                { name: 'Năm Mới Giảm Giá', code: 'newyear30', discount: '30.00', discountType: 'Percentage', startDate: '2026-01-01T00:00:00+00:00', endDate: '2026-01-07T23:59:59+00:00' },
-                { name: 'Tết Nguyên Đán Rộn Ràng', code: 'tet50', discount: '50.00', discountType: 'Fixed', startDate: '2026-02-01T00:00:00+00:00', endDate: '2026-02-10T23:59:59+00:00' },
-                { name: 'Đại Tiệc Mua Sắm 11.11', code: 'single11', discount: '11.00', discountType: 'Percentage', startDate: '2026-11-11T00:00:00+00:00', endDate: '2026-11-11T23:59:59+00:00' },
+                { quantity: 0, name: 'Ưu Đãi Mua Số Lượng Lớn', code: 'bulk50', discount: '50.00', discountType: 'Fixed', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-25T12:00:00+00:00' },
+                { quantity: 0, name: 'Nhu Yếu Phẩm Hàng Tuần', code: 'weekly10', discount: '10.00', discountType: 'Percentage', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-19T12:00:00+00:00' },
+                { quantity: 0, name: 'Ưu Đãi Đặc Biệt Tiết Kiệm Tủ Bếp', code: 'pantry25', discount: '25.00', discountType: 'Fixed', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-19T12:00:00+00:00' },
+                { quantity: 2, name: 'Khuấy Động Sản Phẩm Tươi Sống', code: 'fresh15', discount: '15.00', discountType: 'Percentage', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-19T12:00:00+00:00' },
+                { quantity: 0, name: 'Khuyến Mãi Giảm Giá Đặc Biệt', code: 'special30', discount: '30.00', discountType: 'Fixed', startDate: '2025-02-01T00:00:00+00:00', endDate: '2025-02-10T23:59:59+00:00' },
+                { quantity: 0, name: 'Mua Sắm Cuối Tuần', code: 'weekend20', discount: '20.00', discountType: 'Percentage', startDate: '2025-02-03T00:00:00+00:00', endDate: '2025-02-05T23:59:59+00:00' },
+                { quantity: 10, name: 'Giảm Giá Đơn Hàng Đầu Tiên', code: 'first5', discount: '5.00', discountType: 'Fixed', startDate: '2025-02-01T00:00:00+00:00', endDate: '2025-02-28T23:59:59+00:00' },
+                { quantity: 0, name: 'Ưu Đãi Độc Quyền Khách VIP', code: 'vip40', discount: '40.00', discountType: 'Percentage', startDate: '2025-03-01T00:00:00+00:00', endDate: '2025-03-15T23:59:59+00:00' },
+                { quantity: 0, name: 'Flash Sale 24H', code: 'flash24', discount: '24.00', discountType: 'Fixed', startDate: '2025-04-01T00:00:00+00:00', endDate: '2025-04-01T23:59:59+00:00' },
+                { quantity: 0, name: 'Giảm Giá Tích Lũy', code: 'save10', discount: '10.00', discountType: 'Percentage', startDate: '2025-04-05T00:00:00+00:00', endDate: '2025-04-10T23:59:59+00:00' },
+                { quantity: 0, name: 'Tháng 5 May Mắn', code: 'lucky5', discount: '5.00', discountType: 'Fixed', startDate: '2025-05-01T00:00:00+00:00', endDate: '2025-05-31T23:59:59+00:00' },
+                { quantity: 0, name: 'Giảm Giá Hè Rực Rỡ', code: 'summer30', discount: '30.00', discountType: 'Percentage', startDate: '2025-06-01T00:00:00+00:00', endDate: '2025-06-15T23:59:59+00:00' },
+                { quantity: 0, name: 'Combo Siêu Tiết Kiệm', code: 'combo25', discount: '25.00', discountType: 'Fixed', startDate: '2025-07-01T00:00:00+00:00', endDate: '2025-07-10T23:59:59+00:00' },
+                { quantity: 0, name: 'Khuyến Mãi Tân Sinh Viên', code: 'student15', discount: '15.00', discountType: 'Percentage', startDate: '2025-08-01T00:00:00+00:00', endDate: '2025-08-31T23:59:59+00:00' },
+                { quantity: 0, name: 'Siêu Deal Mùa Thu', code: 'fall50', discount: '50.00', discountType: 'Fixed', startDate: '2025-09-01T00:00:00+00:00', endDate: '2025-09-30T23:59:59+00:00' },
+                { quantity: 0, name: 'Ngày Đặc Biệt 10.10', code: 'october10', discount: '10.00', discountType: 'Percentage', startDate: '2025-10-10T00:00:00+00:00', endDate: '2025-10-10T23:59:59+00:00' },
+                { quantity: 0, name: 'Lễ Hội Giáng Sinh', code: 'xmas20', discount: '20.00', discountType: 'Fixed', startDate: '2025-12-20T00:00:00+00:00', endDate: '2025-12-25T23:59:59+00:00' },
+                { quantity: 0, name: 'Năm Mới Giảm Giá', code: 'newyear30', discount: '30.00', discountType: 'Percentage', startDate: '2026-01-01T00:00:00+00:00', endDate: '2026-01-07T23:59:59+00:00' },
+                { quantity: 0, name: 'Tết Nguyên Đán Rộn Ràng', code: 'tet50', discount: '50.00', discountType: 'Fixed', startDate: '2026-02-01T00:00:00+00:00', endDate: '2026-02-10T23:59:59+00:00' },
+                { quantity: 0, name: 'Đại Tiệc Mua Sắm 11.11', code: 'single11', discount: '11.00', discountType: 'Percentage', startDate: '2026-11-11T00:00:00+00:00', endDate: '2026-11-11T23:59:59+00:00' },
             ],
             pageIndex: 1,
             pageSize: 10,
@@ -82,10 +82,13 @@ function VoucherPage() {
         console.log({ data })
     };
 
-    const getCouponStatus = (startDate: string, endDate: string) => {
+    const getCouponStatus = (quantity: number, startDate: string, endDate: string) => {
         const now = new Date();
         const start = new Date(startDate);
         const end = new Date(endDate);
+
+        if (quantity === 0)
+            return { status: 'Đã hết', color: 'bg-gray-50 text-gray-600' };
 
         if (now < start) {
             return { status: 'Chuẩn bị diễn ra', color: 'bg-yellow-50 text-yellow-600' };
@@ -94,7 +97,6 @@ function VoucherPage() {
         } else if (now > end) {
             return { status: 'Đã hết hạn', color: 'bg-red-50 text-red-600' };
         }
-        return { status: 'Hết hạn', color: 'bg-gray-50 text-gray-600' };
     };
     return (
         <div className='m-10'>
@@ -233,7 +235,7 @@ function VoucherPage() {
                     </TableHeader>
                     <TableBody>
                         {coupons.value.items.map((coupon) => {
-                            const { status, color } = getCouponStatus(coupon.startDate, coupon.endDate);
+                            const { status, color } = getCouponStatus(coupon.quantity, coupon.startDate, coupon.endDate);
                             return <TableRow key={coupon.code}>
                                 <TableCell className="font-bold">{coupon.name}</TableCell>
                                 <TableCell>{coupon.code}</TableCell>

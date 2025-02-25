@@ -29,9 +29,6 @@ const fetching = async (endpoint: string, params?: Record<string, any>) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`
     );
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
 
     const data = await response.json();
     return data;

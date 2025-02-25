@@ -4,38 +4,49 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Trash2 } from 'lucide-react';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteDialogProps {
     name: string,
     deleteFunction: (id: string) => Promise<{
         success: boolean;
         message: string;
-    } | undefined>;
+    }>;
     isOpen: boolean;
-    onClose: (value: boolean) => void
+    onClose: () => void
     id: string,
-    isIcon?: boolean
+    isIcon?: boolean,
+    refreshKey?: [string, string][]
 }
 
 
-export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen, isIcon }: Readonly<DeleteDialogProps>) {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const onSubmit = async () => {
-        setIsSubmitting(true)
-        try {
-            const response = await deleteFunction(id);
-            if (response?.success) {
-                toast.success(response.message)
-                onClose(false);
-            } else {
-                toast.error(response?.message)
+export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen, isIcon, refreshKey }: Readonly<DeleteDialogProps>) {
+    const queryClient = useQueryClient();
+    const { isPending: isSubmitting, mutateAsync: deleteItem } = useMutation({
+        mutationFn: async () => {
+            try {
+                const res = await deleteFunction(id)
+                if (!res.success)
+                    throw new Error(res.message);
+                return res.message;
+            } catch (error) {
+                console.log(error);
+                throw new Error(error instanceof Error ? error.message : 'An unknown error occurred');
             }
-        } catch (error) {
-            console.log({ error });
+        },
+        onSuccess: (message: string) => {
+            onClose();
+            toast.success(message)
+            Promise.all(
+                refreshKey?.map((key: [string, string]) => {
+                    return queryClient.invalidateQueries({ queryKey: key });
+                }) || []
+            )
+        },
+        onError: (error) => {
+            toast.error(error.message)
         }
-
-        setIsSubmitting(false)
-    };
+    });
 
     return (<Dialog open={isOpen} onOpenChange={onClose}>
         {isIcon && <DialogTrigger asChild>
@@ -54,7 +65,7 @@ export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen, isIcon
                 <DialogTrigger asChild>
                     <Button variant="outline" type="button">Hủy</Button>
                 </DialogTrigger>
-                <Button disabled={isSubmitting} onClick={onSubmit} variant="destructive" type="submit">{isSubmitting ? <WaitingSpinner
+                <Button disabled={isSubmitting} onClick={() => deleteItem()} variant="destructive" type="submit">{isSubmitting ? <WaitingSpinner
                     variant="pinwheel"
                     label="Đang xóa..."
                     className="font-semibold "

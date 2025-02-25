@@ -12,6 +12,9 @@ import {
   TicketPercent,
   icons,
   GalleryHorizontal,
+  BookOpen,
+  BookOpenText,
+  BookKey,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -70,6 +73,23 @@ const data = {
           url: "/admin/product/create",
         },
       ],
+    },
+    {
+      title: "Bài viết",
+      url: "/admin/blog",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Loại bài viết",
+          url: "/admin/blog/category",
+          icon: BookKey
+        },
+        {
+          title: "Bài viết",
+          url: "/admin/blog",
+          icon: BookOpenText
+        },
+      ]
     },
     {
       title: "Cài đặt",

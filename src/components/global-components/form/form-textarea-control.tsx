@@ -25,7 +25,8 @@ interface FormTextareaControlProps<T extends FieldValues, K> {
   value?: any;
   defaultValue?: any,
   icon?: React.ReactElement;
-  row?: number
+  row?: number,
+  require?: boolean
 }
 
 export const FormTextareaControl = <T extends FieldValues, K>({
@@ -39,7 +40,8 @@ export const FormTextareaControl = <T extends FieldValues, K>({
   value,
   icon,
   row,
-  defaultValue
+  defaultValue,
+  require
 }: FormTextareaControlProps<T, K>) => {
   // console.log({ value });
   return (
@@ -54,7 +56,7 @@ export const FormTextareaControl = <T extends FieldValues, K>({
 
         return (
           <FormItem>
-            <FormLabel className={cn("text-text-foreground", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", require ? "after:content-['(*)'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
               {icon}
               {label}
             </FormLabel>

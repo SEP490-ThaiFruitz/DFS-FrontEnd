@@ -25,7 +25,8 @@ export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
     resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
-
+  const registerDialog = useRegisterDialog();
+  const loginDialog = useLoginDialog();
   const { setToken } = useAuth();
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
@@ -37,25 +38,18 @@ export const LoginDialog = () => {
         password: values.password,
       });
 
-      console.log({ response });
-
       if (response?.isSuccess) {
-        // loginDialog.onClose();
-        toast.success("Login successful");
+        toast.success("Đăng nhập thành công");
         setToken(response.token as any);
-        return;
+        window.location.href = "/";
+      } else {
+        toast.error("Đăng nhập thất bại");
       }
 
-      toast.error("Login failed");
-
-      console.log({ response });
     } catch (error) {
       console.log({ error });
     }
   };
-
-  const registerDialog = useRegisterDialog();
-  const loginDialog = useLoginDialog();
 
   const title = (
     <div className="text-center">
@@ -64,12 +58,12 @@ export const LoginDialog = () => {
   );
 
   const trigger = (
-    <div
+    <button
       onClick={loginDialog.onOpen}
       className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
     >
       <LogIn className="size-4 mr-1" /> Đăng nhập
-    </div>
+    </button>
   );
 
   const toggle = () => {
@@ -102,14 +96,14 @@ export const LoginDialog = () => {
         <DialogFooter>
           <ButtonCustomized
             type="submit"
-            className="max-w-32 bg-sky-500 hover:bg-sky-700"
+            className="max-w-48 bg-green-500 hover:bg-green-700"
             variant="secondary"
             disabled={form.formState.isSubmitting}
             label={
               form.formState.isSubmitting ? (
                 <WaitingSpinner
                   variant="pinwheel"
-                  label="Đang đăng kí..."
+                  label="Đang đăng nhập..."
                   className="font-semibold "
                   classNameLabel="font-semibold text-sm"
                 />
@@ -118,25 +112,17 @@ export const LoginDialog = () => {
               )
             }
           />
-
-          {/* <ButtonCustomized
-            type="submit"
-            className="w-32 bg-sky-500 hover:bg-sky-700"
-            variant="secondary"
-            label="Login"
-          /> */}
         </DialogFooter>
 
         <div className="my-2">
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
             Bạn chưa có tài khoản?{" "}
-            <h3
-              // onClick={handleOpenRegister}
+            <button
               onClick={toggle}
               className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
             >
               Đăng kí ở đây
-            </h3>
+            </button>
           </h2>
         </div>
       </FormValues>

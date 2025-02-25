@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useState, type ComponentProps } from "react";
+import { useEffect, useState, type ComponentProps } from "react";
 import { Logo } from "./logo";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
@@ -11,11 +11,17 @@ import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
 import { ApiResponse } from "@/types/types";
 import Link from "next/link";
+import { useAuth } from "@/providers/auth-provider";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories")
   const [active, setActive] = useState<string | null>(null);
-
+  const { user } = useAuth();
+  useEffect(() => {
+    if (user?.Role !== "Customer") {
+      window.location.href = "/admin"
+    } 
+  }, [user])
   const styleClassName =
     "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 

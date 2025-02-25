@@ -55,12 +55,12 @@ export const RegisterDialog = () => {
   );
 
   const trigger = (
-    <div
+    <button
       onClick={registerDialog.onOpen}
       className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
     >
       <UserPlus className="size-4 mr-1" /> Đăng kí
-    </div>
+    </button>
   );
 
   const body = (
@@ -93,7 +93,7 @@ export const RegisterDialog = () => {
         <DialogFooter>
           <ButtonCustomized
             type="submit"
-            className="max-w-32 bg-sky-500 hover:bg-sky-700"
+            className="max-w-48 bg-sky-500 hover:bg-sky-700"
             variant="secondary"
             label={
               form.formState.isSubmitting ? (
@@ -112,14 +112,13 @@ export const RegisterDialog = () => {
 
         <div className="my-2">
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
-            Bạn đã có tài khoản?
-            <h3
-              // onClick={handleOpenLogin}
+            Bạn đã có tài khoản? {" "}
+            <button
               onClick={toggle}
               className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti text-violet-500"
             >
               Đăng nhập
-            </h3>
+            </button>
           </h2>
         </div>
       </FormValues>
@@ -131,7 +130,6 @@ export const RegisterDialog = () => {
       content={body}
       open={registerDialog.isOpen}
       onClose={registerDialog.onClose}
-      // open={isRegisterOpen}
       asChild
       trigger={trigger}
       title={title}

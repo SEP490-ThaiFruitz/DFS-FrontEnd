@@ -12,9 +12,10 @@ interface PaginationCustomComponentProps {
   totalItems: number;
   itemsPerPage: number;
   onChangePageIndex: (pageNumber: number) => void;
+  hidden?: boolean
 }
 
-const PaginationCustom = ({ totalItems, itemsPerPage, onChangePageIndex }: PaginationCustomComponentProps) => {
+const PaginationCustom = ({ totalItems, itemsPerPage, onChangePageIndex, hidden }: PaginationCustomComponentProps) => {
   // State to track the current page
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -93,18 +94,22 @@ const PaginationCustom = ({ totalItems, itemsPerPage, onChangePageIndex }: Pagin
   };
 
   return (
-    <div className="my-5 flex items-center justify-between gap-8">
-      <p>
-        Hiển thị {startItem} đến {endItem} trong số {totalItems}
-      </p>
-      <div>
-        <Pagination>
-          <PaginationContent>
-            {renderPaginationLinks()}
-          </PaginationContent>
-        </Pagination>
-      </div>
-    </div>
+    <>
+      {totalPages > 0 && (
+        <div className="my-5 flex items-center justify-between gap-8">
+          <p className={hidden ? "hidden" : "block"}>
+            Hiển thị {startItem} đến {endItem} trong số {totalItems}
+          </p>
+          <div>
+            <Pagination>
+              <PaginationContent>
+                {renderPaginationLinks()}
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

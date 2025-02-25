@@ -235,7 +235,7 @@ function VoucherPage() {
                     </TableHeader>
                     <TableBody>
                         {coupons.value.items.map((coupon) => {
-                            const { status, color } = getCouponStatus(coupon.quantity, coupon.startDate, coupon.endDate);
+                            const colorStatus: { status: string, color: string } | undefined = getCouponStatus(coupon.quantity, coupon.startDate, coupon.endDate);
                             return <TableRow key={coupon.code}>
                                 <TableCell className="font-bold">{coupon.name}</TableCell>
                                 <TableCell>{coupon.code}</TableCell>
@@ -250,8 +250,8 @@ function VoucherPage() {
                                     {coupon.discountType === "Percentage" ? formatNumberWithUnit(coupon.discount, "%") : formatVND(coupon.discount)}
                                 </TableCell>
                                 <TableCell>
-                                    <div className={`w-fit py-1 px-2 rounded-lg ${color}`}>
-                                        {status}
+                                    <div className={`w-fit py-1 px-2 rounded-lg ${colorStatus?.color}`}>
+                                        {colorStatus?.status}
                                     </div>
                                 </TableCell>
                                 <TableCell>
@@ -289,9 +289,9 @@ function VoucherPage() {
                 </Table>
             </div>
             <PaginationCustom itemsPerPage={pageSize} totalItems={coupons.value.totalCount} onChangePageIndex={setPageIndex} />
-            <DeleteDialog id={coupon?.code ?? ""} isOpen={deleteCoupon} onClose={() => setDeleteCoupon(!deleteCoupon)} name={''} deleteFunction={function (id: string): Promise<{ success: boolean; message: string } | undefined> {
+            {/* <DeleteDialog id={coupon?.code ?? ""} isOpen={deleteCoupon} onClose={() => setDeleteCoupon(!deleteCoupon)} name={''} deleteFunction={function (id: string): Promise<{ success: boolean; message: string } | undefined> {
                 throw new Error('Function not implemented.')
-            }} />
+            }} /> */}
         </div>
     )
 }

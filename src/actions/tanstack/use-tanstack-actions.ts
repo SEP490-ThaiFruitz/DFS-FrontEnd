@@ -29,7 +29,7 @@ const fetching = async (endpoint: string, params?: Record<string, any>) => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`
     );
-
+    console.log(response)
     const data = await response.json();
     return data;
   } catch (error) {

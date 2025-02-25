@@ -5,9 +5,7 @@ import { FormInputControl } from "@/components/global-components/form/form-input
 import { FormPassword } from "@/components/global-components/form/form-password";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { Logo } from "@/components/global-components/logo";
-import { NavbarLink } from "@/components/global-components/navigate";
 import {
-  LoginSafeTypes,
   LoginSafeTypesHaveEmail,
 } from "@/zod-safe-types/auth-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ButtonCustomized } from "../_custom-button/button-customized";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
-import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { loginAction } from "@/actions/login";
 import { useRegisterDialog } from "@/hooks/use-register-dialog";
@@ -70,7 +68,7 @@ export const LoginDialog = () => {
       onClick={loginDialog.onOpen}
       className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
     >
-      <LogIn className="size-4 mr-1" /> Login
+      <LogIn className="size-4 mr-1" /> Đăng nhập
     </div>
   );
 
@@ -84,13 +82,6 @@ export const LoginDialog = () => {
   const body = (
     <div>
       <FormValues form={form} onSubmit={onSubmit}>
-        {/* <FormInputControl
-          form={form}
-          name="phone"
-          disabled={form.formState.isSubmitting}
-          label="Phone"
-          placeholder="+84..."
-        /> */}
 
         <FormInputControl
           form={form}
@@ -105,18 +96,10 @@ export const LoginDialog = () => {
           name="password"
           disabled={form.formState.isSubmitting}
           label="Password"
-          placeholder="your password"
+          placeholder="Mật khẩu"
         />
 
         <DialogFooter>
-          <DialogClose asChild>
-            <ButtonCustomized
-              className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-              variant="outline"
-              label="Cancel"
-            />
-          </DialogClose>
-
           <ButtonCustomized
             type="submit"
             className="max-w-32 bg-sky-500 hover:bg-sky-700"
@@ -126,7 +109,7 @@ export const LoginDialog = () => {
               form.formState.isSubmitting ? (
                 <WaitingSpinner
                   variant="pinwheel"
-                  label="Registering..."
+                  label="Đang đăng kí..."
                   className="font-semibold "
                   classNameLabel="font-semibold text-sm"
                 />
@@ -146,13 +129,13 @@ export const LoginDialog = () => {
 
         <div className="my-2">
           <h2 className="flex font-semibold items-center justify-center gap-x-1">
-            Already have an account?{" "}
+            Bạn chưa có tài khoản?{" "}
             <h3
               // onClick={handleOpenRegister}
               onClick={toggle}
               className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
             >
-              Register here
+              Đăng kí ở đây
             </h3>
           </h2>
         </div>
@@ -171,7 +154,7 @@ export const LoginDialog = () => {
       open={loginDialog.isOpen}
       onClose={loginDialog.onClose}
       // onOpen={onOpenLogin}
-      description="Lets login to get sale!"
+      description="Hãy đăng nhập để mua hàng!"
     />
   );
 };

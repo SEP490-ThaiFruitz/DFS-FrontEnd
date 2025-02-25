@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { TextShimmerWave } from "../custom/_customize-text/text-shummer-wave";
+import Link from "next/link";
 
 interface LogoProps {
   classNameLabel?: string;
@@ -13,7 +14,7 @@ export const Logo = ({
   width = 50,
 }: LogoProps) => {
   return (
-    <div className="flex flex-col items-center ">
+    <Link href={"/"} className="flex flex-col items-center ">
       <Image
         src="/images/dried-fruit.webp"
         alt="Picture of the author"
@@ -34,6 +35,6 @@ export const Logo = ({
           ThaiFruitz
         </TextShimmerWave>
       </h1>
-    </div>
+    </Link>
   );
 };

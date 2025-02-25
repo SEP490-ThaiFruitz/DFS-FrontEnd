@@ -3,13 +3,17 @@
 import { cn } from "@/lib/utils";
 import { useState, type ComponentProps } from "react";
 import { Logo } from "./logo";
-import { LogIn, MenuIcon } from "lucide-react";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
 import { ShoppingBagSheet } from "../custom/_custom-sheet/shopping-bag-sheet";
 import { HoveredLink, Menu, MenuItem, ProductItem } from "../ui/navbar-menu";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
+import { ApiResponse } from "@/types/types";
+import Link from "next/link";
 
 export const Navigate = () => {
+  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories")
   const [active, setActive] = useState<string | null>(null);
 
   const styleClassName =
@@ -45,7 +49,7 @@ export const Navigate = () => {
     <div
       className={cn(
         "fixed top-0 inset-x-0 z-50 h-16 w-full",
-        "w-full rounded-none list-none  "
+        "w-full rounded-none list-none shadow-sm"
       )}
     >
       <Menu
@@ -119,14 +123,22 @@ export const Navigate = () => {
             </div>
           </MenuItem>
 
-          <MenuItem
-            setActive={setActive}
-            active={active}
-            item="Control"
-            className={styleClassName}
-          >
-            <HoveredLink href="/individual">Individual</HoveredLink>
-          </MenuItem>
+          <Link href="/blogs">
+            <MenuItem
+              setActive={setActive}
+              active={active}
+              item="Bài viết"
+              className={styleClassName}
+            >
+              <div className="flex flex-col space-y-4 text-sm">
+                {blogCategories?.value?.map((item: BlogCategory, index) => (
+                  <HoveredLink key={index + 1} href={`/blogs?category=${item.name}`}>
+                    {item.name}
+                  </HoveredLink>
+                ))}
+              </div>
+            </MenuItem>
+          </Link>
         </div>
 
         <div>

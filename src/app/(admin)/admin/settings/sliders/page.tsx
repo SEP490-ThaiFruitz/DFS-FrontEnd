@@ -191,12 +191,10 @@ function SliderPage() {
                     </TableBody>
                 </Table>
             </div>
-            <DeleteDialog id={slider?.title ?? ""} onClose={() => {
+            {/* <DeleteDialog id={slider?.title ?? ""} onClose={() => {
                 setSlider(undefined);
                 setIsOpenDelete(false);
-            }} name={slider?.title ?? ""} deleteFunction={function (id: string): Promise<{ success: boolean; message: string; } | undefined> {
-                throw new Error("Function not implemented.");
-            }} isOpen={isOpenDelete} />
+            }} name={slider?.title ?? ""} deleteFunction={} isOpen={isOpenDelete} /> */}
         </div>
     )
 }

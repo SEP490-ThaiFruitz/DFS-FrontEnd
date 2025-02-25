@@ -11,19 +11,29 @@ export const LoginSafeTypes = z.object({
   phone: z.string().refine(isValidPhone, {
     message: "Số điện thoại không hợp lệ",
   }),
-  password: z.string().min(5).max(32),
+  password: z.string({
+    required_error: "Vui lòng nhập mật khẩu"
+  }).min(5).max(32),
 });
 
 export const LoginSafeTypesHaveEmail = z.object({
   // phone: z.string().refine(isValidPhone, {
   //   message: "Số điện thoại không hợp lệ",
   // }),
-  email: z.string().email(),
-  password: z.string().min(5).max(32),
+  email: z.string({
+    required_error: "Vui lòng nhập email"
+  }).email({
+    message: "Email không hợp lệ"
+  }),
+  password: z.string({
+    required_error: "Vui lòng nhập mật khẩu"
+  }).min(5).max(32),
 });
 
 export const RegisterSafeTypes = LoginSafeTypes.extend({
-  confirmPassword: z.string().min(5).max(32),
+  confirmPassword: z.string({
+    required_error: "Vui lòng nhập xác nhận mật khẩu"
+  }).min(5).max(32),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Xác nhận mật khẩu không khớp",
   path: ["confirmPassword"],

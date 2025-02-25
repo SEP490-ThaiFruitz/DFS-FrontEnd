@@ -44,11 +44,11 @@ function BlogDetailPage() {
                         </div>
                         <div className="grid grid-cols-2">
                             <p className="font-semibold text-gray-600">Ngày tạo:</p>
-                            <p className="text-gray-800">{formatTimeVietNam(blog?.value?.createdOnUtc)}</p>
+                            <p className="text-gray-800">{formatTimeVietNam(new Date(blog!.value!.createdOnUtc))}</p>
                         </div>
                         <div className="grid grid-cols-2">
                             <p className="font-semibold text-gray-600">Ngày sửa:</p>
-                            <p className="text-gray-800">{formatTimeVietNam(blog?.value?.modifiedOnUtc)}</p>
+                            <p className="text-gray-800">{formatTimeVietNam(new Date(blog!.value!.modifiedOnUtc))}</p>
                         </div>
                         <div>
                             <p className="font-semibold text-gray-600">Nội dung:</p>

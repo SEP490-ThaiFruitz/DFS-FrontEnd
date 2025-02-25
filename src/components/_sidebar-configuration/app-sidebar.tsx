@@ -7,10 +7,8 @@ import {
   Command,
   GalleryVerticalEnd,
   LayoutList,
-  PieChart,
   TableProperties,
   TicketPercent,
-  icons,
   GalleryHorizontal,
   BookOpen,
   BookOpenText,
@@ -20,7 +18,6 @@ import {
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
 import { NavProjects } from "@/components/_sidebar-configuration/nav-projects";
 import { NavUser } from "@/components/_sidebar-configuration/nav-user";
-import { TeamSwitcher } from "@/components/_sidebar-configuration/team-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -28,9 +25,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { title } from "process";
-import { url } from "inspector";
 import { Logo } from "../global-components/logo";
+import { useAuth } from "@/providers/auth-provider";
 
 // This is sample data.
 const data = {
@@ -129,7 +125,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

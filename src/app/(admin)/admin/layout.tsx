@@ -38,10 +38,7 @@ const AdminRouteLayout = async ({
 
             <div className="flex flex-col">
               {children}
-              {/* {auth} */}
             </div>
-
-            {/* <div>{test}</div> */}
           </SidebarInset>
         </SidebarProvider>
       ) : (

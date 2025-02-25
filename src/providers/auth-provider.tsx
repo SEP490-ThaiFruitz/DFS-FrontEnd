@@ -15,6 +15,7 @@ export type DecodeData = {
   Id: string;
   Name: string;
   Email: string;
+  Avatar: string;
   Role: string;
   exp: number;
   iss: string;

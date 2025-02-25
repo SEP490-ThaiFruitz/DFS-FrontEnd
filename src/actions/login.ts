@@ -70,3 +70,4 @@ export const loginAction = async <TValues>(values: TValues) => {
 export const registerAction = async <TValues>(values: TValues) => {
   console.log(values);
 };
+

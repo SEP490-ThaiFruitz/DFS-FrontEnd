@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useEffect, useState, type ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 import { Logo } from "./logo";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
@@ -11,17 +11,96 @@ import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
 import { ApiResponse } from "@/types/types";
 import Link from "next/link";
-import { useAuth } from "@/providers/auth-provider";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Bell, Boxes, LogOut, MapPinHouse, Search, UserRoundPen } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
+import { Badge } from "../ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Separator } from "@radix-ui/react-separator";
+import { Input } from "../ui/input";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories")
   const [active, setActive] = useState<string | null>(null);
-  const { user } = useAuth();
-  useEffect(() => {
-    if (user?.Role !== "Customer") {
-      window.location.href = "/admin"
-    } 
-  }, [user])
+  const user = {
+    Id: "00000000-0000-0000-0000-000000000001",
+    Name: "John Doe",
+    Email: "admin@gmail.com",
+    Phone: "0987654457",
+    Gender: "Male",
+    Birthday: "1990-01-01",
+    Avatar: "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i",
+    Point: 0,
+    Role: "Administrator"
+  }
+
+  const notification = [
+    {
+      name: 'John Doe',
+      avatar: 'https://github.com/shadcn.png',
+      title: 'Administrator',
+      content: 'The React Framework – created and maintained by @vercel.',
+      status: 'Unread',
+    },
+    {
+      name: 'Jane Smith',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith1',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith5',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith6',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith7',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith8',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith8',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith8',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    }, {
+      name: 'Jane Smith8',
+      avatar: 'https://example.com/jane.png',
+      title: 'Manager',
+      content: 'Building scalable web solutions.',
+      status: 'Read',
+    },
+  ];
+
   const styleClassName =
     "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 
@@ -67,25 +146,19 @@ export const Navigate = () => {
         </div>
 
         <div>
+          <Link href="/">
+            <MenuItem
+              setActive={setActive}
+              active={active}
+              item="Trang chủ"
+              className={styleClassName}
+            />
+          </Link>
+
           <MenuItem
             setActive={setActive}
             active={active}
-            item="Services"
-            className={styleClassName}
-          >
-            <div className="flex flex-col space-y-4 text-sm">
-              <HoveredLink href="/web-dev">Web Development</HoveredLink>
-              <HoveredLink href="/interface-design">
-                Interface Design
-              </HoveredLink>
-              <HoveredLink href="/seo">Search Engine Optimization</HoveredLink>
-              <HoveredLink href="/branding">Branding</HoveredLink>
-            </div>
-          </MenuItem>
-          <MenuItem
-            setActive={setActive}
-            active={active}
-            item="Products"
+            item="Sản phẩm"
             className={styleClassName}
           >
             <div className="  text-sm grid grid-cols-2 gap-10 p-4">
@@ -118,7 +191,20 @@ export const Navigate = () => {
           <MenuItem
             setActive={setActive}
             active={active}
-            item="Pricing"
+            item="Quà tặng"
+            className={styleClassName}
+          >
+            <div className="flex flex-col space-y-4 text-sm">
+              <HoveredLink href="/hobby">Hobby</HoveredLink>
+              <HoveredLink href="/individual">Individual</HoveredLink>
+              <HoveredLink href="/team">Team</HoveredLink>
+              <HoveredLink href="/enterprise">Enterprise</HoveredLink>
+            </div>
+          </MenuItem>
+          <MenuItem
+            setActive={setActive}
+            active={active}
+            item="Chính sách"
             className={styleClassName}
           >
             <div className="flex flex-col space-y-4 text-sm">
@@ -147,13 +233,151 @@ export const Navigate = () => {
           </Link>
         </div>
 
-        <div>
-          <LoginDialog />
-          <RegisterDialog />
+        <div className="flex items-center">
+          <HoverCard>
+            <HoverCardTrigger>
+              <div className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
+                <div className="relative">
+                  <Bell className="size-4 mr-1 relative" />
+                  <span
+                    className="
+            absolute
+            -top-1
+            -right-2
+            w-4
+            h-4
+            bg-primary-500
+            text-slate-900
+            rounded-full
+            flex items-center justify-center
+            "
+                  >
+                    0
+                  </span>
+                </div>
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent className="min-w-96 max-h-[600px] overflow-y-auto scroll-smooth">
+              <p className="font-bold mb-2">Thông báo</p>
+              <Tabs defaultValue="all">
+                <TabsList className="ml-auto my-4">
+                  <TabsTrigger
+                    value="all"
+                    className="text-zinc-600 dark:text-zinc-200"
+                  >
+                    Tất cả
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="unread"
+                    className="text-zinc-600 dark:text-zinc-200"
+                  >
+                    Chưa đọc
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="all" className="m-0">
+                  {notification.map((_) => (
+                    <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                      <Avatar>
+                        <AvatarImage src={user.Avatar} alt={`${_.name}'s avatar`} />
+                        <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
+                          {_.title} + {" "}
+                          {_.content}
+
+                        </h4>
+
+                      </div>
+                      <Badge
+                        variant={_.status === 'Online' ? 'default' : 'secondary'}
+                        className="mt-2"
+                      >
+                        {_.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </TabsContent>
+                <TabsContent value="unread" className="m-0">
+                  {notification.map((_) => (
+                    <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                      <Avatar>
+                        <AvatarImage src={user.Avatar} alt={`${_.name}'s avatar`} />
+                        <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
+                          {_.title} + {" "}
+                          {_.content}
+
+                        </h4>
+
+                      </div>
+                      <Badge
+                        variant={_.status === 'Online' ? 'default' : 'secondary'}
+                        className="mt-2"
+                      >
+                        {_.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </TabsContent>
+              </Tabs>
+
+              <div className="mt-2 text-center">
+                <Button className="inline-block" size="sm">Xem thêm</Button>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
           <ShoppingBagSheet />
+          {user ? <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-12 w-12 rounded-full">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={user.Avatar ?? "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i.png"} alt={user.Name} />
+                  <AvatarFallback>SC</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user.Name}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.Email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <Link href={"/profile"}>
+                  <DropdownMenuItem className="hover:cursor-pointer">
+                    <UserRoundPen />
+                    Hồ sơ
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuItem className="hover:cursor-pointer">
+                  <MapPinHouse />
+                  Địa chỉ
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:cursor-pointer">
+                  <Boxes />
+                  Đơn hàng
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="hover:cursor-pointer">
+                <LogOut />
+                Đăng xuất
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> : <>
+            <LoginDialog />
+            <RegisterDialog />
+          </>}
         </div>
 
-        {/* <div /> */}
       </Menu>
     </div>
   );

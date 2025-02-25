@@ -7,6 +7,7 @@ import { FormPassword } from "@/components/global-components/form/form-password"
 import { FormValues } from "@/components/global-components/form/form-values";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
+import { useAuth } from "@/providers/auth-provider";
 import { LoginSafeTypesHaveEmail } from "@/zod-safe-types/auth-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -18,13 +19,15 @@ export const AdminFormLogin = () => {
     resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
 
+  const { setToken } = useAuth();
+
   const { isOpen, onOpen, onChange } = useLoginDialog();
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
     try {
       console.log({ values });
 
-      const response = await loginAction<{
+      const response: any = await loginAction<{
         username: string;
         password: string;
       }>({
@@ -32,8 +35,12 @@ export const AdminFormLogin = () => {
         password: values.password,
       });
 
-      if (response.success) {
+      console.log({ response });
+
+      if (response?.isSuccess) {
         toast.success("Login successfully");
+
+        setToken(response.token as any);
 
         return;
       }

@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { QueryProvider } from "@/providers/query-client";
+import { AuthProvider } from "@/providers/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,11 +40,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          <NuqsAdapter>
-            <Toaster richColors position="top-right" />
-            {children}
-            <FloatingButton />
-          </NuqsAdapter>
+          <AuthProvider>
+            <NuqsAdapter>
+              <Toaster richColors position="top-right" />
+              {children}
+              <FloatingButton />
+            </NuqsAdapter>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

@@ -20,20 +20,35 @@ import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { loginAction } from "@/actions/login";
 import { useRegisterDialog } from "@/hooks/use-register-dialog";
+import { toast } from "sonner";
+import { useAuth } from "@/providers/auth-provider";
 
 export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
     resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
 
+  const { setToken } = useAuth();
+
   const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
     try {
       console.log({ values });
 
-      const response = await loginAction({
+      const response: any = await loginAction({
         username: values.email,
-        ...values,
+        password: values.password,
       });
+
+      console.log({ response });
+
+      if (response?.isSuccess) {
+        // loginDialog.onClose();
+        toast.success("Login successful");
+        setToken(response.token as any);
+        return;
+      }
+
+      toast.error("Login failed");
 
       console.log({ response });
     } catch (error) {
@@ -116,7 +131,7 @@ export const LoginDialog = () => {
                   classNameLabel="font-semibold text-sm"
                 />
               ) : (
-                "Register"
+                "Đăng nhập"
               )
             }
           />

@@ -5,9 +5,7 @@ import { FormInputControl } from "@/components/global-components/form/form-input
 import { FormPassword } from "@/components/global-components/form/form-password";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { Logo } from "@/components/global-components/logo";
-import {
-  LoginSafeTypesHaveEmail,
-} from "@/zod-safe-types/auth-safe-types";
+import { LoginSafeTypesHaveEmail } from "@/zod-safe-types/auth-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -41,11 +39,10 @@ export const LoginDialog = () => {
       if (response?.isSuccess) {
         toast.success("Đăng nhập thành công");
         setToken(response.token as any);
-        window.location.href = "/";
+        // window.location.href = "/";
       } else {
         toast.error("Đăng nhập thất bại");
       }
-
     } catch (error) {
       console.log({ error });
     }
@@ -76,7 +73,6 @@ export const LoginDialog = () => {
   const body = (
     <div>
       <FormValues form={form} onSubmit={onSubmit}>
-
         <FormInputControl
           form={form}
           name="email"
@@ -93,10 +89,17 @@ export const LoginDialog = () => {
           placeholder="Mật khẩu"
         />
 
-        <DialogFooter>
+        <DialogFooter className="mt-8">
+          <ButtonCustomized
+            className="w-32 bg-neutral-200 hover:bg-neutral-300 text-slate-900"
+            variant="outline"
+            label="Đóng"
+            onClick={loginDialog.onClose}
+          />
+
           <ButtonCustomized
             type="submit"
-            className="max-w-48 bg-green-500 hover:bg-green-700"
+            className="w-auto min-w-32 bg-sky-500 hover:bg-sky-700 hover:font-semibold duration-300 transition"
             variant="secondary"
             disabled={form.formState.isSubmitting}
             label={
@@ -113,19 +116,18 @@ export const LoginDialog = () => {
             }
           />
         </DialogFooter>
-
-        <div className="my-2">
-          <h2 className="flex font-semibold items-center justify-center gap-x-1">
-            Bạn chưa có tài khoản?{" "}
-            <button
-              onClick={toggle}
-              className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
-            >
-              Đăng kí ở đây
-            </button>
-          </h2>
-        </div>
       </FormValues>
+      <div className="my-6">
+        <h2 className="flex font-semibold items-center justify-center gap-x-1">
+          Bạn chưa có tài khoản?{" "}
+          <button
+            onClick={toggle}
+            className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti  text-violet-500"
+          >
+            Đăng kí ở đây
+          </button>
+        </h2>
+      </div>
     </div>
   );
 
@@ -135,11 +137,8 @@ export const LoginDialog = () => {
       asChild
       trigger={trigger}
       title={title}
-      // open={isLoginOpen}
-
       open={loginDialog.isOpen}
       onClose={loginDialog.onClose}
-      // onOpen={onOpenLogin}
       description="Hãy đăng nhập để mua hàng!"
     />
   );

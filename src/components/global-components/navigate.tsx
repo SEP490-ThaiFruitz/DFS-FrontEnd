@@ -170,7 +170,7 @@ export const Navigate = () => {
 
     <div
       className={cn(
-        "fixed top-0 inset-x-0 z-50 h-16 w-full",
+        "fixed top-0 inset-x-0 z-50 h-16 w-full shadow-lg backdrop-blur-md bg-neutral-100/50 dark:bg-neutral-800/50 rounded-b-2xl",
         "w-full rounded-none list-none shadow-sm"
       )}
     >

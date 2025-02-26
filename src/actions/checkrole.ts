@@ -21,7 +21,7 @@ export enum ROLES {
 export const checkRole = async (role: string) => {
   const token: any = await getToken();
 
-  console.log({ tokenAdminLayout: token });
+  // console.log({ tokenAdminLayout: token });
 
   if (!token?.accessToken) {
     return null;

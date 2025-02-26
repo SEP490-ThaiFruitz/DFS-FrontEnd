@@ -14,14 +14,15 @@ import Link from "next/link";
 import { useAuth } from "@/providers/auth-provider";
 
 export const Navigate = () => {
-  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories")
+  const { data: blogCategories } =
+    useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories");
   const [active, setActive] = useState<string | null>(null);
   const { user } = useAuth();
-  useEffect(() => {
-    if (user?.Role !== "Customer") {
-      window.location.href = "/admin"
-    } 
-  }, [user])
+  // useEffect(() => {
+  //   if (user?.Role !== "Customer") {
+  //     window.location.href = "/admin"
+  //   }
+  // }, [user])
   const styleClassName =
     "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 
@@ -138,7 +139,10 @@ export const Navigate = () => {
             >
               <div className="flex flex-col space-y-4 text-sm">
                 {blogCategories?.value?.map((item: BlogCategory, index) => (
-                  <HoveredLink key={index + 1} href={`/blogs?category=${item.name}`}>
+                  <HoveredLink
+                    key={index + 1}
+                    href={`/blogs?category=${item.name}`}
+                  >
                     {item.name}
                   </HoveredLink>
                 ))}

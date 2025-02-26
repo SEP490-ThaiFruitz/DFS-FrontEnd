@@ -40,23 +40,24 @@ import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Separator } from "@radix-ui/react-separator";
 import { Input } from "../ui/input";
+import { useAuth } from "@/providers/auth-provider";
 
 export const Navigate = () => {
   const { data: blogCategories } =
     useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories");
   const [active, setActive] = useState<string | null>(null);
-  const user = {
-    Id: "00000000-0000-0000-0000-000000000001",
-    Name: "John Doe",
-    Email: "admin@gmail.com",
-    Phone: "0987654457",
-    Gender: "Male",
-    Birthday: "1990-01-01",
-    Avatar:
-      "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i",
-    Point: 0,
-    Role: "Administrator",
-  };
+  // const user: userData = {
+  //   Id: "00000000-0000-0000-0000-000000000001",
+  //   Name: "John Doe",
+  //   Email: "admin@gmail.com",
+  //   Phone: "0987654457",
+  //   Gender: "Male",
+  //   Birthday: "1990-01-01",
+  //   Avatar:
+  //     "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i",
+  //   Point: 0,
+  //   Role: "Administrator",
+  // };
 
   const notification = [
     {
@@ -322,7 +323,7 @@ export const Navigate = () => {
                     >
                       <Avatar>
                         <AvatarImage
-                          src={user.Avatar}
+                          src={user?.Avatar}
                           alt={`${_.name}'s avatar`}
                         />
                         <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
@@ -351,7 +352,7 @@ export const Navigate = () => {
                     >
                       <Avatar>
                         <AvatarImage
-                          src={user.Avatar}
+                          src={user?.Avatar}
                           alt={`${_.name}'s avatar`}
                         />
                         <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>

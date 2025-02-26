@@ -11,18 +11,39 @@ import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
 import { ApiResponse } from "@/types/types";
 import Link from "next/link";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Bell, Boxes, LogOut, MapPinHouse, Search, UserRoundPen } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
+import {
+  Bell,
+  Boxes,
+  LogOut,
+  MapPinHouse,
+  Search,
+  UserRoundPen,
+} from "lucide-react";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Separator } from "@radix-ui/react-separator";
 import { Input } from "../ui/input";
 
 export const Navigate = () => {
-  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories")
+  const { data: blogCategories } =
+    useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories");
   const [active, setActive] = useState<string | null>(null);
   const user = {
     Id: "00000000-0000-0000-0000-000000000001",
@@ -31,76 +52,91 @@ export const Navigate = () => {
     Phone: "0987654457",
     Gender: "Male",
     Birthday: "1990-01-01",
-    Avatar: "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i",
+    Avatar:
+      "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i",
     Point: 0,
-    Role: "Administrator"
-  }
+    Role: "Administrator",
+  };
 
   const notification = [
     {
-      name: 'John Doe',
-      avatar: 'https://github.com/shadcn.png',
-      title: 'Administrator',
-      content: 'The React Framework – created and maintained by @vercel.',
-      status: 'Unread',
+      name: "John Doe",
+      avatar: "https://github.com/shadcn.png",
+      title: "Administrator",
+      content: "The React Framework – created and maintained by @vercel.",
+      status: "Unread",
     },
     {
-      name: 'Jane Smith',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith1',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith5',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith6',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith7',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
+      name: "Jane Smith",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith1",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith5",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith6",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith7",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
     },
   ];
 
+  const { user } = useAuth();
+  // useEffect(() => {
+  //   if (user?.Role !== "Customer") {
+  //     window.location.href = "/admin"
+  //   }
+  // }, [user])
   const styleClassName =
     "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 
@@ -224,7 +260,10 @@ export const Navigate = () => {
             >
               <div className="flex flex-col space-y-4 text-sm">
                 {blogCategories?.value?.map((item: BlogCategory, index) => (
-                  <HoveredLink key={index + 1} href={`/blogs?category=${item.name}`}>
+                  <HoveredLink
+                    key={index + 1}
+                    href={`/blogs?category=${item.name}`}
+                  >
                     {item.name}
                   </HoveredLink>
                 ))}
@@ -277,21 +316,26 @@ export const Navigate = () => {
 
                 <TabsContent value="all" className="m-0">
                   {notification.map((_) => (
-                    <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                    <div
+                      key={_.name}
+                      className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer"
+                    >
                       <Avatar>
-                        <AvatarImage src={user.Avatar} alt={`${_.name}'s avatar`} />
+                        <AvatarImage
+                          src={user.Avatar}
+                          alt={`${_.name}'s avatar`}
+                        />
                         <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                          {_.title} + {" "}
-                          {_.content}
-
+                          {_.title} + {_.content}
                         </h4>
-
                       </div>
                       <Badge
-                        variant={_.status === 'Online' ? 'default' : 'secondary'}
+                        variant={
+                          _.status === "Online" ? "default" : "secondary"
+                        }
                         className="mt-2"
                       >
                         {_.status}
@@ -301,21 +345,26 @@ export const Navigate = () => {
                 </TabsContent>
                 <TabsContent value="unread" className="m-0">
                   {notification.map((_) => (
-                    <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                    <div
+                      key={_.name}
+                      className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer"
+                    >
                       <Avatar>
-                        <AvatarImage src={user.Avatar} alt={`${_.name}'s avatar`} />
+                        <AvatarImage
+                          src={user.Avatar}
+                          alt={`${_.name}'s avatar`}
+                        />
                         <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                          {_.title} + {" "}
-                          {_.content}
-
+                          {_.title} + {_.content}
                         </h4>
-
                       </div>
                       <Badge
-                        variant={_.status === 'Online' ? 'default' : 'secondary'}
+                        variant={
+                          _.status === "Online" ? "default" : "secondary"
+                        }
                         className="mt-2"
                       >
                         {_.status}
@@ -326,58 +375,74 @@ export const Navigate = () => {
               </Tabs>
 
               <div className="mt-2 text-center">
-                <Button className="inline-block" size="sm">Xem thêm</Button>
+                <Button className="inline-block" size="sm">
+                  Xem thêm
+                </Button>
               </div>
             </HoverCardContent>
           </HoverCard>
           <ShoppingBagSheet />
-          {user ? <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-12 w-12 rounded-full">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={user.Avatar ?? "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i.png"} alt={user.Name} />
-                  <AvatarFallback>SC</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.Name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user.Email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <Link href={"/profile"}>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-12 w-12 rounded-full"
+                >
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage
+                      src={
+                        user.Avatar ??
+                        "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i.png"
+                      }
+                      alt={user.Name}
+                    />
+                    <AvatarFallback>SC</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user.Name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.Email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <Link href={"/profile"}>
+                    <DropdownMenuItem className="hover:cursor-pointer">
+                      <UserRoundPen />
+                      Hồ sơ
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem className="hover:cursor-pointer">
-                    <UserRoundPen />
-                    Hồ sơ
+                    <MapPinHouse />
+                    Địa chỉ
                   </DropdownMenuItem>
-                </Link>
+                  <DropdownMenuItem className="hover:cursor-pointer">
+                    <Boxes />
+                    Đơn hàng
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem className="hover:cursor-pointer">
-                  <MapPinHouse />
-                  Địa chỉ
+                  <LogOut />
+                  Đăng xuất
                 </DropdownMenuItem>
-                <DropdownMenuItem className="hover:cursor-pointer">
-                  <Boxes />
-                  Đơn hàng
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="hover:cursor-pointer">
-                <LogOut />
-                Đăng xuất
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> : <>
-            <LoginDialog />
-            <RegisterDialog />
-          </>}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <LoginDialog />
+              <RegisterDialog />
+            </>
+          )}
         </div>
-
       </Menu>
     </div>
   );

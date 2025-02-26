@@ -557,7 +557,7 @@ export function DataTable<T>({
             )}
           </TableBody>
         </Table>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        {/* <p className="mt-4 text-center text-sm text-muted-foreground">
           Pinnable columns made with{" "}
           <a
             className="underline hover:text-foreground"
@@ -567,7 +567,7 @@ export function DataTable<T>({
           >
             TanStack Table
           </a>
-        </p>
+        </p> */}
       </div>
       {/* </DndContext> */}
 

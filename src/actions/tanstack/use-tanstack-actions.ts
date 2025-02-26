@@ -46,7 +46,7 @@ export const useFetch = <T>(
   options?: Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">
 ) => {
   return useQuery<T, Error>({
-    queryKey: [...queryKey, params],
+    queryKey: params ? [...queryKey, params] : [...queryKey],
     queryFn: async () => await fetching(endpoint, params),
     ...options,
   });

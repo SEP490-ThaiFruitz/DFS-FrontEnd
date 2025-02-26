@@ -7,14 +7,17 @@ interface LogoProps {
   classNameLabel?: string;
   height?: number;
   width?: number;
+
+  className?: string;
 }
 export const Logo = ({
   classNameLabel,
   height = 50,
   width = 50,
+  className,
 }: LogoProps) => {
   return (
-    <Link href={"/"} className="flex flex-col items-center ">
+    <Link href={"/"} className={cn("flex flex-col items-center ", className)}>
       <Image
         src="/images/dried-fruit.webp"
         alt="Picture of the author"

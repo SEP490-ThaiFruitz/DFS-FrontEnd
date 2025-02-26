@@ -1,4 +1,4 @@
-"use client"
+import { Footer } from "@/components/global-components/footer/footer";
 import Navigate from "@/components/global-components/navigate";
 
 interface ClientLayoutProps {
@@ -18,6 +18,7 @@ const ClientLayout = ({ children, filter, test2 }: ClientLayoutProps) => {
         <div>{filter}</div>
         <div>{test2}</div>
       </>
+      <Footer />
     </>
   );
 };

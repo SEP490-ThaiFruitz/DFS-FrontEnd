@@ -8,12 +8,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useQuery } from '@tanstack/react-query'
 import { ApiResponse } from '@/types/types'
 
+
 interface BlogLayoutProps {
     children: React.ReactNode
 }
 
 function BlogLayout({ children }: Readonly<BlogLayoutProps>) {
-    const { isPending: isLoadingBlogCategories, data: blogCategories } = useQuery<ApiResponse<BlogCategory[]>>({ queryKey: ["BlogCategories", "Guest"] })
+    const { isPending, data: blogCategories } = useQuery<ApiResponse<BlogCategory[]>>({ queryKey: ["BlogCategories", "Guest"] })
     return (
         <div className="m-10">
             <div className="grid lg:grid-cols-4 gap-10">
@@ -23,7 +24,7 @@ function BlogLayout({ children }: Readonly<BlogLayoutProps>) {
                         <h3 className="text-lg font-bold mb-4">Loại bài viết</h3>
                         <p className='h-1 w-1/3 bg-green-400'></p>
                         <div className='mt-5 grid gap-5'>
-                            {isLoadingBlogCategories ? [...Array(5)].map((_, index) => (
+                            {isPending ? [...Array(5)].map((_, index) => (
                                 <Skeleton className='w-full h-10' key={index + 1} />
                             )) : blogCategories?.value?.map((blogCategory: BlogCategory) => (
                                 <Link className='border rounded-md hover:bg-slate-50' key={blogCategory.id} href={`/blogs?category=${blogCategory.name}`}>

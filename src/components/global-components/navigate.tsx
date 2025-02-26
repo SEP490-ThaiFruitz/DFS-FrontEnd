@@ -55,66 +55,74 @@ export const Navigate = () => {
 
   const notification = [
     {
-      name: 'John Doe',
-      avatar: 'https://github.com/shadcn.png',
-      title: 'Administrator',
-      content: 'The React Framework – created and maintained by @vercel.',
-      status: 'Unread',
+      name: "John Doe",
+      avatar: "https://github.com/shadcn.png",
+      title: "Administrator",
+      content: "The React Framework – created and maintained by @vercel.",
+      status: "Unread",
     },
     {
-      name: 'Jane Smith',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith1',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith5',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith6',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith7',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
-    }, {
-      name: 'Jane Smith8',
-      avatar: 'https://example.com/jane.png',
-      title: 'Manager',
-      content: 'Building scalable web solutions.',
-      status: 'Read',
+      name: "Jane Smith",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith1",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith5",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith6",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith7",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
+    },
+    {
+      name: "Jane Smith8",
+      avatar: "https://example.com/jane.png",
+      title: "Manager",
+      content: "Building scalable web solutions.",
+      status: "Read",
     },
   ];
 
@@ -150,7 +158,7 @@ export const Navigate = () => {
 
     <div
       className={cn(
-        "fixed top-0 inset-x-0 z-50 h-16 w-full",
+        "fixed top-0 inset-x-0 z-50 h-16 w-full shadow-lg backdrop-blur-md bg-neutral-100/50 dark:bg-neutral-800/50 rounded-b-2xl",
         "w-full rounded-none list-none shadow-sm"
       )}
     >
@@ -241,7 +249,10 @@ export const Navigate = () => {
             >
               <div className="flex flex-col space-y-4 text-sm">
                 {blogCategories?.value?.map((item: BlogCategory, index) => (
-                  <HoveredLink key={index + 1} href={`/blogs?category=${item.name}`}>
+                  <HoveredLink
+                    key={index + 1}
+                    href={`/blogs?category=${item.name}`}
+                  >
                     {item.name}
                   </HoveredLink>
                 ))}

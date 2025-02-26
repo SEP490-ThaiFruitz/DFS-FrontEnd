@@ -5,9 +5,7 @@ import { FormInputControl } from "@/components/global-components/form/form-input
 import { FormPassword } from "@/components/global-components/form/form-password";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { Logo } from "@/components/global-components/logo";
-import {
-  RegisterSafeTypes,
-} from "@/zod-safe-types/auth-safe-types";
+import { RegisterSafeTypes } from "@/zod-safe-types/auth-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -92,8 +90,15 @@ export const RegisterDialog = () => {
 
         <DialogFooter>
           <ButtonCustomized
+            className="w-32 bg-neutral-200 hover:bg-neutral-300 text-slate-900"
+            variant="outline"
+            label="Đóng"
+            onClick={registerDialog.onClose}
+          />
+
+          <ButtonCustomized
             type="submit"
-            className="max-w-48 bg-sky-500 hover:bg-sky-700"
+            className="w-auto min-w-32 bg-sky-500 hover:bg-sky-700 hover:font-semibold duration-300 transition"
             variant="secondary"
             label={
               form.formState.isSubmitting ? (
@@ -109,19 +114,22 @@ export const RegisterDialog = () => {
             }
           />
         </DialogFooter>
-
-        <div className="my-2">
-          <h2 className="flex font-semibold items-center justify-center gap-x-1">
-            Bạn đã có tài khoản? {" "}
-            <button
-              onClick={toggle}
-              className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti text-violet-500"
-            >
-              Đăng nhập
-            </button>
-          </h2>
-        </div>
       </FormValues>
+      <div className="my-6">
+        <h2 className="flex font-semibold items-center justify-center gap-x-1">
+          Bạn đã có tài khoản?{" "}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggle();
+            }}
+            className="text-base font-semibold hover:scale-105 cursor-pointer hover:font-bold hover:underline transition duration-300 hover:motion-preset-confetti text-violet-500"
+          >
+            Đăng nhập
+          </button>
+        </h2>
+      </div>
     </div>
   );
 

@@ -4,9 +4,7 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
 } from "lucide-react"
 
 import {
@@ -29,20 +27,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useQuery } from "@tanstack/react-query"
+import { logOut } from "@/actions/auth"
+import { Profile } from "@/types/types"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const user = {
-    Id: "00000000-0000-0000-0000-000000000001",
-    Name: "John Doe",
-    Email: "admin@gmail.com",
-    Phone: "0987654457",
-    Gender: "Male",
-    Birthday: "1990-01-01",
-    Avatar: "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i",
-    Point: 0,
-    Role: "Administrator"
-  }
+  const { data: user } = useQuery<Profile>({ queryKey: ["authUser"] })
+  console.log(user)
   const getRoleLabel = (role: string | undefined) => {
     switch (role) {
       case 'Administrator':
@@ -63,12 +55,12 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-10 w-10 rounded-lg">
-                <AvatarImage src={user?.Avatar ?? "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i.png"} alt={user?.Name} />
+                <AvatarImage src={user?.avatar} alt={user?.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.Name}</span>
-                <span className="truncate text-xs">{getRoleLabel(user?.Role)}</span>
+                <span className="truncate font-semibold">{user?.name}</span>
+                <span className="truncate text-xs">{getRoleLabel(user?.role)}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -82,12 +74,12 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user?.Avatar ?? "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i.png"} alt={user.Name} />
+                  <AvatarImage src={user?.avatar} alt={user?.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user?.Name}</span>
-                  <span className="truncate text-xs">{getRoleLabel(user?.Role)}</span>
+                  <span className="truncate font-semibold">{user?.name}</span>
+                  <span className="truncate text-xs">{getRoleLabel(user?.role)}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -103,7 +95,10 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem onClick={async () => {
+              await logOut();
+              window.location.href = "/";
+            }} className="cursor-pointer">
               <LogOut />
               Đăng xuất
             </DropdownMenuItem>

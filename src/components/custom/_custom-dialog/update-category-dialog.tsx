@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control";
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
 import { Category } from "@/features/admin/category/column";
-import { FormControl, FormField, FormItem } from "@/components/ui/form";
+import { FormControl, FormItem } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
@@ -47,11 +47,12 @@ export const UpdateCategoryDialog = ({
       formData.append("isActive", values.isActive.toString());
 
       const response = await updateCategory(formData);
-      if (response.success) {
-        toast.success(response.message);
+      if (response?.isSuccess) {
+        form.reset();
         onClose();
+        toast.success("Cập nhập loại bài viết thành công")
       } else {
-        toast.error(response.message);
+        toast.error(response?.status == 409 ? "Tên loại bài viết đã tồn tại" : "Lỗi hệ thống")
       }
 
       console.log({ response });

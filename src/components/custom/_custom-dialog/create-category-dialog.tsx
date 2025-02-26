@@ -33,12 +33,12 @@ export const CreateCategoryDialog = () => {
       }
       const response = await createCategory(formData);
 
-      if (response.success) {
+      if (response?.isSuccess) {
         form.reset();
         setIsOpen(false);
-        toast.success(response.message)
-      }else{
-        toast.error(response.message)
+        toast.success("Tạo loại bài viết thành công")
+      } else {
+        toast.error(response?.status == 409 ? "Tên loại bài viết đã tồn tại" : "Lỗi hệ thống")
       }
 
       console.log({ response });

@@ -1,5 +1,4 @@
-import { Logo } from "@/components/global-components/logo";
-import { Navbar } from "@/components/global-components/navbar";
+"use client"
 import Navigate from "@/components/global-components/navigate";
 
 interface ClientLayoutProps {
@@ -9,9 +8,10 @@ interface ClientLayoutProps {
 }
 
 const ClientLayout = ({ children, filter, test2 }: ClientLayoutProps) => {
+
   return (
     <>
-      <Navbar />
+      <Navigate />
       <>
         {children}
 

@@ -29,16 +29,16 @@ interface ProductSize {
 function CreateProductPage() {
   const [productSizes, setProductSizes] = useState<ProductSize[]>([{ size: 0, quantity: 0, price: 0 }]);
 
-  const { data: categories } = useFetch<ApiResponse<SelectData[]>>("/Categories/get-all-non-paging", ["categories"],{},{
+  const { data: categories } = useFetch<ApiResponse<SelectData[]>>("/Categories/get-all-non-paging", ["categories"], {}, {
     staleTime: 1000 * 60 * 1,
   })
   const { mutate: createProductMutation, isPending } = useMutation({
     mutationFn: async (values: FormData) => {
       const response = await createProduct(values);
-      if (response.success) {
-        return response.message
+      if (response?.isSuccess) {
+        return "Tạo sản phẩm thành công"
       } else {
-        throw new Error(response.message);
+        throw new Error(response?.status === 409 ? "Tên sản phẩm đã tồn tại" : "Lỗi hệ thống");
       }
     },
     onSuccess: (value) => {

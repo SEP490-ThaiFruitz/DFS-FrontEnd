@@ -1,19 +1,19 @@
 "use client"
 import React from 'react'
 import { BlogCategory } from '@/app/(admin)/admin/blog/category/page'
-import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
-import { ApiResponse } from '@/types/types'
 import Link from 'next/link'
 import Image from 'next/image'
 import { formatVND } from '@/lib/format-currency'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useQuery } from '@tanstack/react-query'
+import { ApiResponse } from '@/types/types'
 
 interface BlogLayoutProps {
     children: React.ReactNode
 }
 
 function BlogLayout({ children }: Readonly<BlogLayoutProps>) {
-    const { isPending: isLoadingBlogCategories, data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", ["BlogCategories", "Guest"])
+    const { isPending: isLoadingBlogCategories, data: blogCategories } = useQuery<ApiResponse<BlogCategory[]>>({ queryKey: ["BlogCategories", "Guest"] })
     return (
         <div className="m-10">
             <div className="grid lg:grid-cols-4 gap-10">

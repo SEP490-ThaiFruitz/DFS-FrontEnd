@@ -60,3 +60,15 @@ export type ApiResponse<T = undefined> = {
   };
 };
 
+export interface Profile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  birthday: Date;
+  avatar: string;
+  point: number;
+  balance: number | null;
+  role: string;
+}

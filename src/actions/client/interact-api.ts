@@ -1,4 +1,3 @@
-import axios from "axios";
 import { ApiResponse } from "@/types/types";
 import { cookies } from "next/headers";
 
@@ -7,14 +6,10 @@ const handleError = (error: unknown, message: string) => {
   throw error; // Re-throw để React Query hoặc caller xử lý
 };
 
-export const getToken = async (): Promise<{ accessToken: string } | null> => {
+export const getToken = async (): Promise<{ accessToken: string | undefined } | null> => {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
-
-    if (!token) {
-      throw new Error("Token not found");
-    }
 
     return {
       accessToken: token,
@@ -26,118 +21,80 @@ export const getToken = async (): Promise<{ accessToken: string } | null> => {
   }
 };
 
-const getWithToken = async (endpoint: string) => {
-  const tokenData = await getToken();
-  if (!tokenData) {
-    console.log("Access token not found.");
-    return;
-  }
-
-  const { accessToken } = tokenData;
-
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-  };
-
+export const getHeaders = async (isFormData?: boolean) => {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      {
-        headers,
-      }
-    );
+    const tokenData = await getToken();
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    let headers = { "Content-Type": "application/json" } as any;
+
+    if (isFormData) {
+      headers = {};
+    }
+    if (tokenData) {
+      headers.Authorization = "Bearer " + tokenData?.accessToken;
     }
 
-    const data = await response.json(); // Assuming JSON response
-    console.log(data); // Handle the response as needed
+    return headers;
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    console.log({ error });
+
+    return null;
   }
 };
+
 
 const get = async (endpoint: string, params?: Record<string, any>) => {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}${
-        params ? `?${new URLSearchParams(params)}` : ""
-      }`
-    );
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    const requestOptions = {
+      method: 'GET',
+      headers: await getHeaders()
     }
 
-    const data = await response.json();
-    return data;
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}${queryString}`;
+
+    const response = await fetch(url, requestOptions);
+    return await handleResponse(response);
+
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    handleError(error, "Error in fetching data");
   }
 };
 
-const create = async <TValues>(endpoint: string, body: TValues) => {
-  // const tokenData = await getToken();
-  // if (!tokenData) {
-  //   console.log("Access token not found.");
-  //   return;
-  // }
-
-  const accessToken = "";
+const post = async <TValues>(endpoint: string, body: TValues) => {
   try {
-    let headers = { "Content-Type": "application/json" } as any;
-    if (body instanceof FormData) {
-      headers = {};
+    const requestOptions = {
+      method: 'POST',
+      headers: await getHeaders(),
+      body: body instanceof FormData ? body : JSON.stringify(body)
     }
-    if (accessToken) {
-      headers.Authorization = "Bearer " + accessToken;
-    }
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      {
-        method: "POST",
-        headers: headers,
-        body: body instanceof FormData ? body : JSON.stringify(body),
-      }
-    );
-    const data = await response.json();
-    console.log(response);
-    return data;
+
+    const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
+
+    const response = await fetch(url, requestOptions);
+
+    return await handleResponse(response);
+
   } catch (error) {
     console.log("Error in creating data:", error);
     handleError(error, "Error in creating data");
   }
 };
 
-const update = async <TValues>(endpoint: string, body: TValues) => {
-  // const tokenData = await getToken();
-  // if (!tokenData) {
-  //   console.log("Access token not found.");
-  //   return;
-  // }
-
-  const accessToken = "";
+const put = async <TValues>(endpoint: string, body: TValues) => {
   try {
-    let headers = { "Content-Type": "application/json" } as any;
-    if (body instanceof FormData) {
-      headers = {};
+    const requestOptions = {
+      method: 'PUT',
+      headers: await getHeaders(),
+      body: body instanceof FormData ? body : JSON.stringify(body)
     }
-    if (accessToken) {
-      headers.Authorization = "Bearer " + accessToken;
-    }
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      {
-        method: "PUT",
-        headers: headers,
-        body: body instanceof FormData ? body : JSON.stringify(body),
-      }
-    );
 
-    const data = await response.json();
-    console.log(response);
-    return data;
+    const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
+
+    const response = await fetch(url, requestOptions);
+
+    return await handleResponse(response);
+
   } catch (error) {
     console.log("Error in updating data:", error);
     handleError(error, "Error in updating data");
@@ -152,7 +109,7 @@ const remove = async (endpoint: string) => {
         method: "DELETE",
       }
     );
-    console.log({response})
+    console.log({ response })
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -166,76 +123,31 @@ const remove = async (endpoint: string) => {
   }
 };
 
-const login = async <TValues, TResponse>(
-  endpoint: string,
-  body: TValues
-): Promise<ApiResponse<TResponse> | undefined> => {
-  console.log(`${process.env.NEXT_PUBLIC_URL_API}${endpoint}`);
+async function handleResponse(response: Response) {
+  const text = await response.text();
+
+  let data;
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      }
-    );
-
-    // console.log({ response });
-
-    if (!response.ok) {
-      return response.json();
-    }
-
-    const data: ApiResponse<TResponse> = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error in creating data:", error);
-    return undefined;
+    data = JSON.parse(text);
+  } catch {
+    data = text;
   }
-};
 
-const register = async <TValues, TResponse>(
-  endpoint: string,
-  body: TValues
-): Promise<ApiResponse<TResponse> | undefined> => {
-  console.log(`${process.env.NEXT_PUBLIC_URL_API}${endpoint}`);
-  try {
-    // const response = await fetch(
-    //   `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(body),
-    //   }
-    // );
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      body
-    );
-
-    // console.log({ response });
-
-    if (response.status === 200) {
-      const data: ApiResponse<TResponse> = await response.data;
-      return data;
-    }
-    return response.data;
-  } catch (error) {
-    console.error("Error in creating data:", error);
-    return undefined;
+  if (response.ok) {
+    return { isSuccess: true, data: data };
+  } else {
+    return {
+      isSuccess: false,
+      status: response.status,
+      message: response.statusText
+    };
   }
-};
+}
+
 
 export const interactApi = {
   get,
-  getWithToken,
-  create,
-  update,
-  remove,
-  login,
+  post,
+  put,
+  remove
 };

@@ -16,6 +16,13 @@ interface ButtonCustomizedProps {
     | "ghost"
     | "secondary"
     | "link";
+  size?: 
+    | "default"
+    | "sm"
+    | "lg"
+    | "icon"
+    | null
+    | undefined
 }
 export const ButtonCustomized = ({
   label,
@@ -23,7 +30,7 @@ export const ButtonCustomized = ({
   onClick,
   className,
   type = "button",
-  disabled
+  disabled,
 }: ButtonCustomizedProps) => {
   return (
     <Button

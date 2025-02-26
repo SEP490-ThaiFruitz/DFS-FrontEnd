@@ -16,7 +16,7 @@ import { useState } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 export interface SelectData {
-  id: string;
+  id: string |number;
   name: string;
   thumbnail?: string;
 }
@@ -100,14 +100,14 @@ export const FormSelectControl = <T extends FieldValues, K>({
                   )}
                   <SelectGroup>
                     {filteredItems.map((data: SelectData) => isImage ? (
-                      <SelectItem key={data.id} value={data.id} className="block w-full text-left cursor-pointer">
+                      <SelectItem key={data.id} value={data.id.toString()} className="block w-full text-left cursor-pointer">
                         <div className="inline-flex justify-between items-center w-full">
                           <p className="truncate">{data.name}</p>
                           <Image width={100} height={100} alt={data.name} src={data.thumbnail as string} />
                         </div>
                       </SelectItem>
                     ) : (
-                      <SelectItem className="cursor-pointer" key={data.id} value={data.id}>
+                      <SelectItem className="cursor-pointer" key={data.id} value={data.id.toString()}>
                         {data.name}
                       </SelectItem>
                     ))}

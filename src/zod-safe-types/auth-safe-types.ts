@@ -17,9 +17,6 @@ export const LoginSafeTypes = z.object({
 });
 
 export const LoginSafeTypesHaveEmail = z.object({
-  // phone: z.string().refine(isValidPhone, {
-  //   message: "Số điện thoại không hợp lệ",
-  // }),
   email: z.string({
     required_error: "Vui lòng nhập email"
   }).email({

@@ -1,4 +1,5 @@
 import { ProfileClientPage } from "@/features/client/profile/profile-client";
+import { Suspense } from "react";
 
 export async function generateMetadata() {
   return {
@@ -9,7 +10,9 @@ export async function generateMetadata() {
 }
 
 const ProfilePage = () => {
-  return <ProfileClientPage />;
+  return <Suspense>
+    <ProfileClientPage />
+  </Suspense>;
 };
 
 export default ProfilePage;

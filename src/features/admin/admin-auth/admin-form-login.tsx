@@ -1,6 +1,6 @@
 "use client";
 
-import { loginAction } from "@/actions/login";
+import { loginAction } from "@/actions/auth";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { FormInputControl } from "@/components/global-components/form/form-input-control";
 import { FormPassword } from "@/components/global-components/form/form-password";

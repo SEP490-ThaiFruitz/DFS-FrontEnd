@@ -1,6 +1,6 @@
 "use client";
 
-import React, { type JSX } from "react";
+import React, { useMemo, type JSX } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -26,28 +26,36 @@ import {
   MapPin,
   Briefcase,
   ChevronRight,
+  MapPinned,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { OrderTrackingClientPage } from "./order-tracking/order-tracking-client";
 import { OrderTrackingPage } from "./order-tracking/order-tracking-page";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
+import AddressPage from "./address/address-page";
+import { useSearchParams } from "next/navigation";
+
 
 const TAB_TRIGGER = [
   { value: "profile", label: "Thông tin cá nhân", icon: User },
   { value: "order-tracking", label: "Theo dõi đơn hàng", icon: MapPin },
+  { value: "address", label: "Địa chỉ", icon: MapPinned },
   { value: "statistic", label: "Thống kê", icon: Briefcase },
 ];
 
 const TAB_CONTENT: { value: string; component: JSX.Element }[] = [
   { value: "profile", component: <div>Profile</div> },
   { value: "order-tracking", component: <OrderTrackingPage /> },
+  { value: "address", component: <AddressPage /> },
   { value: "statistic", component: <div>Statistic</div> },
 ];
 
 export const MotionCard = motion(Card);
 
 export const ProfileClientPage = () => {
-  const [tab, setTab] = React.useState("profile");
+  const searchParams = useSearchParams();
+  const activeTab = useMemo(() => searchParams.get("tab"), [searchParams]);
+  const [tab, setTab] = React.useState(activeTab?? "profile");
 
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">

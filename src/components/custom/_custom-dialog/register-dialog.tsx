@@ -18,7 +18,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useRegisterDialog } from "@/hooks/use-register-dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
-import { registerAction } from "@/actions/login";
+import { registerAction } from "@/actions/auth";
 
 export const RegisterDialog = () => {
   const form = useForm<z.infer<typeof RegisterSafeTypes>>({

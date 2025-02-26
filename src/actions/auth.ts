@@ -2,7 +2,6 @@
 
 import { cookies } from "next/headers";
 import { interactApi } from "./client/interact-api";
-import { setCookie } from "./cookie-interactive";
 
 export interface LoginResponse {
   accessToken: string;
@@ -12,20 +11,20 @@ export interface LoginResponse {
 
 export const loginAction = async <TValues>(values: TValues) => {
   try {
-    const response = await interactApi.login<TValues, LoginResponse>(
+    const response = await interactApi.post<TValues>(
       "/Auths/sign-in",
       values
     );
 
     if (!response?.isSuccess) {
       return response;
-      // throw new Error("No response from server");
     }
-
-    if (response.isSuccess && response.value?.accessToken) {
+    const loginResponse: LoginResponse = response.data?.value;
+    console.log({ loginResponse })
+    if (response.isSuccess && loginResponse.accessToken) {
       const cookieStore = await cookies();
 
-      cookieStore.set("accessToken", response.value.accessToken, {
+      cookieStore.set("accessToken", loginResponse.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 24 * 7,
@@ -34,7 +33,7 @@ export const loginAction = async <TValues>(values: TValues) => {
         // path: "/",
       });
 
-      cookieStore.set("refreshToken", response.value.refreshToken, {
+      cookieStore.set("refreshToken", loginResponse.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * 24 * 7,
@@ -49,16 +48,13 @@ export const loginAction = async <TValues>(values: TValues) => {
       // });
 
       return {
-        isSuccess: true,
-        message: "Login successful",
-        token: response.value.accessToken,
-        refreshToken: response.value.refreshToken,
+        isSuccess: true
       };
     } else {
-      console.error("Login failed. Error:", response.error?.message);
+      console.error("Login failed. Error:", response.message);
       return {
         isSuccess: false,
-        message: response.error?.message || "Invalid credentials",
+        message: response.message ?? "Invalid credentials",
       };
     }
   } catch (error) {
@@ -70,4 +66,13 @@ export const loginAction = async <TValues>(values: TValues) => {
 export const registerAction = async <TValues>(values: TValues) => {
   console.log(values);
 };
+
+export const logOut = async () => {
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll()
+  allCookies.forEach((cookie) => {
+    cookieStore.delete(cookie.name);
+  });
+};
+
 

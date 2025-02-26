@@ -17,6 +17,7 @@ import { BlogCategory } from './category/page'
 import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog'
 import { deleteBlog } from '@/actions/blog'
 
+
 export interface Blog {
     id: string;
     title: string;

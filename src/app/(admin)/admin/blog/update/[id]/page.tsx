@@ -28,10 +28,10 @@ function UpdateBlogPage() {
     const { isPending, mutate: updateBlogMutation } = useMutation({
         mutationFn: async (values: FormData) => {
             const response = await updateBlog(values);
-            if (response.success) {
-                return response.message
+            if (response?.isSuccess) {
+                return "Cập nhật bài viết thành công"
             } else {
-                throw new Error(response.message);
+                throw new Error(response?.status === 409 ? "Tên bài viết đã tồn tại" : "Lỗi hệ thống");
             }
         },
         onSuccess: (value) => {

@@ -16,10 +16,10 @@ import { ButtonCustomized } from "../_custom-button/button-customized";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
-import { loginAction } from "@/actions/login";
+import { loginAction } from "@/actions/auth";
 import { useRegisterDialog } from "@/hooks/use-register-dialog";
 import { toast } from "sonner";
-import { useAuth } from "@/providers/auth-provider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
@@ -27,28 +27,32 @@ export const LoginDialog = () => {
   });
   const registerDialog = useRegisterDialog();
   const loginDialog = useLoginDialog();
-  const { setToken } = useAuth();
+  const queryClient = useQueryClient();
+
+  const { mutate: loginMutation } = useMutation({
+    mutationFn: async ({ username, password }: { username: string, password: string }) => {
+      try {
+        const response: any = await loginAction({ username, password });
+
+        if (response?.isSuccess) {
+          return response?.token
+        }
+        throw new Error(response?.message || "Lỗi hệ thống")
+      } catch (error: any) {
+        throw new Error(error?.message ?? "");
+      }
+    },
+    onSuccess: () => {
+      toast.success("Đăng nhập thành công");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    }
+  });
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
-    try {
-      console.log({ values });
-
-      const response: any = await loginAction({
-        username: values.email,
-        password: values.password,
-      });
-
-      if (response?.isSuccess) {
-        toast.success("Đăng nhập thành công");
-        setToken(response.token as any);
-        window.location.href = "/";
-      } else {
-        toast.error("Đăng nhập thất bại");
-      }
-
-    } catch (error) {
-      console.log({ error });
-    }
+    loginMutation({ username: values.email, password: values?.password })
   };
 
   const title = (
@@ -70,8 +74,6 @@ export const LoginDialog = () => {
     loginDialog.onClose();
     registerDialog.onOpen();
   };
-
-  console.log("login dialog: ", loginDialog.isOpen);
 
   const body = (
     <div>

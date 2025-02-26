@@ -1,5 +1,5 @@
 "use client"
-import { createBlogCategory, deleteBlogCategory, updateBlogCategory } from "@/actions/blog";
+import { createBlogCategory, deleteBlogCategory, updateBlogCategory } from "@/actions/blog-category";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
@@ -38,12 +38,12 @@ function BlogCategoryPage() {
 
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", ["BlogCategories", "admin"])
   const { isPending, mutate: createOrUpdateBlogCategory } = useMutation({
-    mutationFn: async (values: any) => {
+    mutationFn: async ({ name }: { name: string }) => {
       try {
-        const res = blogCategory === undefined ? await createBlogCategory(values) : await updateBlogCategory({ id: blogCategory.id, ...values });
-        if (!res.success)
-          throw new Error(res.message);
-        return res.message;
+        const res = blogCategory === undefined ? await createBlogCategory(name) : await updateBlogCategory({ id: blogCategory.id, name });
+        if (!res?.isSuccess)
+          throw new Error(res?.message ?? 'Operation failed');
+        return res.message ?? 'Operation completed successfully';
       } catch (error) {
         console.log(error);
         throw new Error(error instanceof Error ? error.message : 'An unknown error occurred');
@@ -60,7 +60,7 @@ function BlogCategoryPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof FormCategoryBlogSafeTypes>) => {
-    createOrUpdateBlogCategory(values)
+    createOrUpdateBlogCategory({ name: values?.name })
   };
   const handlerCloseForm = () => {
     setIsOpen(!isOpen);

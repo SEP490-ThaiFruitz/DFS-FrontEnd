@@ -46,7 +46,7 @@ export const ReturnPolicy = () => {
             Chính sách đổi trả
           </DialogTitle>
           <DialogDescription>
-            Chi tiết về điều kiện và quy trình đổi trả sản phẩm của Môi Mộc
+            Chi tiết về điều kiện và quy trình đổi trả sản phẩm của ThaiFruiz
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4">
@@ -81,7 +81,7 @@ export const ReturnPolicy = () => {
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm font-medium text-yellow-600">
                       Lưu ý: Nếu sản phẩm đã bóc tem, nhãn hoặc đã qua sử dụng,
-                      Môi Mộc sẽ không hỗ trợ đổi trả.
+                      ThaiFruiz sẽ không hỗ trợ đổi trả.
                     </p>
                   </div>
                 </div>
@@ -100,7 +100,7 @@ export const ReturnPolicy = () => {
                   <p className="text-sm text-muted-foreground">
                     Thời gian áp dụng cho chính sách đổi trả là trong vòng 7
                     ngày kể từ ngày khách hàng nhận được sản phẩm. Sau thời hạn
-                    này, Môi Mộc sẽ không tiếp nhận yêu cầu đổi trả.
+                    này, ThaiFruiz sẽ không tiếp nhận yêu cầu đổi trả.
                   </p>
                 </div>
               </AccordionContent>
@@ -116,8 +116,8 @@ export const ReturnPolicy = () => {
               <AccordionContent>
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">
-                    Trong tất cả các trường hợp đổi trả hợp lệ, Môi Mộc sẽ chịu
-                    hoàn toàn chi phí vận chuyển, giúp khách hàng an tâm và
+                    Trong tất cả các trường hợp đổi trả hợp lệ, ThaiFruiz sẽ
+                    chịu hoàn toàn chi phí vận chuyển, giúp khách hàng an tâm và
                     thuận tiện hơn trong quá trình đổi trả.
                   </p>
                 </div>
@@ -147,7 +147,7 @@ export const ReturnPolicy = () => {
                     <div className="flex items-center gap-2">
                       <MessageSquare className="w-4 h-4 text-muted-foreground" />
                       <p className="text-sm font-semibold">
-                        Nhắn tin qua fanpage Môi Mộc
+                        Nhắn tin qua fanpage ThaiFruiz
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export const ReturnPolicy = () => {
                     <p className="text-sm text-muted-foreground">
                       Chuẩn bị sản phẩm để đổi trả: Đóng gói sản phẩm lại như
                       lúc mới nhận, đảm bảo an toàn trong quá trình vận chuyển.
-                      Sau đó, Môi Mộc sẽ liên hệ với Viettel Post để đến lấy
+                      Sau đó, ThaiFruiz sẽ liên hệ với Viettel Post để đến lấy
                       hàng tại địa chỉ của khách hàng.
                     </p>
                   </div>
@@ -179,7 +179,7 @@ export const ReturnPolicy = () => {
               <AccordionContent>
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">
-                    Trong trường hợp sản phẩm bị lỗi do nhà sản xuất, Môi Mộc
+                    Trong trường hợp sản phẩm bị lỗi do nhà sản xuất, ThaiFruiz
                     cam kết đổi mới hoàn toàn sản phẩm mà không phát sinh bất kỳ
                     chi phí nào cho khách hàng. Sản phẩm thay thế sẽ được kiểm
                     tra kỹ lưỡng, đảm bảo chất lượng trước khi giao lại đến tay

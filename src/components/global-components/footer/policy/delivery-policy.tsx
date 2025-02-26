@@ -36,7 +36,7 @@ export function DeliveryPolicy() {
             Chính sách vận chuyển
           </DialogTitle>
           <DialogDescription>
-            Chi tiết về dịch vụ vận chuyển và giao hàng của Môi Mộc
+            Chi tiết về dịch vụ vận chuyển và giao hàng của ThaiFruiz
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4">
@@ -56,14 +56,14 @@ export function DeliveryPolicy() {
               <AccordionContent>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Môi Mộc sử dụng dịch vụ chuyển phát nhanh của Viettel Post
+                  ThaiFruiz sử dụng dịch vụ chuyển phát nhanh của Viettel Post
                     cho các đơn hàng ngoại tỉnh (ngoài khu vực TP. Hồ Chí Minh).
                     Tốc độ giao hàng sẽ phụ thuộc vào tùy chọn của khách hàng
                     qua Viettel Post.
                   </p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Đối với đơn hàng trong nội thành TP. Hồ Chí Minh, Môi Mộc có
-                    đội ngũ nhân viên giao hàng tận nơi, đảm bảo sản phẩm đến
+                    Đối với đơn hàng trong nội thành TP. Hồ Chí Minh, ThaiFruiz
+                    có đội ngũ nhân viên giao hàng tận nơi, đảm bảo sản phẩm đến
                     tay khách hàng nhanh chóng và an toàn.
                   </p>
                   <div className="bg-muted p-4 rounded-lg">
@@ -72,8 +72,8 @@ export function DeliveryPolicy() {
                       <span>Vận chuyển miễn phí</span>
                     </h4>
                     <p className="text-sm">
-                      Môi Mộc áp dụng chính sách vận chuyển miễn phí cho các đơn
-                      hàng giao trong khu vực TP. Hồ Chí Minh, tạo điều kiện
+                      ThaiFruiz áp dụng chính sách vận chuyển miễn phí cho các
+                      đơn hàng giao trong khu vực TP. Hồ Chí Minh, tạo điều kiện
                       thuận lợi nhất cho khách hàng nội thành.
                     </p>
                   </div>
@@ -138,14 +138,14 @@ export function DeliveryPolicy() {
                     <h4 className="font-semibold mb-2">Đơn hàng nội thành</h4>
                     <p className="text-sm text-muted-foreground">
                       Khách hàng có thể liên hệ trực tiếp với quản trị viên
-                      fanpage Môi Mộc để kiểm tra tình trạng đơn hàng.
+                      fanpage ThaiFruiz để kiểm tra tình trạng đơn hàng.
                     </p>
                   </div>
                   <div>
                     <h4 className="font-semibold mb-2">Đơn hàng ngoại tỉnh</h4>
                     <p className="text-sm text-muted-foreground">
                       Khách hàng có thể theo dõi tình trạng đơn hàng qua ứng
-                      dụng Viettel Post hoặc liên hệ với quản trị viên Môi Mộc
+                      dụng Viettel Post hoặc liên hệ với quản trị viên ThaiFruiz
                       để được hỗ trợ.
                     </p>
                   </div>
@@ -162,7 +162,7 @@ export function DeliveryPolicy() {
               </AccordionTrigger>
               <AccordionContent>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Hiện tại, Môi Mộc chưa hỗ trợ dịch vụ giao hàng quốc tế.
+                  Hiện tại, ThaiFruiz chưa hỗ trợ dịch vụ giao hàng quốc tế.
                 </p>
               </AccordionContent>
             </AccordionItem>

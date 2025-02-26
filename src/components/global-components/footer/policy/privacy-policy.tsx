@@ -74,7 +74,7 @@ export function PrivacyPolicy() {
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm">
                       Các thông tin này đảm bảo rằng khách hàng có thể tạo tài
-                      khoản và Môi Mộc có thể xử lý đơn hàng một cách nhanh
+                      khoản và ThaiFruiz có thể xử lý đơn hàng một cách nhanh
                       chóng và chính xác.
                     </p>
                   </div>
@@ -97,8 +97,8 @@ export function PrivacyPolicy() {
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-4">
                     <li>
-                      Quản lý dữ liệu người dùng: Dữ liệu giúp Môi Mộc xây dựng
-                      dịch vụ cá nhân hóa và hỗ trợ khách hàng tốt hơn.
+                      Quản lý dữ liệu người dùng: Dữ liệu giúp ThaiFruiz xây
+                      dựng dịch vụ cá nhân hóa và hỗ trợ khách hàng tốt hơn.
                     </li>
                     <li>
                       Xử lý đơn hàng: Thông tin giao hàng được chuyển cho đối
@@ -108,9 +108,9 @@ export function PrivacyPolicy() {
                   </ul>
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm font-medium">
-                      Môi Mộc cam kết không chia sẻ thông tin cá nhân của khách
-                      hàng với bất kỳ bên thứ ba nào ngoài đối tác vận chuyển
-                      cần thiết để hoàn thành đơn hàng.
+                      ThaiFruiz cam kết không chia sẻ thông tin cá nhân của
+                      khách hàng với bất kỳ bên thứ ba nào ngoài đối tác vận
+                      chuyển cần thiết để hoàn thành đơn hàng.
                     </p>
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export function PrivacyPolicy() {
               <AccordionContent>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Môi Mộc áp dụng các biện pháp bảo mật cao cấp để bảo vệ
+                    ThaiFruiz áp dụng các biện pháp bảo mật cao cấp để bảo vệ
                     thông tin cá nhân của khách hàng, bao gồm:
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-4">
@@ -165,7 +165,7 @@ export function PrivacyPolicy() {
                       động và an toàn.
                     </li>
                     <li>
-                      Bảo mật dữ liệu: Hệ thống website Môi Mộc được trang bị
+                      Bảo mật dữ liệu: Hệ thống website ThaiFruiz được trang bị
                       các lớp bảo mật tiên tiến để đảm bảo an toàn cho dữ liệu
                       cá nhân của khách hàng.
                     </li>
@@ -184,9 +184,9 @@ export function PrivacyPolicy() {
               <AccordionContent>
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">
-                    Môi Mộc cam kết không thu thập cookie từ khách hàng khi truy
-                    cập vào trang web, đảm bảo quyền riêng tư và không lưu trữ
-                    bất kỳ thông tin không cần thiết nào của người dùng.
+                    ThaiFruiz cam kết không thu thập cookie từ khách hàng khi
+                    truy cập vào trang web, đảm bảo quyền riêng tư và không lưu
+                    trữ bất kỳ thông tin không cần thiết nào của người dùng.
                   </p>
                 </div>
               </AccordionContent>

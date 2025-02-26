@@ -36,7 +36,7 @@ export function PaymentPolicy() {
             Chính sách thanh toán
           </DialogTitle>
           <DialogDescription>
-            Chi tiết về phương thức và quy trình thanh toán tại Môi Mộc
+            Chi tiết về phương thức và quy trình thanh toán tại ThaiFruiz
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4">
@@ -57,10 +57,11 @@ export function PaymentPolicy() {
                 <div className="space-y-4">
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground">
-                      Hiện tại, Môi Mộc hỗ trợ một hình thức thanh toán duy nhất
-                      là chuyển khoản ngân hàng. Khi thanh toán, khách hàng có
-                      thể quét mã QR ngân hàng hiển thị tại bước thanh toán để
-                      thực hiện chuyển khoản một cách nhanh chóng và tiện lợi.
+                      Hiện tại, ThaiFruiz hỗ trợ một hình thức thanh toán duy
+                      nhất là chuyển khoản ngân hàng. Khi thanh toán, khách hàng
+                      có thể quét mã QR ngân hàng hiển thị tại bước thanh toán
+                      để thực hiện chuyển khoản một cách nhanh chóng và tiện
+                      lợi.
                     </p>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -83,7 +84,7 @@ export function PaymentPolicy() {
                   <p className="text-sm text-muted-foreground">
                     Sau khi khách hàng hoàn tất chuyển khoản, hệ thống sẽ tự
                     động kiểm tra tình trạng giao dịch. Nếu thanh toán được xác
-                    nhận thành công, Môi Mộc sẽ gửi tin nhắn xác nhận qua SMS
+                    nhận thành công, ThaiFruiz sẽ gửi tin nhắn xác nhận qua SMS
                     đến số điện thoại của khách hàng để xác nhận đơn hàng đã
                     được ghi nhận và chuẩn bị xử lý.
                   </p>
@@ -114,9 +115,9 @@ export function PaymentPolicy() {
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">
                     Trong trường hợp xảy ra lỗi thanh toán hoặc đơn hàng bị hủy,
-                    Môi Mộc cam kết sẽ hoàn lại toàn bộ số tiền cho khách hàng.
-                    Quy trình hoàn tiền sẽ được thực hiện nhanh chóng để đảm bảo
-                    quyền lợi và sự hài lòng của khách hàng.
+                    ThaiFruiz cam kết sẽ hoàn lại toàn bộ số tiền cho khách
+                    hàng. Quy trình hoàn tiền sẽ được thực hiện nhanh chóng để
+                    đảm bảo quyền lợi và sự hài lòng của khách hàng.
                   </p>
                 </div>
               </AccordionContent>
@@ -132,10 +133,10 @@ export function PaymentPolicy() {
               <AccordionContent>
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Đối với các thông tin thanh toán, Môi Mộc không yêu cầu tên
-                    chủ thẻ hoặc tài khoản ngân hàng phải trùng khớp với người
-                    nhận hàng. Điều này giúp khách hàng linh hoạt hơn trong việc
-                    lựa chọn phương thức thanh toán.
+                    Đối với các thông tin thanh toán, ThaiFruiz không yêu cầu
+                    tên chủ thẻ hoặc tài khoản ngân hàng phải trùng khớp với
+                    người nhận hàng. Điều này giúp khách hàng linh hoạt hơn
+                    trong việc lựa chọn phương thức thanh toán.
                   </p>
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm font-medium text-yellow-500">

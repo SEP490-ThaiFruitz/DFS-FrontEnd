@@ -1,73 +1,84 @@
 import React from 'react'
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Trash2 } from 'lucide-react';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteDialogProps {
-    name: string,
     deleteFunction: (id: string) => Promise<{
-        success: boolean;
+        isSuccess: boolean;
+        data: any;
+        status?: undefined;
+        message?: undefined;
+        detail?: undefined;
+    } | {
+        isSuccess: boolean;
+        status: number;
         message: string;
-    }>;
+        detail: string;
+        data?: undefined;
+    } | undefined>;
     isOpen: boolean;
     onClose: () => void
     id: string,
-    isIcon?: boolean,
-    refreshKey?: [string, string][]
+    button?: React.ReactNode,
+    refreshKey?: [string, ...string[]][];
+    title?: string,
+    content?: React.ReactNode,
+    name: string | undefined,
+    message?: string,
+    classNameButton?: string
 }
 
 
-export function DeleteDialog({ name, deleteFunction, id, onClose, isOpen, isIcon, refreshKey }: Readonly<DeleteDialogProps>) {
+export function DeleteDialog({ deleteFunction, id, onClose, isOpen, button, refreshKey, title, content, message = "Xóa", name = "", classNameButton = "" }: Readonly<DeleteDialogProps>) {
     const queryClient = useQueryClient();
     const { isPending: isSubmitting, mutateAsync: deleteItem } = useMutation({
         mutationFn: async () => {
             try {
                 const res = await deleteFunction(id)
-                if (!res.success)
-                    throw new Error(res.message);
+                if (!res?.isSuccess)
+                    throw new Error(res?.message);
                 return res.message;
-            } catch (error) {
+            } catch (error: any) {
                 console.log(error);
-                throw new Error(error instanceof Error ? error.message : 'An unknown error occurred');
+                throw new Error(error?.message);
             }
         },
-        onSuccess: (message: string) => {
+        onSuccess: () => {
             onClose();
-            toast.success(message)
+            toast.success(`${message} ${name} thành công`)
             Promise.all(
-                refreshKey?.map((key: [string, string]) => {
+                refreshKey?.map((key: [string, ...string[]]) => {
                     return queryClient.invalidateQueries({ queryKey: key });
                 }) || []
             )
         },
         onError: (error) => {
-            toast.error(error.message)
+            console.log(error)
+            toast.error(`${message} ${name} thất bại`)
         }
     });
 
     return (<Dialog open={isOpen} onOpenChange={onClose}>
-        {isIcon && <DialogTrigger asChild>
-            <Button variant="outline" type="button">
-                <Trash2 size={20} />
-            </Button>
+        {button && <DialogTrigger asChild>
+            {button}
         </DialogTrigger>}
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Bạn có chắc chắn không?</DialogTitle>
+                <DialogTitle>{title ?? "Bạn có chắc chắn không?"}</DialogTitle>
                 <DialogDescription>
-                    Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa {name} không?
+                    {content ?? `Thao tác này không thể hoàn lại. Bạn có chắc chắn muốn ${message.toLowerCase()} ${name} không?`}
                 </DialogDescription>
             </DialogHeader>
             <DialogFooter>
                 <DialogTrigger asChild>
                     <Button variant="outline" type="button">Hủy</Button>
                 </DialogTrigger>
-                <Button disabled={isSubmitting} onClick={() => deleteItem()} variant="destructive" type="submit">{isSubmitting ? <WaitingSpinner
+                <Button className={classNameButton} disabled={isSubmitting} onClick={() => deleteItem()} variant="destructive" type="submit">{isSubmitting ? <WaitingSpinner
                     variant="pinwheel"
-                    label="Đang xóa..."
+                    label="Đang thực hiện..."
                     className="font-semibold "
                     classNameLabel="font-semibold text-sm"
                 /> : "Xác nhận"}</Button>

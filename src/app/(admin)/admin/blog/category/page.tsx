@@ -40,13 +40,16 @@ function BlogCategoryPage() {
   const { isPending, mutate: createOrUpdateBlogCategory } = useMutation({
     mutationFn: async ({ name }: { name: string }) => {
       try {
-        const res = blogCategory === undefined ? await createBlogCategory(name) : await updateBlogCategory({ id: blogCategory.id, name });
-        if (!res?.isSuccess)
-          throw new Error(res?.message ?? 'Operation failed');
-        return res.message ?? 'Operation completed successfully';
-      } catch (error) {
-        console.log(error);
-        throw new Error(error instanceof Error ? error.message : 'An unknown error occurred');
+        const res = blogCategory === undefined ? await createBlogCategory({ name }) : await updateBlogCategory({ id: blogCategory.id, name });
+        if (!res?.isSuccess) {
+          if (res?.status === 409) {
+            throw new Error(`${name} đã tồn tại`);
+          }
+          throw new Error("Lỗi thống");
+        }
+        return blogCategory === undefined ? "Tạo mới loại bài viết thành công" : "Cập nhật loại bài viết thành công";
+      } catch (error: any) {
+        throw new Error(error?.message);
       }
     },
     onSuccess: (message: string) => {
@@ -175,11 +178,16 @@ function BlogCategoryPage() {
           </TableBody>
         </Table>
       </div>
-      <DeleteDialog refreshKey={[["BlogCategories", "admin"]]} id={blogCategory?.id.toString() ?? ""} onClose={() => {
-        form.reset();
-        setBlogCategory(undefined);
-        setIsOpenDelete(false)
-      }} name={blogCategory?.name ?? ""} deleteFunction={deleteBlogCategory} isOpen={isOpenDelete} />
+      <DeleteDialog
+        refreshKey={[["BlogCategories", "admin"]]}
+        id={blogCategory?.id.toString() ?? ""}
+        onClose={() => {
+          form.reset();
+          setBlogCategory(undefined);
+          setIsOpenDelete(false)
+        }}
+        name={blogCategory?.name}
+        deleteFunction={deleteBlogCategory} isOpen={isOpenDelete} />
     </div>
   )
 }

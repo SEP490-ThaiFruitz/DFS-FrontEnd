@@ -15,34 +15,19 @@ import { InputPassword } from "./input-password";
 
 interface FormItemsControlProps<T extends FieldValues> {
   form: UseFormReturn<T>;
-  onSubmit?: (data: T) => void;
   name: Path<T>;
   placeholder?: string;
   label?: string;
-  formSubmit?: React.ReactNode;
-  type?: string;
   classNameLabel?: string;
-
   className?: string;
   disabled?: boolean;
 }
-
-type User = {
-  email: string;
-
-  address: User1;
-};
-
-type User1 = {
-  street: string;
-};
 
 export const FormPassword = <T extends FieldValues>({
   form,
   name,
   placeholder,
   label,
-  type,
   classNameLabel,
   className,
   disabled,
@@ -71,10 +56,10 @@ export const FormPassword = <T extends FieldValues>({
       name={name}
       render={({ field, fieldState, formState }) => {
         const errorMessage =
-          getErrorMessage(fieldState.error) || getErrorMessage(formError);
+          getErrorMessage(fieldState.error) ?? getErrorMessage(formError);
         return (
           <FormItem>
-            <FormLabel className={cn("text-moi_moc_green", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", classNameLabel)}>
               {label}
             </FormLabel>
             <FormControl>

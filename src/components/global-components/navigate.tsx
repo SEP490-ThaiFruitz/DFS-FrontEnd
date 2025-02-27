@@ -51,7 +51,7 @@ export const Navigate = () => {
     if (user && user?.role !== "Customer") {
       router.push("/admin")
     }
-  }, [user])
+  }, [user, router])
 
   const notification = [
     {
@@ -367,7 +367,7 @@ export const Navigate = () => {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-12 w-12 rounded-full">
+                <Button variant="ghost" className="relative h-12 w-12 rounded-full border">
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={user.avatar} alt={user.name} />
                     <AvatarFallback>SC</AvatarFallback>

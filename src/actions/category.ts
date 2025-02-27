@@ -14,6 +14,6 @@ export const updateCategory = async <TValues>(values: TValues) => {
   return await interactApi.put<TValues>("/Categories", values);
 };
 
-export const deleteCategory = async <TValues>(values: TValues) => {
-  return await interactApi.remove(`/Categories/${values}`);
+export const deleteCategory = async (id: string) => {
+  return await interactApi.remove(`/Categories/${id}`);
 };

@@ -27,7 +27,7 @@ export const LoginDialog = () => {
   const loginDialog = useLoginDialog();
   const queryClient = useQueryClient();
 
-  const { mutate: loginMutation } = useMutation({
+  const {isPending ,mutate: loginMutation } = useMutation({
     mutationFn: async ({ username, password }: { username: string, password: string }) => {
       try {
         const response: any = await loginAction({ username, password });
@@ -79,7 +79,7 @@ export const LoginDialog = () => {
         <FormInputControl
           form={form}
           name="email"
-          disabled={form.formState.isSubmitting}
+          disabled={isPending}
           label="Email"
           placeholder="mail@example.com."
         />
@@ -87,8 +87,8 @@ export const LoginDialog = () => {
         <FormPassword
           form={form}
           name="password"
-          disabled={form.formState.isSubmitting}
-          label="Password"
+          disabled={isPending}
+          label="Mật khẩu"
           placeholder="Mật khẩu"
         />
 
@@ -104,9 +104,9 @@ export const LoginDialog = () => {
             type="submit"
             className="w-auto min-w-32 bg-sky-500 hover:bg-sky-700 hover:font-semibold duration-300 transition"
             variant="secondary"
-            disabled={form.formState.isSubmitting}
+            disabled={isPending}
             label={
-              form.formState.isSubmitting ? (
+              isPending ? (
                 <WaitingSpinner
                   variant="pinwheel"
                   label="Đang đăng nhập..."

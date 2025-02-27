@@ -2,10 +2,6 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
-  Settings,
-  Command,
-  GalleryVerticalEnd,
   LayoutList,
   TableProperties,
   TicketPercent,
@@ -13,6 +9,8 @@ import {
   BookOpen,
   BookOpenText,
   BookKey,
+  UserRound,
+  Settings,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -26,33 +24,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Logo } from "../global-components/logo";
-import { useAuth } from "@/providers/auth-provider";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "Manger",
-    email: "Manger@gmail.com",
-    avatar: "https://res.cloudinary.com/deojypwtl/image/upload/v1736993028/avatar/jlktmd5ukeb2t12ozf9i.png",
-    role: "Quản trị viên"
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "Sản phẩm",
@@ -110,6 +84,11 @@ const data = {
       name: "Mã giảm giá",
       url: "/admin/voucher",
       icon: TicketPercent,
+    },
+    {
+      name: "Người dùng",
+      url: "/admin/user",
+      icon: UserRound,
     },
   ],
 };

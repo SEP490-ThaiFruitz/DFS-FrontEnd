@@ -199,7 +199,13 @@ function BlogPage() {
                 </Table>
             </div>
             <PaginationCustom itemsPerPage={pageSize} totalItems={blogs?.value?.totalCount ?? 0} onChangePageIndex={setPageIndex} />
-            <DeleteDialog id={blog?.id ?? ""} isOpen={isOpenDelete} onClose={() => setIsOpenDelete(!isOpenDelete)} name={blog?.title ?? ""} deleteFunction={deleteBlog} />
+            <DeleteDialog
+                id={blog?.id ?? ""}
+                isOpen={isOpenDelete}
+                onClose={() => setIsOpenDelete(!isOpenDelete)}
+                name={blog?.title}
+                deleteFunction={deleteBlog}
+            />
         </div>
     )
 }

@@ -52,7 +52,7 @@ const get = async (endpoint: string, params?: Record<string, any>) => {
 
     const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
     const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}${queryString}`;
-
+    console.log({ url })
     const response = await fetch(url, requestOptions);
     return await handleResponse(response);
 
@@ -65,12 +65,11 @@ const post = async <TValues>(endpoint: string, body: TValues) => {
   try {
     const requestOptions = {
       method: 'POST',
-      headers: await getHeaders(),
+      headers: await getHeaders(body instanceof FormData),
       body: body instanceof FormData ? body : JSON.stringify(body)
     }
 
     const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
-
     const response = await fetch(url, requestOptions);
 
     return await handleResponse(response);
@@ -85,14 +84,14 @@ const put = async <TValues>(endpoint: string, body: TValues) => {
   try {
     const requestOptions = {
       method: 'PUT',
-      headers: await getHeaders(),
+      headers: await getHeaders(body instanceof FormData),
       body: body instanceof FormData ? body : JSON.stringify(body)
     }
 
     const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
 
     const response = await fetch(url, requestOptions);
-
+    console.log(requestOptions)
     return await handleResponse(response);
 
   } catch (error) {
@@ -103,20 +102,17 @@ const put = async <TValues>(endpoint: string, body: TValues) => {
 
 const remove = async (endpoint: string) => {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      {
-        method: "DELETE",
-      }
-    );
-    console.log({ response })
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    const requestOptions = {
+      method: 'DELETE',
+      headers: await getHeaders(),
     }
 
-    const data = await response.json();
-    console.log(data);
-    return data;
+    const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
+
+    const response = await fetch(url, requestOptions);
+
+    return await handleResponse(response);
+
   } catch (error) {
     console.log("Error in deleting data:", error);
     handleError(error, "Error in deleting data");
@@ -136,10 +132,13 @@ async function handleResponse(response: Response) {
   if (response.ok) {
     return { isSuccess: true, data: data };
   } else {
+    console.log(response)
+    console.log(data)
     return {
       isSuccess: false,
       status: response.status,
-      message: response.statusText
+      message: data?.title,
+      detail: data?.detail
     };
   }
 }

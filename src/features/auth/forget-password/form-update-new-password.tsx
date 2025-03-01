@@ -1,26 +1,30 @@
-"use client"
-import { updateNewPassword } from '@/actions/auth';
-import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
-import { FormPassword } from '@/components/global-components/form/form-password'
-import { FormValues } from '@/components/global-components/form/form-values'
-import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
-import { DialogFooter } from '@/components/ui/dialog';
-import { NewPasswordSafeTypes } from '@/zod-safe-types/auth-safe-types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import React from 'react'
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { UserForgetPassword } from './form-forget-password';
+"use client";
+import { updateNewPassword } from "@/actions/auth";
+import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
+import { FormPassword } from "@/components/global-components/form/form-password";
+import { FormValues } from "@/components/global-components/form/form-values";
+import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
+import { DialogFooter } from "@/components/ui/dialog";
+import { NewPasswordSafeTypes } from "@/zod-safe-types/auth-safe-types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { UserForgetPassword } from "./form-forget-password";
 
 interface FormUpdateNewForgetPasswordProps {
-  user: UserForgetPassword,
-  returnButton?: React.ReactNode,
-  handlerSucess
+  user: UserForgetPassword;
+  returnButton?: React.ReactNode;
+  handlerSucess: () => void;
 }
 
-export const FormUpdateNewForgetPassword = ({ user, returnButton, handlerSucess }: FormUpdateNewForgetPasswordProps) => {
+export const FormUpdateNewForgetPassword = ({
+  user,
+  returnButton,
+  handlerSucess,
+}: FormUpdateNewForgetPasswordProps) => {
   const form = useForm<z.infer<typeof NewPasswordSafeTypes>>({
     resolver: zodResolver(NewPasswordSafeTypes),
   });
@@ -32,21 +36,23 @@ export const FormUpdateNewForgetPassword = ({ user, returnButton, handlerSucess 
 
         if (!response?.isSuccess) {
           if (response?.status === 404) {
-            throw new Error("Không tìm thấy tài khoản")
+            throw new Error("Không tìm thấy tài khoản");
           }
           if (response?.status === 400) {
             if (response?.detail.includes("Invalid otp")) {
-              throw new Error("Mã OTP không đúng")
+              throw new Error("Mã OTP không đúng");
             }
             if (response?.detail.includes("OTP has expired")) {
-              throw new Error("Mã OTP đã hết hạn")
+              throw new Error("Mã OTP đã hết hạn");
             }
-            throw new Error("Lỗi hệ thống")
+            throw new Error("Lỗi hệ thống");
           }
-          throw new Error(response?.message || "Lỗi hệ thống")
+          throw new Error(response?.message || "Lỗi hệ thống");
         }
       } catch (error: unknown) {
-        throw new Error(error instanceof Error ? error.message : "Unknown error");
+        throw new Error(
+          error instanceof Error ? error.message : "Unknown error"
+        );
       }
     },
     onSuccess: () => {
@@ -55,18 +61,16 @@ export const FormUpdateNewForgetPassword = ({ user, returnButton, handlerSucess 
       handlerSucess();
     },
     onError: (error) => {
-      toast.error(error.message)
-    }
+      toast.error(error.message);
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof NewPasswordSafeTypes>) => {
-    updateNewPasswordMutation(values.password)
+    updateNewPasswordMutation(values.password);
   };
   return (
     <FormValues form={form} onSubmit={onSubmit}>
-      <p className="mt-3 w-96 text-center">
-        Nhập mật khẩu mới.
-      </p>
+      <p className="mt-3 w-96 text-center">Nhập mật khẩu mới.</p>
 
       <div className="space-y-4">
         <FormPassword
@@ -104,7 +108,7 @@ export const FormUpdateNewForgetPassword = ({ user, returnButton, handlerSucess 
             )
           }
         />
-      </DialogFooter >
-    </FormValues >
-  )
-}
+      </DialogFooter>
+    </FormValues>
+  );
+};

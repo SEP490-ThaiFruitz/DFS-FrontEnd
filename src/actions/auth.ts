@@ -17,55 +17,90 @@ export const loginAction = async <TValues>(values: TValues) => {
     );
 
     if (!response?.isSuccess) {
-      return response;
-    }
-    const loginResponse: LoginResponse = response.data?.value;
-    console.log({ loginResponse })
-    if (response.isSuccess && loginResponse.accessToken) {
-      const cookieStore = await cookies();
-
-      cookieStore.set("accessToken", loginResponse.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 7,
-
-        // sameSite: "strict",
-        // path: "/",
-      });
-
-      cookieStore.set("refreshToken", loginResponse.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 7,
-      });
-
-      // console.log("set cookie: ", response.value.accessToken);
-      // setCookie("accessToken", response.value.accessToken, {
-      //   // expires: 7,
-      //   // httpOnly: true,
-      //   // secure: process.env.NODE_ENV === "production",
-      //   // sameSite: "strict",
-      // });
-
-      return {
-        isSuccess: true
-      };
-    } else {
-      console.error("Login failed. Error:", response.message);
       return {
         isSuccess: false,
-        message: response.message ?? "Invalid credentials",
+        status: response?.status,
+        message: response?.detail ?? "Invalid credentials",
       };
     }
+    const loginResponse: LoginResponse = response.data?.value;
+
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", loginResponse.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+
+      // sameSite: "strict",
+      // path: "/",
+    });
+
+    cookieStore.set("refreshToken", loginResponse.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    // console.log("set cookie: ", response.value.accessToken);
+    // setCookie("accessToken", response.value.accessToken, {
+    //   // expires: 7,
+    //   // httpOnly: true,
+    //   // secure: process.env.NODE_ENV === "production",
+    //   // sameSite: "strict",
+    // });
+
+    return {
+      isSuccess: true
+    };
+
   } catch (error) {
     console.error("Error during login:", error);
-    return { isSuccess: false, message: "An error occurred during login" };
+    return { isSuccess: false, message: "Lỗi hệ thống" };
   }
 };
 
 export const registerAction = async <TValues>(values: TValues) => {
-  console.log(values);
-};
+  try {
+    const response = await interactApi.post<TValues>(
+      "/Auths/sign-up",
+      values
+    );
+
+    if (!response?.isSuccess) {
+      return {
+        isSuccess: false,
+        status: response?.status,
+        message: response?.message,
+        detail: response?.detail
+      };
+    }
+    const loginResponse: LoginResponse = response.data?.value;
+
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", loginResponse.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    cookieStore.set("refreshToken", loginResponse.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+
+    return {
+      isSuccess: true
+    };
+
+  } catch (error) {
+    console.error("Error during register:", error);
+    return { isSuccess: false, message: "Lỗi hệ thống" };
+  }
+}
 
 export const logOut = async () => {
   const cookieStore = await cookies();
@@ -75,5 +110,24 @@ export const logOut = async () => {
   });
 };
 
+export const verifyAccount = async (otp: string) => {
+  return await interactApi.post("/Auths/confirm-otp-verification", { otp })
+}
+
+export const sendCodeVerifyAccount = async <TValues>(values: TValues) => {
+  return await interactApi.post("/Auths/send-otp-verification", values)
+}
+
+export const sendForgetPassword = async <TValues>(values: TValues) => {
+  return await interactApi.post("/Auths/forgot-password", values)
+}
+
+export const verifyForgetPassword = async <TValues>(values: TValues) => {
+  return await interactApi.post("/Auths/confirm-otp-reset-password", values)
+}
+
+export const updateNewPassword = async <TValues>(values: TValues) => {
+  return await interactApi.put("/Auths/reset-password", values)
+}
 
 

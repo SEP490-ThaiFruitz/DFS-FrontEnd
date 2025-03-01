@@ -6,71 +6,66 @@ import { FormInputControl } from "@/components/global-components/form/form-input
 import { FormPassword } from "@/components/global-components/form/form-password";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
-import { useLoginDialog } from "@/hooks/use-login-dialog";
-import { useAuth } from "@/providers/auth-provider";
+import { FormForgetPassword } from "@/features/auth/forget-password/form-forget-password";
+import { useForgetPasswordDialog } from "@/hooks/use-forget-password-dialog";
 import { LoginSafeTypesHaveEmail } from "@/zod-safe-types/auth-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export const AdminFormLogin = () => {
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
     resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
+  const forgetPasswordDialog = useForgetPasswordDialog();
+  const { isPending, mutate: loginMutation } = useMutation({
+    mutationFn: async ({ username, password }: { username: string, password: string }) => {
+      try {
+        const response = await loginAction({ username, password });
 
-  const { setToken } = useAuth();
-
-  const { isOpen, onOpen, onChange } = useLoginDialog();
+        if (!response?.isSuccess) {
+          if (response?.status === 400 || response?.status === 404) {
+            if (response?.message.includes("banned.")) {
+              throw new Error("Tài khoản của bạn đã bị khóa")
+            }
+            throw new Error("Tài khoản hoặc mật khẩu không đúng")
+          }
+          throw new Error(response?.message || "Lỗi hệ thống")
+        }
+      } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error.message : "Unknown error");
+      }
+    },
+    onSuccess: () => {
+      toast.success("Đăng nhập thành công", {
+        duration: 1000
+      });
+      queryClient.invalidateQueries({ queryKey: ["authUser, mange"] })
+      window.location.href = "/admin/dashboard"
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    }
+  });
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
-    try {
-      console.log({ values });
-
-      const response: any = await loginAction<{
-        username: string;
-        password: string;
-      }>({
-        username: values.email,
-        password: values.password,
-      });
-
-      console.log({ response });
-
-      if (response?.isSuccess) {
-        toast.success("Login successfully");
-
-        setToken(response.token as any);
-
-        return;
-      }
-
-      toast.error("Login failed");
-
-      console.log({ response });
-    } catch (error) {
-      console.log({ error });
-    }
+    loginMutation({ username: values.email, password: values?.password })
   };
 
   const styleInput =
-    "block h-12 w-full appearance-none rounded-xl bg-white px-4 py-2 text-amber-500 placeholder-neutral-300 duration-200 focus:outline-none focus:ring-neutral-300 sm:text-sm";
+    "block h-12 w-full appearance-none rounded-xl bg-white px-4 py-2 placeholder-neutral-300 duration-200 focus:outline-none focus:ring-neutral-300 sm:text-sm";
 
   return (
     <div>
       <FormValues form={form} onSubmit={onSubmit}>
-        {/* <FormInputControl
-          form={form}
-          name="phone"
-          disabled={form.formState.isSubmitting}
-          label="Phone"
-          placeholder="+84..."
-        /> */}
-
         <FormInputControl
           form={form}
           name="email"
-          disabled={form.formState.isSubmitting}
+          disabled={isPending}
           label="Email"
           placeholder="mail@example.com."
           classNameInput={styleInput}
@@ -79,48 +74,42 @@ export const AdminFormLogin = () => {
         <FormPassword
           form={form}
           name="password"
-          disabled={form.formState.isSubmitting}
-          label="Password"
-          placeholder="your password"
+          disabled={isPending}
+          label="Mật khẩu"
           className={styleInput}
         />
+        <div className="flex">
+          <button
+            onClick={() => forgetPasswordDialog.onOpen()}
+            type="button"
+            className="ml-auto text-base font-semibold hover:scale-105 cursor-pointer 
+              hover:font-bold hover:underline">
+            Quên mật khẩu?
+          </button>
+        </div>
 
         <div>
-          {/* <DialogClose asChild> */}
-          {/* <ButtonCustomized
-            className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-            variant="outline"
-            label="Cancel"
-          /> */}
-          {/* </DialogClose> */}
-
           <ButtonCustomized
             type="submit"
             className="w-full bg-sky-500 hover:bg-sky-700"
             variant="secondary"
-            disabled={form.formState.isSubmitting}
+            disabled={isPending}
             label={
-              form.formState.isSubmitting ? (
+              isPending ? (
                 <WaitingSpinner
                   variant="pinwheel"
-                  label="Registering..."
+                  label="Đăng đăng nhập..."
                   className="font-semibold "
                   classNameLabel="font-semibold text-sm"
                 />
               ) : (
-                "Login"
+                "Đăng nhập"
               )
             }
           />
-
-          {/* <ButtonCustomized
-            type="submit"
-            className="w-32 bg-sky-500 hover:bg-sky-700"
-            variant="secondary"
-            label="Login"
-          /> */}
         </div>
       </FormValues>
+      {forgetPasswordDialog.isOpen && (<FormForgetPassword />)}
     </div>
   );
 };

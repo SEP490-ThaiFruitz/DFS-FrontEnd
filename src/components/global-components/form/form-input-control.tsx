@@ -27,6 +27,7 @@ interface FormInputControlProps<T extends FieldValues, K> {
   defaultValue?: any,
   icon?: React.ReactElement;
   isMinDate?: boolean;
+  isMaxDate?: boolean;
   require?: boolean
 }
 
@@ -43,6 +44,7 @@ export const FormInputControl = <T extends FieldValues, K>({
   icon,
   defaultValue,
   isMinDate,
+  isMaxDate,
   require
 }: FormInputControlProps<T, K>) => {
 
@@ -69,6 +71,7 @@ export const FormInputControl = <T extends FieldValues, K>({
                 {...field}
                 type={type}
                 min={isMinDate ? new Date().toISOString().split('T')[0] : undefined}
+                max={isMaxDate ? new Date().toISOString().split('T')[0] : undefined}
               />
             </FormControl>
             <FormMessage>{fieldState.error?.message}</FormMessage>

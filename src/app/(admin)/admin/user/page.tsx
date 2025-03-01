@@ -277,9 +277,9 @@ function UserPage() {
                 id={user?.id ?? ""}
                 isOpen={isBanPopup} onClose={() => setIsBanPopup(!isBanPopup)}
                 deleteFunction={banUser}
-                refreshKey={[["users"]]}
-                name={user?.email}
-                content={`Bạn có chắc chắn muốn ${user?.isActive ? "khóa tài khoản" : "mở khóa tài khoản"} ${user?.email} không?`}
+                refreshKey={[["Users"]]}
+                name={user?.name}
+                content={`Bạn có chắc chắn muốn ${user?.isActive ? "khóa tài khoản" : "mở khóa tài khoản"} ${user?.name} không?`}
                 message={user?.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
                 classNameButton={user?.isActive ? "" : "bg-green-500 hover:bg-green-800"}
             />

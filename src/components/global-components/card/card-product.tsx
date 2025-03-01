@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Product } from "@/features/client/sidebar-filter/sidebar-filter";
 import { formatVND } from "@/lib/format-currency";
 import { truncate } from "lodash";
 import Image from "next/image";
@@ -87,7 +88,7 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
             className="flex items-center gap-x-2"
           >
             <CardItem translateY={10} translateZ={10} as="del">
-              {formatVND(20000)}
+              {formatVND(productVariantSummaryResponse.price)}
             </CardItem>
             <CardItem
               translateY={10}
@@ -95,12 +96,12 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
               as="h2"
               className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
             >
-              {formatVND(10000)}
+              {formatVND(productVariantSummaryResponse.price)}
             </CardItem>
           </CardItem>
 
           <CardItem translateY={10} translateZ={10} as="h4">
-            <StatusButton handleAddToCart={() => {}} />
+            <StatusButton handleAddToCart={() => { }} />
           </CardItem>
         </div>
       </CardBody>

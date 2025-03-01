@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils";
 
 interface DialogReusedProps {
   title: string | JSX.Element;
-  description: string | JSX.Element;
-  trigger: React.ReactNode | string | number | JSX.Element;
+  description?: string | JSX.Element;
+  trigger?: React.ReactNode | string | number | JSX.Element;
 
   content: string | JSX.Element;
 
@@ -29,6 +29,7 @@ interface DialogReusedProps {
   onClose?: (state: boolean) => void;
 
   asChild?: boolean;
+  hiddenClose?: boolean,
 }
 
 export const DialogReused = ({
@@ -40,13 +41,14 @@ export const DialogReused = ({
   asChild,
   onClose,
   className,
+  hiddenClose
 }: DialogReusedProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       {/* <DialogTrigger asChild={asChild}>{trigger}</DialogTrigger> */}
       {trigger}
-      <DialogContent className={cn("", className)}>
+      <DialogContent hidden={hiddenClose} className={cn("", className)}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

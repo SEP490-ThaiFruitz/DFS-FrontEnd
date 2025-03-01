@@ -51,6 +51,25 @@ const items = [
   },
 ] as const;
 
+export interface ProductVariantSummaryResponse {
+  productVariantId: string;
+  sku: string;
+  netWeight: number;
+  price: number;
+  discountPrice: number | null;
+  stockQuantity: number;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  categoryId: string;
+  origin: string;
+  mainImageUrl: string;
+  productVariantSummaryResponse: ProductVariantSummaryResponse;
+}
+
 const FormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
@@ -58,6 +77,7 @@ const FormSchema = z.object({
 });
 
 export function SidebarFilter() {
+  // const { data: products } = useFetch<ApiResponse<PageResult<Product>>>("/Products", ["products", "guest"])
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {

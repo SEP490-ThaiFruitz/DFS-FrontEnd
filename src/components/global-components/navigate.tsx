@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useEffect, useState, type ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 import { Logo } from "./logo";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
@@ -18,16 +18,20 @@ import { Bell, Boxes, LogOut, MapPinHouse, UserRoundPen } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "@/actions/user";
-import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { logOut } from "@/actions/auth";
 import { useRouter } from "next/navigation";
+import { getProfile } from "@/actions/user";
+import { toast } from "sonner";
+import { VerifyDialog } from "../custom/_custom-dialog/verify-account-dialog";
+import { useLoginDialog } from "@/hooks/use-login-dialog";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", ["BlogCategories", "Guest"])
   const [active, setActive] = useState<string | null>(null);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const loginDialog = useLoginDialog();
   const { data: user } = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
@@ -35,6 +39,7 @@ export const Navigate = () => {
         const res = await getProfile();
         if (res?.isSuccess) {
           const data: ApiResponse<Profile> = res?.data
+          console.log({ data })
           return data.value;
         }
         return null;
@@ -47,12 +52,6 @@ export const Navigate = () => {
     initialData: null,
   });
 
-  useEffect(() => {
-    if (user && user?.role !== "Customer") {
-      router.push("/admin")
-    }
-  }, [user, router])
-
   const notification = [
     {
       name: "John Doe",
@@ -61,100 +60,12 @@ export const Navigate = () => {
       content: "The React Framework – created and maintained by @vercel.",
       status: "Unread",
     },
-    {
-      name: "Jane Smith",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith1",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith5",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith6",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith7",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith8",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith8",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith8",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
-    {
-      name: "Jane Smith8",
-      avatar: "https://example.com/jane.png",
-      title: "Manager",
-      content: "Building scalable web solutions.",
-      status: "Read",
-    },
   ];
 
   const styleClassName =
     "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 
   return (
-    // <NavbarContainer className="w-full rounded-none list-none flex items-center justify-between">
-    //   {/* <div className="flex items-center justify-between "> */}
-    //   <div className="flex items-center gap-x-1  ">
-    //     <div className="pl-4">
-    //       <Logo height={70} width={70} />
-    //     </div>
-    //     <NavbarLink href="#">Icons</NavbarLink>
-    //     <NavbarLink href="#">App</NavbarLink>
-    //     <NavbarLink href="#">Pricing</NavbarLink>
-    //     <NavbarLink href="#" isHighlighted={true}>
-    //       Buy Icons
-    //     </NavbarLink>
-    //   </div>
-    //   <div className="flex items-center gap-x-1 mr-8">
-    //     {/* <NavbarLink href="#" onClick={() => {}}>
-    //       <LogIn className="size-4 mr-1" /> Login
-    //     </NavbarLink> */}
-    //     {/* <NavbarLink href="#">Sign Up</NavbarLink> */}
-    //     <LoginDialog />
-    //     <RegisterDialog />
-    //     <ShoppingBagSheet />
-    //   </div>
-
-    //   {/* </div> */}
-    // </NavbarContainer>
 
     <div
       className={cn(
@@ -262,6 +173,7 @@ export const Navigate = () => {
         </div>
 
         <div className="flex items-center">
+          {/* Notification here */}
           {user && (
             <Popover>
               <PopoverTrigger>
@@ -364,6 +276,7 @@ export const Navigate = () => {
             </Popover>
           )}
           <ShoppingBagSheet />
+          {/* Account hrere*/}
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -378,9 +291,13 @@ export const Navigate = () => {
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">{user.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
+                    {user?.email ? (
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    ) : <p className="text-xs leading-none text-muted-foreground">
+                      {user.phone}
+                    </p>}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -401,7 +318,9 @@ export const Navigate = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={async () => {
                   await logOut()
-                  window.location.reload();
+                  queryClient.removeQueries({ queryKey: ["authUser"] });
+                  router.push("/");
+                  loginDialog.onOpen();
                 }} className="hover:cursor-pointer">
                   <LogOut />
                   Đăng xuất
@@ -409,6 +328,7 @@ export const Navigate = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+          {user && !user.isVerification && (<VerifyDialog />)}
           {!user && (
             <>
               <LoginDialog />

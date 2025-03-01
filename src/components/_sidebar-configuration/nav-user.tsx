@@ -27,32 +27,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { logOut } from "@/actions/auth"
-import { ApiResponse, Profile } from "@/types/types"
-import { toast } from "sonner"
-import { getProfile } from "@/actions/user"
+import { useRouter } from "next/navigation"
+import { Profile } from "@/types/types"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { data: user } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      try {
-        const res = await getProfile();
-        if (res?.isSuccess) {
-          const data: ApiResponse<Profile> = res?.data
-          return data.value;
-        }
-        return null;
-      } catch (error) {
-        console.log(error);
-        toast.error("Lỗi hệ thống")
-      }
-    },
-    retry: false,
-    initialData: null,
-  });
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: user } = useQuery<Profile>({ queryKey: ["authUser, mange"] })
+
   const getRoleLabel = (role: string | undefined) => {
     switch (role) {
       case 'Administrator':
@@ -63,6 +48,7 @@ export function NavUser() {
         return 'Nhân viên';
     }
   };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -114,8 +100,9 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={async () => {
-              await logOut();
-              window.location.href = "/";
+              await logOut()
+              queryClient.removeQueries({ queryKey: ["authUser"] });
+              router.push("/");
             }} className="cursor-pointer">
               <LogOut />
               Đăng xuất

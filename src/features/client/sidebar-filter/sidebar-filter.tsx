@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { CardProduct } from "@/components/global-components/card/card-product";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { ApiResponse, PageResult } from "@/types/types";
 
 const items = [
   {
@@ -47,6 +49,26 @@ const items = [
   },
 ] as const;
 
+export interface ProductVariantSummaryResponse {
+  productVariantId: string;
+  sku: string;
+  netWeight: number;
+  price: number;
+  discountPrice: number | null;
+  stockQuantity: number;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  categoryId: string;
+  origin: string;
+  mainImageUrl: string;
+  productVariantSummaryResponse: ProductVariantSummaryResponse;
+}
+
+
 const FormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one item.",
@@ -54,6 +76,7 @@ const FormSchema = z.object({
 });
 
 export function SidebarFilter() {
+  const { data: products } = useFetch<ApiResponse<PageResult<Product>>>("/Products", ["products", "guest"])
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -106,10 +129,10 @@ export function SidebarFilter() {
                                 return checked
                                   ? field.onChange([...field.value, item.id])
                                   : field.onChange(
-                                      field.value?.filter(
-                                        (value) => value !== item.id
-                                      )
-                                    );
+                                    field.value?.filter(
+                                      (value) => value !== item.id
+                                    )
+                                  );
                               }}
                             />
                           </FormControl>
@@ -130,8 +153,8 @@ export function SidebarFilter() {
 
       {/* Main Content */}
       <div className="flex-1 h-full overflow-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 lg:gap-4 2xl:gap-6">
-        {Array.from({ length: 20 }).map((_, index) => (
-          <CardProduct key={index} />
+        {products?.value?.items.map((product: Product, index) => (
+          <CardProduct product={product} key={product.id} />
         ))}
       </div>
     </div>

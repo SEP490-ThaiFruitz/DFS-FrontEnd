@@ -97,6 +97,7 @@ function InformationPersonal() {
                         name='birthday'
                         form={form}
                         type='Date'
+                        isMaxDate
                         disabled={isPending}
                         label='Ngày sinh nhật'
                         classNameInput='block'

@@ -66,8 +66,7 @@ function ProfileAvatar() {
                 <Image
                     src={file?.preview ?? user?.avatar ?? "https://res.cloudinary.com/deojypwtl/image/upload/v1740025338/%C4%90%E1%BB%A9c%20L%C3%AAn%20fs/8edbaec6ea96436e97e56d24d0d7d61a_t1tsw3.png"}
                     alt={"avatar"}
-                    width={1000}
-                    height={1000}
+                    fill
                     className="rounded-full object-cover border-4 border-purple-200"
                 />
                 <button disabled={isPending} className="absolute bottom-0 right-0 bg-purple-500 text-white rounded-full p-2 cursor-pointer hover:bg-purple-600 transition-colors">

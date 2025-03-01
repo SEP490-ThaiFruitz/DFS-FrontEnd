@@ -4,7 +4,8 @@ import React from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Undo2 } from 'lucide-react'
+import { HomeIcon, Undo2 } from 'lucide-react'
+
 
 export default function NotFound() {
     const router = useRouter();
@@ -27,10 +28,16 @@ export default function NotFound() {
                     <div className='my-5'>
                         Thật không may, có lỗi xảy ra và trang này không tồn tại. Hãy thử sử dụng chức năng tìm kiếm hoặc quay lại trang trước.
                     </div>
-                    <Button size='sm' onClick={handleBackClick}>
-                        <Undo2 className='mr-1' size={20} />
-                        Quay lại
-                    </Button>
+                    <div className="flex items-center justify-between">
+                        <Button size="sm" variant={"outline"} className="flex items-center gap-2 px-4 py-2 font-bold" onClick={handleBackClick}>
+                            <Undo2 size={22} />
+                            <span>Quay lại</span>
+                        </Button>
+                        <Button size="sm" variant={"outline"} className="flex items-center gap-2 px-4 py-2 font-bold text-green-700 border-green-700" onClick={() => router.push("/")}>
+                            <HomeIcon size={22} />
+                            <span>Trang chủ</span>
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

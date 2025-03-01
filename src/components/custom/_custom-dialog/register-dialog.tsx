@@ -17,28 +17,60 @@ import { toast } from "sonner";
 import { useRegisterDialog } from "@/hooks/use-register-dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { registerAction } from "@/actions/auth";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+interface RegisterUser {
+  name: string;
+  password: string;
+  email?: string;
+  phone?: string;
+}
 
 export const RegisterDialog = () => {
   const form = useForm<z.infer<typeof RegisterSafeTypes>>({
     resolver: zodResolver(RegisterSafeTypes),
+    defaultValues: {
+      type: "phone"
+    },
   });
 
   const registerDialog = useRegisterDialog();
   const loginDialog = useLoginDialog();
+  const [loginType, setLoginType] = useState<"phone" | "email">("phone");
+  const queryClient = useQueryClient();
+
+  const { isPending, mutate: registerAccountMutation } = useMutation({
+    mutationFn: async (value: RegisterUser) => {
+      try {
+        const response = await registerAction(value);
+
+        if (!response?.isSuccess) {
+          if (response?.detail.includes("Email")) {
+            throw new Error("Email đã tồn tại. Vui lòng đăng nhập")
+          }
+          if (response?.detail.includes("Phone")) {
+            throw new Error("Số điện thoại đã tồn tại. Vui lòng đăng nhập")
+          }
+          throw new Error("Lỗi hệ thống")
+        }
+      } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["authUser"] })
+      registerDialog.onClose();
+      loginDialog.onClose();
+      form.reset();
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    }
+  });
 
   const onSubmit = async (values: z.infer<typeof RegisterSafeTypes>) => {
-    try {
-      console.log({ values });
-
-      const response: any = await registerAction({
-        username: values.phone,
-        password: values.password,
-      });
-
-      toast.success("Register successfully!");
-    } catch (error) {
-      console.log({ error });
-    }
+    registerAccountMutation(values)
   };
 
   const toggle = () => {
@@ -54,6 +86,7 @@ export const RegisterDialog = () => {
 
   const trigger = (
     <button
+      disabled={isPending}
       onClick={registerDialog.onOpen}
       className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
     >
@@ -64,18 +97,48 @@ export const RegisterDialog = () => {
   const body = (
     <div>
       <FormValues form={form} onSubmit={onSubmit}>
+        {loginType === "phone" ? (
+          <div className="relative">
+            <FormInputControl
+              form={form}
+              name="phone"
+              disabled={isPending}
+              label="Số điện thoại"
+              placeholder="+84..."
+            />
+            <button onMouseDown={() => {
+              setLoginType("email")
+              form.resetField("phone")
+              form.setValue("type", "email")
+            }} className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer">Email</button>
+          </div>
+        ) : (
+          <div className="relative">
+            <FormInputControl
+              form={form}
+              name="email"
+              disabled={isPending}
+              label="Email"
+              placeholder="example@mail.com"
+            />
+            <button onMouseDown={() => {
+              setLoginType("phone")
+              form.resetField("email")
+              form.setValue("type", "phone")
+            }} className="absolute right-2.5 top-1 font-bold hover:underline hover:cursor-pointer">Số điện thoại</button>
+          </div>
+        )}
         <FormInputControl
           form={form}
-          name="phone"
-          disabled={form.formState.isSubmitting}
-          label="Phone"
-          placeholder="+84..."
+          name="name"
+          disabled={isPending}
+          label="Họ và tên"
+          placeholder="Nguyễn Anh Minh"
         />
-
         <FormPassword
           form={form}
           name="password"
-          disabled={form.formState.isSubmitting}
+          disabled={isPending}
           label="Mật Khẩu"
           placeholder="Nhập mật khẩu"
         />
@@ -83,25 +146,19 @@ export const RegisterDialog = () => {
         <FormPassword
           form={form}
           name="confirmPassword"
-          disabled={form.formState.isSubmitting}
+          disabled={isPending}
           label="Xác Nhận Mật Khẩu"
           placeholder="Nhập lại mật khẩu"
         />
 
-        <DialogFooter>
-          <ButtonCustomized
-            className="w-32 bg-neutral-200 hover:bg-neutral-300 text-slate-900"
-            variant="outline"
-            label="Đóng"
-            onClick={registerDialog.onClose}
-          />
-
+        <DialogFooter className="py-6">
           <ButtonCustomized
             type="submit"
-            className="w-auto min-w-32 bg-sky-500 hover:bg-sky-700 hover:font-semibold duration-300 transition"
+            disabled={isPending}
+            className="bg-sky-500 hover:bg-sky-700 hover:font-semibold duration-300 transition"
             variant="secondary"
             label={
-              form.formState.isSubmitting ? (
+              isPending ? (
                 <WaitingSpinner
                   variant="pinwheel"
                   label="Đang đăng kí..."
@@ -115,7 +172,7 @@ export const RegisterDialog = () => {
           />
         </DialogFooter>
       </FormValues>
-      <div className="my-6">
+      <div className="mt-6">
         <h2 className="flex font-semibold items-center justify-center gap-x-1">
           Bạn đã có tài khoản?{" "}
           <button

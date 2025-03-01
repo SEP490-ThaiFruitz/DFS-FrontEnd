@@ -71,4 +71,5 @@ export interface Profile {
   point: number;
   balance: number | null;
   role: string;
+  isVerification : boolean;
 }

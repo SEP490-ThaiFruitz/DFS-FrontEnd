@@ -8,15 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Product } from "@/features/client/sidebar-filter/sidebar-filter";
 import { formatVND } from "@/lib/format-currency";
 import { truncate } from "lodash";
 import Image from "next/image";
 
 interface CardProductProps {
-  // handleAddToCart: (e: React.MouseEvent) => void;
+  product: Product
 }
 
-export const CardProduct = ({}: CardProductProps) => {
+export const CardProduct = ({ product }: Readonly<CardProductProps>) => {
   return (
     <CardContainer
       className="inter-var cursor-pointer w-96 lg:w-80 2xl:w-96 motion-preset-pop hover:shadow-xl hover:scale-105 rounded-xl transition duration-300
@@ -27,8 +28,8 @@ export const CardProduct = ({}: CardProductProps) => {
         {/* <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto max-h-[350px] rounded-xl p-6 border transition duration-300"> */}
         <CardItem translateY={6} translateZ={6} className="">
           <Image
-            src="/images/third-background.png"
-            alt="Picture of the author"
+            src={product.mainImageUrl}
+            alt={product.name}
             height="1000"
             width="1000"
             className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl group-hover/card:scale-105 cursor-pointer transition duration-300"
@@ -42,7 +43,7 @@ export const CardProduct = ({}: CardProductProps) => {
           as="h1"
         >
           {truncate(
-            "Hover over this card to unleash the power of CSS perspective",
+            product.name,
             { length: 60 }
           )}
         </CardItem>
@@ -54,7 +55,7 @@ export const CardProduct = ({}: CardProductProps) => {
           as="h1"
         >
           {truncate(
-            "Hover over this card to unleash the power of CSS perspective",
+            product.description,
             { length: 80 }
           )}
         </CardItem>
@@ -66,7 +67,7 @@ export const CardProduct = ({}: CardProductProps) => {
             className="flex items-center gap-x-2"
           >
             <CardItem translateY={10} translateZ={10} as="del">
-              {formatVND(20000)}
+              {formatVND(product.productVariantSummaryResponse.price)}
             </CardItem>
             <CardItem
               translateY={10}
@@ -74,12 +75,12 @@ export const CardProduct = ({}: CardProductProps) => {
               as="h2"
               className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
             >
-              {formatVND(10000)}
+              {formatVND(product.productVariantSummaryResponse.price)}
             </CardItem>
           </CardItem>
 
           <CardItem translateY={10} translateZ={10} as="h4">
-            <StatusButton handleAddToCart={() => {}} />
+            <StatusButton handleAddToCart={() => { }} />
           </CardItem>
         </div>
       </CardBody>

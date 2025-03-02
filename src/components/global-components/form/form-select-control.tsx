@@ -46,6 +46,7 @@ interface FormSelectControlProps<T extends FieldValues, K> {
   defaultValue?: any;
   icon?: React.ReactElement;
   require?: boolean;
+  isCustomValue?: boolean;
 }
 
 export const FormSelectControl = <T extends FieldValues, K>({
@@ -63,6 +64,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
   search,
   isImage,
   require,
+  isCustomValue
 }: FormSelectControlProps<T, K>) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -122,7 +124,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
                       isImage ? (
                         <SelectItem
                           key={data.id}
-                          value={data.id.toString()}
+                          value={isCustomValue ?  `${data.id.toString()}-${data.name}` : data.id.toString()}
                           className="block w-full text-left cursor-pointer"
                         >
                           <div className="inline-flex justify-between items-center w-full">
@@ -139,7 +141,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
                         <SelectItem
                           className="cursor-pointer"
                           key={data.id}
-                          value={data.id.toString()}
+                          value={isCustomValue ?  `${data.id.toString()}-${data.name}` : data.id.toString()}
                         >
                           {data.name}
                         </SelectItem>

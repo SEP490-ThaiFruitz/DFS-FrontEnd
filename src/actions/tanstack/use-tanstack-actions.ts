@@ -19,7 +19,7 @@ const handleParams = (params: Record<string, any>, endpoint: string) => {
 
 const fetching = async (endpoint: string, params?: Record<string, any>) => {
   try {
-   
+
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`

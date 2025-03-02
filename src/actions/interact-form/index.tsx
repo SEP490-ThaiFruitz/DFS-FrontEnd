@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import axios from "axios";
 import { toast } from "sonner";
+import { getHeaders } from "../client/interact-api";
 
 export const onSubmit = async <T,>(
   zodSchema: z.ZodObject<any>,
@@ -9,9 +10,13 @@ export const onSubmit = async <T,>(
   endpoint: string
 ) => {
   try {
+    
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
-      data
+      data,
+      {
+        headers: await getHeaders(data instanceof FormData)
+      }
     );
 
     if (response.status === 200) {

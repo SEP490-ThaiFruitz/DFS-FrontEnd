@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -21,34 +21,53 @@ import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 // Types
 import { ApiResponse } from '@/types/types';
 import { FormAddressSafeTypes } from '@/zod-safe-types/address-safe-types';
+import { UseMutateFunction, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { createAddress, updateAddress } from '@/actions/address';
+import { FormControl, FormItem } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
+import { Address } from './address-page';
 
 interface FormAddressProps {
-    address?: {
-        id: number;
-        name: string;
-        tag: string;
-        address: string;
-        phone: string;
-        isDefault: boolean;
-    };
+    address?: Address;
     onClose: () => void;
 }
 
 const useAddressForm = (address?: FormAddressProps['address']) => {
     const form = useForm<z.infer<typeof FormAddressSafeTypes>>({
         resolver: zodResolver(FormAddressSafeTypes),
-        defaultValues: address
-            ? {
-                tag: address.tag,
-                name: address.name,
-                phone: address.phone,
-                address: address.address,
-            }
-            : undefined,
+        defaultValues: {
+            id: undefined,
+            tag: "",
+            name: "",
+            phone: "",
+            address: "",
+            province: "",
+            district: "",
+            ward: "",
+            isDefault: false,
+        },
     });
-
-    const onSubmit = (values: z.infer<typeof FormAddressSafeTypes>) => {
-        console.log(values);
+    useEffect(() => {
+        if (address) {
+            form.reset({
+                id: address.id,
+                tag: address.tagName || "",
+                name: address.receiverName || "",
+                phone: address.receiverPhone || "",
+                address: address.receiverAddress?.split(",")[0] || "",
+                province: `${address.provinceID}-${address.receiverAddress?.split(",")[3]?.trim() ?? ""}`,
+                district: `${address.districtID}-${address.receiverAddress?.split(",")[2]?.trim() ?? ""}`,
+                ward: `${address.wardID}-${address.receiverAddress?.split(",")[1]?.trim() ?? ""}`,
+                isDefault: address.isDefault ?? false,
+            });
+        }
+    }, [address, form]);
+    const onSubmit = (
+        values: z.infer<typeof FormAddressSafeTypes>,
+        mutation: UseMutateFunction<void, Error, any, unknown>
+    ) => {
+        mutation(values);
     };
 
     return { form, onSubmit };
@@ -56,25 +75,90 @@ const useAddressForm = (address?: FormAddressProps['address']) => {
 
 function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
     const { form, onSubmit } = useAddressForm(address);
-
+    const queryClient = useQueryClient();
+    console.log(form.getValues())
     const { data: provinces } = useFetch<ApiResponse<SelectData[]>>("/Addresses/province", ["provinces"]);
 
-    const provinceId = form.watch('province');
-    const districtId = form.watch('district');
+    const { isPending, mutate: addressMutation } = useMutation({
+        mutationFn: async ({ id, province, district, ward, address, name, tag, isDefault, phone }
+            : { id: string, province: string, district: string, ward: string, address: string, name: string, tag: string, isDefault: boolean, phone: string }) => {
+            try {
+                const payload = {
+                    tagName: tag,
+                    receiverName: name,
+                    receiverPhone: phone,
+                    receiverAddress: `${address}, ${ward.split("-")[1]}, ${district.split("-")[1]}, ${province.split("-")[1]}`,
+                    longtitude: null,
+                    latitude: null,
+                    isDefault: isDefault,
+                    wardId: Number(ward?.split("-")[0]) || 0,
+                };
+
+                const response = id === undefined ? await createAddress(payload) : await updateAddress({ id, ...payload });
+
+                if (!response?.isSuccess) {
+                    if (response?.status === 409) {
+                        throw new Error("Tên thẻ đã tồn tại")
+                    }
+                    throw new Error("Lỗi hệ thống")
+                }
+            } catch (error: unknown) {
+                throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống");
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["addresses"] })
+            if (form.getFieldState("id") === undefined) {
+                toast.success("Tạo địa chỉ thành công")
+            } else {
+                toast.success("Cập nhật địa chỉ thành công")
+            }
+            form.reset();
+            onClose();
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
+
+    const provinceId = form.watch("province");
+    const districtId = form.watch("district");
+
+    const [province, setProvince] = useState<string>();
+    const [district, setDistrict] = useState<string>();
+
+    useEffect(() => {
+        if (provinceId) {
+            setProvince(provinceId.split("-")[0]);
+        }
+    }, [provinceId]);
+
+
+    useEffect(() => {
+        if (districtId) {
+            setDistrict(districtId.split("-")[0]);
+        }
+    }, [districtId]);
 
     const { data: districts } = useFetch<ApiResponse<SelectData[]>>(
-        `/Addresses/district/${provinceId}`,
-        ["districts", provinceId],
+        `/Addresses/district/${province}`,
+        ["districts", province ?? ""],
         {},
-        { enabled: !!provinceId }
+        { enabled: !!province }
     );
 
     const { data: wards } = useFetch<ApiResponse<SelectData[]>>(
-        `/Addresses/${districtId}/ward`,
-        ["wards", districtId],
+        `/Addresses/${district}/ward`,
+        ["wards", district ?? ""],
         {},
-        { enabled: !!districtId }
+        { enabled: !!district }
     );
+    useEffect(() => {
+        if (address) {
+            form.setValue("district", `${address?.districtID}-${address?.receiverAddress?.split(",")[2]?.trim() ?? ""}`)
+            form.setValue("ward", `${address?.wardID}-${address?.receiverAddress?.split(",")[1]?.trim() ?? ""}`)
+        }
+    }, [address, form, wards]);
 
     if (!provinces) {
         return (
@@ -94,36 +178,58 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
             <ResizableHandle withHandle className="bg-purple-200" />
             <ResizablePanel defaultSize={60} minSize={40} className="p-4">
                 <h4 className="text-xl font-semibold mb-6 text-purple-700">{title}</h4>
-                <FormValues<z.infer<typeof FormAddressSafeTypes>> form={form} onSubmit={onSubmit}>
+                <FormValues<z.infer<typeof FormAddressSafeTypes>> form={form} onSubmit={(values) => onSubmit(values, addressMutation)}>
                     <div className="space-y-5">
                         <div className="grid sm:grid-cols-2 gap-10">
-                            <FormInputControl form={form} name="tag" label="Tên thẻ" />
-                            <FormInputControl form={form} name="name" label="Tên" />
-                            <FormInputControl form={form} name="phone" label="Số điện thoại" />
+                            <FormInputControl disabled={isPending} form={form} name="tag" label="Tên thẻ" />
+                            <FormInputControl disabled={isPending} form={form} name="name" label="Tên" />
+                            <FormInputControl disabled={isPending} form={form} name="phone" label="Số điện thoại" />
                             <FormSelectControl
+                                disabled={isPending}
                                 form={form}
                                 name="province"
                                 label="Tỉnh / Thành phố"
                                 placeholder="Chọn tỉnh / thành phố"
                                 items={provinces?.value}
+                                isCustomValue
                             />
                             <FormSelectControl
+                                disabled={isPending}
                                 form={form}
                                 name="district"
                                 label="Quận / Huyện"
                                 placeholder="Chọn quận / huyện"
                                 items={districts?.value}
+                                isCustomValue
                             />
                             <FormSelectControl
+                                disabled={isPending}
                                 form={form}
                                 name="ward"
                                 label="Phường / Xã"
                                 placeholder="Chọn phường / xã"
                                 items={wards?.value}
+                                isCustomValue
                             />
                         </div>
-                        <FormTextareaControl form={form} name="address" label="Địa chỉ" />
-                        <div className="flex flex-row-reverse justify-between">
+                        <FormTextareaControl disabled={isPending} form={form} name="address" label="Địa chỉ" />
+                        <Controller
+                            name="isDefault"
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between">
+                                    <p className="text-sm font-medium">Địa chỉ mặc định</p>
+                                    <FormControl>
+                                        <Switch
+                                            className={`${field.value ? "!bg-green-500" : "!bg-red-500"}`}
+                                            onCheckedChange={(checked) => field.onChange(checked)}
+                                            checked={field.value}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <div className="pt-5 pb-3 flex flex-row-reverse justify-between">
                             <Button
                                 className="h-10"
                                 onClick={() => {
@@ -136,11 +242,11 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
                             </Button>
                             <ButtonCustomized
                                 type="submit"
-                                className="max-w-32 h-10 rounded-md bg-purple-500 hover:bg-purple-700"
+                                className="max-w-fit h-10 rounded-md bg-purple-500 hover:bg-purple-700"
                                 variant="secondary"
-                                disabled={form.formState.isSubmitting}
+                                disabled={isPending}
                                 label={
-                                    form.formState.isSubmitting ? (
+                                    isPending ? (
                                         <WaitingSpinner
                                             variant="pinwheel"
                                             label={submittingLabel}

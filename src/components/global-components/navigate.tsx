@@ -14,7 +14,7 @@ import Link from "next/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Bell, Boxes, LogOut, MapPinHouse, UserRoundPen } from "lucide-react";
+import { Bell, Boxes, Heart, LogOut, MapPinHouse, UserRoundPen } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -175,13 +175,14 @@ export const Navigate = () => {
         <div className="flex items-center">
           {/* Notification here */}
           {user && (
-            <Popover>
-              <PopoverTrigger>
-                <div className="relative inline-flex text-sm h-11 w-10 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
-                  <div className="relative">
-                    <Bell className="size-4 mr-1 relative" />
-                    <span
-                      className="
+            <div className="space-x-1 md:space-x-6">
+              <Popover>
+                <PopoverTrigger>
+                  <div className="relative inline-flex text-sm h-11 w-10 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
+                    <div className="relative">
+                      <Bell className="size-4 mr-1 relative" />
+                      <span
+                        className="
                                  absolute
                                  -top-1
                                  -right-2
@@ -192,143 +193,144 @@ export const Navigate = () => {
                                   rounded-full
                                  flex items-center justify-center
                                  "
-                    >
-                      0
-                    </span>
+                      >
+                        0
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent
-                className="min-w-96 max-h-[600px] overflow-y-hidden hover:overflow-y-auto scroll-smooth"
-                style={{ scrollbarWidth: 'thin' }}
-              >
-                <p className="font-bold mb-2">Thông báo</p>
-                <Tabs defaultValue="all">
-                  <TabsList className="ml-auto my-4">
-                    <TabsTrigger
-                      value="all"
-                      className="text-zinc-600 dark:text-zinc-200"
-                    >
-                      Tất cả
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="unread"
-                      className="text-zinc-600 dark:text-zinc-200"
-                    >
-                      Chưa đọc
-                    </TabsTrigger>
-                  </TabsList>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="min-w-96 max-h-[600px] overflow-y-hidden hover:overflow-y-auto scroll-smooth"
+                  style={{ scrollbarWidth: 'thin' }}
+                >
+                  <p className="font-bold mb-2">Thông báo</p>
+                  <Tabs defaultValue="all">
+                    <TabsList className="ml-auto my-4">
+                      <TabsTrigger
+                        value="all"
+                        className="text-zinc-600 dark:text-zinc-200"
+                      >
+                        Tất cả
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="unread"
+                        className="text-zinc-600 dark:text-zinc-200"
+                      >
+                        Chưa đọc
+                      </TabsTrigger>
+                    </TabsList>
 
-                  <TabsContent value="all" className="m-0">
-                    {notification.map((_) => (
-                      <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
-                        <Avatar>
-                          <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
-                          <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                            {_.title} + {" "}
-                            {_.content}
+                    <TabsContent value="all" className="m-0">
+                      {notification.map((_) => (
+                        <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                          <Avatar>
+                            <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
+                            <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
+                              {_.title} + {" "}
+                              {_.content}
 
-                          </h4>
+                            </h4>
 
+                          </div>
+                          <Badge
+                            variant={_.status === 'Online' ? 'default' : 'secondary'}
+                            className="mt-2"
+                          >
+                            {_.status}
+                          </Badge>
                         </div>
-                        <Badge
-                          variant={_.status === 'Online' ? 'default' : 'secondary'}
-                          className="mt-2"
-                        >
-                          {_.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </TabsContent>
-                  <TabsContent value="unread" className="m-0">
-                    {notification.map((_) => (
-                      <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
-                        <Avatar>
-                          <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
-                          <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                            {_.title} + {" "}
-                            {_.content}
+                      ))}
+                    </TabsContent>
+                    <TabsContent value="unread" className="m-0">
+                      {notification.map((_) => (
+                        <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                          <Avatar>
+                            <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
+                            <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
+                              {_.title} + {" "}
+                              {_.content}
 
-                          </h4>
+                            </h4>
 
+                          </div>
+                          <Badge
+                            variant={_.status === 'Online' ? 'default' : 'secondary'}
+                            className="mt-2"
+                          >
+                            {_.status}
+                          </Badge>
                         </div>
-                        <Badge
-                          variant={_.status === 'Online' ? 'default' : 'secondary'}
-                          className="mt-2"
-                        >
-                          {_.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </TabsContent>
-                </Tabs>
+                      ))}
+                    </TabsContent>
+                  </Tabs>
 
-                <div className="mt-2 text-center">
-                  <Button className="inline-block" size="sm">Xem thêm</Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-          <ShoppingBagSheet />
-          {/* Account hrere*/}
-          {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-12 w-12 rounded-full border">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>SC</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.name}</p>
-                    {user?.email ? (
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
-                      </p>
-                    ) : <p className="text-xs leading-none text-muted-foreground">
-                      {user.phone}
-                    </p>}
+                  <div className="mt-2 text-center">
+                    <Button className="inline-block" size="sm">Xem thêm</Button>
                   </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => router.push("/profile")} className="hover:cursor-pointer">
-                    <UserRoundPen />
-                    Hồ sơ
+                </PopoverContent>
+              </Popover>
+              <Link href={"/favorites"} className="relative inline-flex text-sm h-11 w-10 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
+                <Heart className="size-4" />
+              </Link>
+              <ShoppingBagSheet />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-12 w-12 rounded-full border">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback>SC</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      {user?.email ? (
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email}
+                        </p>
+                      ) : <p className="text-xs leading-none text-muted-foreground">
+                        {user.phone}
+                      </p>}
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => router.push("/profile")} className="hover:cursor-pointer">
+                      <UserRoundPen />
+                      Hồ sơ
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/profile?tab=address")} className="hover:cursor-pointer">
+                      <MapPinHouse />
+                      Địa chỉ
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="hover:cursor-pointer">
+                      <Boxes />
+                      Đơn hàng
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={async () => {
+                    await logOut()
+                    queryClient.removeQueries({ queryKey: ["authUser"] });
+                    router.push("/");
+                    loginDialog.onOpen();
+                  }} className="hover:cursor-pointer">
+                    <LogOut />
+                    Đăng xuất
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/profile?tab=address")} className="hover:cursor-pointer">
-                    <MapPinHouse />
-                    Địa chỉ
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:cursor-pointer">
-                    <Boxes />
-                    Đơn hàng
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={async () => {
-                  await logOut()
-                  queryClient.removeQueries({ queryKey: ["authUser"] });
-                  router.push("/");
-                  loginDialog.onOpen();
-                }} className="hover:cursor-pointer">
-                  <LogOut />
-                  Đăng xuất
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {!user.isVerification && (<VerifyDialog />)}
+            </div>
           )}
-          {user && !user.isVerification && (<VerifyDialog />)}
           {!user && (
             <>
               <LoginDialog />

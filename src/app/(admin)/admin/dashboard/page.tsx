@@ -1,5 +1,4 @@
 import { interactApi } from "@/actions/client/interact-api";
-import { getF } from "@/actions/interact";
 import { DataTable } from "@/components/global-components/data-table/data-table";
 import { Payment, columns } from "@/features/admin/dashboard/column";
 

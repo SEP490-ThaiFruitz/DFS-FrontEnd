@@ -106,14 +106,17 @@ export const ProductItem = ({
   description,
   href,
   src,
+
+  className,
 }: {
   title: string;
   description: string;
   href: string;
   src: string;
+  className?: string;
 }) => {
   return (
-    <Link href={href} className="flex space-x-2">
+    <Link href={href} className={cn("flex space-x-2", className)}>
       <Image
         src={src}
         width={140}

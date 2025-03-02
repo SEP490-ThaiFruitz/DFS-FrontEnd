@@ -15,6 +15,9 @@ import Image from "next/image";
 import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 import { ProductTransformType, ProductTypes } from "@/providers/data-provider";
 import { EnhanceButton } from "@/components/custom/_custom-button/enhance-button";
+import { cartActions } from "@/actions/cart/use-cart";
+import { useQueryClient } from "@tanstack/react-query";
+import { CART_KEY } from "@/app/key/comm-key";
 
 interface CardProductProps extends ProductTypes {
   // handleAddToCart: (e: React.MouseEvent) => void;
@@ -30,9 +33,13 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
     productVariantSummaryResponse,
   } = props;
 
+  const queryClient = useQueryClient();
+
+  // console.log({ productVariantSummaryResponse });
+
   return (
     <CardContainer
-      className="inter-var cursor-pointer w-96 lg:w-80 2xl:w-96 motion-preset-pop hover:shadow-xl hover:scale-105 rounded-xl transition duration-300
+      className="inter-var cursor-pointer w-96 lg:w-80 2xl:w-96 motion-preset-pop  hover:scale-105 rounded-xl transition duration-300
     "
       containerClassName="py-0"
     >
@@ -87,21 +94,45 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
             translateZ={20}
             className="flex items-center gap-x-2"
           >
-            <CardItem translateY={10} translateZ={10} as="del">
-              {formatVND(productVariantSummaryResponse.price)}
-            </CardItem>
-            <CardItem
-              translateY={10}
-              translateZ={10}
-              as="h2"
-              className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
-            >
-              {formatVND(productVariantSummaryResponse.price)}
-            </CardItem>
+            {productVariantSummaryResponse.discountPrice ? (
+              <>
+                <CardItem translateY={10} translateZ={10} as="del">
+                  {formatVND(productVariantSummaryResponse.price)}
+                </CardItem>
+                <CardItem
+                  translateY={10}
+                  translateZ={10}
+                  as="h2"
+                  className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
+                >
+                  {formatVND(productVariantSummaryResponse.discountPrice!)}
+                </CardItem>
+              </>
+            ) : (
+              <CardItem translateY={10} translateZ={10}>
+                <CardItem
+                  translateY={10}
+                  translateZ={10}
+                  as="h2"
+                  className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
+                >
+                  {formatVND(productVariantSummaryResponse.price)}
+                </CardItem>
+              </CardItem>
+            )}
           </CardItem>
 
           <CardItem translateY={10} translateZ={10} as="h4">
-            <StatusButton handleAddToCart={() => { }} />
+            <StatusButton
+              handleAddToCart={() => {
+                cartActions.addToCart({
+                  itemType: "ProductVariant",
+                  referenceId: productVariantSummaryResponse.productVariantId,
+                  quantity: 1,
+                });
+                queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
+              }}
+            />
           </CardItem>
         </div>
       </CardBody>

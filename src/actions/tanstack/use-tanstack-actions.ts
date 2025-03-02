@@ -1,9 +1,14 @@
+"use client";
+
 import {
   UseMutationOptions,
   useQuery,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { interactApiClient } from "../client/interact-api-client";
+
+import Cookies from "js-cookie";
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL_API;
 
@@ -18,11 +23,20 @@ const handleParams = (params: Record<string, any>, endpoint: string) => {
 };
 
 const fetching = async (endpoint: string, params?: Record<string, any>) => {
-  try {
-   
+  const token = Cookies.get("accessToken");
 
+  const headers: Record<string, string> = token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+
+  console.log({ headers });
+
+  try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`
+      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
+      {
+        headers,
+      }
     );
     // console.log(response)
     const data = await response.json();
@@ -47,33 +61,33 @@ export const useFetch = <T>(
   });
 };
 
-// export const useMutate = <T, D = any>(
-//   endpoint: string,
-//   method: "create" | "update" | "remove" = "create",
-//   options?: Omit<UseMutationOptions<T, Error, D>, "mutationFn">
-// ) => {
-//   return useMutation<T, Error, D>({
-//     mutationFn: async (data: D): Promise<any> => {
-//       try {
-//         switch (method) {
-//           case "create":
-//             return await interactApi.create(endpoint, data);
-//           case "update":
-//             return await interactApi.update(endpoint, data);
-//           case "remove":
-//             return await interactApi.remove(endpoint);
-//           default:
-//             throw new Error(`Unsupported method: ${method}`);
-//         }
-//       } catch (error) {
-//         console.error(
-//           `Error performing ${method.toUpperCase()} on ${endpoint}:`,
-//           error
-//         );
-//         throw error;
-//       }
-//     },
+export const useMutate = <T, D = any>(
+  endpoint: string,
+  method: "create" | "update" | "remove" = "create",
+  options?: Omit<UseMutationOptions<T, Error, D>, "mutationFn">
+) => {
+  return useMutation<T, Error, D>({
+    mutationFn: async (data: D): Promise<any> => {
+      try {
+        switch (method) {
+          case "create":
+            return await interactApiClient.post(endpoint, data);
+          // case "update":
+          //   return await interactApiClient.put(endpoint, data);
+          // case "remove":
+          //   return await interactApiClient.remove(endpoint);
+          default:
+            throw new Error(`Unsupported method: ${method}`);
+        }
+      } catch (error) {
+        console.error(
+          `Error performing ${method.toUpperCase()} on ${endpoint}:`,
+          error
+        );
+        throw error;
+      }
+    },
 
-//     ...options,
-//   });
-// };
+    ...options,
+  });
+};

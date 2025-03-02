@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useCookie, useLocalStorage } from "react-use";
 
 export type DecodeData = {
   Id: string;
@@ -27,6 +28,9 @@ export type AuthContextType = {
   setUser: Dispatch<SetStateAction<DecodeData | null>>;
   token: string | null;
   user: DecodeData | null;
+
+  value: unknown;
+  setValue: Dispatch<SetStateAction<unknown>>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -43,11 +47,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<DecodeData | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
+  // console.log({ token });
+
+  // const [updateCookie, deleteCookie] = useCookie("my-cookie");
+
+  useEffect(() => {}, []);
+
   useEffect(() => {
     if (token) {
       try {
         const decoded = jwtDecode<DecodeData>(token);
         setUser(decoded);
+        setValue(decoded);
       } catch (error) {
         console.error("Failed to decode token:", error);
       }
@@ -57,9 +68,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [token]);
 
-  console.log({ userDecoded: user });
+  const [value, setValue, remove] = useLocalStorage("user");
+
+  console.log({ value });
+
+  // console.log({ userDecoded: user });
   return (
-    <AuthContext.Provider value={{ setUser, user, setToken, token }}>
+    <AuthContext.Provider
+      value={{ setUser, user, setToken, token, value, setValue }}
+    >
       {children}
     </AuthContext.Provider>
   );

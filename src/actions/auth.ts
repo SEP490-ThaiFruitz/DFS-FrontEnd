@@ -11,10 +11,7 @@ export interface LoginResponse {
 
 export const loginAction = async <TValues>(values: TValues) => {
   try {
-    const response = await interactApi.post<TValues>(
-      "/Auths/sign-in",
-      values
-    );
+    const response = await interactApi.post<TValues>("/Auths/sign-in", values);
 
     if (!response?.isSuccess) {
       return {
@@ -25,11 +22,13 @@ export const loginAction = async <TValues>(values: TValues) => {
     }
     const loginResponse: LoginResponse = response.data?.value;
 
+    // console.log({ response });
+
     const cookieStore = await cookies();
 
     cookieStore.set("accessToken", loginResponse.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // httpOnly: true,
+      // secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
 
       // sameSite: "strict",
@@ -37,8 +36,8 @@ export const loginAction = async <TValues>(values: TValues) => {
     });
 
     cookieStore.set("refreshToken", loginResponse.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // httpOnly: true,
+      // secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
 
@@ -51,9 +50,9 @@ export const loginAction = async <TValues>(values: TValues) => {
     // });
 
     return {
-      isSuccess: true
+      isSuccess: true,
+      ...response?.data.value,
     };
-
   } catch (error) {
     console.error("Error during login:", error);
     return { isSuccess: false, message: "Lỗi hệ thống" };
@@ -62,17 +61,14 @@ export const loginAction = async <TValues>(values: TValues) => {
 
 export const registerAction = async <TValues>(values: TValues) => {
   try {
-    const response = await interactApi.post<TValues>(
-      "/Auths/sign-up",
-      values
-    );
+    const response = await interactApi.post<TValues>("/Auths/sign-up", values);
 
     if (!response?.isSuccess) {
       return {
         isSuccess: false,
         status: response?.status,
         message: response?.message,
-        detail: response?.detail
+        detail: response?.detail,
       };
     }
     const loginResponse: LoginResponse = response.data?.value;
@@ -91,43 +87,43 @@ export const registerAction = async <TValues>(values: TValues) => {
       maxAge: 60 * 60 * 24 * 7,
     });
 
-
     return {
-      isSuccess: true
+      isSuccess: true,
     };
-
   } catch (error) {
     console.error("Error during register:", error);
     return { isSuccess: false, message: "Lỗi hệ thống" };
   }
-}
+};
 
 export const logOut = async () => {
   const cookieStore = await cookies();
-  const allCookies = cookieStore.getAll()
-  allCookies.forEach((cookie) => {
-    cookieStore.delete(cookie.name);
-  });
+
+  await cookieStore.delete("accessToken");
+  await cookieStore.delete("refreshToken");
+
+  // const allCookies = cookieStore.getAll()
+  // allCookies.forEach((cookie) => {
+  //   cookieStore.delete(cookie.name);
+  // });
 };
 
 export const verifyAccount = async (otp: string) => {
-  return await interactApi.post("/Auths/confirm-otp-verification", { otp })
-}
+  return await interactApi.post("/Auths/confirm-otp-verification", { otp });
+};
 
 export const sendCodeVerifyAccount = async <TValues>(values: TValues) => {
-  return await interactApi.post("/Auths/send-otp-verification", values)
-}
+  return await interactApi.post("/Auths/send-otp-verification", values);
+};
 
 export const sendForgetPassword = async <TValues>(values: TValues) => {
-  return await interactApi.post("/Auths/forgot-password", values)
-}
+  return await interactApi.post("/Auths/forgot-password", values);
+};
 
 export const verifyForgetPassword = async <TValues>(values: TValues) => {
-  return await interactApi.post("/Auths/confirm-otp-reset-password", values)
-}
+  return await interactApi.post("/Auths/confirm-otp-reset-password", values);
+};
 
 export const updateNewPassword = async <TValues>(values: TValues) => {
-  return await interactApi.put("/Auths/reset-password", values)
-}
-
-
+  return await interactApi.put("/Auths/reset-password", values);
+};

@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForgetPasswordDialog } from "@/hooks/use-forget-password-dialog";
 import { FormForgetPassword } from "@/features/auth/forget-password/form-forget-password";
+import { useAuth } from "@/providers/auth-provider";
 
 export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypes>>({
@@ -31,39 +32,49 @@ export const LoginDialog = () => {
 
   const queryClient = useQueryClient();
 
+  const { setToken } = useAuth();
+
   const { isPending, mutate: loginMutation } = useMutation({
-    mutationFn: async ({ username, password }: { username: string, password: string }) => {
+    mutationFn: async ({
+      username,
+      password,
+    }: {
+      username: string;
+      password: string;
+    }) => {
       try {
         const response: any = await loginAction({ username, password });
-
         if (!response?.isSuccess) {
           if (response?.status === 400 || response?.status === 404) {
             if (response?.message.includes("banned.")) {
-              throw new Error("Tài khoản của bạn đã bị khóa")
+              throw new Error("Tài khoản của bạn đã bị khóa");
             }
-            throw new Error("Tài khoản hoặc mật khẩu không đúng")
+            throw new Error("Tài khoản hoặc mật khẩu không đúng");
           }
-          throw new Error(response?.message || "Lỗi hệ thống")
+          throw new Error(response?.message || "Lỗi hệ thống");
         }
+
+        setToken(response.accessToken);
       } catch (error: any) {
         throw new Error(error?.message ?? "");
       }
     },
     onSuccess: () => {
       toast.success("Đăng nhập thành công", {
-        duration: 1000
+        duration: 1000,
       });
-      queryClient.invalidateQueries({ queryKey: ["authUser"] })
+
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
       registerDialog.onClose();
       loginDialog.onClose();
     },
     onError: (error) => {
-      toast.error(error.message)
-    }
+      toast.error(error.message);
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypes>) => {
-    loginMutation({ username: values.username, password: values?.password })
+    loginMutation({ username: values.username, password: values?.password });
   };
 
   const title = (
@@ -109,10 +120,11 @@ export const LoginDialog = () => {
           <button
             type="button"
             onClick={() => {
-              forgetPasswordDialog.onOpen()
+              forgetPasswordDialog.onOpen();
             }}
             className="ml-auto text-base font-semibold hover:scale-105 cursor-pointer 
-              hover:font-bold hover:underline">
+              hover:font-bold hover:underline"
+          >
             Quên mật khẩu?
           </button>
         </div>
@@ -137,7 +149,7 @@ export const LoginDialog = () => {
           />
         </DialogFooter>
       </FormValues>
-      {forgetPasswordDialog.isOpen && (<FormForgetPassword />)}
+      {forgetPasswordDialog.isOpen && <FormForgetPassword />}
       <div className="mt-6">
         <h2 className="flex font-semibold items-center justify-center gap-x-1">
           Bạn chưa có tài khoản?{" "}

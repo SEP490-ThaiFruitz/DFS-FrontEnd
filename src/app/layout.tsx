@@ -40,15 +40,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          <DataProvider>
-            <AuthProvider>
+          <AuthProvider>
+            <DataProvider>
               <NuqsAdapter>
                 <Toaster richColors position="top-right" />
                 {children}
                 {/* <FloatingButton /> */}
               </NuqsAdapter>
-            </AuthProvider>
-          </DataProvider>
+            </DataProvider>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

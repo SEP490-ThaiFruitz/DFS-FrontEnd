@@ -19,6 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { Logo } from "@/components/global-components/logo";
 import { Separator } from "@/components/ui/separator";
+import Maps from "@/components/global-components/maps";
 
 interface Product {
   id: number;

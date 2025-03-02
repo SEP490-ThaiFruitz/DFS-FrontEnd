@@ -5,6 +5,10 @@ import { ProductKey } from "@/app/key/product-key";
 import { PageResult } from "@/types/types";
 import { createContext, useContext } from "react";
 
+import Cookies from "js-cookie";
+import { cookies } from "next/headers";
+import { CART_KEY } from "@/app/key/comm-key";
+
 export type DataContextType = {
   productList: ProductTransformType | undefined;
 };
@@ -41,6 +45,10 @@ export const useData = () => {
 };
 
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
+  // const { token } = useAuth();
+
+  const cookieToken = Cookies.get("accessToken");
+
   const {
     isLoading,
     data: productList,
@@ -48,6 +56,15 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     isError,
   } = useFetch<ProductTransformType>("/Products", [ProductKey.PRODUCTS]);
 
+  const {
+    isLoading: isLoadingCart,
+    data: carts,
+    error: errorCart,
+    isError: isErrorCart,
+  } = useFetch<ProductTransformType>("/Carts", [CART_KEY.CARTS]);
+
+  // console.log({ productList });
+  // console.log({ carts });
   // if (isLoading) {
   //   return null;
   // }

@@ -11,7 +11,15 @@ import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
 import { ApiResponse, Profile } from "@/types/types";
 import Link from "next/link";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Bell, Boxes, LogOut, MapPinHouse, UserRoundPen } from "lucide-react";
@@ -25,9 +33,14 @@ import { getProfile } from "@/actions/user";
 import { toast } from "sonner";
 import { VerifyDialog } from "../custom/_custom-dialog/verify-account-dialog";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
+import { useData } from "@/providers/data-provider";
+import { truncate } from "lodash";
 
 export const Navigate = () => {
-  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", ["BlogCategories", "Guest"])
+  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
+    "/BlogCategories",
+    ["BlogCategories", "Guest"]
+  );
   const [active, setActive] = useState<string | null>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -38,19 +51,21 @@ export const Navigate = () => {
       try {
         const res = await getProfile();
         if (res?.isSuccess) {
-          const data: ApiResponse<Profile> = res?.data
-          console.log({ data })
+          const data: ApiResponse<Profile> = res?.data;
+          console.log({ data });
           return data.value;
         }
         return null;
       } catch (error) {
         console.log(error);
-        toast.error("Lỗi hệ thống")
+        toast.error("Lỗi hệ thống");
       }
     },
     retry: false,
     initialData: null,
   });
+
+  const { productList } = useData();
 
   const notification = [
     {
@@ -66,7 +81,6 @@ export const Navigate = () => {
     "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 
   return (
-
     <div
       className={cn(
         "fixed top-0 inset-x-0 z-50 h-16 w-full shadow-lg backdrop-blur-md bg-neutral-100/50 dark:bg-neutral-800/50 rounded-b-2xl",
@@ -82,13 +96,16 @@ export const Navigate = () => {
         </div>
 
         <div>
-          <Link href="/">
-            <MenuItem
+          <Link href="/" className={styleClassName}>
+            {/* <MenuItem
               setActive={setActive}
               active={active}
               item="Trang chủ"
               className={styleClassName}
-            />
+            /> */}
+            {/* <Button className={cn("bg-white", styleClassName)}> */}
+            Trang chủ
+            {/* </Button> */}
           </Link>
 
           <MenuItem
@@ -97,7 +114,21 @@ export const Navigate = () => {
             item="Sản phẩm"
             className={styleClassName}
           >
-            <div className="  text-sm grid grid-cols-2 gap-10 p-4">
+            <div className="  text-sm grid grid-cols-2 lg:grid-cols-4 gap-10 p-4">
+              {productList?.value.items.map((product) => {
+                return (
+                  <ProductItem
+                    key={product.id}
+                    title={product.name}
+                    href="#"
+                    src={product.mainImageUrl}
+                    description={truncate(product.description, { length: 80 })}
+                    className="hover:scale-110 transition duration-300 hover:shadow-lg rounded-xl"
+                  />
+                );
+              })}
+
+              {/* 
               <ProductItem
                 title="Algochurn"
                 href="https://algochurn.com"
@@ -121,7 +152,7 @@ export const Navigate = () => {
                 href="https://userogue.com"
                 src="https://assets.aceternity.com/demos/Screenshot+2024-02-21+at+11.47.07%E2%80%AFPM.png"
                 description="Respond to government RFPs, RFIs and RFQs 10x faster using AI"
-              />
+              /> */}
             </div>
           </MenuItem>
           <MenuItem
@@ -200,7 +231,7 @@ export const Navigate = () => {
               </PopoverTrigger>
               <PopoverContent
                 className="min-w-96 max-h-[600px] overflow-y-hidden hover:overflow-y-auto scroll-smooth"
-                style={{ scrollbarWidth: 'thin' }}
+                style={{ scrollbarWidth: "thin" }}
               >
                 <p className="font-bold mb-2">Thông báo</p>
                 <Tabs defaultValue="all">
@@ -221,21 +252,26 @@ export const Navigate = () => {
 
                   <TabsContent value="all" className="m-0">
                     {notification.map((_) => (
-                      <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                      <div
+                        key={_.name}
+                        className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer"
+                      >
                         <Avatar>
-                          <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
+                          <AvatarImage
+                            src={"/images/dried-fruit.webp"}
+                            alt={`${_.name}'s avatar`}
+                          />
                           <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                            {_.title} + {" "}
-                            {_.content}
-
+                            {_.title} + {_.content}
                           </h4>
-
                         </div>
                         <Badge
-                          variant={_.status === 'Online' ? 'default' : 'secondary'}
+                          variant={
+                            _.status === "Online" ? "default" : "secondary"
+                          }
                           className="mt-2"
                         >
                           {_.status}
@@ -245,21 +281,26 @@ export const Navigate = () => {
                   </TabsContent>
                   <TabsContent value="unread" className="m-0">
                     {notification.map((_) => (
-                      <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
+                      <div
+                        key={_.name}
+                        className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer"
+                      >
                         <Avatar>
-                          <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
+                          <AvatarImage
+                            src={"/images/dried-fruit.webp"}
+                            alt={`${_.name}'s avatar`}
+                          />
                           <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                            {_.title} + {" "}
-                            {_.content}
-
+                            {_.title} + {_.content}
                           </h4>
-
                         </div>
                         <Badge
-                          variant={_.status === 'Online' ? 'default' : 'secondary'}
+                          variant={
+                            _.status === "Online" ? "default" : "secondary"
+                          }
                           className="mt-2"
                         >
                           {_.status}
@@ -270,7 +311,9 @@ export const Navigate = () => {
                 </Tabs>
 
                 <div className="mt-2 text-center">
-                  <Button className="inline-block" size="sm">Xem thêm</Button>
+                  <Button className="inline-block" size="sm">
+                    Xem thêm
+                  </Button>
                 </div>
               </PopoverContent>
             </Popover>
@@ -280,7 +323,10 @@ export const Navigate = () => {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-12 w-12 rounded-full border">
+                <Button
+                  variant="ghost"
+                  className="relative h-12 w-12 rounded-full border"
+                >
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={user.avatar} alt={user.name} />
                     <AvatarFallback>SC</AvatarFallback>
@@ -290,23 +336,33 @@ export const Navigate = () => {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {user.name}
+                    </p>
                     {user?.email ? (
                       <p className="text-xs leading-none text-muted-foreground">
                         {user.email}
                       </p>
-                    ) : <p className="text-xs leading-none text-muted-foreground">
-                      {user.phone}
-                    </p>}
+                    ) : (
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.phone}
+                      </p>
+                    )}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => router.push("/profile")} className="hover:cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={() => router.push("/profile")}
+                    className="hover:cursor-pointer"
+                  >
                     <UserRoundPen />
                     Hồ sơ
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/profile?tab=address")} className="hover:cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={() => router.push("/profile?tab=address")}
+                    className="hover:cursor-pointer"
+                  >
                     <MapPinHouse />
                     Địa chỉ
                   </DropdownMenuItem>
@@ -316,19 +372,22 @@ export const Navigate = () => {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={async () => {
-                  await logOut()
-                  queryClient.removeQueries({ queryKey: ["authUser"] });
-                  router.push("/");
-                  loginDialog.onOpen();
-                }} className="hover:cursor-pointer">
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await logOut();
+                    queryClient.removeQueries({ queryKey: ["authUser"] });
+                    router.push("/");
+                    loginDialog.onOpen();
+                  }}
+                  className="hover:cursor-pointer"
+                >
                   <LogOut />
                   Đăng xuất
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          {user && !user.isVerification && (<VerifyDialog />)}
+          {user && !user.isVerification && <VerifyDialog />}
           {!user && (
             <>
               <LoginDialog />
@@ -336,9 +395,8 @@ export const Navigate = () => {
             </>
           )}
         </div>
-
-      </Menu >
-    </div >
+      </Menu>
+    </div>
   );
 };
 

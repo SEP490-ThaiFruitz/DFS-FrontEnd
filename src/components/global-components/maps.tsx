@@ -378,7 +378,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
                 defaultValue={defaultValue}
                 className={cn("h-7 w-full py-1 pl-8 text-sm", className)}
                 aria-describedby={`${id}-error`}
-                style={{ paddingLeft: <Icon /> ? "2.5rem" : "1rem" }}
+                // style={{ paddingLeft: <Icon /> ? "2.5rem" : "1rem" }}
               />
             </div>
           ) : searchIcon ? (

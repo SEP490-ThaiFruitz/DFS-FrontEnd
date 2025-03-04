@@ -2,6 +2,7 @@ import { CART_KEY } from "@/app/key/comm-key";
 import { onSubmit } from "../interact-form";
 import { useFetch } from "../tanstack/use-tanstack-actions";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface Payload {
   itemType: string;
@@ -77,13 +78,16 @@ const post = async <TValues,>(endpoint: string, body: TValues) => {
 };
 
 const addToCart = async (payload: Payload) => {
-  const cartItems = {
-    cartItems: [payload],
-    // ...payload,
-  };
+  const cartItems = payload;
+
+  console.log({ payload });
 
   try {
     const response = await onSubmit("/Carts/items", cartItems);
+
+    if (response?.isSuccess) {
+      toast.success("Thêm vào giỏ hàng thành công");
+    }
     // const response = await post("/Carts/items", cartItems);
 
     console.log({ response });

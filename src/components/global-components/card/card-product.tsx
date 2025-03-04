@@ -11,12 +11,16 @@ import { favoriteProduct } from "@/actions/favorite";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Product } from "@/features/client/sidebar-filter/sidebar-filter";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 
 interface CardProductProps extends Product {
-  isFavorite: boolean,
+  isFavorite: boolean;
 }
-
 
 interface CardProductProps extends Product {
   isFavorite: boolean;
@@ -41,7 +45,9 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
           throw new Error("Lỗi hệ thống");
         }
       } catch (error: unknown) {
-        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống");
+        throw new Error(
+          error instanceof Error ? error?.message : "Lỗi hệ thống"
+        );
       }
     },
     onSuccess: () => {
@@ -59,7 +65,7 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
   });
 
   return (
-    <Card className="w-full relative md:min-w-72 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow hover:cursor-pointer hover:scale-105">
+    <Card className="w-full relative md:min-w-72 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md hover:cursor-pointer hover:scale-105 transition-all duration-300 cursor-pointer">
       {variant?.promotion && (
         <AdvancedColorfulBadges
           className="absolute top-2 right-2 z-50"
@@ -74,8 +80,11 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
         className="absolute z-10 top-2 right-2 p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-shadow"
       >
         <Heart
-          className={`size-6 transition ${isFavourite ? "fill-green-500 text-green-500" : "text-gray-500 dark:text-gray-400"
-            } ${isPending ? "animate-spin" : ""}`}
+          className={`size-6 transition ${
+            isFavourite
+              ? "fill-green-500 text-green-500"
+              : "text-gray-500 dark:text-gray-400"
+          } ${isPending ? "animate-spin" : ""}`}
         />
       </button>
       {variant?.promotion && (
@@ -99,29 +108,36 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
             {truncate(name, { length: 60 })}
           </h1>
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            ⭐ {variant?.rating ?? 0} <span className="text-gray-400 dark:text-gray-500">|</span>{" "}
+            ⭐ {variant?.rating ?? 0}{" "}
+            <span className="text-gray-400 dark:text-gray-500">|</span>{" "}
             {variant?.quantitySold} đã bán
           </p>
         </div>
 
-        {variant?.stockQuantity > 0 ?
+        {variant?.stockQuantity > 0 ? (
           <div className="mt-5 py-2 flex items-center space-x-5 text-gray-700 dark:text-gray-200 text-base font-medium">
             <p className="font-semibold">Số lượng</p>
-            <p className="text-gray-600 dark:text-gray-400">{formatNumberWithUnit(variant?.stockQuantity)}</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              {formatNumberWithUnit(variant?.stockQuantity)}
+            </p>
           </div>
-          : <div className="mt-5 py-2 w-full text-lg text-center bg-red-50 text-red-700 font-bold">
+        ) : (
+          <div className="mt-5 py-2 w-full text-lg text-center bg-red-50 text-red-700 font-bold">
             <p>Đã hết hàng</p>
-          </div>}
+          </div>
+        )}
       </CardContent>
 
       {variant && (
-
         <CardFooter className="flex items-center justify-between">
           <div className="flex items-center gap-x-2">
             {variant?.promotion ? (
               <>
                 <del className="text-gray-500 dark:text-gray-400 text-base">
-                  {formatVND(variant.price - variant.price * variant.promotion.percentage * 0.1)}
+                  {formatVND(
+                    variant.price -
+                      variant.price * variant.promotion.percentage * 0.1
+                  )}
                 </del>
                 <h2 className="text-lg font-bold text-red-600 dark:text-red-500">
                   {formatVND(variant.price)}
@@ -137,7 +153,7 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
           <StatusButton
             handleAddToCart={() => {
               cartActions.addToCart({
-                itemType: "ProductVariant",
+                itemType: "single",
                 referenceId: variant.productVariantId,
                 quantity: 1,
               });

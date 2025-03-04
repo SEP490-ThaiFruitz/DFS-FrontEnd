@@ -20,6 +20,8 @@ import { ButtonCustomized } from "@/components/custom/_custom-button/button-cust
 import { Logo } from "@/components/global-components/logo";
 import { Separator } from "@/components/ui/separator";
 import Maps from "@/components/global-components/maps";
+import { useAuth } from "@/providers/auth-provider";
+import AddressChoices from "./address-choices";
 
 interface Product {
   id: number;
@@ -117,6 +119,10 @@ function PaymentClientPage() {
   const discount = promoCode === "FRUIT10" ? subtotal * 0.1 : 0;
   const total = subtotal + deliveryPrice - discount;
 
+  const { user } = useAuth();
+
+  console.log({ user });
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -130,7 +136,7 @@ function PaymentClientPage() {
           {/* Left Column - Form and Options */}
           <div className="space-y-6">
             {/* Personal Information */}
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Thông tin cá nhân của bạn</CardTitle>
                 <CardDescription>
@@ -158,7 +164,9 @@ function PaymentClientPage() {
                   <Input id="phone" type="tel" />
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
+
+            <AddressChoices />
 
             {/* Delivery Method */}
             <Card>

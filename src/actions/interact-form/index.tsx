@@ -29,15 +29,15 @@ export const onSubmit = async <T,>(
       }
     );
 
+    console.log({ response });
+
     // const response = await interactApi.post(endpoint, data);
 
-    if (response?.status === 201) {
+    if (response?.status === 200) {
       // toast.success("Tạo mới sản phẩm thành công");
       return response.data;
     }
   } catch (error) {
-    console.log({ error });
-
     return { success: false, message: "Có lỗi xả ra khi tạo mới sản phẩm" };
   }
 };

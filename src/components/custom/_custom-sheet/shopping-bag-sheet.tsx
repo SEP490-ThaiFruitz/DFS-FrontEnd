@@ -61,12 +61,32 @@ export const products: Product[] = [
   },
 ];
 
+interface Cart {
+  cartItemId: string;
+  productId: string;
+  name: string;
+  productVariant: {
+    productVariantId: string;
+    image: string;
+    weight: number;
+    type: string;
+    unitPrice: number;
+    stock: number;
+    discount: {
+      startDate: string;
+      endDate: string;
+      percentage: number;
+    };
+  };
+  quantity: string;
+}
+
 export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const { isLoading, data, error } = useFetch("Carts/", ["carts"]);
 
-  // console.log({ data });
+  console.log({ data });
 
   const [items, setItems] = useState<CartItem[]>(
     products.map((product) => ({
@@ -123,7 +143,7 @@ export const ShoppingBagSheet = () => {
                 <h1 className="text-2xl font-semibold">
                   Giỏ hàng ({items.length})
                 </h1>
-                <ScrollArea className="w-full h-[500px]">
+                <ScrollArea className="w-full h-[200px] md:h-[250px]  lg:h-[300px]">
                   {items.map((item) => (
                     <ViewCardProductActions
                       key={item.id}

@@ -10,38 +10,42 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { Separator } from "@/components/ui/separator";
-import {
   User,
   MapPin,
-  Briefcase,
   MapPinned,
+  Flame,
+  Ticket,
+  ChartPie,
+  MessageSquareDiff,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { OrderTrackingPage } from "./order-tracking/order-tracking-page";
-import AddressPage from "./address/address-page";
 import { useSearchParams } from "next/navigation";
-import ProfileAvatar from "./avatar";
-import ProfilePassword from "./password";
-import InformationPersonal from "./information-personal";
+import InformationTab from "./information/information";
+import AddressTab from "./address/address-tab";
+import PointTab from "./point/point-tab";
+import VoucherTab from "./voucher/voucher-tab";
+import FeedbackTab from "./feedback/feedback-tab";
 
 
 const TAB_TRIGGER = [
   { value: "profile", label: "Thông tin cá nhân", icon: User },
   { value: "order-tracking", label: "Theo dõi đơn hàng", icon: MapPin },
   { value: "address", label: "Địa chỉ", icon: MapPinned },
-  { value: "statistic", label: "Thống kê", icon: Briefcase },
+  { value: "point", label: "Tích lũy điểm", icon: Flame },
+  { value: "voucher", label: "Mã giảm giá", icon: Ticket },
+  { value: "statistic", label: "Thống kê", icon: ChartPie },
+  { value: "feedback", label: "Đánh giá", icon: MessageSquareDiff },
 ];
 
-const TAB_CONTENT: { value: string; component: JSX.Element }[] = [
-  { value: "profile", component: <div>Profile</div> },
-  { value: "order-tracking", component: <OrderTrackingPage /> },
-  { value: "address", component: <AddressPage /> },
-  { value: "statistic", component: <div>Statistic</div> },
+const TAB_CONTENT: { value: string; component: JSX.Element, title: string, description: string }[] = [
+  { value: "profile", component: <InformationTab />, title: "Thông tin cá nhân của bạn", description: "Hãy điền thông tin cá nhân của bạn để chúng tôi có thể phục vụ bạn tốt hơn." },
+  { value: "order-tracking", component: <OrderTrackingPage />, title: "Đơn hàng của bạn", description: " Cung cấp thông tin địa chị giao hàng thuận tiện cho việc mua hàng sau này!" },
+  { value: "address", component: <AddressTab />, title: "Địa chỉ giao hàng của bạn", description: " Cung cấp thông tin địa chị giao hàng thuận tiện cho việc mua hàng sau này!" },
+  { value: "point", component: <PointTab />, title: "Lịch sử tích lũy điểm", description: "Theo dõi số điểm đã tích lũy và đổi thưởng một cách dễ dàng!" },
+  { value: "voucher", component: <VoucherTab />, title: " Mã giảm giá của bạn", description: "Xem và sử dụng mã giảm giá để tiết kiệm khi mua hàng!." },
+  { value: "statistic", component: <div>Statistic</div>, title: "Báo cáo chi tiêu", description: "Theo dõi tổng số tiền bạn đã chi tiêu để quản lý tài chính hiệu quả hơn." },
+  { value: "feedback", component: <FeedbackTab />, title: "Phản hồi & Đánh giá", description: "Xem và quản lý phản hồi của bạn để cải thiện trải nghiệm sử dụng." }
 ];
 
 export const MotionCard = motion(Card);
@@ -66,54 +70,30 @@ export const ProfileClientPage = () => {
             </TabsTrigger>
           ))}
         </TabsList>
-
-        <TabsContent value="profile" className=" p-4">
-          <MotionCard
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="overflow-hidden"
-          >
-            <CardHeader className="space-y-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              <CardTitle className="text-3xl font-bold">
-                Thông tin cá nhân của bạn
-              </CardTitle>
-              <CardDescription className="text-purple-100">
-                Hãy điền thông tin cá nhân của bạn để chúng tôi có thể phục vụ
-                bạn tốt hơn.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="p-6 bg-slate-100/90">
-              <ResizablePanelGroup
-                direction="horizontal"
-                className="min-h-[600px] rounded-lg border bg-card"
-              >
-                <ResizablePanel defaultSize={40} minSize={30} className="p-4">
-                  <div className="flex flex-col gap-6">
-                    <ProfileAvatar />
-                    <Separator className="bg-purple-200" />
-                    <ProfilePassword />
-                  </div>
-                </ResizablePanel>
-
-                <ResizableHandle withHandle className="bg-purple-200" />
-
-                <ResizablePanel defaultSize={60} minSize={40} className="p-4">
-                  <InformationPersonal />
-                </ResizablePanel>
-              </ResizablePanelGroup>
-            </CardContent>
-          </MotionCard>
-        </TabsContent>
-
         {TAB_CONTENT.map(
           (content) =>
-            content.value !== "profile" && (
-              <TabsContent key={content.value} value={content.value}>
-                {content.component}
-              </TabsContent>
-            )
+          (
+            <TabsContent key={content.value} value={content.value}>
+              <MotionCard
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="overflow-hidden"
+              >
+                <CardHeader className="space-y-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                  <CardTitle className="text-3xl font-bold">
+                    {content.title}
+                  </CardTitle>
+                  <CardDescription className="text-purple-100">
+                    {content.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6 bg-slate-100/90">
+                  {content.component}
+                </CardContent>
+              </MotionCard>
+            </TabsContent>
+          )
         )}
       </Tabs>
     </div>

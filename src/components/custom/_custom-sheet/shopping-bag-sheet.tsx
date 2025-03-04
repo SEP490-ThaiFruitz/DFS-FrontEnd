@@ -94,8 +94,8 @@ export const ShoppingBagSheet = () => {
             <span
               className="
             absolute
-            -top-1
-            -right-2
+            -top-2.5
+            -right-2.5
             w-4
             h-4
             bg-primary-500
@@ -125,15 +125,13 @@ export const ShoppingBagSheet = () => {
                 </h1>
                 <ScrollArea className="w-full h-[500px]">
                   {items.map((item) => (
-                    <>
-                      <ViewCardProductActions
-                        key={item.id}
-                        item={item}
-                        onQuantityChange={handleQuantityChange}
-                        onRemove={handleRemove}
-                        className="m-4"
-                      />
-                    </>
+                    <ViewCardProductActions
+                      key={item.id}
+                      item={item}
+                      onQuantityChange={handleQuantityChange}
+                      onRemove={handleRemove}
+                      className="m-4"
+                    />
                   ))}
                 </ScrollArea>
 

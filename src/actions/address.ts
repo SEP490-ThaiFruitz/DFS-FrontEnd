@@ -13,3 +13,7 @@ export const createAddress = async <TValues>(values: TValues) => {
 export const updateAddress = async <TValues>(values: TValues) => {
     return await interactApi.put<TValues>("/Addresses", values);
 };
+
+export const deleteAddress = async(id: string) => {
+    return await interactApi.remove(`/Addresses/${id}`);
+};

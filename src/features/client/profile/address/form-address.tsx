@@ -26,7 +26,7 @@ import { toast } from 'sonner';
 import { createAddress, updateAddress } from '@/actions/address';
 import { FormControl, FormItem } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
-import { Address } from './address-page';
+import { Address } from './address-tab';
 
 interface FormAddressProps {
     address?: Address;

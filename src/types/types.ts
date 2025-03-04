@@ -71,5 +71,11 @@ export interface Profile {
   point: number;
   balance: number | null;
   role: string;
-  isVerification : boolean;
+  isVerification: boolean;
+}
+
+export interface Favorite {
+  productId: string,
+  name: string,
+  imageUrl: string,
 }

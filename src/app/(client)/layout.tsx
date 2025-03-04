@@ -4,18 +4,21 @@ import React from "react";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
-  filter: React.ReactNode;
   common: React.ReactNode;
 }
-
-const ClientLayout = ({ children, filter, common }: ClientLayoutProps) => {
+export async function generateMetadata() {
+  return {
+    title: "Trang chủ",
+    description:
+      "Thai Fruitz - Trang chủ nơi bạn có thể tìm thấy những sản phẩm organic tươi ngon nhất, giup bạn duy trì một lối sống lành mạnh.",
+  };
+}
+const ClientLayout = ({ children, common }: ClientLayoutProps) => {
   return (
     <>
       <Navigate />
       <>
         {children}
-
-        {filter}
 
         {common}
       </>

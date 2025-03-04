@@ -68,7 +68,7 @@ export const Footer = () => {
     "hover:scale-110 transition duration-200  p-0.5 rounded-lg";
 
   return (
-    <div className="z-10 my-4">
+    <div className="z-10 my-4 border rounded-t-xl">
       <div className="item-center my-8 flex justify-center">
         <Logo
           width={250}

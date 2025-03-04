@@ -1,11 +1,11 @@
 import { SidebarFilter } from "@/features/client/sidebar-filter/sidebar-filter";
 
-const FilterPage = () => {
+const FindPage = () => {
   return (
-    <div className="h-auto ">
+    <div className="h-auto py-20">
       <SidebarFilter />
     </div>
   );
 };
 
-export default FilterPage;
+export default FindPage;

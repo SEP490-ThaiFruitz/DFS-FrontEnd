@@ -11,10 +11,10 @@ import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormItem } from "@/components/ui/form";
-import { Star } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { Star } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FeedbackDialogProps {
     feedback?: {
@@ -29,9 +29,7 @@ interface FeedbackDialogProps {
 export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProps) => {
     const form = useForm<z.infer<typeof FeedbackSafeTypes>>({
         resolver: zodResolver(FeedbackSafeTypes),
-        defaultValues: feedback
-            ? { content: feedback.content, star: feedback.rating }
-            : { content: "", star: 3 },
+        defaultValues: feedback || { content: "", star: 3 },
     });
 
     const [rating, setRating] = useState(feedback?.rating ?? 3);
@@ -46,7 +44,6 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
                 console.log("Creating feedback:", values);
                 toast.success("Đánh giá đã được tạo mới!");
             }
-            onClose();
         } catch (error: unknown) {
             toast.error(error instanceof Error ? error?.message : "Có lỗi xảy ra khi xử lý yêu cầu!");
         }
@@ -75,7 +72,7 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
 
     const body = (
         <ScrollArea className="max-h-[600px] overflow-auto">
-            <FormValues classNameForm="px-4" form={form} onSubmit={onSubmit}>
+            <FormValues classNameForm="p-4" form={form} onSubmit={onSubmit}>
                 <Controller
                     name="star"
                     control={form.control}
@@ -102,19 +99,14 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
                         </FormItem>
                     )}
                 />
-                <FormTextareaControl
-                    form={form}
-                    label="Nội dung"
-                    name="content"
-                    rows={6}
-                />
-                {/* <FormFileControl
+                <FormTextareaControl form={form} label="Nội dung" name="content" rows={6} />
+                <FormFileControl
                     form={form}
                     name="images"
                     type={"image/jpeg, image/jpg, image/png, image/webp"}
                     maxFiles={5}
-                    multiple={true}
-                /> */}
+                    mutiple
+                />
                 <DialogFooter>
                     <DialogClose asChild>
                         <ButtonCustomized
@@ -157,3 +149,4 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
         />
     );
 };
+

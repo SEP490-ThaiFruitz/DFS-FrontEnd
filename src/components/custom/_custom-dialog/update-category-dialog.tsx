@@ -85,7 +85,7 @@ export const UpdateCategoryDialog = ({
 
         <FormTextareaControl
           form={form}
-          row={4}
+          rows={4}
           name="description"
           defaultValue={category?.description}
           disabled={form.formState.isSubmitting}

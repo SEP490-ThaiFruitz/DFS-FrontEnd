@@ -1,5 +1,5 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FeedbackSafeTypes } from "@/zod-safe-types/feedback-safe-types";
 import { ButtonCustomized } from "../_custom-button/button-customized";
@@ -11,6 +11,10 @@ import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FormItem } from "@/components/ui/form";
+import { Star } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 interface FeedbackDialogProps {
     feedback?: {
@@ -25,23 +29,24 @@ interface FeedbackDialogProps {
 export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProps) => {
     const form = useForm<z.infer<typeof FeedbackSafeTypes>>({
         resolver: zodResolver(FeedbackSafeTypes),
-        defaultValues: feedback || { content: "", rating: 3 },
+        defaultValues: feedback
+            ? { content: feedback.content, star: feedback.rating }
+            : { content: "", star: 3 },
     });
+
+    const [rating, setRating] = useState(feedback?.rating ?? 3);
+    const [hoverRating, setHoverRating] = useState<number | null>(null);
 
     const onSubmit = async (values: z.infer<typeof FeedbackSafeTypes>) => {
         try {
             if (feedback) {
-                // Handle Update Logic
                 console.log("Updating feedback:", values);
-                // Example: await updateFeedback(feedback.id, values);
                 toast.success("Đánh giá đã được cập nhật!");
             } else {
-                // Handle Create Logic
                 console.log("Creating feedback:", values);
-                // Example: await createFeedback(values);
                 toast.success("Đánh giá đã được tạo mới!");
             }
-            onClose(); // Close dialog after submission
+            onClose();
         } catch (error: unknown) {
             toast.error(error instanceof Error ? error?.message : "Có lỗi xảy ra khi xử lý yêu cầu!");
         }
@@ -55,39 +60,61 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
 
     const buttonLabel = feedback ? "Cập nhật" : "Thêm mới";
 
+    const handleStarClick = (starValue: number) => {
+        setRating(starValue);
+        form.setValue("star", starValue);
+    };
+
+    const handleStarHover = (starValue: number) => {
+        setHoverRating(starValue);
+    };
+
+    const handleStarLeave = () => {
+        setHoverRating(null);
+    };
+
     const body = (
-        <div className="max-h-[600px] overflow-y-auto px-4" style={{ scrollbarWidth: 'thin' }}>
-            <FormValues form={form} onSubmit={onSubmit}>
-                <div className="mt-4">
-                    <label className="block text-sm font-semibold">Đánh giá</label>
-                    <div className="flex space-x-2">
-                        {[1, 2, 3, 4, 5].map((rating) => (
-                            <label key={rating} className="flex items-center">
-                                <input
-                                    type="radio"
-                                    value={rating}
-                                    {...form.register("rating")}
-                                    className="mr-1"
-                                />
-                                {rating}
-                            </label>
-                        ))}
-                    </div>
-                    {form.formState.errors.rating && (
-                        <div className="text-sm text-red-600">
-                            {form.formState.errors.rating.message}
-                        </div>
+        <ScrollArea className="max-h-[600px] overflow-auto">
+            <FormValues classNameForm="px-4" form={form} onSubmit={onSubmit}>
+                <Controller
+                    name="star"
+                    control={form.control}
+                    render={({ field }) => (
+                        <FormItem className="pt-8">
+                            <Label>Đánh giá</Label>
+                            <div className="flex flex-row items-center justify-between">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star
+                                        key={star}
+                                        onClick={() => {
+                                            handleStarClick(star)
+                                            field.onChange(star)
+                                        }}
+                                        onMouseEnter={() => handleStarHover(star)}
+                                        onMouseLeave={handleStarLeave}
+                                        className={`cursor-pointer h-20 w-20 ${star <= (hoverRating ?? rating)
+                                            ? 'text-yellow-600 fill-yellow-600'
+                                            : 'text-gray-300 fill-none'
+                                            }`}
+                                    />
+                                ))}
+                            </div>
+                        </FormItem>
                     )}
-                </div>
-                
-                <FormTextareaControl form={form} label="Nội dung" name="content" row={6} />
-                <FormFileControl
+                />
+                <FormTextareaControl
+                    form={form}
+                    label="Nội dung"
+                    name="content"
+                    rows={6}
+                />
+                {/* <FormFileControl
                     form={form}
                     name="images"
                     type={"image/jpeg, image/jpg, image/png, image/webp"}
-                    maxFile={5}
-                    mutiple
-                />
+                    maxFiles={5}
+                    multiple={true}
+                /> */}
                 <DialogFooter>
                     <DialogClose asChild>
                         <ButtonCustomized
@@ -98,7 +125,7 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
                     </DialogClose>
                     <ButtonCustomized
                         type="submit"
-                        className="max-w-32 bg-green-500 hover:bg-green-700"
+                        className="max-w-32 bg-green-700 hover:bg-green-800"
                         variant="secondary"
                         disabled={form.formState.isSubmitting}
                         label={
@@ -116,7 +143,7 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
                     />
                 </DialogFooter>
             </FormValues>
-        </div>
+        </ScrollArea>
     );
 
     return (

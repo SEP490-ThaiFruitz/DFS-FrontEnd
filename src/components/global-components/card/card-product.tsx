@@ -17,13 +17,8 @@ interface CardProductProps extends Product {
   isFavorite: boolean,
 }
 
-
-interface CardProductProps extends Product {
-  isFavorite: boolean;
-}
-
 export const CardProduct = ({ ...props }: CardProductProps) => {
-  const { id, name, mainImageUrl, variant, isFavorite } = props;
+  const { id, name, mainImageUrl, variant, isFavorite, rating, quantitySold } = props;
   const queryClient = useQueryClient();
   const { data: user } = useQuery({ queryKey: ["authUser"] });
   const [isFavourite, setIsFavourite] = useState<boolean>(isFavorite);
@@ -60,15 +55,6 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
 
   return (
     <Card className="w-full relative md:min-w-72 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow hover:cursor-pointer hover:scale-105">
-      {variant?.promotion && (
-        <AdvancedColorfulBadges
-          className="absolute top-2 right-2 z-50"
-          color="red"
-          size="lg"
-        >
-          {variant.promotion.percentage}%
-        </AdvancedColorfulBadges>
-      )}
       <button
         onClick={() => favoriteMutation()}
         className="absolute z-10 top-2 right-2 p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-shadow"
@@ -79,8 +65,8 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
         />
       </button>
       {variant?.promotion && (
-        <div className="absolute top-0 left-0 flex items-center px-2 py-1 bg-red-500 text-white text-sm font-bold rounded-tl-md rounded-br-md shadow">
-          <span>{variant?.promotion.percentage}</span>
+        <div className="absolute top-0 left-0 flex items-center px-3 py-2 bg-red-500 text-white text-sm font-bold rounded-tl-lg rounded-br-lg shadow">
+          <span>{variant?.promotion.percentage}%</span>
         </div>
       )}
       <CardHeader className="p-0">
@@ -99,8 +85,8 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
             {truncate(name, { length: 60 })}
           </h1>
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            ⭐ {variant?.rating ?? 0} <span className="text-gray-400 dark:text-gray-500">|</span>{" "}
-            {variant?.quantitySold} đã bán
+            ⭐ {rating ?? 0} <span className="text-gray-400 dark:text-gray-500">|</span>{" "}
+            {quantitySold} đã bán 
           </p>
         </div>
 
@@ -121,7 +107,7 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
             {variant?.promotion ? (
               <>
                 <del className="text-gray-500 dark:text-gray-400 text-base">
-                  {formatVND(variant.price - variant.price * variant.promotion.percentage * 0.1)}
+                  {formatVND(variant.price - variant.price * (variant.promotion.percentage / 100))}
                 </del>
                 <h2 className="text-lg font-bold text-red-600 dark:text-red-500">
                   {formatVND(variant.price)}

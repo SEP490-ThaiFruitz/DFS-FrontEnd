@@ -31,7 +31,7 @@ interface FormFileControlProps<T extends FieldValues> {
   type: string;
   mutiple: boolean;
   require?: boolean,
-  maxFile?: number
+  maxFiles?: number
 }
 
 export const FormFileControl = <T extends FieldValues>({
@@ -46,7 +46,7 @@ export const FormFileControl = <T extends FieldValues>({
   type,
   mutiple,
   require,
-  maxFile,
+  maxFiles,
 }: FormFileControlProps<T>) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isDragActive, setIsDragActive] = useState(false);
@@ -87,9 +87,9 @@ export const FormFileControl = <T extends FieldValues>({
 
   const handleFiles = (fileList: File[]) => {
     form.clearErrors(name);
-    if (!mutiple && fileList?.length > 1 || (maxFile && fileList?.length > maxFile)) {
-      const errorMessage = maxFile && fileList?.length > maxFile
-        ? `Vui lòng chọn tối đa ${maxFile}`
+    if (!mutiple && fileList?.length > 1 || (maxFiles && fileList?.length > maxFiles)) {
+      const errorMessage = maxFiles && fileList?.length > maxFiles
+        ? `Vui lòng chọn tối đa ${maxFiles}`
         : 'Vui lòng chọn 1 files';
       form.setError(name, {
         message: errorMessage,

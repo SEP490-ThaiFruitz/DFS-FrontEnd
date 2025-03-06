@@ -28,10 +28,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/actions/user";
 import { ApiResponse, Profile } from "@/types/types";
 import { toast } from "sonner";
-import { logOut } from "@/actions/auth";
-import router from "next/router";
 
-// This is sample data.
 const data = {
   navMain: [
     {

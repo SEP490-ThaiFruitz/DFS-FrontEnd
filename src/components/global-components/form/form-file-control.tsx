@@ -14,6 +14,7 @@ import { type DragEvent, useEffect, useRef, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import ImagePreview from "@/components/custom/_custom-image/image-preview";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -216,12 +217,9 @@ export const FormFileControl = <T extends FieldValues>({
                           key={file.name}
                         >
                           {file.type.startsWith("image/") ? (
-                            <Image
-                              alt={file.name}
-                              className="mr-2 size-10 rounded object-cover"
-                              height={1000}
-                              width={1000}
-                              src={file.preview}
+                            <ImagePreview
+                              images={[file.preview]}
+                              className="mr-2 size-10 rounded object-cover hover:cursor-pointer"
                             />
                           ) : (
                             <File className="mr-2 size-10 text-neutral-500" />

@@ -98,7 +98,7 @@ export const AdminFormLogin = () => {
               isPending ? (
                 <WaitingSpinner
                   variant="pinwheel"
-                  label="Đăng đăng nhập..."
+                  label="Đang đăng nhập..."
                   className="font-semibold "
                   classNameLabel="font-semibold text-sm"
                 />

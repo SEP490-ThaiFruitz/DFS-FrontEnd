@@ -1,6 +1,6 @@
+import { formatVND } from "@/lib/format-currency";
 import { cn } from "@/lib/utils";
-
-interface ViewCardProductProps {}
+import Image from "next/image";
 
 interface ViewCardProductProps {
   productName: string;
@@ -19,9 +19,11 @@ export const ViewCardProduct = ({
 }: ViewCardProductProps) => {
   return (
     <div className={cn("flex items-center gap-4 my-2", className)}>
-      <img
+      <Image
         src={productImage}
         alt={productName}
+        width={1000}
+        height={1000}
         className="w-16 h-16 rounded-lg object-cover"
       />
       <div className="flex-1">
@@ -30,8 +32,11 @@ export const ViewCardProduct = ({
           Số lượng: {productQuantity}
         </p>
       </div>
+      <p className="font-light text-slate-400 line-through">
+        {formatVND((productPrice * productQuantity * 15000).toFixed(2))}
+      </p>
       <p className="font-medium">
-        ${(productPrice * productQuantity).toFixed(2)}
+        {formatVND((productPrice * productQuantity * 10000).toFixed(2))}
       </p>
     </div>
   );

@@ -1,6 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 import { getToken } from "./client/interact-api";
-import { redirect } from "next/navigation";
 
 export type DecodeData = {
   Id: string;
@@ -18,10 +17,8 @@ export enum ROLES {
   Manager = "Manager",
   Customer = "Customer",
 }
-export const checkRole = async (role: string) => {
+export const checkRole = async (roles: string[]) => {
   const token: any = await getToken();
-
-  // console.log({ tokenAdminLayout: token });
 
   if (!token?.accessToken) {
     return null;
@@ -29,8 +26,8 @@ export const checkRole = async (role: string) => {
 
   try {
     const decode: DecodeData = jwtDecode<DecodeData>(token?.accessToken);
-
-    return decode.Role.toUpperCase() === role.toUpperCase();
+    const userRole = decode.Role.toUpperCase();
+    return roles.find(role => role.toUpperCase() === userRole);
   } catch (error) {
     console.log({ error });
   }

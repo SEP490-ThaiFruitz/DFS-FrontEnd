@@ -22,6 +22,9 @@ import { Separator } from "@/components/ui/separator";
 import Maps from "@/components/global-components/maps";
 import { useAuth } from "@/providers/auth-provider";
 import AddressChoices from "./address-choices";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { CartProductTypes } from "@/types/cart.types";
+import { ViewCardProductActions } from "@/components/global-components/card/view-card-product-actions";
 
 interface Product {
   id: number;
@@ -121,7 +124,11 @@ function PaymentClientPage() {
 
   const { user } = useAuth();
 
-  console.log({ user });
+  const {
+    isLoading,
+    data: productCart,
+    error,
+  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", ["carts"]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -260,7 +267,7 @@ function PaymentClientPage() {
               </CardHeader>
               <CardContent>
                 <ScrollArea className="space-y-4 max-h-[300px] overflow-auto">
-                  {cartItems.map((item) => (
+                  {/* {cartItems.map((item) => (
                     <ViewCardProduct
                       key={item.id}
                       productImage={item.image}
@@ -268,7 +275,16 @@ function PaymentClientPage() {
                       productPrice={item.price}
                       productQuantity={item.quantity}
                     />
-                  ))}
+                  ))} */}
+
+                  {productCart?.value.items.map((product) => {
+                    return (
+                      <ViewCardProductActions
+                        key={product.productId}
+                        product={product}
+                      />
+                    );
+                  })}
                 </ScrollArea>
 
                 <div className="mt-6 space-y-4">

@@ -18,6 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { CartProductTypes } from "@/types/cart.types";
 import { ShoppingBagIcon, ShoppingBasket, ShoppingCart } from "lucide-react";
 import React, { useState } from "react";
 
@@ -84,9 +85,15 @@ interface Cart {
 export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { isLoading, data, error } = useFetch("Carts/", ["carts"]);
+  const {
+    isLoading,
+    data: productCart,
+    error,
+  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", ["carts"]);
 
-  console.log({ data });
+  console.log({ productCart });
+
+  console.log(productCart?.value.items);
 
   const [items, setItems] = useState<CartItem[]>(
     products.map((product) => ({
@@ -144,10 +151,10 @@ export const ShoppingBagSheet = () => {
                   Giỏ hàng ({items.length})
                 </h1>
                 <ScrollArea className="w-full h-[200px] md:h-[250px]  lg:h-[300px]">
-                  {items.map((item) => (
+                  {productCart?.value.items.map((product) => (
                     <ViewCardProductActions
-                      key={item.id}
-                      item={item}
+                      key={product.productId}
+                      product={product}
                       onQuantityChange={handleQuantityChange}
                       onRemove={handleRemove}
                       className="m-4"

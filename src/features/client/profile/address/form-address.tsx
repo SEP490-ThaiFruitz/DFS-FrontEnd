@@ -89,7 +89,6 @@ const useAddressForm = (address?: FormAddressProps["address"]) => {
 function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
   const { form, onSubmit } = useAddressForm(address);
   const queryClient = useQueryClient();
-  console.log(form.getValues());
   const { data: provinces } = useFetch<ApiResponse<SelectData[]>>(
     "/Addresses/province",
     ["provinces"]

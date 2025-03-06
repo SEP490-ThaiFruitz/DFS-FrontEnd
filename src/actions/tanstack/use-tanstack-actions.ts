@@ -29,12 +29,7 @@ const fetching = async (endpoint: string, params?: Record<string, any>) => {
     ? { Authorization: `Bearer ${token}` }
     : {};
 
-  console.log({ headers });
-
   try {
-    console.log("test")
-    console.log(endpoint)
-
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
       {

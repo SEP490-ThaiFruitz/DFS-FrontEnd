@@ -38,10 +38,8 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
     const onSubmit = async (values: z.infer<typeof FeedbackSafeTypes>) => {
         try {
             if (feedback) {
-                console.log("Updating feedback:", values);
                 toast.success("Đánh giá đã được cập nhật!");
             } else {
-                console.log("Creating feedback:", values);
                 toast.success("Đánh giá đã được tạo mới!");
             }
         } catch (error: unknown) {

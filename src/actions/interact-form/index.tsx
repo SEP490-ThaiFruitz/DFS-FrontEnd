@@ -29,8 +29,6 @@ export const onSubmit = async <T,>(
       }
     );
 
-    console.log({ response });
-
     // const response = await interactApi.post(endpoint, data);
 
     if (response?.status === 200) {

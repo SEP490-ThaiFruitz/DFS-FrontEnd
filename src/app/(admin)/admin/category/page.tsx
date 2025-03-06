@@ -37,7 +37,6 @@ const CategoryPage = () => {
     getCategories().then((response: any) => {
       if (response?.success) {
         const data = response?.data as ApiResponse<PageResult<Category>>;
-        console.log({ data })
         setData(data?.value);
       } else {
         toast.error(response.message);
@@ -94,10 +93,11 @@ const CategoryPage = () => {
         const isActive = row.getValue("isActive");
         return (
           <Badge
-            className={`border ${isActive
+            className={`border ${
+              isActive
                 ? "border-green-400 text-green-700"
                 : "border-red-400 text-red-700"
-              }`}
+            }`}
             variant="outline"
           >
             {isActive ? "Hoạt động" : "Đã ngưng"}

@@ -3,12 +3,17 @@ import { onSubmit } from "../interact-form";
 import { useFetch } from "../tanstack/use-tanstack-actions";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
+import axios from "axios";
 
 interface Payload {
   itemType: string;
   referenceId: string;
   quantity: number;
 }
+
+const token = Cookies.get("accessToken");
+
+const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
 const handleError = (error: unknown, message: string) => {
   console.error(`${message}:`, error);
@@ -29,7 +34,6 @@ async function handleResponse(response: Response) {
     return { isSuccess: true, data: data };
   } else {
     console.log(response);
-    console.log(data);
     return {
       isSuccess: false,
       status: response.status,
@@ -80,8 +84,6 @@ const post = async <TValues,>(endpoint: string, body: TValues) => {
 const addToCart = async (payload: Payload) => {
   const cartItems = payload;
 
-  console.log({ payload });
-
   try {
     const response = await onSubmit("/Carts/items", cartItems);
 
@@ -96,6 +98,38 @@ const addToCart = async (payload: Payload) => {
   }
 };
 
+const decreaseQuantity = async (payload: {
+  itemType: string;
+  referenceId: string;
+}) => {
+  const url = `${process.env.NEXT_PUBLIC_URL_API}${"/Carts/items"}`;
+
+  try {
+    // const response = await axios.delete("/Carts/items", {
+    //   headers: headers,
+    // });
+
+    try {
+      const requestOptions = {
+        method: "DELETE",
+        headers: await getHeaders(),
+        body: JSON.stringify(payload),
+      };
+
+      const response = await fetch(url, requestOptions);
+
+      return await handleResponse(response);
+    } catch (error) {
+      console.log("Error in deleting data:", error);
+      handleError(error, "Error in deleting data");
+    }
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+const removeProductOutOfCart = async () => {};
+
 const getCart = () => {
   return useFetch("Carts/", [CART_KEY.CARTS]);
 };
@@ -103,4 +137,6 @@ const getCart = () => {
 export const cartActions = {
   addToCart,
   getCart,
+
+  decreaseQuantity,
 };

@@ -97,7 +97,7 @@ const put = async <TValues>(endpoint: string, body: TValues) => {
   }
 };
 
-const remove = async <T>(endpoint: string, payload: T) => {
+const remove = async <T>(endpoint: string, payload?: T) => {
   const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
 
   const tokenData = await getToken();

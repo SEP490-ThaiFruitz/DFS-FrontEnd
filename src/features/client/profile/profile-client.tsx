@@ -40,7 +40,7 @@ const TAB_TRIGGER = [
 
 const TAB_CONTENT: { value: string; component: JSX.Element, title: string, description: string }[] = [
   { value: "profile", component: <InformationTab />, title: "Thông tin cá nhân của bạn", description: "Hãy điền thông tin cá nhân của bạn để chúng tôi có thể phục vụ bạn tốt hơn." },
-  { value: "order-tracking", component: <OrderTrackingPage />, title: "Đơn hàng của bạn", description: " Cung cấp thông tin địa chị giao hàng thuận tiện cho việc mua hàng sau này!" },
+  { value: "order-tracking", component: <OrderTrackingPage />, title: "Đơn hàng của bạn", description: "Theo dõi đơn đặt hàng và quản lý mua sắm hiệu quả hơn!" },
   { value: "address", component: <AddressTab />, title: "Địa chỉ giao hàng của bạn", description: " Cung cấp thông tin địa chị giao hàng thuận tiện cho việc mua hàng sau này!" },
   { value: "point", component: <PointTab />, title: "Lịch sử tích lũy điểm", description: "Theo dõi số điểm đã tích lũy và đổi thưởng một cách dễ dàng!" },
   { value: "voucher", component: <VoucherTab />, title: " Mã giảm giá của bạn", description: "Xem và sử dụng mã giảm giá để tiết kiệm khi mua hàng!." },

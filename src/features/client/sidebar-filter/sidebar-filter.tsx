@@ -47,8 +47,6 @@ interface ProductVariant {
   price: number;
   stockQuantity: number;
   promotion?: Promotion;
-  rating: number;
-  quantitySold: number;
 }
 
 interface Promotion {
@@ -63,6 +61,8 @@ export interface Product {
   mainImageUrl: string;
   variant: ProductVariant;
   categoryId?: string;
+  quantitySold: number;
+  rating: number;
 }
 
 export function SidebarFilter() {

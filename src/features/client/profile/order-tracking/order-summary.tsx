@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
 
 export const OrderSummary = () => {
@@ -16,6 +17,12 @@ export const OrderSummary = () => {
           <span className="text-muted-foreground">Giảm giá:</span>
           <span className="text-green-600 dark:text-green-400">
             -52.300đ (10%)
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Điểm:</span>
+          <span className="text-green-600 dark:text-green-400">
+            -1.300đ (1000)
           </span>
         </div>
         <div className="flex justify-between">

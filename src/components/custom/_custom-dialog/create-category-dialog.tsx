@@ -68,7 +68,7 @@ export const CreateCategoryDialog = () => {
 
         <FormTextareaControl
           form={form}
-          row={4}
+          rows={4}
           name="description"
           disabled={form.formState.isSubmitting}
           label="Mô tả loại sản phẩm"

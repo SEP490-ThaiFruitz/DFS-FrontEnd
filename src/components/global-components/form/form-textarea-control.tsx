@@ -25,7 +25,7 @@ interface FormTextareaControlProps<T extends FieldValues, K> {
   value?: any;
   defaultValue?: any,
   icon?: React.ReactElement;
-  row?: number,
+  rows?: number,
   require?: boolean
 }
 
@@ -39,7 +39,7 @@ export const FormTextareaControl = <T extends FieldValues, K>({
   classNameInput,
   value,
   icon,
-  row,
+  rows,
   defaultValue,
   require
 }: FormTextareaControlProps<T, K>) => {
@@ -66,7 +66,7 @@ export const FormTextareaControl = <T extends FieldValues, K>({
                 placeholder={placeholder}
                 disabled={disabled}
                 {...field}
-                rows={row}
+                rows={rows}
               />
             </FormControl>
             <FormMessage>{fieldState.error?.message}</FormMessage>

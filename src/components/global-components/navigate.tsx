@@ -42,7 +42,7 @@ export const Navigate = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const loginDialog = useLoginDialog();
-  
+
   const { data: user } = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
@@ -69,9 +69,9 @@ export const Navigate = () => {
       "fixed top-0 inset-x-0 z-50 h-16 w-full shadow-lg backdrop-blur-md bg-neutral-100/50 dark:bg-neutral-800/50 rounded-b-2xl",
       "w-full rounded-none list-none shadow-sm"
     )}>
-      <Menu setActive={setActive} className="h-full flex items-center justify-between w-full rounded-none px-4">
+      <Menu setActive={setActive} className="h-full flex items-center justify-between w-full rounded-none md:px-4">
         {/* Logo */}
-        <div className="hidden sm:flex items-center">
+        <div className="hidden md:flex items-center">
           <Logo height={60} width={60} />
         </div>
 
@@ -192,7 +192,9 @@ export const Navigate = () => {
           ) : (
             <div className="flex space-x-2">
               <LoginDialog />
-              <RegisterDialog />
+              <div className="hidden lg:block">
+                <RegisterDialog />
+              </div>
             </div>
           )}
         </div>

@@ -17,7 +17,7 @@ export interface Voucher {
 
 const VoucherSlide = () => {
 
-    const { data: vouchers } = useFetch<ApiResponse<PageResult<Voucher>>>("/Vouchers", ["Voucher", "Home"])
+    const { data: vouchers } = useFetch<ApiResponse<PageResult<Voucher>>>("/Vouchers/vouchers-for-home-page", ["Voucher", "Home"])
     return (
         <div className="p-10 w-full">
             <CustomSlide

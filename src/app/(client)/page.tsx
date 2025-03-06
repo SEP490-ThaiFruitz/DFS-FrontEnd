@@ -31,7 +31,7 @@ const ClientPage = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <ImagesSlider images={images} className="h-[85vh]">
+      <ImagesSlider images={images}  className="h-[85vh]">
         <BannerText />
       </ImagesSlider>
       <VoucherSlide />

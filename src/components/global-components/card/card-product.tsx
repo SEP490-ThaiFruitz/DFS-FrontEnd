@@ -83,13 +83,13 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
           <span>{variant?.promotion.percentage}%</span>
         </div>
       )}
-      <CardHeader className="p-0">
+      <CardHeader className="p-5">
         <Image
           src={mainImageUrl}
           alt={`Image of ${name}`}
           height="1000"
           width="1000"
-          className="h-60 w-full object-cover rounded-t-xl"
+          className="h-60 w-full object-contain rounded-t-xl"
         />
       </CardHeader>
 

@@ -5,16 +5,18 @@ export const CreateVoucherSafeTypes = z.object({
     message: "Vui lòng nhập tên giảm giá"
   }),
   code: z.string(),
-  moneyDiscount: z.string().refine((value) => {
+  moneyDiscount: z.union([z.string(), z.undefined()]).refine((value) => {
+    if (value === undefined || value === null || value === "") return true;
     if (isNaN(parseFloat(value))) return false;
     if (parseFloat(value) < 0) return false;
     return true;
-  }, { "message": "Số tiền giảm giá phải là một số hợp lệ và lớn hơn 0" }),
-  percentDiscount: z.string().refine((value) => {
+  }, { message: "Số tiền giảm giá phải là một số hợp lệ và lớn hơn hoặc bằng 0" }),
+  percentDiscount: z.union([z.string(), z.undefined()]).refine((value) => {
+    if (value === undefined || value === null || value === "") return true;
     if (isNaN(parseFloat(value))) return false;
-    if (parseFloat(value) < 0 || parseFloat(value) > 100) return false;
+    if (parseFloat(value) < 1 || parseFloat(value) > 100) return false;
     return true;
-  }, { "message": "Số phần trăm phải lớn hơn 0 và bé hơn 100" }),
+  }, { message: "Số phần trăm phải lớn hơn 0 và bé hơn hoặc bằng 100" }),
   discountType: z.enum(['Fixed', 'Percentage'], {
     errorMap: () => ({ message: 'Vui lòng chọn loại giảm giá (Cố Định hoặc Phần Trăm)' })
   }),

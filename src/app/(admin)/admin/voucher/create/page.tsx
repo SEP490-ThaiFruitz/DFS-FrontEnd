@@ -1,4 +1,5 @@
 "use client";
+import { createVoucher } from '@/actions/voucher';
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
 import { FormFileControl } from '@/components/global-components/form/form-file-control';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
@@ -16,22 +17,28 @@ import { z } from 'zod';
 
 function CreateVoucherPage() {
 
-  const { isPending } = useMutation({
-    // mutationFn: async (values: FormData) => {
-    //   const response = await createVoucher(values);
-    //   if (response.success) {
-    //     return response.message
-    //   } else {
-    //     throw new Error(response.message);
-    //   }
-    // },
-    // onSuccess: (value) => {
-    //   form.reset();
-    //   toast.success(value)
-    // },
-    // onError: (value) => {
-    //   toast.error(value.message)
-    // }
+  const { isPending, mutate: createVoucherMutation } = useMutation({
+    mutationFn: async (values: FormData) => {
+      try {
+        const response = await createVoucher(values);
+        if (!response?.isSuccess) {
+          if (response?.status === 409) {
+            throw new Error("Tên mã giảm giá đã tồn tại")
+          }
+          throw new Error("Tạo mã giảm giá thất bại")
+        }
+      }
+      catch (error: unknown) {
+        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống")
+      }
+    },
+    onSuccess: () => {
+      form.reset();
+      toast.success("Tạo mã giảm giá thành công")
+    },
+    onError: (value) => {
+      toast.error(value.message)
+    }
   })
 
   const form = useForm<z.infer<typeof CreateVoucherSafeTypes>>({
@@ -39,7 +46,27 @@ function CreateVoucherPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof CreateVoucherSafeTypes>) => {
-    console.log({ values })
+    const formData = new FormData()
+    formData.append("name", values.name)
+    formData.append("code", values.code)
+    if (values.moneyDiscount) {
+      formData.append("value", values.moneyDiscount)
+    } else if (values.percentDiscount) {
+      formData.append("value", values.percentDiscount)
+    }
+    formData.append("discountType", values.discountType)
+    formData.append("startDate", values.startDate)
+    formData.append("endDate", values.endDate)
+    formData.append("image", values.image)
+    formData.append("minimumOrderAmount", values.minimumOrderAmount)
+    formData.append("maximumDiscount", values.maximumDiscount)
+    formData.append("quantity", values.quantity)
+
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+    
+    createVoucherMutation(formData)
   };
 
 

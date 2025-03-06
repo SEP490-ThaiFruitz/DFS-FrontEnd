@@ -54,39 +54,35 @@ function VoucherDetailPage() {
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Giảm giá:</p>
-                            <p>{voucher?.value?.discountType === "Amount" ? formatVND(voucher?.value?.value) : formatNumberWithUnit(voucher?.value?.value, "%")}</p>
+                            <p>{voucher?.value?.discountType === "Amount" ? formatVND(voucher?.value?.value) : formatNumberWithUnit(voucher?.value?.value ?? "N/A", "%")}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Ngày bắt đầu:</p>
-                            <p>{formatTimeVietNam(new Date(voucher?.value?.startDate), true)}</p>
+                            <p>{formatTimeVietNam(new Date(voucher?.value?.startDate ?? "N/A"), true)}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Ngày kết thúc:</p>
-                            <p>{formatTimeVietNam(new Date(voucher?.value?.endDate), true)}</p>
+                            <p>{formatTimeVietNam(new Date(voucher?.value?.endDate ?? "N/A"), true)}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Đơn hàng tối thiểu:</p>
-                            <p>{formatVND(voucher?.value?.minimumOrderAmount)}</p>
+                            <p>{formatVND(voucher?.value?.minimumOrderAmount ?? "N/A")}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Giảm tối đa:</p>
-                            <p>{formatVND(voucher?.value?.maximumDiscountAmount)}</p>
+                            <p>{formatVND(voucher?.value?.maximumDiscountAmount ?? "N/A")}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Số lượng:</p>
-                            <p>{formatNumberWithUnit(voucher?.value?.quantity)}</p>
+                            <p>{formatNumberWithUnit(voucher?.value?.quantity ?? "N/A")}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Ngày tạo:</p>
-                            <p>{formatTimeVietNam(new Date(voucher?.value?.createdOnUtc), true)}</p>
+                            <p>{formatTimeVietNam(new Date(voucher?.value?.createdOnUtc ?? "N/A"), true)}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Ngày cập nhật:</p>
-                            <p>{formatTimeVietNam(new Date(voucher?.value?.modifiedOnUtc), true)}</p>
-                        </div>
-                        <div className="flex justify-between gap-20">
-                            <p className='font-bold'>Ngày cập nhật:</p>
-                            <p>{formatTimeVietNam(new Date(voucher?.value?.modifiedOnUtc), true)}</p>
+                            <p>{formatTimeVietNam(new Date(voucher?.value?.modifiedOnUtc ?? "N/A"), true)}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Trạng thái:</p>

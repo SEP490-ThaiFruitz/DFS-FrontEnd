@@ -35,7 +35,7 @@ function VoucherPage() {
     const [pageIndex, setPageIndex] = useState(1);
     const [filter, setFilter] = useState<boolean>(false);
     const [pageSize, setPageSize] = useState(10);
-    const { data: vouchers, inPending } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers?pageIndex=${pageIndex}&pageSize=${pageSize}`)
+    const { data: vouchers } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers?pageIndex=${pageIndex}&pageSize=${pageSize}`)
     const [voucher, setVoucher] = useState<Voucher>();
     const [isDeleteVoucher, setIsDeleteVoucher] = useState(false);
     const form = useForm({

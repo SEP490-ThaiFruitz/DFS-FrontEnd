@@ -280,7 +280,7 @@ function PaymentClientPage() {
                     />
                   ))} */}
 
-                  {productCart?.value.items.map((product) => {
+                  {productCart?.value?.items.map((product) => {
                     return (
                       <ViewCardProductActions
                         key={product.productId}

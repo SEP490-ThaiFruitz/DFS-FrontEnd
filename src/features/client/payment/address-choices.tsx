@@ -307,18 +307,18 @@ export default function AddressChoices() {
       </div> */}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 mb-4">
+        <TabsList className="grid grid-cols-3 mb-4">
           <TabsTrigger value="base-info" className="flex items-center gap-2">
             <FileUser className="h-4 w-4" />
             Thông tin cơ bản
           </TabsTrigger>
-          <TabsTrigger value="personal" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Thông tin cá nhân
-          </TabsTrigger>
           <TabsTrigger value="address" className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             Địa chỉ giao hàng
+          </TabsTrigger>
+          <TabsTrigger value="personal" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            Thông tin cá nhân
           </TabsTrigger>
         </TabsList>
 

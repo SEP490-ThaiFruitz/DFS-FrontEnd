@@ -93,7 +93,7 @@ export const ShoppingBagSheet = () => {
 
   console.log({ productCart });
 
-  console.log(productCart?.value.items);
+  console.log(productCart?.value?.items);
 
   const [items, setItems] = useState<CartItem[]>(
     products.map((product) => ({
@@ -151,7 +151,7 @@ export const ShoppingBagSheet = () => {
                   Giỏ hàng ({items.length})
                 </h1>
                 <ScrollArea className="w-full h-[200px] md:h-[250px]  lg:h-[300px]">
-                  {productCart?.value.items.map((product) => (
+                  {productCart?.value?.items.map((product) => (
                     <ViewCardProductActions
                       key={product.productId}
                       product={product}

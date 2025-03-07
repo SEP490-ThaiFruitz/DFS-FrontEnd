@@ -13,6 +13,7 @@ import {
   PlusCircle,
   ChevronRight,
   ArrowLeft,
+  FileUser,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -307,6 +308,10 @@ export default function AddressChoices() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-2 mb-4">
+          <TabsTrigger value="base-info" className="flex items-center gap-2">
+            <FileUser className="h-4 w-4" />
+            Thông tin cơ bản
+          </TabsTrigger>
           <TabsTrigger value="personal" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             Thông tin cá nhân
@@ -316,6 +321,44 @@ export default function AddressChoices() {
             Địa chỉ giao hàng
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="base-info">
+          <Card>
+            <CardHeader>
+              <CardTitle>Thông tin cơ bản của bạn</CardTitle>
+              <CardDescription>
+                Hãy đảm bảo thông tin cơ bản của bạn chính xác
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-0">
+                  <h1>Tên của bạn: </h1>
+
+                  <h2>Đặng Hữu Phúc</h2>
+                </div>
+
+                <div className="flex items-center gap-0">
+                  <h1>Email: </h1>
+
+                  <h2>danghuuphuc001@gmail.com</h2>
+                </div>
+
+                <div className="flex items-center gap-0">
+                  <h1>Số điện thoại </h1>
+
+                  <h2>0123444999</h2>
+                </div>
+
+                <div className="flex items-center gap-0">
+                  <h1>Địa chỉ: </h1>
+
+                  <h2>FPT Quận 9</h2>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="personal">
           <Card>

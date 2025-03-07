@@ -130,8 +130,8 @@ async function handleResponse(response: Response) {
   if (response.ok) {
     return { isSuccess: true, data: data };
   } else {
-    console.log(response);
-    console.log(data);
+    // console.log(response);
+    // console.log(data);
     return {
       isSuccess: false,
       status: response.status,

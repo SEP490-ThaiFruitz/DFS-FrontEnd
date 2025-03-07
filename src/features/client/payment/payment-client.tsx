@@ -25,6 +25,7 @@ import AddressChoices from "./address-choices";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { CartProductTypes } from "@/types/cart.types";
 import { ViewCardProductActions } from "@/components/global-components/card/view-card-product-actions";
+import { CART_KEY } from "@/app/key/comm-key";
 
 interface Product {
   id: number;
@@ -128,7 +129,9 @@ function PaymentClientPage() {
     isLoading,
     data: productCart,
     error,
-  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", ["carts"]);
+  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", [
+    CART_KEY.CARTS,
+  ]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -338,7 +341,7 @@ function PaymentClientPage() {
               <CardFooter>
                 <ButtonCustomized
                   className="w-full bg-sky-400/75 hover:bg-sky-600/80 font-semibold text-lg hover:motion-preset-confetti "
-                  label="Place Order"
+                  label="Tiến hành thanh toán"
                 />
               </CardFooter>
             </Card>

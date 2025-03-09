@@ -1,34 +1,55 @@
-"use client"
-import { createBlogCategory, deleteBlogCategory, updateBlogCategory } from "@/actions/blog-category";
+"use client";
+import {
+  createBlogCategory,
+  deleteBlogCategory,
+  updateBlogCategory,
+} from "@/actions/blog-category";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
 import { FormInputControl } from "@/components/global-components/form/form-input-control";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { TableBody, TableCell, Table, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  TableBody,
+  TableCell,
+  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ApiResponse } from "@/types/types";
 import { FormCategoryBlogSafeTypes } from "@/zod-safe-types/blog-safe-types";
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CirclePlus, Pencil, Trash2 } from 'lucide-react'
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { CirclePlus, Pencil, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from 'zod'
+import { z } from "zod";
 
 export interface BlogCategory {
-  id: number,
-  name: string,
-  quantity: number,
-  publishedQuantity: number
+  id: number;
+  name: string;
+  quantity: number;
+  publishedQuantity: number;
 }
 
 function BlogCategoryPage() {
   const queryClient = useQueryClient();
-  const [blogCategory, setBlogCategory] = useState<BlogCategory | undefined>(undefined)
+  const [blogCategory, setBlogCategory] = useState<BlogCategory | undefined>(
+    undefined
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
 
@@ -36,49 +57,67 @@ function BlogCategoryPage() {
     resolver: zodResolver(FormCategoryBlogSafeTypes),
   });
 
-  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", ["BlogCategories", "admin"])
+  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
+    "/BlogCategories",
+    ["BlogCategories", "admin"]
+  );
   const { isPending, mutate: createOrUpdateBlogCategory } = useMutation({
     mutationFn: async ({ name }: { name: string }) => {
       try {
-        const res = blogCategory === undefined ? await createBlogCategory({ name }) : await updateBlogCategory({ id: blogCategory.id, name });
+        const res =
+          blogCategory === undefined
+            ? await createBlogCategory({ name })
+            : await updateBlogCategory({ id: blogCategory.id, name });
         if (!res?.isSuccess) {
           if (res?.status === 409) {
             throw new Error(`${name} đã tồn tại`);
           }
           throw new Error("Lỗi thống");
         }
-        return blogCategory === undefined ? "Tạo mới loại bài viết thành công" : "Cập nhật loại bài viết thành công";
+        return blogCategory === undefined
+          ? "Tạo mới loại bài viết thành công"
+          : "Cập nhật loại bài viết thành công";
       } catch (error: any) {
         throw new Error(error?.message);
       }
     },
     onSuccess: (message: string) => {
-      handlerCloseForm()
-      toast.success(message)
-      queryClient.invalidateQueries({ queryKey: ["BlogCategories", "admin"] })
+      handlerCloseForm();
+      toast.success(message);
+      queryClient.invalidateQueries({ queryKey: ["BlogCategories", "admin"] });
     },
     onError: (error) => {
-      toast.error(error.message)
-    }
+      toast.error(error.message);
+    },
   });
 
-  const onSubmit = async (values: z.infer<typeof FormCategoryBlogSafeTypes>) => {
-    createOrUpdateBlogCategory({ name: values?.name })
+  const onSubmit = async (
+    values: z.infer<typeof FormCategoryBlogSafeTypes>
+  ) => {
+    createOrUpdateBlogCategory({ name: values?.name });
   };
   const handlerCloseForm = () => {
     setIsOpen(!isOpen);
     form.reset();
     setBlogCategory(undefined);
-  }
+  };
   return (
-    <div className='m-10'>
-      <div className='flex justify-between items-center'>
-        <p className='text-2xl font-semibold leading-none tracking-tight'>Loại bài viết</p>
-        <Dialog open={isOpen} onOpenChange={() => {
-          handlerCloseForm()
-        }}>
+    <div className="m-10">
+      <div className="flex justify-between items-center">
+        <p className="text-2xl font-semibold leading-none tracking-tight">
+          Loại bài viết
+        </p>
+        <Dialog
+          open={isOpen}
+          onOpenChange={() => {
+            handlerCloseForm();
+          }}
+        >
           <DialogTrigger asChild>
-            <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+            <Button
+              size={"sm"}
+              className="text-white bg-green-500 hover:bg-green-600"
+            >
               <CirclePlus />
               Tạo loại bài viết
             </Button>
@@ -86,9 +125,15 @@ function BlogCategoryPage() {
           {isOpen && (
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>{blogCategory ? "Cập nhật " : "Tạo "}loại bài viết</DialogTitle>
+                <DialogTitle>
+                  {blogCategory ? "Cập nhật " : "Tạo "}loại bài viết
+                </DialogTitle>
               </DialogHeader>
-              <FormValues form={form} onSubmit={onSubmit} classNameForm="grid gap-4 py-4">
+              <FormValues
+                form={form}
+                onSubmit={onSubmit}
+                classNameForm="grid gap-4 py-4"
+              >
                 <FormInputControl
                   form={form}
                   name="name"
@@ -119,11 +164,9 @@ function BlogCategoryPage() {
                           className="font-semibold "
                           classNameLabel="font-semibold text-sm"
                         />
-                      ) :
-                        (
-                          <p>{blogCategory ? "Cập nhật" : "Lưu"}</p>
-                        )
-
+                      ) : (
+                        <span>{blogCategory ? "Cập nhật" : "Lưu"}</span>
+                      )
                     }
                   />
                 </DialogFooter>
@@ -133,48 +176,60 @@ function BlogCategoryPage() {
         </Dialog>
       </div>
       <div className="mt-10 border rounded-lg shadow-sm h-fit min-w-full max-w-6xl overflow-x-auto">
-        <Table className='overflow-x-auto'>
+        <Table className="overflow-x-auto">
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px] min-w-[100px]">STT</TableHead>
               <TableHead className="w-[200px] min-w-[300px]">Tên</TableHead>
-              <TableHead className="w-[200px] min-w-[200px]">Số bài viết</TableHead>
-              <TableHead className="w-[200px] min-w-[200px]">Số bài viết hiện</TableHead>
-              <TableHead className="w-[200px] min-w-[200px]">Hành động</TableHead>
+              <TableHead className="w-[200px] min-w-[200px]">
+                Số bài viết
+              </TableHead>
+              <TableHead className="w-[200px] min-w-[200px]">
+                Số bài viết hiện
+              </TableHead>
+              <TableHead className="w-[200px] min-w-[200px]">
+                Hành động
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {blogCategories?.value?.map((blogCategory: BlogCategory, index: number) => <TableRow key={blogCategory.id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell className="font-bold">{blogCategory.name}</TableCell>
-              <TableCell>{blogCategory.quantity}</TableCell>
-              <TableCell>{blogCategory.publishedQuantity}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
-                    onClick={() => {
-                      setIsOpen(true)
-                      setBlogCategory(blogCategory)
-                    }}
-                  >
-                    <Pencil />
-                  </Button>
+            {blogCategories?.value?.map(
+              (blogCategory: BlogCategory, index: number) => (
+                <TableRow key={blogCategory.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell className="font-bold">
+                    {blogCategory.name}
+                  </TableCell>
+                  <TableCell>{blogCategory.quantity}</TableCell>
+                  <TableCell>{blogCategory.publishedQuantity}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
+                        onClick={() => {
+                          setIsOpen(true);
+                          setBlogCategory(blogCategory);
+                        }}
+                      >
+                        <Pencil />
+                      </Button>
 
-                  <Button
-                    variant="outline"
-                    className="h-6 w-6 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                    onClick={() => {
-                      setBlogCategory(blogCategory)
-                      setIsOpenDelete(true)
-                    }}
-                  >
-                    <Trash2 />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>)}
+                      <Button
+                        variant="outline"
+                        className="h-6 w-6 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                        onClick={() => {
+                          setBlogCategory(blogCategory);
+                          setIsOpenDelete(true);
+                        }}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            )}
           </TableBody>
         </Table>
       </div>
@@ -184,12 +239,14 @@ function BlogCategoryPage() {
         onClose={() => {
           form.reset();
           setBlogCategory(undefined);
-          setIsOpenDelete(false)
+          setIsOpenDelete(false);
         }}
         name={blogCategory?.name}
-        deleteFunction={deleteBlogCategory} isOpen={isOpenDelete} />
+        deleteFunction={deleteBlogCategory}
+        isOpen={isOpenDelete}
+      />
     </div>
-  )
+  );
 }
 
-export default BlogCategoryPage
+export default BlogCategoryPage;

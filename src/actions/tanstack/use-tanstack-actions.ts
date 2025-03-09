@@ -11,6 +11,7 @@ import { interactApiClient } from "../client/interact-api-client";
 import Cookies from "js-cookie";
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL_API;
+const token = Cookies.get("accessToken");
 
 const handleParams = (params: Record<string, any>, endpoint: string) => {
   const url = new URL(`${BASE_URL}${endpoint}`);
@@ -23,8 +24,6 @@ const handleParams = (params: Record<string, any>, endpoint: string) => {
 };
 
 const fetching = async (endpoint: string, params?: Record<string, any>) => {
-  const token = Cookies.get("accessToken");
-
   const headers: Record<string, string> = token
     ? { Authorization: `Bearer ${token}` }
     : {};
@@ -36,12 +35,20 @@ const fetching = async (endpoint: string, params?: Record<string, any>) => {
         headers,
       }
     );
-    // console.log(response)
+
+    if (!response.ok) {
+      console.log(response);
+      return [];
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error in fetching data:", error);
-    throw error;
+    console.log("Error in fetching data:", error);
+
+    // throw error;
+
+    return [];
   }
 };
 

@@ -1,5 +1,4 @@
-'use client'
-
+"use client";
 
 import StatusButton from "@/components/custom/_custom-button/status-button";
 import { formatNumberWithUnit, formatVND } from "@/lib/format-currency";
@@ -65,7 +64,7 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
   });
 
   return (
-    <Card className="w-full relative md:min-w-72 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md  hover:cursor-pointer hover:scale-105 transition-all duration-300 hover:shadow-xl">
+    <Card className="w-full relative md:min-w-72 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm  hover:cursor-pointer hover:scale-105 transition-all duration-300 hover:shadow-xl">
       <button
         onClick={() => favoriteMutation()}
         className="absolute z-10 top-2 right-2 p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-shadow"
@@ -114,7 +113,7 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
           </div>
         ) : (
           <div className="mt-5 py-2 w-full text-lg text-center bg-red-50 text-red-700 font-bold">
-            <p>Đã hết hàng</p>
+            <span>Đã hết hàng</span>
           </div>
         )}
       </CardContent>

@@ -17,11 +17,12 @@ const ClientLayout = ({ children, common }: ClientLayoutProps) => {
   return (
     <>
       <Navigate />
-      <>
+      <div className="bg-[#fefdf7]">
+        {/* <div> */}
         {children}
 
         {common}
-      </>
+      </div>
       <Footer />
     </>
   );

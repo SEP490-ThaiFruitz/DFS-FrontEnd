@@ -45,39 +45,43 @@ function BlogDetailPage({ params }: BlogDetailPageProps) {
               <div className="h-full text-gray-500 w-full flex items-center justify-center text-center text-xl font-semibold">
                 <div className="flex space-x-5">
                   <ImageOff />
-                  <p>Không có ảnh</p>
+                  <span>Không có ảnh</span>
                 </div>
               </div>
             )}
           </div>
           <div className="space-y-7">
             <div className="grid grid-cols-2">
-              <p className="font-semibold text-gray-600">Tên:</p>
-              <p className="text-gray-800">{blog?.value?.title}</p>
+              <span className="font-semibold text-gray-600">Tên:</span>
+              <span className="text-gray-800">{blog?.value?.title}</span>
             </div>
             <div className="grid grid-cols-2">
-              <p className="font-semibold text-gray-600">Người đăng:</p>
-              <p className="text-gray-800">{blog?.value?.user?.name}</p>
+              <span className="font-semibold text-gray-600">Người đăng:</span>
+              <span className="text-gray-800">{blog?.value?.user?.name}</span>
             </div>
             <div className="grid grid-cols-2">
-              <p className="font-semibold text-gray-600">Loại bài viết:</p>
-              <p className="text-gray-800">{blog?.value?.blogCategory?.name}</p>
+              <span className="font-semibold text-gray-600">
+                Loại bài viết:
+              </span>
+              <span className="text-gray-800">
+                {blog?.value?.blogCategory?.name}
+              </span>
             </div>
             <div className="grid grid-cols-2">
-              <p className="font-semibold text-gray-600">Ngày tạo:</p>
-              <p className="text-gray-800">
+              <span className="font-semibold text-gray-600">Ngày tạo:</span>
+              <span className="text-gray-800">
                 {formatTimeVietNam(new Date(blog!?.value!.createdOnUtc))}
-              </p>
+              </span>
             </div>
             <div className="grid grid-cols-2">
-              <p className="font-semibold text-gray-600">Ngày sửa:</p>
-              <p className="text-gray-800">
+              <span className="font-semibold text-gray-600">Ngày sửa:</span>
+              <span className="text-gray-800">
                 {formatTimeVietNam(new Date(blog!?.value!.modifiedOnUtc))}
-              </p>
+              </span>
             </div>
             <div>
-              <p className="font-semibold text-gray-600">Nội dung:</p>
-              <p>{blog?.value?.content}</p>
+              <span className="font-semibold text-gray-600">Nội dung:</span>
+              <span>{blog?.value?.content}</span>
             </div>
           </div>
         </CardContent>

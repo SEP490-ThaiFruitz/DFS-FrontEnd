@@ -31,8 +31,8 @@ const FavoriteClientPage = () => {
                 <Skeleton className='w-80 h-10' />
             </div> :
                 <div className='p-4 flex space-x-3 items-center'>
-                    <p className='text-2xl font-bold'>Danh sách yêu thích</p>
-                    <p>{`(Đã tìm thấy ${favorites?.totalCount ?? 0} sản phẩm)`}</p>
+                    <span className='text-2xl font-bold'>Danh sách yêu thích</span>
+                    <span>{`(Đã tìm thấy ${favorites?.totalCount ?? 0} sản phẩm)`}</span>
                 </div>}
             <div className="flex p-4">
                 {!isLoadingFavorites ? (

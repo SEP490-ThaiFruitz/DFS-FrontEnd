@@ -31,6 +31,8 @@ export type AuthContextType = {
 
   value: unknown;
   setValue: Dispatch<SetStateAction<unknown>>;
+
+  removeInfoUser: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -75,7 +77,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // console.log({ userDecoded: user });
   return (
     <AuthContext.Provider
-      value={{ setUser, user, setToken, token, value, setValue }}
+      value={{
+        setUser,
+        user,
+        setToken,
+        token,
+        value,
+        setValue,
+        removeInfoUser: remove,
+      }}
     >
       {children}
     </AuthContext.Provider>

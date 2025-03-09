@@ -6,6 +6,7 @@ import {
   CartItem,
   Product,
   ViewCardProductActions,
+  ViewCardProductActionsSkeleton,
 } from "@/components/global-components/card/view-card-product-actions";
 import { EmptyState } from "@/components/global-components/empty-state";
 import { Logo } from "@/components/global-components/logo";
@@ -21,6 +22,9 @@ import {
 import { CartProductTypes } from "@/types/cart.types";
 import { ShoppingBagIcon, ShoppingBasket, ShoppingCart } from "lucide-react";
 import React, { useState } from "react";
+
+import Cookies from "js-cookie";
+import { CART_KEY } from "@/app/key/comm-key";
 
 export const products: Product[] = [
   {
@@ -85,15 +89,21 @@ interface Cart {
 export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
+  const token = Cookies.get("accessToken");
+
+  // console.log({ token });
+
   const {
     isLoading,
     data: productCart,
     error,
-  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", ["carts"]);
+  } = useFetch<{ value: { items: CartProductTypes[] } }>("/Carts/", [
+    CART_KEY.CARTS,
+  ]);
 
-  console.log({ productCart });
+  // console.log(productCart?.value?.items);
 
-  console.log(productCart?.value?.items);
+  console.log(productCart);
 
   const [items, setItems] = useState<CartItem[]>(
     products.map((product) => ({
@@ -145,47 +155,53 @@ export const ShoppingBagSheet = () => {
             </div>
           </SheetTitle>
           <SheetDescription>
-            <div className="w-full">
-              <div className="container mx-auto p-4 md:p-6">
-                <h1 className="text-2xl font-semibold">
-                  Giỏ hàng ({items.length})
-                </h1>
-                <ScrollArea className="w-full h-[200px] md:h-[250px]  lg:h-[300px]">
-                  {productCart?.value?.items.map((product) => (
-                    <ViewCardProductActions
-                      key={product.productId}
-                      product={product}
-                      onQuantityChange={handleQuantityChange}
-                      onRemove={handleRemove}
+            <div className="w-full overflow-hidden">
+              {!isLoading ? (
+                productCart?.value?.items.length ? (
+                  <div className="container mx-auto p-4 md:p-6 w-full">
+                    <>
+                      <h1 className="text-2xl font-semibold">
+                        Giỏ hàng ({items.length})
+                      </h1>
+                      <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[300px] 2xl:h-[300px]">
+                        {productCart?.value?.items.map((product) => (
+                          <ViewCardProductActions
+                            key={product.productId}
+                            product={product}
+                            onQuantityChange={handleQuantityChange}
+                            onRemove={handleRemove}
+                            className="m-4"
+                          />
+                        ))}
+                      </ScrollArea>
+
+                      <div className=" mt-14 w-full">
+                        <CartSummary items={items} />
+                      </div>
+                    </>
+                  </div>
+                ) : (
+                  <EmptyState
+                    icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
+                    title="Giỏ hàng của bạn"
+                    description="Có vẻ như giỏ hàng của bạn đang trống"
+                    action={{
+                      label: "Mua ngay nào",
+                      onClick: () => setIsOpen(false),
+                    }}
+                    className="min-w-full flex flex-col"
+                  />
+                )
+              ) : (
+                Array.from({ length: 3 }).map((_, index) => {
+                  return (
+                    <ViewCardProductActionsSkeleton
+                      key={index}
                       className="m-4"
                     />
-                  ))}
-                </ScrollArea>
-
-                <div className=" mt-14 w-full">
-                  <CartSummary items={items} />
-                </div>
-              </div>
-
-              {/* <div className="flex items-center justify-center h-full pt-10">
-                <EmptyState
-                  icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
-                  title="Giỏ hàng của bạn"
-                  description="Có vẻ như giỏ hàng của bạn đang trống"
-                  action={{
-                    label: "Mua ngay nào",
-                    onClick: () => setIsOpen(false),
-                  }}
-                />
-              </div> */}
-
-              {/* <ViewCardProductActions
-                productImage="/images/second-background.png"
-                productName="test"
-                productPrice={12}
-                productQuantity={1}
-                className="123"
-              /> */}
+                  );
+                })
+              )}
             </div>
           </SheetDescription>
         </SheetHeader>

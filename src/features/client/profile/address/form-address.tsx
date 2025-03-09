@@ -33,10 +33,10 @@ import { toast } from "sonner";
 import { createAddress, updateAddress } from "@/actions/address";
 import { FormControl, FormItem } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { Address } from "./address-tab";
+import { AddressTypes } from "@/types/address.types";
 
 interface FormAddressProps {
-  address?: Address;
+  address?: AddressTypes;
   onClose: () => void;
 }
 
@@ -221,6 +221,10 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
       </ResizablePanel>
     );
   }
+
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
 
   const isEditMode = !!address;
   const title = isEditMode

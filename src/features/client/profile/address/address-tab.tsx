@@ -7,25 +7,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getAddresses, deleteAddress } from "@/actions/address";
 import { ApiResponse, PageResult } from "@/types/types";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
-
-export interface Address {
-  id: string;
-  tagName: string;
-  userId: string;
-  receiverName: string;
-  receiverPhone: string;
-  receiverAddress: string;
-  longitude: number | null;
-  latitude: number | null;
-  isDefault: boolean;
-  provinceID: number;
-  districtID: number;
-  wardID: number;
-}
+import { AddressTypes } from "@/types/address.types";
 
 function AddressTab() {
   const [isCreate, setIsCreate] = useState<boolean>(false);
-  const [address, setAddress] = useState<Address | undefined>(undefined);
+  const [address, setAddress] = useState<AddressTypes | undefined>(undefined);
   const [isDeleteDialog, setIsDeleteDialog] = useState<boolean>(false);
   const [addressDelete, setAddressDelete] = useState<
     { id: string; name: string } | undefined
@@ -37,7 +23,7 @@ function AddressTab() {
       try {
         const response = await getAddresses();
         if (response?.isSuccess) {
-          const data: ApiResponse<PageResult<Address>> = response.data;
+          const data: ApiResponse<PageResult<AddressTypes>> = response.data;
           return data;
         }
       } catch (error) {
@@ -52,7 +38,7 @@ function AddressTab() {
     >
       <ResizablePanel defaultSize={70} minSize={30} className="p-4">
         <div className="m-5 grid sm:grid-cols-3 gap-6">
-          {addresses?.value?.items.map((item: Address) => (
+          {addresses?.value?.items.map((item: AddressTypes) => (
             <button
               key={item.id}
               onClick={() => {
@@ -71,9 +57,9 @@ function AddressTab() {
               ) : (
                 <h3 className="font-bold mb-3">{item.tagName}</h3>
               )}
-              <p className="line-clamp-3 whitespace-pre-line">
+              <span className="line-clamp-3 whitespace-pre-line">
                 {item.receiverAddress}
-              </p>
+              </span>
 
               <button
                 onClick={(e) => {
@@ -99,7 +85,7 @@ function AddressTab() {
           >
             <div className="flex items-center p-5 space-x-5 font-bold">
               <CirclePlusIcon />
-              <p>Thêm mới</p>
+              <span>Thêm mới</span>
             </div>
           </button>
         </div>

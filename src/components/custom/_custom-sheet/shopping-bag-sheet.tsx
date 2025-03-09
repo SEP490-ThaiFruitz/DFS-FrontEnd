@@ -167,6 +167,7 @@ export const ShoppingBagSheet = () => {
                         {productCart?.value?.items.map((product) => (
                           <ViewCardProductActions
                             key={product.productId}
+                            // cartItemId=
                             product={product}
                             onQuantityChange={handleQuantityChange}
                             onRemove={handleRemove}

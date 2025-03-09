@@ -13,4 +13,5 @@ export type CartProductTypes = {
     stockQuantity: number;
   };
   combo: null | any;
+  quantity: number;
 };

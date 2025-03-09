@@ -42,7 +42,7 @@ interface ViewCardProductActionsProps {
 }
 
 interface ViewCardProductActionsSkeletonProps {
-  className?: string
+  className?: string;
 }
 
 export const ViewCardProductActions = ({
@@ -90,6 +90,8 @@ export const ViewCardProductActions = ({
           100
       )
     : 0;
+
+  console.log(product.quantity);
 
   return (
     <div
@@ -144,8 +146,7 @@ export const ViewCardProductActions = ({
                     // onClick={() => handleQuantityChange(quantity - 1)}
                     onClick={() => {
                       cartActions.decreaseQuantity({
-                        itemType: "single",
-                        referenceId: product.productVariant.productVariantId,
+                        cartItemId: product.cartItemId,
                       });
 
                       queryClient.invalidateQueries({
@@ -159,7 +160,7 @@ export const ViewCardProductActions = ({
                   </Button>
                   <input
                     type="number"
-                    value={quantity}
+                    value={product.quantity}
                     onChange={(e) =>
                       handleQuantityChange(Number.parseInt(e.target.value) || 1)
                     }
@@ -171,8 +172,7 @@ export const ViewCardProductActions = ({
                     className="h-9 w-9 rounded-r-md"
                     onClick={() => {
                       cartActions.increaseQuantity({
-                        itemType: "single",
-                        referenceId: product.productVariant.productVariantId,
+                        cartItemId: product.cartItemId,
                       });
                       queryClient.invalidateQueries({
                         queryKey: [CART_KEY.CARTS],

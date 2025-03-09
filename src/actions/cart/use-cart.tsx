@@ -84,7 +84,7 @@ const addToCart = async (payload: Payload) => {
 };
 
 const updateQuantity = async (
-  payload: { itemType: string; referenceId: string },
+  payload: { cartItemId: string },
   change: number
 ) => {
   const url = `${process.env.NEXT_PUBLIC_URL_API}/Carts/items`;
@@ -94,7 +94,7 @@ const updateQuantity = async (
   // const queryClient = useQueryClient();
 
   try {
-    const response = await axios.put(
+    const response = await axios.patch(
       url,
       { ...payload, quantity: change }, // Cập nhật chính xác
       { headers: headers }
@@ -115,11 +115,11 @@ const updateQuantity = async (
 };
 
 // Hàm tăng số lượng
-const increaseQuantity = (payload: { itemType: string; referenceId: string }) =>
+const increaseQuantity = (payload: { cartItemId: string }) =>
   updateQuantity(payload, 1);
 
 // Hàm giảm số lượng
-const decreaseQuantity = (payload: { itemType: string; referenceId: string }) =>
+const decreaseQuantity = (payload: { cartItemId: string }) =>
   updateQuantity(payload, -1);
 
 const removeProductOutOfCart = async (payload: {

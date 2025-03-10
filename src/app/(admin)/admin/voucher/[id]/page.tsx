@@ -21,7 +21,17 @@ interface VoucherDetail extends Voucher {
 function VoucherDetailPage() {
     const { id } = useParams();
     const { data: voucher } = useFetch<ApiResponse<VoucherDetail>>(`/Vouchers/${id}`)
-    
+    console.log({ voucher })
+    function formatDate(dateString: string) {
+        const date = new Date(dateString);
+        const day = date.getUTCDate().toString().padStart(2, '0');
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+        const year = date.getUTCFullYear();
+        const hours = date.getUTCHours().toString().padStart(2, '0');
+        const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+      
+        return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }
     return (
         <div className='m-10'>
             <Card>
@@ -31,7 +41,7 @@ function VoucherDetailPage() {
                 <CardContent className='my-5 sm:mx-8 grid lg:grid-cols-2 gap-20'>
                     <div className='border shadow-md rounded-xl h-full'>
                         {voucher?.value?.image ?
-                            <Image className='h-full w-full p-2' src={voucher?.value?.image} height={100} width={100} alt='image' />
+                            <Image className='h-fit w-fit p-2' src={voucher?.value?.image} height={1000} width={1000} alt='image' />
                             : <div className="h-full text-gray-500 w-full flex items-center justify-center text-center text-xl font-semibold">
                                 <div className='flex space-x-5'>
                                     <ImageOff />
@@ -58,11 +68,11 @@ function VoucherDetailPage() {
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Ngày bắt đầu:</p>
-                            <p>{formatTimeVietNam(new Date(voucher?.value?.startDate ?? "N/A"), true)}</p>
+                            <p>{formatDate(voucher?.value?.startDate ?? "Na/N")}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Ngày kết thúc:</p>
-                            <p>{formatTimeVietNam(new Date(voucher?.value?.endDate ?? "N/A"), true)}</p>
+                            <p>{formatDate(voucher?.value?.endDate ?? "Na/N")}</p>
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Đơn hàng tối thiểu:</p>
@@ -86,9 +96,9 @@ function VoucherDetailPage() {
                         </div>
                         <div className="flex justify-between gap-20">
                             <p className='font-bold'>Trạng thái:</p>
-                            {voucher?.value?.isDeletedIsDeleted ? 
-                            <p className='py-2 p-1 w-fit bg-red-300 text-red-600 rounded-md'>Đã xóa</p> 
-                            : <p className='py-2 p-1 w-fit bg-green-300 text-green-600 rounded-md'>Hoạt động</p>}
+                            {voucher?.value?.isDeletedIsDeleted ?
+                                <p className='py-2 p-1 w-fit bg-red-100 text-red-600 font-bold rounded-md'>Đã xóa</p>
+                                : <p className='py-2 p-1 w-fit bg-green-100 text-green-600 font-bold rounded-md'>Hoạt động</p>}
                         </div>
                     </div>
                 </CardContent>

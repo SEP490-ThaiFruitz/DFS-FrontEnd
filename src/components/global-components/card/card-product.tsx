@@ -89,15 +89,6 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
             {quantitySold} đã bán 
           </p>
         </div>
-
-        {variant?.stockQuantity > 0 ?
-          <div className="mt-5 py-2 flex items-center space-x-5 text-gray-700 dark:text-gray-200 text-base font-medium">
-            <p className="font-semibold">Số lượng</p>
-            <p className="text-gray-600 dark:text-gray-400">{formatNumberWithUnit(variant?.stockQuantity)}</p>
-          </div>
-          : <div className="mt-5 py-2 w-full text-lg text-center bg-red-50 text-red-700 font-bold">
-            <p>Đã hết hàng</p>
-          </div>}
       </CardContent>
 
       {variant && (

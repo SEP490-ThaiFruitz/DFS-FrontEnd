@@ -216,6 +216,7 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
                         <Controller
                             name="isDefault"
                             control={form.control}
+                            disabled={isPending}
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between">
                                     <p className="text-sm font-medium">Địa chỉ mặc định</p>

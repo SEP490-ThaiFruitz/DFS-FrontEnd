@@ -20,3 +20,11 @@ export const getUsersByAdministrator = async (params?: Record<string, any>) => {
 export const banUser = async (id: string) => {
     return await interactApi.put(`/Users/${id}/status`, {});
 }
+
+export const createUser = async <TValues>(values: TValues) => {
+    return await interactApi.post("/Users/create-account", values);
+}
+
+export const updateUser = async <TValues>(values: TValues) => {
+    return await interactApi.put("/Users/update-account", values);
+}

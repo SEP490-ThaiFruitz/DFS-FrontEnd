@@ -33,6 +33,7 @@ export const getHeaders = async (isFormData?: boolean) => {
     if (tokenData) {
       headers.Authorization = "Bearer " + tokenData?.accessToken;
     }
+    console.log(headers.Authorization)
 
     return headers;
   } catch (error) {

@@ -10,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TableBody, TableCell, Table, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ApiResponse, PageResult } from '@/types/types'
 import { useQuery } from '@tanstack/react-query'
-import { CirclePlus, Filter, LockKeyhole, LockKeyholeOpen, Search, Trash2 } from 'lucide-react'
+import { CirclePlus, Filter, LockKeyhole, LockKeyholeOpen, Pencil, Search, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import FormUser from './form-user'
 
 interface User {
     id: string;
@@ -34,6 +35,8 @@ function UserPage() {
     const [pageSize, setPageSize] = useState(10);
     const [searchParams, setSearchParams] = useState<{ name?: string;[key: string]: any }>({});
     const [isBanPopup, setIsBanPopup] = useState<boolean>(false);
+    const [isFormUser, setIsFormUser] = useState<boolean>(false);
+
     const { data: users, isPending, refetch } = useQuery({
         queryKey: ["Users"],
         queryFn: async () => {
@@ -109,12 +112,12 @@ function UserPage() {
         <div className='m-10'>
             <div className='flex justify-between items-center'>
                 <p className='text-2xl font-semibold leading-none tracking-tight'>Tài khoản</p>
-                <Link href="/admin/voucher/create">
-                    <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
-                        <CirclePlus />
-                        Tạo người dùng mới
-                    </Button>
-                </Link>
+                <Button onClick={() => {
+                    setIsFormUser(true)
+                }} size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+                    <CirclePlus />
+                    Tạo mới
+                </Button>
             </div>
             {filter && (<div className='border p-5 rounded-lg shadow-sm mt-5 transform origin-top-right transition-all duration-5000 ease-in-out'>
                 <FormValues form={form} onSubmit={onSubmit}>
@@ -248,7 +251,17 @@ function UserPage() {
                                     <div className="bg-red-50 text-red-600 w-fit py-1 px-2 rounded-lg">Đã khóa</div>
                                 )}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className='space-x-2'>
+                                <Button
+                                    onClick={() => {
+                                        setIsFormUser(true)
+                                        setUser(user)
+                                    }}
+                                    variant="outline"
+                                    className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
+                                >
+                                    <Pencil />
+                                </Button>
                                 {user.role !== "Administrator" && (
                                     !user.isActive ? (
                                         <Button onClick={() => {
@@ -283,6 +296,10 @@ function UserPage() {
                 message={user?.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
                 classNameButton={user?.isActive ? "" : "bg-green-500 hover:bg-green-800"}
             />
+            {isFormUser && (<FormUser isOpen={isFormUser} user={user} onClose={() => {
+                setIsFormUser(false)
+                setUser(undefined)
+            }} />)}
         </div>
     )
 }

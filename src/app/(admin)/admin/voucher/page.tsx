@@ -208,7 +208,7 @@ function VoucherPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {vouchers?.value?.items.map((voucher: Voucher) => {
+                        {vouchers?.value?.items?.map((voucher: Voucher) => {
                             const colorStatus: { status: string, color: string } | undefined = getCouponStatus(voucher.quantity, voucher.startDate, voucher.endDate);
                             return <TableRow key={voucher.id}>
                                 <TableCell className="font-bold">{voucher.name}</TableCell>

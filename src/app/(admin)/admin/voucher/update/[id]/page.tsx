@@ -7,54 +7,109 @@ import { FormSelectControl } from '@/components/global-components/form/form-sele
 import { FormValues } from '@/components/global-components/form/form-values';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CreateVoucherSafeTypes } from '@/zod-safe-types/voucher-safe-types';
+import { ApiResponse } from '@/types/types';
+import { UpdateVoucherSafeTypes } from '@/zod-safe-types/voucher-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { Voucher } from '../../page';
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
+import { updateVoucher } from '@/actions/voucher';
+import { useEffect } from 'react';
 
 function UpdateVoucherPage() {
   const { id } = useParams();
-  const [coupon] = useState({ name: 'Ưu Đãi Mua Số Lượng Lớn', code: 'bulk50', discount: '50.00', discountType: 'Fixed', startDate: '2025-01-19T08:00:00+00:00', endDate: '2025-01-25T12:00:00+00:00' });
-  const { isPending } = useMutation({
-    // mutationFn: async (values: FormData) => {
-    //   const response = await createVoucher(values);
-    //   if (response.success) {
-    //     return response.message
-    //   } else {
-    //     throw new Error(response.message);
-    //   }
-    // },
-    // onSuccess: (value) => {
-    //   form.reset();
-    //   toast.success(value)
-    // },
-    // onError: (value) => {
-    //   toast.error(value.message)
-    // }
+  const { data: voucher } = useFetch<ApiResponse<Voucher>>(`/Vouchers/${id}`)
+
+  const { isPending, mutate: updateVoucherMutation } = useMutation({
+    mutationFn: async (values: FormData) => {
+      const response = await updateVoucher(values.get("id")?.toString() ?? '', values);
+      try {
+        if (!response?.isSuccess) {
+          if (response?.status === 409) {
+            throw new Error("Tên mã giảm giá đã tồn tại")
+          }
+          throw new Error("Lỗi hệ thống")
+        }
+      } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống");
+      }
+    },
+    onSuccess: () => {
+      toast.success("Cập nhật mã giảm giá thành công")
+    },
+    onError: (value) => {
+      toast.error(value.message)
+    }
   })
 
-  const form = useForm<z.infer<typeof CreateVoucherSafeTypes>>({
-    resolver: zodResolver(CreateVoucherSafeTypes),
+  const form = useForm<z.infer<typeof UpdateVoucherSafeTypes>>({
+    resolver: zodResolver(UpdateVoucherSafeTypes),
     defaultValues: {
-      name: coupon.name,
-      code: coupon.code,
-      discountType: coupon.discountType === 'Fixed' ? 'Fixed' : 'Percentage',
-      moneyDiscount: coupon.discountType === 'Fixed' ? coupon.discount : undefined,
-      percentDiscount: coupon.discountType === 'Percentage' ? coupon.discount : undefined,
-      startDate: new Date(coupon.startDate).toISOString().split('T')[0],
-      endDate: new Date(coupon.endDate).toISOString().split('T')[0],
-      minimumOrderAmount: "0",
-      maximumDiscount: "0",
-      quantity: "0"
-    }
+      id: '',
+      name: '',
+      code: '',
+      discountType: 'Amount',
+      moneyDiscount: '',
+      percentDiscount: '',
+      startDate: '',
+      endDate: '',
+      minimumOrderAmount: '',
+      maximumDiscount: '',
+      quantity: '',
+    },
   });
 
-  const onSubmit = async (values: z.infer<typeof CreateVoucherSafeTypes>) => {
-    console.log({ values })
+  useEffect(() => {
+    if (voucher?.value) {
+      form.reset({
+        id: voucher.value.id ?? '',
+        name: voucher.value.name ?? '',
+        code: voucher.value.code?.toString() ?? '',
+        discountType: voucher.value.discountType === 'Amount' ? 'Amount' : 'Percentage',
+        moneyDiscount:
+          voucher.value.discountType === 'Amount' ? voucher.value.value?.toString() ?? '' : undefined,
+        percentDiscount:
+          voucher.value.discountType === 'Percentage' ? voucher.value.value?.toString() ?? '' : undefined,
+        startDate: voucher.value.startDate
+          ? new Date(voucher.value.startDate).toISOString().split('T')[0]
+          : '',
+        endDate: voucher.value.endDate
+          ? new Date(voucher.value.endDate).toISOString().split('T')[0]
+          : '',
+        minimumOrderAmount: voucher.value.minimumOrderAmount?.toString() ?? '',
+        maximumDiscount: voucher.value.maximumDiscountAmount?.toString() ?? '',
+        quantity: voucher.value.quantity?.toString() ?? '',
+      });
+    }
+  }, [voucher, form.reset, form]);
+  const onSubmit = async (values: z.infer<typeof UpdateVoucherSafeTypes>) => {
+    const formData = new FormData()
+    formData.append("id", values.id)
+    formData.append("name", values.name)
+    if (values.code) {
+      formData.append("code", values.code)
+    }
+    if (values.moneyDiscount) {
+      formData.append("value", values.moneyDiscount)
+    } else if (values.percentDiscount) {
+      formData.append("value", values.percentDiscount)
+    }
+    formData.append("discountType", values.discountType)
+    formData.append("startDate", values.startDate)
+    formData.append("endDate", values.endDate)
+    if (values.image) {
+      formData.append("image", values.image[0])
+    }
+    formData.append("minimumOrderAmount", values.minimumOrderAmount)
+    formData.append("maximumDiscountAmount", values.maximumDiscount)
+    alert(values.maximumDiscount)
+    formData.append("quantity", values.quantity)
+
+    updateVoucherMutation(formData)
   };
 
 
@@ -72,6 +127,7 @@ function UpdateVoucherPage() {
                 name="name"
                 disabled={isPending}
                 label="Tên mã giảm giá"
+                require
               />
               <FormInputControl
                 form={form}
@@ -85,24 +141,27 @@ function UpdateVoucherPage() {
                 classNameInput='h-fit'
                 placeholder='Chọn loại giảm giá'
                 items={[
-                  { id: 'Fixed', name: 'Cố định' },
+                  { id: 'Amount', name: 'Cố định' },
                   { id: 'Percentage', name: 'Phần trăm' },
                 ]}
                 disabled={isPending}
                 label="Chọn loại giảm giá"
+                require
               />
-              {form.watch("discountType") && form.getValues("discountType") !== undefined ? form.getValues("discountType") === 'Fixed' ? <FormNumberInputControl
+              {form.watch("discountType") && form.getValues("discountType") !== undefined ? form.getValues("discountType") === 'Amount' ? <FormNumberInputControl
                 form={form}
                 name="moneyDiscount"
                 isMoney
                 disabled={isPending}
                 label="Số tiền giảm"
+                require
               /> : <FormNumberInputControl
                 form={form}
                 unit='%'
                 name="percentDiscount"
                 disabled={isPending}
                 label="Số phần trăm giảm"
+                require
               /> : null}
               <div className='grid sm:grid-cols-2 gap-5'>
                 <FormInputControl
@@ -113,6 +172,7 @@ function UpdateVoucherPage() {
                   disabled={isPending}
                   type='Date'
                   label="Ngày bắt đầu"
+                  require
                 />
                 <FormInputControl
                   isMinDate
@@ -122,6 +182,7 @@ function UpdateVoucherPage() {
                   disabled={isPending}
                   type='Date'
                   label="Ngày kết thúc"
+                  require
                 />
                 <FormNumberInputControl
                   form={form}
@@ -129,6 +190,7 @@ function UpdateVoucherPage() {
                   disabled={isPending}
                   isMoney
                   label="Đơn hàng tối thiểu"
+                  require
                 />
                 <FormNumberInputControl
                   form={form}
@@ -136,12 +198,14 @@ function UpdateVoucherPage() {
                   disabled={isPending}
                   isMoney
                   label="Giảm tối đa"
+                  require
                 />
                 <FormNumberInputControl
                   form={form}
                   name="quantity"
                   disabled={isPending}
                   label="Số lượng"
+                  require
                 />
               </div>
             </div>
@@ -169,7 +233,7 @@ function UpdateVoucherPage() {
           isPending ? (
             <WaitingSpinner
               variant="pinwheel"
-              label="Đang tạo..."
+              label="Đang cập nhật..."
               className="font-semibold"
               classNameLabel="font-semibold text-sm"
             />

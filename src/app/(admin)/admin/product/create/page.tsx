@@ -4,32 +4,39 @@ import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
 import { FormFileControl } from '@/components/global-components/form/form-file-control';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
-import { FormNumberInputControl } from '@/components/global-components/form/form-number-control';
 import { FormSelectControl, SelectData } from '@/components/global-components/form/form-select-control';
+import FormTextEditorControl from '@/components/global-components/form/form-text-editor-control';
 import { FormValues } from '@/components/global-components/form/form-values';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { ApiResponse } from '@/types/types';
 import { CreateProductSafeTypes } from '@/zod-safe-types/product-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { CirclePlus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import CardCategory from './card-category';
+import { useRouter } from 'next/navigation';
 
-interface ProductSize {
-  size: number;
-  quantity: number;
-  price: number;
+export interface CategorySelect extends SelectData {
+  isChose: boolean;
 }
 
 function CreateProductPage() {
-  const [productSizes, setProductSizes] = useState<ProductSize[]>([{ size: 0, quantity: 0, price: 0 }]);
+  const router = useRouter();
+  const dryingMethods = [
+    { id: "SunDrying", name: "Sấy bằng ánh nắng mặt trời" },
+    { id: "HotAirDrying", name: "Sấy bằng không khí nóng" },
+    { id: "FreezeDrying", name: "Sấy đông khô" },
+    { id: "MicrowaveDrying", name: "Sấy bằng sóng vi ba" },
+    { id: "VacuumDrying", name: "Sấy theo phương pháp chân không" },
+    { id: "InfraredDrying", name: "Sấy bằng bức xạ hồng ngoại" },
+    { id: "DrumDrying", name: "Sấy trong máy trống" }
+  ];
 
-  const { data: categories } = useFetch<ApiResponse<SelectData[]>>("/Categories/get-all-non-paging", ["categories"], {}, {
+  const { data: categories } = useFetch<ApiResponse<CategorySelect[]>>("/Categories/get-all-non-paging", ["categories"], {}, {
     staleTime: 1000 * 60 * 1,
   })
   const { mutate: createProductMutation, isPending } = useMutation({
@@ -42,7 +49,7 @@ function CreateProductPage() {
       }
     },
     onSuccess: (value) => {
-      form.reset();
+      router.push("/admin/product")
       toast.success(value)
     },
     onError: (value) => {
@@ -52,49 +59,31 @@ function CreateProductPage() {
 
   const form = useForm<z.infer<typeof CreateProductSafeTypes>>({
     resolver: zodResolver(CreateProductSafeTypes),
+    defaultValues: {
+      description: "",
+      categoryIds: []
+    }
   });
 
   const onSubmit = async (values: z.infer<typeof CreateProductSafeTypes>) => {
     const formData = new FormData();
-    debugger
+
     formData.append("name", values.name);
-    formData.append("categoryId", values.categoryId);
+    values.categoryIds.forEach(categoryId => {
+      formData.append("categoryIds", categoryId);
+    });
     formData.append("description", values.description);
 
-    const images = [values.image, ...values.other]
+    formData.append("origin", values.origin);
 
-    images.forEach(image => {
-      formData.append("thumbnail", image);
-    });
+    formData.append("dryingMethod", values.dryingMethod);
 
-    // values.sizes.forEach((size, index) => {
-    //   formData.append(`productSize[${index}][size]`, size.size.toString());
-    //   formData.append(`productSize[${index}][quantity]`, size.quantity.toString());
-    //   formData.append(`productSize[${index}][price]`, size.price.toString());
-    // });
+    if (values.mainImageUrl) {
+      formData.append("mainImageUrl", values.mainImageUrl[0]);
+    }
 
-    values.sizes.forEach((size) => {
-      formData.append(`productSize.size`, size.size.toString());
-      formData.append(`productSize.quantity`, size.quantity.toString());
-      formData.append(`productSize.price`, size.price.toString());
-    });
-
-    console.log({ formData })
     createProductMutation(formData);
 
-  };
-
-  const handleAddSize = () => {
-    setProductSizes([...productSizes, { size: 0, quantity: 0, price: 0 }]);
-  };
-
-  const handleRemoveSize = (rowId: number) => {
-    const sizes = form.getValues().sizes
-    const updatedProducts = sizes.filter((_, index) => index !== rowId);
-    form.reset({ sizes: updatedProducts });
-    setProductSizes(updatedProducts);
-    form.unregister(`sizes.${rowId}`);
-    form.clearErrors(`sizes.${rowId}`);
   };
 
   return (
@@ -111,100 +100,76 @@ function CreateProductPage() {
                 name="name"
                 disabled={isPending}
                 label="Tên sản phẩm"
-              />
-              <FormSelectControl
-                form={form}
-                name="categoryId"
-                classNameInput='h-fit'
-                placeholder='Chọn một loại sản phẩm'
-                search={true}
-                items={categories?.value}
-                isImage
-                disabled={isPending}
-                label="Loại sản phẩm"
+                require
               />
               <FormInputControl
                 form={form}
-                name="description"
+                name="origin"
                 disabled={isPending}
-                label="Mô tả sản phẩm"
+                label="Nguồn gốc"
+                require
+              />
+              <FormSelectControl
+                form={form}
+                name="dryingMethod"
+                classNameInput='h-fit'
+                placeholder='Chọn một phương pháp xấy'
+                items={dryingMethods}
+                disabled={isPending}
+                label="Phương pháp xấy"
+                require
               />
             </div>
             <div className="space-y-6">
               <FormFileControl
                 form={form}
-                name="image"
+                name="mainImageUrl"
                 classNameInput="h-30 w-full"
                 mutiple={false}
                 type={"image/jpeg, image/jpg, image/png, image/webp"}
                 disabled={isPending}
                 label="Ảnh chính sản phẩm"
-              />
-              <FormFileControl
-                form={form}
-                name="other"
-                classNameInput="h-30 w-full"
-                mutiple={true}
-                type={"image/jpeg, image/jpg, image/png, image/webp"}
-                disabled={isPending}
-                label="Ảnh phụ sản phẩm"
+                require
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Kích thước sản phẩm</CardTitle>
-        </CardHeader>
-        <CardContent className='w-fit'>
-          {productSizes.map((_, index) => (
-            <div key={index + 1} className={`flex space-x-4 items-center mb-4 ${productSizes.length - 1 > index ? 'border-b-2 pb-4' : ''}`}>
-              <div className='p-3 font-black'>{index + 1}</div>
-              <FormNumberInputControl
-                form={form}
-                name={`sizes.${index}.size`}
-                disabled={isPending}
-                label="Khối lượng"
-              />
-              <FormNumberInputControl
-                form={form}
-                name={`sizes.${index}.quantity`}
-                disabled={isPending}
-                label="Số lượng"
-              />
-              <FormNumberInputControl
-                form={form}
-                name={`sizes.${index}.price`}
-                disabled={isPending}
-                isMoney
-                label="Giá"
-              />
-              {index > 0 && (
-                <Button
-                  className="mt-8"
-                  variant="destructive"
-                  type="button"
-                  onClick={() => handleRemoveSize(index)}
-                >
-                  <Trash2 />
-                </Button>
-              )}
+          <div className='mt-5'>
+            <Label className={`after:content-['(*)'] after:text-red-500 after:ml-1`}>Chọn loại sản phẩm</Label>
+            <div className='mt-2 grid grid-cols-8 gap-10'>
+              {categories?.value?.map((category: CategorySelect) =>
+                <CardCategory
+                  key={category.id}
+                  category={category}
+                  onChange={(isChoseCategory: boolean) => {
+                    const categoryIds = form.getValues("categoryIds") || [];
+                    const categoryId = category.id.toString();
+                    if (!isChoseCategory) {
+                      const index = categoryIds.findIndex(x => x === categoryId)
+                      if (index !== -1) {
+                        categoryIds.splice(index, 1)
+                        form.setValue("categoryIds", categoryIds);
+                      }
+                      console.log(form.getValues("categoryIds"))
+                    } else {
+                      form.setValue("categoryIds", [...categoryIds, categoryId]);
+                    }
+                  }}
+                />)}
             </div>
-          ))}
+            <p className='text-sm font-medium text-destructive mt-2'>{form.getFieldState("categoryIds").error?.message}</p>
+          </div>
+          <div className='mt-5'>
+            <FormTextEditorControl
+              form={form}
+              name="description"
+              disabled={isPending}
+              placeholder='Nhập mô tả sản phẩm'
+              label="Mô tả sản phẩm"
+              defaultValue={""}
+              require
+            />
+          </div>
         </CardContent>
-
-        <div className="flex justify-center pb-5">
-          <Button
-            className="bg-green-500 hover:bg-green-700 flex items-center"
-            type="button"
-            onClick={handleAddSize}
-          >
-            <CirclePlus className="mr-2" />
-            Thêm kích thước
-          </Button>
-        </div>
       </Card>
 
       <ButtonCustomized

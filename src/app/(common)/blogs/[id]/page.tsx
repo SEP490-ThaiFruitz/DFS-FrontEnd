@@ -53,7 +53,7 @@ function BlogDetail() {
                 <div className='mx-auto max-w-2xl'>
                     <Image
                         className='object-cover rounded-md w-full h-auto mx-auto'
-                        src={"https://th.bing.com/th/id/OIP.rgxW7Ykp9a3I9UV9i7iVaAHaE8rs=1&pid=ImgDetMain"}
+                        src={blog.value?.thumbnail ?? "/images/dried-fruit.webp"}
                         height={500}
                         width={500}
                         alt={blog.value.title}

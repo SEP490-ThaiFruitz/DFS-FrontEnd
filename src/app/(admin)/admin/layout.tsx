@@ -17,11 +17,11 @@ const AdminRouteLayout = async ({
   children,
   auth
 }: AdminRouteLayoutProps) => {
-  const isAdmin = await checkRole([ROLES.Administrator, ROLES.Manager, ROLES.Staff]);
+  const isAuth = await checkRole([ROLES.Administrator, ROLES.Manager, ROLES.Staff]);
 
   return (
     <>
-      {isAdmin ? (
+      {isAuth ? (
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>

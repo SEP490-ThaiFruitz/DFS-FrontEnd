@@ -7,7 +7,7 @@ import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { UpdateCategorySafeTypes } from "@/zod-safe-types/category-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ButtonCustomized } from "../_custom-button/button-customized";
 import { FormInputControl } from "@/components/global-components/form/form-input-control";
@@ -16,8 +16,6 @@ import { Button } from "@/components/ui/button";
 import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control";
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
 import { Category } from "@/features/admin/category/column";
-import { FormControl, FormItem } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 interface UpdateCategoryDialogProps {
@@ -44,7 +42,6 @@ export const UpdateCategoryDialog = ({
       if (values.image) {
         formData.append("thumbnail", values.image);
       }
-      formData.append("isActive", values.isActive.toString());
 
       const response = await updateCategory(formData);
       if (response?.isSuccess) {
@@ -91,24 +88,6 @@ export const UpdateCategoryDialog = ({
           disabled={form.formState.isSubmitting}
           label="Mô tả loại sản phẩm"
         />
-        <Controller
-          name="isActive"
-          control={form.control}
-          defaultValue={category.isActive}
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between">
-              <p className="text-sm font-medium">Trạng thái loại sản phẩm</p>
-              <FormControl>
-                <Switch
-                  className={`${field.value ? "!bg-green-500" : "!bg-red-500"}`}
-                  checked={field.value ?? false}
-                  onCheckedChange={(checked) => field.onChange(checked)}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
         <FormFileControl
           form={form}
           name="image"

@@ -83,6 +83,7 @@ function SliderPage() {
                                 <Controller
                                     name="isActive"
                                     control={form.control}
+                                    disabled={form.formState.isSubmitting}
                                     defaultValue={slider?.isActive ?? true}
                                     render={({ field }) => (
                                         <FormItem className="flex flex-row items-center justify-between">

@@ -15,7 +15,6 @@ const Category = () => {
       description: "Trái cây sấy hỗn hợp, giữ nguyên hương vị tự nhiên.",
       thumbnail:
         "https://nuts.com/images/auto/228x152fill/assets/ae16c735a6a560b8.jpg",
-      isActive: true,
     },
     {
       id: "2a5b9c7e-3d8f-49a6-9f7e-1d2c3b7e2a5f",
@@ -23,7 +22,6 @@ const Category = () => {
       description: "Dâu rừng sấy khô, thơm ngon và bổ dưỡng.",
       thumbnail:
         "https://nuts.com/images/auto/228x152fill/assets/07eb1a837cffa52f.jpg",
-      isActive: true,
     },
     {
       id: "2a5e7b3f-8d1c-49a8-9c7f-3e6d2f9b7e2c",
@@ -31,7 +29,6 @@ const Category = () => {
       description: "Mơ sấy khô, có vị chua nhẹ và ngọt tự nhiên.",
       thumbnail:
         "https://nuts.com/images/auto/228x152fill/assets/4af094199b2e493a.jpg",
-      isActive: true,
     },
     {
       id: "3b7e9a5c-2d8f-49a6-9c7f-1e2b3d7e2a5f",
@@ -39,7 +36,6 @@ const Category = () => {
       description: "Dứa sấy khô, giữ được hương vị thơm ngon đặc trưng.",
       thumbnail:
         "https://nuts.com/images/auto/228x152fill/assets/1c33f0880c7183e2.jpg",
-      isActive: true,
     },
     {
       id: "3e8f9a5c-2d7b-49a6-9f7e-1d2c3b7e2a5f",
@@ -47,7 +43,6 @@ const Category = () => {
       description: "Xoài sấy dẻo, ngọt tự nhiên và giàu vitamin.",
       thumbnail:
         "https://nuts.com/images/auto/228x152fill/assets/e808889d81020418.jpg",
-      isActive: true,
     },
   ];
 

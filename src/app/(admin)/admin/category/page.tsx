@@ -1,5 +1,5 @@
 "use client";
-import { deleteCategory, getCategories } from "@/actions/category";
+import { deleteCategory } from "@/actions/category";
 import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-category-dialog";
 import { UpdateCategoryDialog } from "@/components/custom/_custom-dialog/update-category-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PageResult, ApiResponse } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useState } from "react";
 import Image from "next/image";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
 import { DataTable } from "@/components/global-components/data-table/data-table";
@@ -19,11 +18,9 @@ type Category = {
   name: string;
   description: string;
   thumbnail: string;
-  isActive: boolean;
 };
 
 const CategoryPage = () => {
-  const [data, setData] = useState<PageResult<Category>>();
   const [openUpdate, setOpenUpdate] = useState(false);
   const [selectedCategoryUpdate, setSelectedCategoryUpdate] =
     useState<Category>();
@@ -31,27 +28,9 @@ const CategoryPage = () => {
   const [selectedCategoryDelete, setSelectedCategoryDelete] =
     useState<Category>();
 
-  // console.log("data: ", categories.value.items);
-
-  useEffect(() => {
-    getCategories().then((response: any) => {
-      if (response?.success) {
-        const data = response?.data as ApiResponse<PageResult<Category>>;
-        setData(data?.value);
-      } else {
-        toast.error(response.message);
-      }
-    });
-  }, []);
-
   const {
-    isPending,
     data: categories,
-    isError,
-    isFetching,
-  } = useFetch("/Categories", ["test"]);
-
-  console.log({ data });
+  } = useFetch<ApiResponse<PageResult<Category>>>("/Categories?pageIndex=1&pageSize=1000", ["categories"]);
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -86,26 +65,25 @@ const CategoryPage = () => {
         );
       },
     },
-    {
-      accessorKey: "isActive",
-      header: "Trạng thái",
-      cell: ({ row }) => {
-        const isActive = row.getValue("isActive");
-        return (
-          <Badge
-            className={`border ${
-              isActive
-                ? "border-green-400 text-green-700"
-                : "border-red-400 text-red-700"
-            }`}
-            variant="outline"
-          >
-            {isActive ? "Hoạt động" : "Đã ngưng"}
-          </Badge>
-        );
-      },
-      enableSorting: true,
-    },
+    // {
+    //   accessorKey: "isActive",
+    //   header: "Trạng thái",
+    //   cell: ({ row }) => {
+    //     const isActive = row.getValue("isActive");
+    //     return (
+    //       <Badge
+    //         className={`border ${isActive
+    //            "border-green-400 text-green-700"
+    //           : "border-red-400 text-red-700"
+    //           }`}
+    //         variant="outline"
+    //       >
+    //         {isActive ? "Hoạt động" : "Đã ngưng"}
+    //       </Badge>
+    //     );
+    //   },
+    //   enableSorting: true,
+    // },
     {
       accessorKey: "action",
       header: "",
@@ -147,10 +125,8 @@ const CategoryPage = () => {
         <CreateCategoryDialog />
       </div>
       <div className="py-4">
-        {/* <DataTable data={data?.items || []} columns={columns} /> */}
-
         <DataTable
-          data={data?.items || []}
+          data={categories?.value?.items || []}
           columns={columns}
           searchFiled="name"
         />
@@ -174,6 +150,7 @@ const CategoryPage = () => {
             setOpenDelete(false);
             setSelectedCategoryDelete(undefined);
           }}
+          refreshKey={[["categories"]]}
           id={selectedCategoryDelete.id}
         />
       )}

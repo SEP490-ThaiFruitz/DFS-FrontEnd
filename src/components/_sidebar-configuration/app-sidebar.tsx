@@ -11,6 +11,7 @@ import {
   BookKey,
   UserRound,
   Settings,
+  MessageSquareMore,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -93,6 +94,11 @@ const data = {
       url: "/admin/user",
       icon: UserRound,
     },
+    {
+      name: "Đánh giá",
+      url: "/admin/feedback",
+      icon: MessageSquareMore
+    }
   ],
 };
 

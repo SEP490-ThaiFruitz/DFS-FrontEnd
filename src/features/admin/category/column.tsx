@@ -11,7 +11,6 @@ export type Category = {
   name: string;
   description: string;
   thumbnail: string;
-  isActive: boolean;
 };
 
 export const columns: ColumnDef<Category>[] = [

@@ -122,14 +122,10 @@ const increaseQuantity = (payload: { cartItemId: string }) =>
 const decreaseQuantity = (payload: { cartItemId: string }) =>
   updateQuantity(payload, -1);
 
-const removeProductOutOfCart = async (payload: {
-  itemType: string;
-  referenceId: string;
-}) => {
+const removeProductOutOfCart = async (cartItemId: string) => {
   try {
-    const response = await axios.delete(`${API}/Carts/items`, {
+    const response = await axios.delete(`${API}/Carts/items/${cartItemId}`, {
       headers: headers,
-      data: payload,
     });
 
     if (response.status === 200) {

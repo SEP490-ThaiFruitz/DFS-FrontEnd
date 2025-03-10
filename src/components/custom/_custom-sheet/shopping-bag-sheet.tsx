@@ -95,6 +95,7 @@ export const ShoppingBagSheet = () => {
 
   const {
     isLoading,
+    isFetching,
     data: productCart,
     error,
   } = useFetch<{ value: { items: CartProductTypes[] } }>("/Carts/", [
@@ -102,6 +103,8 @@ export const ShoppingBagSheet = () => {
   ]);
 
   // console.log(productCart?.value?.items);
+
+  console.log({ isLoading, isFetching });
 
   console.log(productCart);
 
@@ -156,7 +159,7 @@ export const ShoppingBagSheet = () => {
           </SheetTitle>
           <SheetDescription>
             <div className="w-full overflow-hidden">
-              {!isLoading ? (
+              {!isLoading || !isFetching ? (
                 productCart?.value?.items.length ? (
                   <div className="container mx-auto p-4 md:p-6 w-full">
                     <>

@@ -51,28 +51,28 @@ export const ViewCardProductActions = ({
   onRemove,
   className,
 }: ViewCardProductActionsProps) => {
-  const [quantity, setQuantity] = useState(
-    product.productVariant.stockQuantity
-  );
+  // const [quantity, setQuantity] = useState(
+  //   product.productVariant.stockQuantity
+  // );
 
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (product.productVariant.stockQuantity !== quantity) {
-      setQuantity(product.productVariant.stockQuantity);
-    }
-  }, [product.productVariant.stockQuantity, quantity]);
+  // useEffect(() => {
+  //   if (product.productVariant.stockQuantity !== quantity) {
+  //     setQuantity(product.productVariant.stockQuantity);
+  //   }
+  // }, [product.productVariant.stockQuantity, quantity]);
 
-  const handleQuantityChange = (newQuantity: number) => {
-    if (
-      newQuantity >= 1 &&
-      newQuantity <=
-        (product.productVariant.stockQuantity || Number.POSITIVE_INFINITY)
-    ) {
-      setQuantity(newQuantity);
-      onQuantityChange?.(product.productId, newQuantity);
-    }
-  };
+  // const handleQuantityChange = (newQuantity: number) => {
+  //   if (
+  //     newQuantity >= 1 &&
+  //     newQuantity <=
+  //       (product.productVariant.stockQuantity || Number.POSITIVE_INFINITY)
+  //   ) {
+  //     setQuantity(newQuantity);
+  //     onQuantityChange?.(product.productId, newQuantity);
+  //   }
+  // };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -153,7 +153,7 @@ export const ViewCardProductActions = ({
                         queryKey: [CART_KEY.CARTS],
                       });
                     }}
-                    disabled={quantity <= 1}
+                    disabled={product.productVariant.stockQuantity <= 1}
                   >
                     <Minus className="h-4 w-4" />
                     <span className="sr-only">Giảm số lượng</span>
@@ -161,9 +161,9 @@ export const ViewCardProductActions = ({
                   <input
                     type="number"
                     value={product.quantity}
-                    onChange={(e) =>
-                      handleQuantityChange(Number.parseInt(e.target.value) || 1)
-                    }
+                    // onChange={(e) =>
+                    //   handleQuantityChange(Number.parseInt(e.target.value) || 1)
+                    // }
                     className="w-12 h-9 text-center border-0 bg-transparent text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <Button
@@ -180,7 +180,8 @@ export const ViewCardProductActions = ({
                     }}
                     disabled={
                       product.productVariant.stockQuantity
-                        ? quantity >= product.productVariant.stockQuantity
+                        ? product.quantity >=
+                          product.productVariant.stockQuantity
                         : false
                     }
                   >
@@ -200,11 +201,11 @@ export const ViewCardProductActions = ({
           {/* Mobile Price */}
           <div className="flex flex-col items-end sm:hidden gap-0.5">
             <span className="font-medium text-primary">
-              {formatPrice(product.productVariant.price * quantity)}
+              {formatPrice(product.productVariant.price * product.quantity)}
             </span>
             {product.productVariant.originalPrice && (
               <del className="text-xs text-muted-foreground">
-                {formatPrice(product.productVariant.price * quantity)}
+                {formatPrice(product.productVariant.price * product.quantity)}
               </del>
             )}
           </div>
@@ -214,11 +215,13 @@ export const ViewCardProductActions = ({
       {/* Desktop Price */}
       <div className="hidden sm:flex flex-col items-end gap-0.5 ml-auto">
         <span className="font-medium text-primary">
-          {formatPrice(product.productVariant.price * quantity)}
+          {formatPrice(product.productVariant.price * product.quantity)}
         </span>
         {product.productVariant.originalPrice && (
           <del className="text-xs text-muted-foreground">
-            {formatPrice(product.productVariant.originalPrice * quantity)}
+            {formatPrice(
+              product.productVariant.originalPrice * product.quantity
+            )}
           </del>
         )}
       </div>
@@ -229,10 +232,7 @@ export const ViewCardProductActions = ({
         size="icon"
         className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-background border shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
         onClick={() => {
-          cartActions.removeProductOutOfCart({
-            itemType: "single",
-            referenceId: product.productVariant.productVariantId,
-          });
+          cartActions.removeProductOutOfCart(product.cartItemId);
           queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
         }}
       >

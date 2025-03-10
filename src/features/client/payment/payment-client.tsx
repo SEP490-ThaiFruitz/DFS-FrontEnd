@@ -151,10 +151,10 @@ function PaymentClientPage() {
   const form = useForm<z.infer<typeof PaymentSafeTypes>>({
     resolver: zodResolver(PaymentSafeTypes),
     defaultValues: {
-      paymentType: PaymentMethod.VNPAY,
+      paymentMethod: PaymentMethod.VNPAY,
       shipType: DeliveryMethod.STANDARD,
 
-      shippingUnitId: "fc744060-00f1-47a0-a138-afd849f9aff6",
+      shippingUnitId: "fce93c8a-6dab-4ad0-a754-0ced6793d4e1",
       voucherId: null,
     },
   });
@@ -182,7 +182,7 @@ function PaymentClientPage() {
     },
   ];
 
-  const paymentMethodWatch = form.watch("paymentType");
+  const paymentMethodWatch = form.watch("paymentMethod");
 
   useEffect(() => {
     if (productCart && productCart?.value?.items?.length > 0) {
@@ -313,7 +313,7 @@ function PaymentClientPage() {
               <CardContent>
                 <FormRadioControl
                   form={form}
-                  name="paymentType"
+                  name="paymentMethod"
                   label="Chọn Phương Thức Thanh Toán"
                   disabled={form.formState.isSubmitting}
                   className="space-y-2"

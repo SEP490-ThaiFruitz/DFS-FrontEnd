@@ -16,7 +16,7 @@ export const PaymentSafeTypes = z.object({
     message: "Cần ít nhất một sản phẩm để thanh toán",
   }),
 
-  paymentType: z.enum([PaymentMethod.VNPAY, PaymentMethod.PAYOS]),
+  paymentMethod: z.enum([PaymentMethod.VNPAY, PaymentMethod.PAYOS]),
 
   voucherId: z.string().optional().nullable(),
 

@@ -8,6 +8,7 @@ import { Tickets } from "lucide-react";
 import { formatVND } from "@/lib/format-currency";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import Link from "next/link";
+import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 
 export interface Voucher {
   name: string;
@@ -39,7 +40,7 @@ const VoucherTab = () => {
   const getRemainingTime = (endDate: string) => {
     const remainingMilliseconds =
       new Date(endDate).getTime() - new Date().getTime();
-    const remainingDays = Math.floor(
+    const remainingDays = Math.ceil(
       remainingMilliseconds / (1000 * 60 * 60 * 24)
     );
     if (remainingMilliseconds <= 0)
@@ -51,11 +52,10 @@ const VoucherTab = () => {
 
     return (
       <div
-        className={`px-2 py-1  w-fit rounded-md font-bold text-center ${
-          remainingDays > 3
-            ? "bg-green-50 text-green-700 "
-            : "bg-yellow-50 text-yellow-700 "
-        }`}
+        className={`px-2 py-1  w-fit rounded-md font-bold text-center ${remainingDays > 3
+          ? "bg-green-50 text-green-700 "
+          : "bg-yellow-50 text-yellow-700 "
+          }`}
       >
         {remainingDays} ngày
       </div>
@@ -97,7 +97,7 @@ const VoucherTab = () => {
             {voucher.image ? (
               <div className="relative p-5 rounded-md flex items-center justify-center bg-green-700">
                 <Image
-                  src="/images/dried-fruit.webp"
+                  src={voucher.image}
                   alt={voucher.name}
                   width={1000}
                   height={1000}
@@ -136,6 +136,7 @@ const VoucherTab = () => {
                   ? " - Giảm tối đa " + formatVND(voucher.maximumDiscountAmount)
                   : "")}
             </p>
+            <div className="font-light text-xs sm:text-sm text-slate-600">Ngày kết thúc: {formatTimeVietNam(new Date(voucher.endDate))}</div>
           </div>
 
           <div className="w-fit font-bold text-sm sm:text-base mx-auto md:mx-0">
@@ -143,7 +144,6 @@ const VoucherTab = () => {
               ? `${voucher.value} %`
               : formatVND(voucher.value)}
           </div>
-
           <div className="w-full flex justify-center md:w-36 mx-auto md:mx-0">
             {voucher.isUsed ? (
               <div className="px-2 py-1 bg-slate-50 w-fit rounded-md text-slate-700 font-bold text-center">

@@ -9,7 +9,7 @@ import VoucherSlide from "@/features/client/home/voucher-slide";
 import Promotion from "@/features/client/home/promotion";
 import Suggest from "@/features/client/home/suggest";
 import BestSellter from "@/features/client/home/best-seller";
-import Category from "@/features/client/home/category";
+import CategorySlide from "@/features/client/home/category-slide";
 
 const ClientPage = () => {
   const images = [
@@ -36,7 +36,7 @@ const ClientPage = () => {
       </ImagesSlider>
       <VoucherSlide />
       <Promotion />
-      <Category />
+      <CategorySlide />
       <Suggest favorites={favorites} />
       <BestSellter favorites={favorites} />
     </div>

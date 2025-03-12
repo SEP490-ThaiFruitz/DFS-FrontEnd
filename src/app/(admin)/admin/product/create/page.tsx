@@ -45,6 +45,7 @@ function CreateProductPage() {
       if (response?.isSuccess) {
         return "Tạo sản phẩm thành công"
       } else {
+        console.log(response?.detail)
         throw new Error(response?.status === 409 ? "Tên sản phẩm đã tồn tại" : "Lỗi hệ thống");
       }
     },
@@ -78,6 +79,8 @@ function CreateProductPage() {
 
     formData.append("dryingMethod", values.dryingMethod);
 
+    formData.append("moistureContent", values.moistureContent.toString());
+
     if (values.mainImageUrl) {
       formData.append("mainImageUrl", values.mainImageUrl[0]);
     }
@@ -107,6 +110,13 @@ function CreateProductPage() {
                 name="origin"
                 disabled={isPending}
                 label="Nguồn gốc"
+                require
+              />
+              <FormInputControl
+                form={form}
+                name="moistureContent"
+                disabled={isPending}
+                label="Độ ẩm"
                 require
               />
               <FormSelectControl

@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { collectVoucher } from "@/actions/voucher";
 import { toast } from "sonner";
 import { Voucher } from "./voucher-slide";
+import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 
 export interface CardVoucherProps {
   voucher: Voucher;
@@ -19,6 +20,14 @@ const CardVoucher = ({ voucher }: Readonly<CardVoucherProps>) => {
       try {
         const response = await collectVoucher({ voucherId });
         if (!response?.isSuccess) {
+          if (response?.status === 400) {
+            if (response.detail.includes("already exist")) {
+              throw new Error("Bạn đã có mã giảm giá này rồi");
+            }
+          }
+          if (response?.status === 401) {
+              throw new Error("Vui lòng đăng nhập");
+          }
           throw new Error("Lỗi");
         }
       } catch (error: unknown) {
@@ -73,8 +82,8 @@ const CardVoucher = ({ voucher }: Readonly<CardVoucherProps>) => {
           </div>
         </div>
       )}
-      <span className="py-1">
-        <span className="font-bold text-sm sm:text-base">{voucher.name}</span>
+      <div className="py-1">
+        <div className="font-bold text-sm sm:text-base">{voucher.name}</div>
         <span className="font-light text-xs sm:text-sm text-slate-600">
           {"Đơn tối thiểu " +
             formatVND(voucher.minimumOrderAmount) +
@@ -82,7 +91,10 @@ const CardVoucher = ({ voucher }: Readonly<CardVoucherProps>) => {
               ? " - Giảm tối đa " + formatVND(voucher.maximumDiscountAmount)
               : "")}
         </span>
-      </span>
+        <div className="font-light text-xs sm:text-sm text-slate-600 text-nowrap">
+          <div>Ngày kết thúc:</div>
+          {formatTimeVietNam(new Date(voucher.endDate))}</div>
+      </div>
       <button
         disabled={isPending}
         onClick={() => collectVoucherMutation(voucher.id)}

@@ -39,28 +39,7 @@ export const ViewCardProductActions = ({
   removeFromCart,
   className,
 }: ViewCardProductActionsProps) => {
-  // const [quantity, setQuantity] = useState(
-  //   product.productVariant.stockQuantity
-  // );
-
   const queryClient = useQueryClient();
-
-  // useEffect(() => {
-  //   if (product.productVariant.stockQuantity !== quantity) {
-  //     setQuantity(product.productVariant.stockQuantity);
-  //   }
-  // }, [product.productVariant.stockQuantity, quantity]);
-
-  // const handleQuantityChange = (newQuantity: number) => {
-  //   if (
-  //     newQuantity >= 1 &&
-  //     newQuantity <=
-  //       (product.productVariant.stockQuantity || Number.POSITIVE_INFINITY)
-  //   ) {
-  //     setQuantity(newQuantity);
-  //     onQuantityChange?.(product.productId, newQuantity);
-  //   }
-  // };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -130,15 +109,6 @@ export const ViewCardProductActions = ({
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9 rounded-l-md"
-                    // onClick={() => {
-                    //   cartActions.decreaseQuantity({
-                    //     cartItemId: product.cartItemId,
-                    //   });
-
-                    //   queryClient.invalidateQueries({
-                    //     queryKey: [CART_KEY.CARTS],
-                    //   });
-                    // }}
                     onClick={() => {
                       decreaseQuantity();
                       toast.success(
@@ -164,14 +134,6 @@ export const ViewCardProductActions = ({
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9 rounded-r-md"
-                    // onClick={() => {
-                    //   cartActions.increaseQuantity({
-                    //     cartItemId: product.cartItemId,
-                    //   });
-                    //   queryClient.invalidateQueries({
-                    //     queryKey: [CART_KEY.CARTS],
-                    //   });
-                    // }}
                     onClick={() => {
                       increaseQuantity();
                       toast.success(

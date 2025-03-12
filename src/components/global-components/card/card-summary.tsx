@@ -9,12 +9,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CartItem } from "./view-card-product-actions";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import Link from "next/link";
 
 interface CartSummaryProps {
-  items: CartItem[];
+  items: any[];
 }
 
 export const CartSummary = ({ items }: CartSummaryProps) => {

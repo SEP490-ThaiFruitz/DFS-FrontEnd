@@ -74,9 +74,12 @@ export const useCartStore = create(
           set((state) => ({
             orders: updatedCartOrders,
             totalItems: state.totalItems + 1,
+            // totalPrice:
+            //   state.totalPrice + discountPriceCondition ??
+            //   Number(product.variant.price),
             totalPrice:
-              state.totalPrice + discountPriceCondition ??
-              Number(product.variant.price),
+              state.totalPrice +
+              (discountPriceCondition || Number(product.variant.price)),
           }));
         } else {
           const updatedCartOrders = [
@@ -87,9 +90,12 @@ export const useCartStore = create(
           set((state) => ({
             orders: updatedCartOrders,
             totalItems: state.totalItems + 1,
+            // totalPrice:
+            //   state.totalPrice + discountPriceCondition ??
+            //   Number(product.variant.price),
             totalPrice:
-              state.totalPrice + discountPriceCondition ??
-              Number(product.variant.price),
+              state.totalPrice +
+              (discountPriceCondition || Number(product.variant.price)),
           }));
         }
       },
@@ -102,8 +108,8 @@ export const useCartStore = create(
           orders: state.orders.filter((order) => order.id !== product.id),
           totalItems: state.totalItems - 1,
           totalPrice:
-            state.totalPrice - discountPriceCondition ??
-            Number(product.variant.price),
+            state.totalPrice -
+            (discountPriceCondition || Number(product.variant.price)),
         }));
       },
 
@@ -127,8 +133,8 @@ export const useCartStore = create(
             orders: updatedCartOrders,
             totalItems: state.totalItems - 1,
             totalPrice:
-              state.totalPrice - discountPriceCondition ??
-              product.variant.price,
+              state.totalPrice -
+              (discountPriceCondition || Number(product.variant.price)),
           }));
         } else {
           const updatedCartOrders = cartOrders.filter(
@@ -139,8 +145,8 @@ export const useCartStore = create(
             orders: updatedCartOrders,
             totalItems: state.totalItems - 1,
             totalPrice:
-              state.totalPrice - discountPriceCondition ??
-              product.variant.price,
+              state.totalPrice -
+              (discountPriceCondition || Number(product.variant.price)),
           }));
         }
       },

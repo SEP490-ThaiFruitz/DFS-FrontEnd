@@ -45,6 +45,9 @@ interface ProductVariant {
   productVariantId: string;
   netWeight: number;
   price: number;
+
+  discountPrice?: number;
+
   stockQuantity: number;
   promotion?: Promotion;
 }
@@ -77,10 +80,9 @@ export function SidebarFilter() {
     },
   });
 
-  const { data: products, isLoading: isLoadingProducts } = useFetch<ApiResponse<PageResult<Product>>>(
-    "/Products",
-    ["products"]
-  );
+  const { data: products, isLoading: isLoadingProducts } = useFetch<
+    ApiResponse<PageResult<Product>>
+  >("/Products", ["products"]);
   const { data: favorites, isLoading: isLoadingFavorites } = useQuery({
     queryKey: ["favorites"],
     queryFn: async () => {
@@ -92,7 +94,6 @@ export function SidebarFilter() {
   });
 
   const isLoading = isLoadingProducts || isLoadingFavorites;
-
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     toast.success("Filters applied: " + JSON.stringify(data));
@@ -109,12 +110,14 @@ export function SidebarFilter() {
       </Button>
 
       {/* Sidebar/Filters */}
-      <div className={`
+      <div
+        className={`
         w-full md:w-64 
-        ${isMobileFiltersOpen ? 'block' : 'hidden lg:block'}
+        ${isMobileFiltersOpen ? "block" : "hidden lg:block"}
         md:sticky md:top-4 
         h-fit md:h-full
-      `}>
+      `}
+      >
         <FormValues form={form} classNameForm="space-y-6" onSubmit={onSubmit}>
           {/* Categories */}
           <FormField
@@ -137,12 +140,16 @@ export function SidebarFilter() {
                             onCheckedChange={(checked) => {
                               const newValue = checked
                                 ? [...field.value, item.id]
-                                : field.value?.filter((value) => value !== item.id);
+                                : field.value?.filter(
+                                    (value) => value !== item.id
+                                  );
                               field.onChange(newValue);
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="font-normal">{item.label}</FormLabel>
+                        <FormLabel className="font-normal">
+                          {item.label}
+                        </FormLabel>
                       </FormItem>
                     )}
                   />
@@ -170,7 +177,8 @@ export function SidebarFilter() {
                   />
                 </FormControl>
                 <FormDescription>
-                  {field.value[0].toLocaleString()} - {field.value[1].toLocaleString()}
+                  {field.value[0].toLocaleString()} -{" "}
+                  {field.value[1].toLocaleString()}
                 </FormDescription>
               </FormItem>
             )}
@@ -198,30 +206,36 @@ export function SidebarFilter() {
             )}
           />
 
-          <Button type="submit" className="w-full">Apply Filters</Button>
+          <Button type="submit" className="w-full">
+            Apply Filters
+          </Button>
         </FormValues>
       </div>
 
       {/* Product Grid */}
-      {!isLoading ? <>
-        {(products?.value?.items?.length ?? 0) > 0 ? (
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
-            {products?.value?.items?.map((product: Product) => (
-              <CardProduct
-                key={product.id}
-                isFavorite={
-                  Array.isArray(favorites)
-                    ? !!favorites.find(x => x.productId === product.id)
-                    : false
-                }
-                {...product}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">No products match your filters</div>
-        )}
-      </> : (
+      {!isLoading ? (
+        <>
+          {(products?.value?.items?.length ?? 0) > 0 ? (
+            <div className="grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
+              {products?.value?.items?.map((product: Product) => (
+                <CardProduct
+                  key={product.id}
+                  isFavorite={
+                    Array.isArray(favorites)
+                      ? !!favorites.find((x) => x.productId === product.id)
+                      : false
+                  }
+                  {...product}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              No products match your filters
+            </div>
+          )}
+        </>
+      ) : (
         <AnimatedLoadingSkeleton className="w-full" />
       )}
     </div>

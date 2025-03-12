@@ -16,28 +16,15 @@ import { cartActions } from "@/actions/cart/use-cart";
 import { useQueryClient } from "@tanstack/react-query";
 import { CART_KEY } from "@/app/key/comm-key";
 import { Skeleton } from "@/components/ui/skeleton";
-
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  variant?: {
-    color?: string;
-    size?: string;
-  };
-  stock?: number;
-}
-
-export interface CartItem extends Product {
-  quantity: number;
-}
+import { Product } from "@/hooks/use-cart-store";
+import { toast } from "sonner";
 
 interface ViewCardProductActionsProps {
-  product: CartProductTypes;
-  onQuantityChange?: (id: string, quantity: number) => void;
+  product: Product;
+  decreaseQuantity: () => void;
+  increaseQuantity: () => void;
   onRemove?: (id: string) => void;
+  removeFromCart: () => void;
   className?: string;
 }
 
@@ -47,8 +34,9 @@ interface ViewCardProductActionsSkeletonProps {
 
 export const ViewCardProductActions = ({
   product,
-  onQuantityChange,
-  onRemove,
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
   className,
 }: ViewCardProductActionsProps) => {
   // const [quantity, setQuantity] = useState(
@@ -82,16 +70,13 @@ export const ViewCardProductActions = ({
     }).format(price);
   };
 
-  const discount = product.productVariant.price
+  const discount = product.variant.promotion?.percentage
     ? Math.round(
-        (((product?.productVariant.originalPrice as any) ??
-          0 - product.productVariant.price) /
-          product?.productVariant.originalPrice) *
+        (((product?.variant.price as any) ?? 0 - product.variant.price) /
+          product?.variant.price) *
           100
       )
     : 0;
-
-  console.log(product.quantity);
 
   return (
     <div
@@ -103,7 +88,7 @@ export const ViewCardProductActions = ({
       {/* Product Image */}
       <div className="relative overflow-hidden rounded-lg border bg-background flex-shrink-0">
         <img
-          src={product.image || "/placeholder.svg"}
+          src={product.mainImageUrl || "/placeholder.svg"}
           alt={product.name}
           className="w-24 h-24 object-cover transition-transform group-hover:scale-105"
         />
@@ -120,13 +105,15 @@ export const ViewCardProductActions = ({
           <h3 className="font-medium text-base leading-tight line-clamp-2">
             {product.name}
           </h3>
-          {product.productVariant && (
+          {product.variant && (
             <div className="flex gap-2 text-sm text-muted-foreground">
-              {product.type && <span>Màu: {product.type}</span>}
-              {product.productVariant.percentage && (
+              {product.variant.netWeight && (
+                <span>Màu: {product.variant.netWeight}</span>
+              )}
+              {product.variant.netWeight && (
                 <>
-                  {product.productVariant.percentage && <span>•</span>}
-                  <span>Size: {product.productVariant.percentage}</span>
+                  {product.variant.netWeight && <span>•</span>}
+                  <span>Size: {product.variant.netWeight}</span>
                 </>
               )}
             </div>
@@ -143,45 +130,57 @@ export const ViewCardProductActions = ({
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9 rounded-l-md"
-                    // onClick={() => handleQuantityChange(quantity - 1)}
-                    onClick={() => {
-                      cartActions.decreaseQuantity({
-                        cartItemId: product.cartItemId,
-                      });
+                    // onClick={() => {
+                    //   cartActions.decreaseQuantity({
+                    //     cartItemId: product.cartItemId,
+                    //   });
 
-                      queryClient.invalidateQueries({
-                        queryKey: [CART_KEY.CARTS],
-                      });
+                    //   queryClient.invalidateQueries({
+                    //     queryKey: [CART_KEY.CARTS],
+                    //   });
+                    // }}
+                    onClick={() => {
+                      decreaseQuantity();
+                      toast.success(
+                        "Giảm số lượng sản phẩm sản phầm thành công"
+                      );
                     }}
-                    disabled={product.productVariant.stockQuantity <= 1}
+                    disabled={product?.quantityOrder! <= 1}
                   >
                     <Minus className="h-4 w-4" />
                     <span className="sr-only">Giảm số lượng</span>
                   </Button>
-                  <input
+                  {/* <input
                     type="number"
-                    value={product.quantity}
+                    value={product.quantityOrder}
                     // onChange={(e) =>
                     //   handleQuantityChange(Number.parseInt(e.target.value) || 1)
                     // }
                     className="w-12 h-9 text-center border-0 bg-transparent text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
+                  /> */}
+
+                  <span>{product.quantityOrder}</span>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-9 w-9 rounded-r-md"
+                    // onClick={() => {
+                    //   cartActions.increaseQuantity({
+                    //     cartItemId: product.cartItemId,
+                    //   });
+                    //   queryClient.invalidateQueries({
+                    //     queryKey: [CART_KEY.CARTS],
+                    //   });
+                    // }}
                     onClick={() => {
-                      cartActions.increaseQuantity({
-                        cartItemId: product.cartItemId,
-                      });
-                      queryClient.invalidateQueries({
-                        queryKey: [CART_KEY.CARTS],
-                      });
+                      increaseQuantity();
+                      toast.success(
+                        "Thêm số lượng sản phẩm sản phầm thành công"
+                      );
                     }}
                     disabled={
-                      product.productVariant.stockQuantity
-                        ? product.quantity >=
-                          product.productVariant.stockQuantity
+                      product.variant.stockQuantity
+                        ? product.quantity! >= product.variant.stockQuantity
                         : false
                     }
                   >
@@ -191,8 +190,8 @@ export const ViewCardProductActions = ({
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                {product.productVariant.stockQuantity
-                  ? `Còn ${product.productVariant.stockQuantity} sản phẩm`
+                {product.variant.stockQuantity
+                  ? `Còn ${product.variant.stockQuantity} sản phẩm`
                   : "Còn hàng"}
               </TooltipContent>
             </Tooltip>
@@ -201,11 +200,14 @@ export const ViewCardProductActions = ({
           {/* Mobile Price */}
           <div className="flex flex-col items-end sm:hidden gap-0.5">
             <span className="font-medium text-primary">
-              {formatPrice(product.productVariant.price * product.quantity)}
+              {formatPrice(product.variant.price * product.quantityOrder!)}
+              123
             </span>
-            {product.productVariant.originalPrice && (
+            {product.variant.price && (
               <del className="text-xs text-muted-foreground">
-                {formatPrice(product.productVariant.price * product.quantity)}
+                {formatPrice(
+                  product.variant.discountPrice! * product.quantityOrder!
+                )}
               </del>
             )}
           </div>
@@ -215,13 +217,11 @@ export const ViewCardProductActions = ({
       {/* Desktop Price */}
       <div className="hidden sm:flex flex-col items-end gap-0.5 ml-auto">
         <span className="font-medium text-primary">
-          {formatPrice(product.productVariant.price * product.quantity)}
+          {formatPrice(product.variant.price * product.quantityOrder!)}
         </span>
-        {product.productVariant.originalPrice && (
+        {product.variant.price && (
           <del className="text-xs text-muted-foreground">
-            {formatPrice(
-              product.productVariant.originalPrice * product.quantity
-            )}
+            {formatPrice(product.variant.price * product?.quantityOrder!)}
           </del>
         )}
       </div>
@@ -231,10 +231,12 @@ export const ViewCardProductActions = ({
         variant="ghost"
         size="icon"
         className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-background border shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
-        onClick={() => {
-          cartActions.removeProductOutOfCart(product.cartItemId);
-          queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
-        }}
+        // onClick={() => {
+        //   cartActions.removeProductOutOfCart(product.cartItemId);
+        //   queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
+        // }}
+
+        onClick={removeFromCart}
       >
         <Trash2 className="h-4 w-4 text-muted-foreground" />
         <span className="sr-only">Xóa sản phẩm</span>

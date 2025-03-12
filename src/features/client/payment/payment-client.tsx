@@ -47,6 +47,8 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useFromStore } from "@/hooks/use-from-store";
+import { useCartStore } from "@/hooks/use-cart-store";
 
 interface Product {
   id: number;
@@ -135,14 +137,14 @@ function PaymentClientPage() {
     },
   ];
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // const subtotal = cartItems.reduce(
+  //   (sum, item) => sum + item.price * item.quantity,
+  //   0
+  // );
+
   const deliveryPrice =
     deliveryMethods.find((m) => m.id === selectedDelivery)?.price || 0;
-  const discount = promoCode === "FRUIT10" ? subtotal * 0.1 : 0;
-  const total = subtotal + deliveryPrice - discount;
+  // const total = subtotal + deliveryPrice - discount;
 
   const { user } = useAuth();
 
@@ -223,6 +225,26 @@ function PaymentClientPage() {
       toast.error("Đặt hàng thất bại");
     }
   };
+
+  const cart = useFromStore(useCartStore, (state) => state.orders);
+
+  const increaseQuantity = useCartStore((state) => state.addOrder);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
+
+  const subtotal =
+    cart?.reduce(
+      (acc, curr) => acc + curr.variant.price * curr?.quantityOrder!,
+      0
+    ) || 0;
+
+  const discount = promoCode === "FRUIT10" ? subtotal * 0.1 : 0;
+
+  const total =
+    cart?.reduce(
+      (acc, curr) => acc + curr.variant.price * curr?.quantityOrder!,
+      0
+    ) || 0;
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 ">
@@ -369,11 +391,14 @@ function PaymentClientPage() {
                     />
                   ))} */}
 
-                  {productCart?.value?.items.map((product) => {
+                  {cart?.map((product) => {
                     return (
                       <ViewCardProductActions
-                        key={product.productId}
+                        key={product.id}
                         product={product}
+                        decreaseQuantity={() => decreaseQuantity(product)}
+                        increaseQuantity={() => increaseQuantity(product)}
+                        removeFromCart={() => removeFromCart(product)}
                       />
                     );
                   })}
@@ -407,12 +432,12 @@ function PaymentClientPage() {
                 <div className="mt-6 space-y-2 border-t pt-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tạm tính</span>
-                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                    <span className="font-medium">{formatVND(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Vận chuyển</span>
                     <span className="font-medium">
-                      ${deliveryPrice.toFixed(2)}
+                      {formatVND(deliveryPrice)}
                     </span>
                   </div>
                   {discount > 0 && (
@@ -423,7 +448,7 @@ function PaymentClientPage() {
                   )}
                   <div className="flex justify-between text-lg font-semibold pt-2">
                     <span>Tổng</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{formatVND(total)}</span>
                   </div>
                 </div>
               </CardContent>

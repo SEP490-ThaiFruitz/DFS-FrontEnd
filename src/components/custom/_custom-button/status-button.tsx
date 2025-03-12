@@ -34,7 +34,7 @@ export default function StatusButton({
     setStatus("loading");
     // console.log("loading 1");
     await wait(700);
-    handleAddToCart(e);
+    handleAddToCart?.(e);
     toast.success("Đã thêm vào giỏ hàng");
     setStatus("Added to cart");
     // console.log("Added to cart 2");

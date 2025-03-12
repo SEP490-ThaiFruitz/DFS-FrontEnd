@@ -12,19 +12,29 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { favoriteProduct } from "@/actions/favorite";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Product } from "@/features/client/sidebar-filter/sidebar-filter";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { Product, useCartStore } from "@/hooks/use-cart-store";
 
 interface CardProductProps extends Product {
   isFavorite: boolean;
+
+  // handleAddToCart: (e: React.MouseEvent, product: Product) => void;
 }
 
 export const CardProduct = ({ ...props }: CardProductProps) => {
+  const addOrder = useCartStore((state) => state.addOrder);
+
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+    e.stopPropagation();
+    toast.success("Thêm sản phẩm vào giỏ hàng thành công");
+
+    addOrder(product);
+  };
   const { id, name, mainImageUrl, variant, isFavorite, rating, quantitySold } =
     props;
   const queryClient = useQueryClient();
@@ -128,14 +138,24 @@ export const CardProduct = ({ ...props }: CardProductProps) => {
           </div>
 
           <StatusButton
-            handleAddToCart={() => {
-              cartActions.addToCart({
-                itemType: "single",
-                referenceId: variant.productVariantId,
-                quantity: 1,
-              });
-              queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
-            }}
+            // handleAddToCart={() => {
+            //   cartActions.addToCart({
+            //     itemType: "single",
+            //     referenceId: variant.productVariantId,
+            //     quantity: 1,
+            //   });
+            //   queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
+            // }}
+            handleAddToCart={(e) =>
+              addOrder({
+                id,
+                name,
+                mainImageUrl,
+                variant,
+                rating,
+                quantitySold,
+              })
+            }
           />
         </CardFooter>
       )}

@@ -3,8 +3,7 @@
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { CartSummary } from "@/components/global-components/card/card-summary";
 import {
-  CartItem,
-  Product,
+  // CartItem,
   ViewCardProductActions,
   ViewCardProductActionsSkeleton,
 } from "@/components/global-components/card/view-card-product-actions";
@@ -25,46 +24,10 @@ import React, { useState } from "react";
 
 import Cookies from "js-cookie";
 import { CART_KEY } from "@/app/key/comm-key";
+import { useFromStore } from "@/hooks/use-from-store";
+import { Product, useCartStore } from "@/hooks/use-cart-store";
 
-export const products: Product[] = [
-  {
-    id: "1",
-    name: "Áo Thun Unisex Cotton Form Rộng",
-    price: 199000,
-    originalPrice: 299000,
-    image: "/images/forth-background.png",
-    variant: {
-      color: "Trắng",
-      size: "L",
-    },
-    stock: 50,
-  },
-  {
-    id: "2",
-    name: "Quần Jean Nam Ống Suông Form Regular",
-    price: 450000,
-    originalPrice: 599000,
-    image: "/images/forth-background.png",
-
-    variant: {
-      size: "32",
-    },
-    stock: 20,
-  },
-  {
-    id: "3",
-    name: "Giày Sneaker Unisex Classic",
-    price: 850000,
-    originalPrice: 1200000,
-    image: "/images/forth-background.png",
-
-    variant: {
-      color: "Đen",
-      size: "42",
-    },
-    stock: 15,
-  },
-];
+//
 
 interface Cart {
   cartItemId: string;
@@ -102,28 +65,62 @@ export const ShoppingBagSheet = () => {
     CART_KEY.CARTS,
   ]);
 
-  // console.log(productCart?.value?.items);
+  const cart = useFromStore(useCartStore, (state) => state.orders);
 
-  console.log({ isLoading, isFetching });
+  const cartCondition = cart?.length! > 0;
 
-  console.log(productCart);
+  // console.log({ isLoading, isFetching });
 
-  const [items, setItems] = useState<CartItem[]>(
-    products.map((product) => ({
-      ...product,
-      quantity: 1,
-    }))
-  );
+  // console.log(productCart);
 
-  const handleQuantityChange = (id: string, quantity: number) => {
-    setItems(
-      items.map((item) => (item.id === id ? { ...item, quantity } : item))
+  let total = 0;
+
+  if (cart) {
+    total = cart.reduce(
+      (acc, product) =>
+        acc +
+        (Number(product?.variant.discountPrice!) > 0
+          ? Number(product?.variant.discountPrice) *
+            (product.quantityOrder as number)
+          : Number(product.variant.discountPrice) *
+            (product.quantityOrder as number)),
+      0
     );
+  }
+
+  console.log(cart);
+
+  const increaseQuantity = useCartStore((state) => state.addOrder);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
+
+  const handleDecreaseQuantity = (product: Product) => {
+    if (product.quantityOrder! > 1) {
+      decreaseQuantity(product);
+    }
   };
 
-  const handleRemove = (id: string) => {
-    setItems(items.filter((item) => item.id !== id));
-  };
+  // const discountPriceCondition = Number(product.variant) > 0;
+  // const discountPercentageToNumber = Number(product?.discountPercentage);
+  // const discountPriceToNumber = Number(product?.discountPrice);
+  // const MAX_LENGTH = 10;
+
+  // const [items, setItems] = useState<CartItem[]>(
+  //   products.map((product) => ({
+  //     ...product,
+  //     quantity: 1,
+  //   }))
+  // );
+
+  // const handleQuantityChange = (id: string, quantity: number) => {
+  //   setItems(
+  //     items.map((item) => (item.id === id ? { ...item, quantity } : item))
+  //   );
+  // };
+
+  // const handleRemove = (id: string) => {
+  //   setItems(items.filter((item) => item.id !== id));
+  // };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -160,28 +157,33 @@ export const ShoppingBagSheet = () => {
           <SheetDescription>
             <div className="w-full overflow-hidden">
               {!isLoading || !isFetching ? (
-                productCart?.value?.items.length ? (
+                cart?.length ? (
                   <div className="container mx-auto p-4 md:p-6 w-full">
                     <>
                       <h1 className="text-2xl font-semibold">
-                        Giỏ hàng ({items.length})
+                        Giỏ hàng ({cart?.length})
                       </h1>
-                      <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[300px] 2xl:h-[300px]">
-                        {productCart?.value?.items.map((product) => (
+                      <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px] ">
+                        {cart.map((product) => (
                           <ViewCardProductActions
-                            key={product.productId}
+                            key={product.id}
                             // cartItemId=
+                            decreaseQuantity={(): void =>
+                              handleDecreaseQuantity(product)
+                            }
+                            increaseQuantity={(): void =>
+                              increaseQuantity(product)
+                            }
+                            removeFromCart={(): void => removeFromCart(product)}
                             product={product}
-                            onQuantityChange={handleQuantityChange}
-                            onRemove={handleRemove}
                             className="m-4"
                           />
                         ))}
                       </ScrollArea>
 
-                      <div className=" mt-14 w-full">
-                        <CartSummary items={items} />
-                      </div>
+                      {/* <div className=" mt-14 w-full">
+                        <CartSummary items={cart} />
+                      </div> */}
                     </>
                   </div>
                 ) : (

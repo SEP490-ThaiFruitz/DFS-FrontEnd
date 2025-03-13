@@ -11,25 +11,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import Link from "next/link";
+import { Product } from "@/hooks/use-cart-store";
 
 interface CartSummaryProps {
-  items: any[];
+  cart: Product[];
 }
 
-export const CartSummary = ({ items }: CartSummaryProps) => {
+export const CartSummary = ({ cart }: CartSummaryProps) => {
   const { subtotal, discount, total } = useMemo(() => {
-    const subtotal = items.reduce(
-      (acc, item) => acc + (item.originalPrice || item.price) * item.quantity,
+    const subtotal = cart.reduce(
+      (acc, item) =>
+        acc +
+          (item.variant.discountPrice || item.variant.price) *
+            item.quantityOrder! ?? 0,
       0
     );
-    const total = items.reduce(
-      (acc, item) => acc + item.price * item.quantity,
+    const total = cart.reduce(
+      (acc, item) => acc + item.variant.price * item.quantityOrder!,
       0
     );
     const discount = subtotal - total;
 
     return { subtotal, discount, total };
-  }, [items]);
+  }, [cart]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -66,7 +70,7 @@ export const CartSummary = ({ items }: CartSummaryProps) => {
             className="w-full bg-sky-400 hover:bg-sky-600/75 transition duration-300 font-bold text-slate-700"
             variant="secondary"
             size="lg"
-            label={`Thanh toán (${items.length} sản phẩm)`}
+            label={`Thanh toán (${cart.length} sản phẩm)`}
           />
         </Link>
       </CardFooter>

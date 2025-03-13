@@ -194,9 +194,9 @@ export const ShoppingBagSheet = () => {
                         ))}
                       </ScrollArea>
 
-                      {/* <div className=" mt-14 w-full">
-                        <CartSummary items={cart} />
-                      </div> */}
+                      <div className=" mt-14 w-full">
+                        <CartSummary cart={cart} />
+                      </div>
                     </>
                   </div>
                 ) : (

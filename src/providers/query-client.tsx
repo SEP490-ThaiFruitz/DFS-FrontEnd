@@ -10,13 +10,19 @@ interface QueryProviderProps {
 }
 
 export const QueryProvider = ({ children }: QueryProviderProps) => {
-  const [queryClient] = useState((): QueryClient => new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false
-      }
-    }
-  }));
+  const [queryClient] = useState(
+    (): QueryClient =>
+      new QueryClient({
+        defaultOptions: {
+          // queries: {
+          //   refetchOnWindowFocus: false
+          // }
+          // queries: {
+          //   staleTime: 60 * 1000,
+          // }
+        },
+      })
+  );
 
   return (
     <QueryClientProvider client={queryClient}>

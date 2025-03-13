@@ -27,6 +27,8 @@ import { CART_KEY } from "@/app/key/comm-key";
 import { useFromStore } from "@/hooks/use-from-store";
 import { Product, useCartStore } from "@/hooks/use-cart-store";
 
+import { AnimatePresence, motion } from "framer-motion";
+
 //
 
 interface Cart {
@@ -88,7 +90,7 @@ export const ShoppingBagSheet = () => {
     );
   }
 
-  console.log(cart);
+  // console.log(cart);
 
   const increaseQuantity = useCartStore((state) => state.addOrder);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
@@ -141,7 +143,18 @@ export const ShoppingBagSheet = () => {
             flex items-center justify-center
             "
             >
-              0
+              <AnimatePresence mode="popLayout">
+                <motion.span
+                  key={cart?.length} // Cập nhật animation mỗi khi cart.length thay đổi
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="font-semibold"
+                >
+                  {cart?.length}
+                </motion.span>
+              </AnimatePresence>
             </span>
           </div>
         </div>

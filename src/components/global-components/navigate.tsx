@@ -159,6 +159,8 @@ export const Navigate = () => {
 
         {/* User Actions */}
         <div className="flex items-center space-x-2">
+          <ShoppingBagSheet />
+
           {user ? (
             <>
               {/* Notification Popover */}
@@ -184,7 +186,6 @@ export const Navigate = () => {
               >
                 <Heart className="size-4" />
               </Link>
-              <ShoppingBagSheet />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button

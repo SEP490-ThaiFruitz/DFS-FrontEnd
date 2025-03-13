@@ -34,8 +34,6 @@ const BestSellter = ({ favorites }: Readonly<BestSellterProps>) => {
         (products?.value?.items?.length ?? 0) > 0 ? (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
             {products?.value?.items?.map((product: Product) => {
-              console.log({ product });
-
               return (
                 <CardProduct
                   key={product.id}

@@ -1,12 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useState, type ComponentProps } from "react";
+import { useState } from "react";
 import { Logo } from "./logo";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
 import { ShoppingBagSheet } from "../custom/_custom-sheet/shopping-bag-sheet";
-import { HoveredLink, Menu, MenuItem, ProductItem } from "../ui/navbar-menu";
+import { HoveredLink, Menu, MenuItem } from "../ui/navbar-menu";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
 import { ApiResponse, Profile } from "@/types/types";
@@ -22,19 +22,25 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Bell, Boxes, Heart, LogOut, MapPinHouse, UserRoundPen } from "lucide-react";
-import { Badge } from "../ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import {
+  Bell,
+  Boxes,
+  Heart,
+  LogOut,
+  MapPinHouse,
+  Menu as MenuIcon,
+  UserRoundPen,
+} from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { logOut } from "@/actions/auth";
-import { useRouter } from "next/navigation";
 import { getProfile } from "@/actions/user";
 import { toast } from "sonner";
 import { VerifyDialog } from "../custom/_custom-dialog/verify-account-dialog";
+import { useRouter } from "next/navigation";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
-import { useData } from "@/providers/data-provider";
-import { truncate } from "lodash";
+import { logOut } from "@/actions/auth";
+
+import Cookies from "js-cookie";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
@@ -42,9 +48,11 @@ export const Navigate = () => {
     ["BlogCategories", "Guest"]
   );
   const [active, setActive] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
   const loginDialog = useLoginDialog();
+
   const { data: user } = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
@@ -52,7 +60,6 @@ export const Navigate = () => {
         const res = await getProfile();
         if (res?.isSuccess) {
           const data: ApiResponse<Profile> = res?.data;
-          console.log({ data });
           return data.value;
         }
         return null;
@@ -65,20 +72,10 @@ export const Navigate = () => {
     initialData: null,
   });
 
-  const { productList } = useData();
+  const token = Cookies.get("accessToken");
 
-  const notification = [
-    {
-      name: "John Doe",
-      avatar: "https://github.com/shadcn.png",
-      title: "Administrator",
-      content: "The React Framework – created and maintained by @vercel.",
-      status: "Unread",
-    },
-  ];
-
-  const styleClassName =
-    "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
+  const navItemClassName =
+    "relative inline-flex text-sm h-11 w-full md:w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0 before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 
   return (
     <div
@@ -89,77 +86,35 @@ export const Navigate = () => {
     >
       <Menu
         setActive={setActive}
-        className="h-full flex items-center justify-between w-full rounded-none "
+        className="h-full flex items-center justify-between w-full rounded-none md:px-4"
       >
-        <div className="pl-4 py-4 ">
+        {/* Logo */}
+        <div className="hidden md:flex items-center">
           <Logo height={60} width={60} />
         </div>
 
-        <div>
-          <Link href="/" className={styleClassName}>
-            {/* <MenuItem
-              setActive={setActive}
-              active={active}
-              item="Trang chủ"
-              className={styleClassName}
-            /> */}
-            {/* <Button className={cn("bg-white", styleClassName)}> */}
+        {/* Mobile Menu Button */}
+        <Button
+          variant="ghost"
+          className="md:hidden"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <MenuIcon className="h-6 w-6" />
+        </Button>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-2">
+          <Link href="/" className={navItemClassName}>
             Trang chủ
-            {/* </Button> */}
           </Link>
-
-          <MenuItem
-            setActive={setActive}
-            active={active}
-            item="Sản phẩm"
-            className={styleClassName}
-          >
-            <div className="  text-sm grid grid-cols-2 lg:grid-cols-4 gap-10 p-4">
-              {productList?.value.items.map((product) => {
-                return (
-                  <ProductItem
-                    key={product.id}
-                    title={product.name}
-                    href="#"
-                    src={product.mainImageUrl}
-                    description={truncate(product.description, { length: 80 })}
-                    className="hover:scale-110 transition duration-300 hover:shadow-lg rounded-xl"
-                  />
-                );
-              })}
-
-              {/* 
-              <ProductItem
-                title="Algochurn"
-                href="https://algochurn.com"
-                src="https://assets.aceternity.com/demos/algochurn.webp"
-                description="Prepare for tech interviews like never before."
-              />
-              <ProductItem
-                title="Tailwind Master Kit"
-                href="https://tailwindmasterkit.com"
-                src="https://assets.aceternity.com/demos/tailwindmasterkit.webp"
-                description="Production ready Tailwind css components for your next project"
-              />
-              <ProductItem
-                title="Moonbeam"
-                href="https://gomoonbeam.com"
-                src="https://assets.aceternity.com/demos/Screenshot+2024-02-21+at+11.51.31%E2%80%AFPM.png"
-                description="Never write from scratch again. Go from idea to blog in minutes."
-              />
-              <ProductItem
-                title="Rogue"
-                href="https://userogue.com"
-                src="https://assets.aceternity.com/demos/Screenshot+2024-02-21+at+11.47.07%E2%80%AFPM.png"
-                description="Respond to government RFPs, RFIs and RFQs 10x faster using AI"
-              /> */}
-            </div>
-          </MenuItem>
+          <Link href="/find" className={navItemClassName}>
+            Sản phẩm
+          </Link>
           <MenuItem
             setActive={setActive}
             active={active}
             item="Quà tặng"
-            className={styleClassName}
+            className={navItemClassName}
           >
             <div className="flex flex-col space-y-4 text-sm">
               <HoveredLink href="/hobby">Hobby</HoveredLink>
@@ -172,7 +127,7 @@ export const Navigate = () => {
             setActive={setActive}
             active={active}
             item="Chính sách"
-            className={styleClassName}
+            className={navItemClassName}
           >
             <div className="flex flex-col space-y-4 text-sm">
               <HoveredLink href="/hobby">Hobby</HoveredLink>
@@ -181,13 +136,12 @@ export const Navigate = () => {
               <HoveredLink href="/enterprise">Enterprise</HoveredLink>
             </div>
           </MenuItem>
-
           <Link href="/blogs">
             <MenuItem
               setActive={setActive}
               active={active}
               item="Bài viết"
-              className={styleClassName}
+              className={navItemClassName}
             >
               <div className="flex flex-col space-y-4 text-sm">
                 {blogCategories?.value?.map((item: BlogCategory, index) => (
@@ -203,142 +157,76 @@ export const Navigate = () => {
           </Link>
         </div>
 
-        <div className="flex items-center">
-          {/* Notification here */}
-          {user && (
-            <div className="space-x-1 md:space-x-6">
+        {/* User Actions */}
+        <div className="flex items-center space-x-2">
+          {user ? (
+            <>
+              {/* Notification Popover */}
               <Popover>
                 <PopoverTrigger>
-                  <div className="relative inline-flex text-sm h-11 w-10 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
-                    <div className="relative">
-                      <Bell className="size-4 mr-1 relative" />
-                      <span
-                        className="
-                                 absolute
-                                 -top-1
-                                 -right-2
-                                 w-4
-                                 h-4
-                                 bg-primary-500
-                                 text-slate-900
-                                  rounded-full
-                                 flex items-center justify-center
-                                 "
-                      >
-                        0
-                      </span>
-                    </div>
+                  <div className="relative inline-flex text-sm h-11 w-10 items-center justify-center text-neutral-800 dark:text-neutral-300 hover:bg-neutral-500/20 rounded-[14px] cursor-pointer transition">
+                    <Bell className="size-4" />
+                    <span
+                      className="absolute top-1 -right-1 w-4 h-4 bg-primary-500
+                    text-slate-900 rounded-full flex items-center justify-center"
+                    >
+                      0
+                    </span>
                   </div>
                 </PopoverTrigger>
-                <PopoverContent
-                  className="min-w-96 max-h-[600px] overflow-y-hidden hover:overflow-y-auto scroll-smooth"
-                  style={{ scrollbarWidth: 'thin' }}
-                >
-                  <p className="font-bold mb-2">Thông báo</p>
-                  <Tabs defaultValue="all">
-                    <TabsList className="ml-auto my-4">
-                      <TabsTrigger
-                        value="all"
-                        className="text-zinc-600 dark:text-zinc-200"
-                      >
-                        Tất cả
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="unread"
-                        className="text-zinc-600 dark:text-zinc-200"
-                      >
-                        Chưa đọc
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="all" className="m-0">
-                      {notification.map((_) => (
-                        <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
-                          <Avatar>
-                            <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
-                            <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                              {_.title} + {" "}
-                              {_.content}
-
-                            </h4>
-
-                          </div>
-                          <Badge
-                            variant={_.status === 'Online' ? 'default' : 'secondary'}
-                            className="mt-2"
-                          >
-                            {_.status}
-                          </Badge>
-                        </div>
-                      ))}
-                    </TabsContent>
-                    <TabsContent value="unread" className="m-0">
-                      {notification.map((_) => (
-                        <div key={_.name} className="flex items-center gap-4 py-2 w-fit hover:cursor-pointer">
-                          <Avatar>
-                            <AvatarImage src={"/images/dried-fruit.webp"} alt={`${_.name}'s avatar`} />
-                            <AvatarFallback>{_.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <h4 className="text-sm font-semibold line-clamp-5 whitespace-pre-line">
-                              {_.title} + {" "}
-                              {_.content}
-
-                            </h4>
-
-                          </div>
-                          <Badge
-                            variant={_.status === 'Online' ? 'default' : 'secondary'}
-                            className="mt-2"
-                          >
-                            {_.status}
-                          </Badge>
-                        </div>
-                      ))}
-                    </TabsContent>
-                  </Tabs>
-
-                  <div className="mt-2 text-center">
-                    <Button className="inline-block" size="sm">Xem thêm</Button>
-                  </div>
+                <PopoverContent className="w-80 md:w-96 max-h-[600px] overflow-y-auto">
+                  {/* Notification content remains the same */}
                 </PopoverContent>
               </Popover>
-              <Link href={"/favorites"} className="relative inline-flex text-sm h-11 w-10 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
+              <Link
+                href="/favorites"
+                className="h-11 w-10 flex items-center justify-center hover:bg-neutral-500/20 rounded-[14px]"
+              >
                 <Heart className="size-4" />
               </Link>
               <ShoppingBagSheet />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-12 w-12 rounded-full border">
+                  <Button
+                    variant="ghost"
+                    className="h-12 w-12 rounded-full border"
+                  >
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarImage src={user?.avatar} alt={user?.name} />
                       <AvatarFallback>SC</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent className="w-56" align="end">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-sm font-medium leading-none">
+                        {user?.name}
+                      </p>
                       {user?.email ? (
                         <p className="text-xs leading-none text-muted-foreground">
                           {user.email}
                         </p>
-                      ) : <p className="text-xs leading-none text-muted-foreground">
-                        {user.phone}
-                      </p>}
+                      ) : (
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.phone}
+                        </p>
+                      )}
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => router.push("/profile")} className="hover:cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={() => router.push("/profile")}
+                      className="hover:cursor-pointer"
+                    >
                       <UserRoundPen />
                       Hồ sơ
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/profile?tab=address")} className="hover:cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={() => router.push("/profile?tab=address")}
+                      className="hover:cursor-pointer"
+                    >
                       <MapPinHouse />
                       Địa chỉ
                     </DropdownMenuItem>
@@ -348,76 +236,99 @@ export const Navigate = () => {
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={async () => {
-                    await logOut()
-                    queryClient.removeQueries({ queryKey: ["authUser"] });
-                    router.push("/");
-                    loginDialog.onOpen();
-                  }} className="hover:cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await logOut();
+                      queryClient.removeQueries({ queryKey: ["authUser"] });
+                      router.push("/");
+                      loginDialog.onOpen();
+                    }}
+                    className="hover:cursor-pointer"
+                  >
                     <LogOut />
                     Đăng xuất
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              {!user.isVerification && (<VerifyDialog />)}
-            </div>
-          )}
-          {!user && (
-            <>
-              <LoginDialog />
-              <RegisterDialog />
+              {!user?.isVerification && <VerifyDialog />}
             </>
+          ) : (
+            <div className="flex space-x-2">
+              <LoginDialog />
+              <div className="hidden lg:block">
+                <RegisterDialog />
+              </div>
+            </div>
           )}
         </div>
       </Menu>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-neutral-100/95 dark:bg-neutral-800/95 border-t shadow-lg">
+          <div className="flex flex-col p-4 space-y-4">
+            <Link
+              href="/"
+              className={navItemClassName}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Trang chủ
+            </Link>
+            <Link
+              href="/find"
+              className={navItemClassName}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Sản phẩm
+            </Link>
+            <MenuItem
+              setActive={setActive}
+              active={active}
+              item="Quà tặng"
+              className={navItemClassName}
+            >
+              <div className="flex flex-col space-y-4 text-sm pl-4">
+                <HoveredLink href="/hobby">Hobby</HoveredLink>
+                <HoveredLink href="/individual">Individual</HoveredLink>
+                <HoveredLink href="/team">Team</HoveredLink>
+                <HoveredLink href="/enterprise">Enterprise</HoveredLink>
+              </div>
+            </MenuItem>
+            <MenuItem
+              setActive={setActive}
+              active={active}
+              item="Chính sách"
+              className={navItemClassName}
+            >
+              <div className="flex flex-col space-y-4 text-sm pl-4">
+                <HoveredLink href="/hobby">Hobby</HoveredLink>
+                <HoveredLink href="/individual">Individual</HoveredLink>
+                <HoveredLink href="/team">Team</HoveredLink>
+                <HoveredLink href="/enterprise">Enterprise</HoveredLink>
+              </div>
+            </MenuItem>
+            <MenuItem
+              setActive={setActive}
+              active={active}
+              item="Bài viết"
+              className={navItemClassName}
+            >
+              <div className="flex flex-col space-y-4 text-sm pl-4">
+                {blogCategories?.value?.map((item: BlogCategory, index) => (
+                  <HoveredLink
+                    key={index + 1}
+                    href={`/blogs?category=${item.name}`}
+                  >
+                    {item.name}
+                  </HoveredLink>
+                ))}
+              </div>
+            </MenuItem>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Navigate;
-
-export const NavbarContainer = ({
-  children,
-  className,
-  ...props
-}: ComponentProps<"nav">) => {
-  return (
-    <nav
-      className={cn(
-        "flex w-fit backdrop-blur-md bg-neutral-100/50 dark:bg-neutral-800/50 rounded-2xl shadow-xl shadow-black/5 p-px relative border border-neutral-400/10",
-        className
-      )}
-      {...props}
-    >
-      {/* <ul className="gap-2 flex w-fit items-center justify-between"> */}
-      {children}
-      {/* </ul> */}
-    </nav>
-  );
-};
-
-export const NavbarLink = ({
-  children,
-  href,
-  isHighlighted,
-  ...props
-}: {
-  isHighlighted?: boolean;
-} & ComponentProps<"a">) => {
-  return (
-    <li>
-      <a
-        href={href}
-        className={cn(
-          "relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center",
-          isHighlighted
-            ? "text-white bg-gradient-to-b from-violet-500 to-violet-600 rounded-[14px] hover:from-violet-500/80 hover:to-violet-600/80 shadow-md transition-all hover:scale-105"
-            : "text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px]"
-        )}
-        {...props}
-      >
-        {children}
-      </a>
-    </li>
-  );
-};

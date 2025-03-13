@@ -2,15 +2,21 @@
 
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ProductKey } from "@/app/key/product-key";
-import { PageResult } from "@/types/types";
+import { ApiResponse, PageResult } from "@/types/types";
 import { createContext, useContext } from "react";
 
 import Cookies from "js-cookie";
 import { cookies } from "next/headers";
 import { CART_KEY } from "@/app/key/comm-key";
+import { AddressTypes } from "@/types/address.types";
 
 export type DataContextType = {
   productList: ProductTransformType | undefined;
+
+  addressData: {
+    isAddressPending: boolean;
+    addresses: AddressTypes[] | undefined;
+  };
 };
 
 export interface ProductTypes {
@@ -63,14 +69,33 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     isError: isErrorCart,
   } = useFetch<ProductTransformType>("/Carts", [CART_KEY.CARTS]);
 
+  const {
+    isLoading: isAddressLoading,
+    data: addressesDelivery,
+    error: errorAddress,
+    isError: isErrorAddress,
+  } = useFetch<ApiResponse<PageResult<AddressTypes>>>("/Addresses", [
+    "address",
+  ]);
+
   // console.log({ productList });
   // console.log({ carts });
   // if (isLoading) {
   //   return null;
   // }
 
+  // console.log({ addressesDelivery });
+
   return (
-    <DataContext.Provider value={{ productList }}>
+    <DataContext.Provider
+      value={{
+        productList,
+        addressData: {
+          isAddressPending: isAddressLoading,
+          addresses: addressesDelivery?.value?.items! || [],
+        },
+      }}
+    >
       {children}
     </DataContext.Provider>
   );

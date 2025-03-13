@@ -32,7 +32,7 @@ function BlogPage() {
               >
                 <div className="w-full h-48 relative">
                   <Image
-                    src={"/images/dried-fruit.webp"}
+                    src={blog?.thumbnail ?? "/images/dried-fruit.webp"}
                     layout="fill"
                     objectFit="cover"
                     className="rounded-t-xl p-3"

@@ -1,6 +1,6 @@
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { Button } from "@/components/ui/button";
-import { ScrollTextIcon, Plane, Package } from "lucide-react";
+import { ScrollTextIcon, Plane, Package, Boxes } from "lucide-react";
 
 export const OrderHeader = () => {
   return (
@@ -8,12 +8,12 @@ export const OrderHeader = () => {
     <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 space-y-4">
       <div className="flex justify-between items-start">
         <div>
-          <AdvancedColorfulBadges color="green" className="mb-2">
+          <AdvancedColorfulBadges color="green" className="mb-2 bg-white">
             Delivering
           </AdvancedColorfulBadges>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
+          <h2 className="hidden xl:flex text-2xl font-bold items-center gap-2">
             <Package className="w-6 h-6" />
-            Order Id: OR12C31
+            Order Id: OR12C31ddsa
           </h2>
         </div>
         <div className="flex gap-2">
@@ -29,10 +29,14 @@ export const OrderHeader = () => {
             variant="secondary"
             className="bg-white/20 hover:bg-white/30 text-white border-none"
           >
-            <ScrollTextIcon className="w-4 h-4 mr-1" /> In
+            <Boxes className="w-4 h-4 mr-1" /> Xem chi tiết
           </Button>
         </div>
       </div>
+      <h2 className="lg:hidden text-2xl font-bold flex items-center gap-2">
+        <Package className="w-6 h-6" />
+        Order Id: OR12C31ddsa
+      </h2>
       <div className="flex flex-col sm:flex-row sm:items-center text-sm gap-2 sm:gap-4 text-indigo-100">
         <span className="flex items-center gap-1">
           <svg

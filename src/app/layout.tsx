@@ -37,13 +37,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
           <AuthProvider>
             <DataProvider>
               <NuqsAdapter>
-                <Toaster richColors position="top-right" />
+                <Toaster richColors position="top-right" duration={3000} />
                 {children}
                 {/* <FloatingButton /> */}
               </NuqsAdapter>

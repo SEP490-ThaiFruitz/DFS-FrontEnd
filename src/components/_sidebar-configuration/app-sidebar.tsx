@@ -11,6 +11,7 @@ import {
   BookKey,
   UserRound,
   Settings,
+  MessageSquareMore,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -28,10 +29,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/actions/user";
 import { ApiResponse, Profile } from "@/types/types";
 import { toast } from "sonner";
-import { logOut } from "@/actions/auth";
-import router from "next/router";
 
-// This is sample data.
 const data = {
   navMain: [
     {
@@ -96,6 +94,11 @@ const data = {
       url: "/admin/user",
       icon: UserRound,
     },
+    {
+      name: "Đánh giá",
+      url: "/admin/feedback",
+      icon: MessageSquareMore
+    }
   ],
 };
 

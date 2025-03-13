@@ -102,7 +102,7 @@ export function NavUser() {
             <DropdownMenuItem onClick={async () => {
               await logOut()
               queryClient.removeQueries({ queryKey: ["authUser"] });
-              router.push("/");
+              router.push("/admin/login");
             }} className="cursor-pointer">
               <LogOut />
               Đăng xuất

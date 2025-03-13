@@ -8,6 +8,7 @@ import React, { useRef, useState } from 'react'
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { Spinner } from '@/components/global-components/spinner';
+import { formatNumberWithUnit } from '@/lib/format-currency';
 
 function ProfileAvatar() {
     const imageRef = useRef<HTMLInputElement>(null);
@@ -17,7 +18,7 @@ function ProfileAvatar() {
         queryKey: ["authUser"]
     });
     const queryClient = useQueryClient();
-    
+
     const { mutate: updateImage, isPending } = useMutation({
         mutationFn: async () => {
             try {
@@ -86,6 +87,9 @@ function ProfileAvatar() {
             </div>
             <p className="text-2xl font-semibold mb-1 text-purple-700">
                 {user?.name}
+            </p>
+            <p className="text-xl font-semibold mb-1 text-purple-700">
+                {formatNumberWithUnit(user?.point ?? 0, "điểm")}
             </p>
         </div>
     )

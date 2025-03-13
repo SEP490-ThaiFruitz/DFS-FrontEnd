@@ -29,10 +29,12 @@ export interface Blog {
         name: string;
     };
     blogCategory: {
+        id: string;
         name: string;
     };
     createdOnUtc: string;
     modifiedOnUtc: string;
+    isPublished: boolean;
 }
 
 function BlogPage() {
@@ -152,6 +154,7 @@ function BlogPage() {
                             <TableHead className="w-fit min-w-[120px]">Tác giả</TableHead>
                             <TableHead className="w-fit min-w-[130px]">Loại bài viết</TableHead>
                             <TableHead className="w-fit min-w-[130px]">Ngày tạo</TableHead>
+                            <TableHead className="w-fit min-w-[130px]">Trạng thái</TableHead>
                             <TableHead className="w-fit min-w-[140px]">Hành động</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -164,6 +167,10 @@ function BlogPage() {
                             </TableCell>
                             <TableCell>
                                 {formatTimeVietNam(new Date(blog.createdOnUtc))}
+                            </TableCell>
+                            <TableCell>
+                                {blog.isPublished ? <div className='py-1 px-2 w-fit rounded-md text-green-700 font-bold bg-green-100'>Đang hiện</div>
+                                    : <div className='py-1 px-2 w-fit rounded-md text-red-700 font-bold bg-red-100'>Đã ẩn</div>}
                             </TableCell>
                             <TableCell>
                                 <div className="flex gap-2">
@@ -205,6 +212,7 @@ function BlogPage() {
                 onClose={() => setIsOpenDelete(!isOpenDelete)}
                 name={blog?.title}
                 deleteFunction={deleteBlog}
+                refreshKey={[["Blogs", "admin"]]}
             />
         </div>
     )

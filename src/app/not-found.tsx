@@ -18,9 +18,9 @@ export default function NotFound() {
     };
     return (
         <div className='bg-[#f3f4f6]'>
-            <div className='flex flex-row-reverse justify-center items-center min-h-screen'>
-                <Image height={600} width={600} src="/images/error.svg" alt="error" />
-                <div className='w-96'>
+            <div className='lg:flex p-10 flex-row-reverse justify-center items-center min-h-screen'>
+                <Image className='mx-auto' height={600} width={600} src="/images/error.svg" alt="error" />
+                <div className='w-96 mx-auto'>
                     <div className='my-5 text-4xl font-black'> Oops, Không tìm thấy trang</div>
                     <div className='text-xl font-bold'>
                         Có vẻ có lỗi khi chuyển qua trang khác

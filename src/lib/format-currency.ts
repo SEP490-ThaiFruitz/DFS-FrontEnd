@@ -3,7 +3,7 @@ export const formatVND = (value: number | string) => {
     style: "currency",
     currency: "VND",
   }).format(Number(value))
-  .replace(/\./g, ",");
+    .replace(/\./g, ",");
 };
 
 export const formatNumberWithUnit = (value: number | string, unit?: string) => {

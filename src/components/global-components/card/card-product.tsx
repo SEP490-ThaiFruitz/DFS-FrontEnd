@@ -1,141 +1,144 @@
+"use client";
+
 import StatusButton from "@/components/custom/_custom-button/status-button";
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Product } from "@/features/client/sidebar-filter/sidebar-filter";
-import { formatVND } from "@/lib/format-currency";
+import { formatNumberWithUnit, formatVND } from "@/lib/format-currency";
 import { truncate } from "lodash";
 import Image from "next/image";
 import { AdvancedColorfulBadges } from "../badge/advanced-badge";
-import { ProductTransformType, ProductTypes } from "@/providers/data-provider";
-import { EnhanceButton } from "@/components/custom/_custom-button/enhance-button";
 import { cartActions } from "@/actions/cart/use-cart";
-import { useQueryClient } from "@tanstack/react-query";
 import { CART_KEY } from "@/app/key/comm-key";
+import { Heart } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { favoriteProduct } from "@/actions/favorite";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Product } from "@/features/client/sidebar-filter/sidebar-filter";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 
-interface CardProductProps extends ProductTypes {
-  // handleAddToCart: (e: React.MouseEvent) => void;
+interface CardProductProps extends Product {
+  isFavorite: boolean;
 }
 
 export const CardProduct = ({ ...props }: CardProductProps) => {
-  const {
-    id,
-    name,
-    description,
-    origin,
-    mainImageUrl,
-    productVariantSummaryResponse,
-  } = props;
-
+  const { id, name, mainImageUrl, variant, isFavorite, rating, quantitySold } =
+    props;
   const queryClient = useQueryClient();
-
-  // console.log({ productVariantSummaryResponse });
+  const { data: user } = useQuery({ queryKey: ["authUser"] });
+  const [isFavourite, setIsFavourite] = useState<boolean>(isFavorite);
+  const { isPending, mutate: favoriteMutation } = useMutation({
+    mutationFn: async () => {
+      try {
+        if (!user) {
+          throw new Error("Vui lòng đăng nhập");
+        }
+        const response = await favoriteProduct({ productId: id });
+        if (!response?.isSuccess) {
+          if (response?.status === 401) {
+            throw new Error("Vui lòng đăng nhập");
+          }
+          throw new Error("Lỗi hệ thống");
+        }
+      } catch (error: unknown) {
+        throw new Error(
+          error instanceof Error ? error?.message : "Lỗi hệ thống"
+        );
+      }
+    },
+    onSuccess: () => {
+      toast.success(
+        !isFavourite
+          ? "Đã thêm vào danh sách yêu thích"
+          : "Đã gỡ khỏi danh sách yêu thích"
+      );
+      setIsFavourite(!isFavourite);
+      queryClient.invalidateQueries({ queryKey: ["list", "favorites"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
-    <CardContainer
-      className="inter-var cursor-pointer w-96 lg:w-80 2xl:w-96 motion-preset-pop  hover:scale-105 rounded-xl transition duration-300
-    "
-      containerClassName="py-0"
-    >
-      <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border transition duration-300">
-        {productVariantSummaryResponse.discountPrice && (
-          <AdvancedColorfulBadges
-            className="absolute top-0 right-0 z-50"
-            color="blush"
-            size="lg"
-          >
-            {productVariantSummaryResponse.discountPrice}% OFF
-          </AdvancedColorfulBadges>
-        )}
+    <Card className="w-full relative md:min-w-72 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm  hover:cursor-pointer hover:scale-105 transition-all duration-300 hover:shadow-xl">
+      <button
+        onClick={() => favoriteMutation()}
+        className="absolute z-10 top-2 right-2 p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-shadow"
+      >
+        <Heart
+          className={`size-6 transition ${
+            isFavourite
+              ? "fill-green-500 text-green-500"
+              : "text-gray-500 dark:text-gray-400"
+          } ${isPending ? "animate-spin" : ""}`}
+        />
+      </button>
+      {variant?.promotion && (
+        <div className="absolute top-0 left-0 flex items-center px-3 py-2 bg-red-500 text-white text-sm font-bold rounded-tl-lg rounded-br-lg shadow">
+          <span>{variant?.promotion.percentage}%</span>
+        </div>
+      )}
+      <CardHeader className="p-5">
+        <Image
+          src={mainImageUrl}
+          alt={`Image of ${name}`}
+          height="1000"
+          width="1000"
+          className="h-60 w-full object-contain rounded-t-xl"
+        />
+      </CardHeader>
 
-        {/* <CardBody className="relative bg-gray-50 group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto max-h-[350px] rounded-xl p-6 border transition duration-300"> */}
-        <CardItem
-          translateY={6}
-          translateZ={6}
-          // className="flex items-center justify-center"
-        >
-          <Image
-            // src="/images/third-background.png"
-            src={mainImageUrl}
-            alt={`Image of ${name}`}
-            height="1000"
-            width="1000"
-            className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl group-hover/card:scale-105 cursor-pointer transition duration-300"
-          />
-        </CardItem>
+      <CardContent className="p-6">
+        <div className="flex justify-between items-center mb-2">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {truncate(name, { length: 60 })}
+          </h1>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            ⭐ {rating ?? 0}{" "}
+            <span className="text-gray-400 dark:text-gray-500">|</span>{" "}
+            {quantitySold} đã bán
+          </p>
+        </div>
+      </CardContent>
 
-        <CardItem
-          translateX={10}
-          translateY={10}
-          className="text-violet-700/75 text-lg font-semibold mt-2 dark:text-neutral-300 h-12"
-          as="h1"
-        >
-          {truncate(name, { length: 60 })}
-        </CardItem>
-
-        <CardItem
-          translateX={10}
-          translateY={15}
-          className="text-neutral-500 mt-2 h-14 dark:text-neutral-300"
-          as="h1"
-        >
-          {truncate(description, { length: 80 })}
-        </CardItem>
-
-        <div className="flex items-center justify-between">
-          <CardItem
-            translateY={10}
-            translateZ={20}
-            className="flex items-center gap-x-2"
-          >
-            {productVariantSummaryResponse.discountPrice ? (
+      {variant && (
+        <CardFooter className="flex items-center justify-between">
+          <div className="flex items-center gap-x-2">
+            {variant?.promotion ? (
               <>
-                <CardItem translateY={10} translateZ={10} as="del">
-                  {formatVND(productVariantSummaryResponse.price)}
-                </CardItem>
-                <CardItem
-                  translateY={10}
-                  translateZ={10}
-                  as="h2"
-                  className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
-                >
-                  {formatVND(productVariantSummaryResponse.discountPrice!)}
-                </CardItem>
+                <del className="text-gray-500 dark:text-gray-400 text-base">
+                  {formatVND(
+                    variant.price -
+                      variant.price * (variant.promotion.percentage / 100)
+                  )}
+                </del>
+                <h2 className="text-lg font-bold text-red-600 dark:text-red-500">
+                  {formatVND(variant.price)}
+                </h2>
               </>
             ) : (
-              <CardItem translateY={10} translateZ={10}>
-                <CardItem
-                  translateY={10}
-                  translateZ={10}
-                  as="h2"
-                  className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
-                >
-                  {formatVND(productVariantSummaryResponse.price)}
-                </CardItem>
-              </CardItem>
+              <h2 className="text-lg font-bold text-red-600 dark:text-red-500">
+                {formatVND(variant?.price)}
+              </h2>
             )}
-          </CardItem>
+          </div>
 
-          <CardItem translateY={10} translateZ={10} as="h4">
-            <StatusButton
-              handleAddToCart={() => {
-                cartActions.addToCart({
-                  itemType: "ProductVariant",
-                  referenceId: productVariantSummaryResponse.productVariantId,
-                  quantity: 1,
-                });
-                queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
-              }}
-            />
-          </CardItem>
-        </div>
-      </CardBody>
-    </CardContainer>
+          <StatusButton
+            handleAddToCart={() => {
+              cartActions.addToCart({
+                itemType: "single",
+                referenceId: variant.productVariantId,
+                quantity: 1,
+              });
+              queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
+            }}
+          />
+        </CardFooter>
+      )}
+    </Card>
   );
 };

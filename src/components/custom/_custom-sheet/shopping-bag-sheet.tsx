@@ -6,6 +6,7 @@ import {
   CartItem,
   Product,
   ViewCardProductActions,
+  ViewCardProductActionsSkeleton,
 } from "@/components/global-components/card/view-card-product-actions";
 import { EmptyState } from "@/components/global-components/empty-state";
 import { Logo } from "@/components/global-components/logo";
@@ -18,8 +19,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { CartProductTypes } from "@/types/cart.types";
 import { ShoppingBagIcon, ShoppingBasket, ShoppingCart } from "lucide-react";
 import React, { useState } from "react";
+
+import Cookies from "js-cookie";
+import { CART_KEY } from "@/app/key/comm-key";
 
 export const products: Product[] = [
   {
@@ -61,12 +66,47 @@ export const products: Product[] = [
   },
 ];
 
+interface Cart {
+  cartItemId: string;
+  productId: string;
+  name: string;
+  productVariant: {
+    productVariantId: string;
+    image: string;
+    weight: number;
+    type: string;
+    unitPrice: number;
+    stock: number;
+    discount: {
+      startDate: string;
+      endDate: string;
+      percentage: number;
+    };
+  };
+  quantity: string;
+}
+
 export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { isLoading, data, error } = useFetch("Carts/", ["carts"]);
+  const token = Cookies.get("accessToken");
 
-  // console.log({ data });
+  // console.log({ token });
+
+  const {
+    isLoading,
+    isFetching,
+    data: productCart,
+    error,
+  } = useFetch<{ value: { items: CartProductTypes[] } }>("/Carts/", [
+    CART_KEY.CARTS,
+  ]);
+
+  // console.log(productCart?.value?.items);
+
+  console.log({ isLoading, isFetching });
+
+  console.log(productCart);
 
   const [items, setItems] = useState<CartItem[]>(
     products.map((product) => ({
@@ -94,8 +134,8 @@ export const ShoppingBagSheet = () => {
             <span
               className="
             absolute
-            -top-1
-            -right-2
+            -top-2.5
+            -right-2.5
             w-4
             h-4
             bg-primary-500
@@ -118,49 +158,54 @@ export const ShoppingBagSheet = () => {
             </div>
           </SheetTitle>
           <SheetDescription>
-            <div className="w-full">
-              <div className="container mx-auto p-4 md:p-6">
-                <h1 className="text-2xl font-semibold">
-                  Giỏ hàng ({items.length})
-                </h1>
-                <ScrollArea className="w-full h-[500px]">
-                  {items.map((item) => (
+            <div className="w-full overflow-hidden">
+              {!isLoading || !isFetching ? (
+                productCart?.value?.items.length ? (
+                  <div className="container mx-auto p-4 md:p-6 w-full">
                     <>
-                      <ViewCardProductActions
-                        key={item.id}
-                        item={item}
-                        onQuantityChange={handleQuantityChange}
-                        onRemove={handleRemove}
-                        className="m-4"
-                      />
+                      <h1 className="text-2xl font-semibold">
+                        Giỏ hàng ({items.length})
+                      </h1>
+                      <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[300px] 2xl:h-[300px]">
+                        {productCart?.value?.items.map((product) => (
+                          <ViewCardProductActions
+                            key={product.productId}
+                            // cartItemId=
+                            product={product}
+                            onQuantityChange={handleQuantityChange}
+                            onRemove={handleRemove}
+                            className="m-4"
+                          />
+                        ))}
+                      </ScrollArea>
+
+                      <div className=" mt-14 w-full">
+                        <CartSummary items={items} />
+                      </div>
                     </>
-                  ))}
-                </ScrollArea>
-
-                <div className=" mt-14 w-full">
-                  <CartSummary items={items} />
-                </div>
-              </div>
-
-              {/* <div className="flex items-center justify-center h-full pt-10">
-                <EmptyState
-                  icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
-                  title="Giỏ hàng của bạn"
-                  description="Có vẻ như giỏ hàng của bạn đang trống"
-                  action={{
-                    label: "Mua ngay nào",
-                    onClick: () => setIsOpen(false),
-                  }}
-                />
-              </div> */}
-
-              {/* <ViewCardProductActions
-                productImage="/images/second-background.png"
-                productName="test"
-                productPrice={12}
-                productQuantity={1}
-                className="123"
-              /> */}
+                  </div>
+                ) : (
+                  <EmptyState
+                    icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
+                    title="Giỏ hàng của bạn"
+                    description="Có vẻ như giỏ hàng của bạn đang trống"
+                    action={{
+                      label: "Mua ngay nào",
+                      onClick: () => setIsOpen(false),
+                    }}
+                    className="min-w-full flex flex-col"
+                  />
+                )
+              ) : (
+                Array.from({ length: 3 }).map((_, index) => {
+                  return (
+                    <ViewCardProductActionsSkeleton
+                      key={index}
+                      className="m-4"
+                    />
+                  );
+                })
+              )}
             </div>
           </SheetDescription>
         </SheetHeader>

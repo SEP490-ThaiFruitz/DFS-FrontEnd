@@ -1,37 +1,111 @@
 "use client"
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Images, Info, ListCollapse, Table, UtensilsCrossed } from 'lucide-react'
+import { ApiResponse } from '@/types/types'
+import { Award, Images, Info, ListCollapse, UtensilsCrossed } from 'lucide-react'
+import Image from 'next/image'
+import { useParams } from 'next/navigation'
 import React from 'react'
+import ImageOtherTab from './image-other'
+import NutritionTab, { ProductNutrition } from './nutrition'
+import { formatTimeVietNam } from '@/lib/format-time-vietnam'
+import CertificationTab, { Certificate } from './certification'
+
+interface PackagingType {
+    id: string;
+    name: string;
+    packagingType: string;
+    packagingMaterial: string;
+    description: string;
+}
+
+interface ProductVariantDetail {
+    id: string;
+    sku: string;
+    image: string;
+    netWeight: number;
+    grossWeight: number;
+    packagingLength: number;
+    packagingWidth: number;
+    packagingHeight: number;
+    packagingVolume: number;
+    shelfLife: string;
+    price: number;
+    stockQuantity: number;
+    reOrderPoint: number;
+    packagingType: PackagingType;
+    discounts: any[];
+}
+
+
+interface Product {
+    id: string;
+    name: string;
+    description: string;
+    origin: string;
+    mainImageUrl: string;
+    moistureContent: number;
+    dryingMethod: string;
+    categories: Category[] | null;
+    productImages: ProductImage[];
+    productCertifications: Certificate[];
+    productVariantDetailManges: ProductVariantDetail[];
+    productNutrition: ProductNutrition;
+    createdOnUtc: string;
+    modifiedOnUtc: string | null;
+    isDeleted: boolean;
+}
+
+interface Category {
+    id: string;
+    name: string;
+}
+
+export interface ProductImage {
+    id: string,
+    imageUrl: string,
+}
+
+
 
 const ProductDetail = () => {
-    const sizes = [
-        { id: 1, weight: "500", unit: "g", type: "Túi nhựa", quantity: 100, price: "50,000đ" },
-        { id: 2, weight: "1", unit: "kg", type: "Hộp giấy", quantity: 50, price: "90,000đ" },
-        { id: 3, weight: "2", unit: "kg", type: "Túi zip", quantity: 30, price: "170,000đ" },
+    const { id } = useParams();
+    const { data: product } = useFetch<ApiResponse<Product>>(`/Products/mange/${id}`, ["detail-mange", `${id}`])
+    const dryingMethods = [
+        { id: "SunDrying", name: "Sấy bằng ánh nắng mặt trời" },
+        { id: "HotAirDrying", name: "Sấy bằng không khí nóng" },
+        { id: "FreezeDrying", name: "Sấy đông khô" },
+        { id: "MicrowaveDrying", name: "Sấy bằng sóng vi ba" },
+        { id: "VacuumDrying", name: "Sấy theo phương pháp chân không" },
+        { id: "InfraredDrying", name: "Sấy bằng bức xạ hồng ngoại" },
+        { id: "DrumDrying", name: "Sấy trong máy trống" }
     ];
 
     return (
         <div className='p-10 w-full'>
             <div className='Container'>
                 <Tabs defaultValue="information">
-                    <TabsList className='grid grid-cols-4 gap-10 bg-transparent'>
+                    <TabsList className='grid grid-cols-5 gap-10 bg-transparent'>
                         <TabsTrigger className='bg-white shadow-sm border data-[state=active]:!bg-green-500 data-[state=active]:text-white' value="information">
                             <Info className='mr-2' size={15} />
-                            Thông tin
+                            <span className="hidden sm:inline">{"Thông tin"}</span>
                         </TabsTrigger>
                         <TabsTrigger className='bg-white shadow-sm border data-[state=active]:!bg-green-500 data-[state=active]:text-white' value="image">
                             <Images className='mr-2' size={15} />
-                            Ảnh
+                            <span className="hidden sm:inline">{"Ảnh phụ"}</span>
                         </TabsTrigger>
-                        <TabsTrigger className='bg-white shadow-sm border data-[state=active]:!bg-green-500 data-[state=active]:text-white' value="nutrion">
+                        <TabsTrigger className='bg-white shadow-sm border data-[state=active]:!bg-green-500 data-[state=active]:text-white' value="nutrition">
                             <UtensilsCrossed className='mr-2' size={15} />
-                            Dinh dưỡng
+                            <span className="hidden sm:inline">{"Dinh dưỡng"}</span>
                         </TabsTrigger>
-                        <TabsTrigger className='bg-white shadow-sm border data-[state=active]:!bg-green-500 data-[state=active]:text-white' value="action">
+                        <TabsTrigger className='bg-white shadow-sm border data-[state=active]:!bg-green-500 data-[state=active]:text-white' value="certification">
+                            <Award className='mr-2' size={15} />
+                            <span className="hidden sm:inline">{"Chứng chỉ"}</span>
+                        </TabsTrigger>
+                        <TabsTrigger className='bg-white shadow-sm border data-[state=active]:!bg-green-500 data-[state=active]:text-white' value="variant">
                             <ListCollapse className='mr-2' size={15} />
-                            Hành động
+                            <span className="hidden sm:inline">{"Biến thể"}</span>
                         </TabsTrigger>
                     </TabsList>
                     <TabsContent value="information">
@@ -39,56 +113,39 @@ const ProductDetail = () => {
                             <CardHeader className='border-b-2'>
                                 <CardTitle>Thông tin sản phẩm</CardTitle>
                             </CardHeader>
-                            <CardContent className='p-5 sm:p-10 grid md:grid-cols-2 gap-20'>
-                                <div className='grid gap-3'>
-                                    <div className='flex space-x-3'>
-                                        <p className='font-semibold'>Tên:</p>
-                                        <p>Mít sấy khô</p>
+                            <CardContent className='p-5'>
+                                <div className='grid md:grid-cols-2 gap-20'>
+                                    <div className='space-y-5'>
+                                        <div><strong className='mr-3'>Tên sản phẩm:</strong> {product?.value?.name}</div>
+                                        <div><strong className='mr-3'>Xuất xứ:</strong> {product?.value?.origin}</div>
+                                        <div><strong className='mr-3'>Độ ẩm:</strong> {product?.value?.moistureContent} %</div>
+                                        <div><strong className='mr-3'>Phương pháp sấy:</strong> {dryingMethods.find(x => x.id === product?.value?.dryingMethod)?.name}</div>
+                                        <div><strong className='mr-3'>Loại sản phẩm:</strong> {product?.value?.categories?.map((category: Category) => category.name).join(", ")}</div>
+                                        {product?.value?.createdOnUtc && (
+                                            <div><strong className='mr-3'>Ngày tạo:</strong>{formatTimeVietNam(new Date(product?.value?.createdOnUtc), true)}</div>
+                                        )}
+                                        {product?.value?.modifiedOnUtc && (
+                                            <div><strong className='mr-3'>Ngày cập nhật:</strong> {formatTimeVietNam(new Date(product?.value?.modifiedOnUtc), true)}</div>
+                                        )}
+                                        <div><strong className='mr-3'>Trạng thái:</strong>
+                                            {!product?.value?.isDeleted ? <span className='px-2 py-1 text-green-600 bg-green-50 rounded font-bold'>Hoạt động</span> : <span className='px-2 py-1 text-red-600 bg-red-50 rounded font-bold'>Đã ẩn</span>}
+                                        </div>
                                     </div>
-                                    <div className='flex space-x-3'>
-                                        <p className='font-semibold'>Loại:</p>
-                                        <p>Trái cây sấy</p>
-                                    </div>
-                                    <div className='flex space-x-3'>
-                                        <p className='font-semibold'>Trạng thái:</p>
-                                        <p>Đang bán</p>
-                                    </div>
-                                    <div>
-                                        <p className='font-semibold mb-3'>Mô tả:</p>
-                                        <p>Mít sấy khô</p>
-                                    </div>
+                                    <Image className='max-h-fit' src={product?.value?.mainImageUrl ?? "/images/dried-fruit.webp"} height={1000} width={1000} alt={product?.value?.name ?? "image"} />
                                 </div>
                                 <div>
-                                    <table className="w-full border-collapse" border={3}>
-                                        <thead>
-                                            <tr>
-                                                <th className="w-[50px]">STT</th>
-                                                <th className="w-[100px]">Cân nặng</th>
-                                                <th className="w-[80px]">Đơn vị</th>
-                                                <th>Loại</th>
-                                                <th className="text-right">Số lượng</th>
-                                                <th className="text-right">Giá tiền</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {sizes.map((size, index) => (
-                                                <tr key={size.id}>
-                                                    <td className="font-medium">{index + 1}</td>
-                                                    <td>{size.weight}</td>
-                                                    <td>{size.unit}</td>
-                                                    <td>{size.type}</td>
-                                                    <td className="text-right">{size.quantity}</td>
-                                                    <td className="text-right">{size.price}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                    <strong>Mô tả sản phẩm:</strong>
+                                    <div dangerouslySetInnerHTML={{ __html: product?.value?.description ?? "" }}></div>
                                 </div>
-                                <div></div>
                             </CardContent>
                         </Card>
                     </TabsContent>
-                    <TabsContent value="password">Change your password here.</TabsContent>
+                    <ImageOtherTab
+                        images={product?.value?.productImages ?? []}
+                        productId={product?.value?.id ?? ""}
+                    />
+                    <NutritionTab productId={product?.value?.id ?? ""} productNutrion={product?.value?.productNutrition} />
+                    <CertificationTab productId={product?.value?.id ?? ""} certificates={product?.value?.productCertifications ?? []} />
                 </Tabs>
             </div>
         </div>

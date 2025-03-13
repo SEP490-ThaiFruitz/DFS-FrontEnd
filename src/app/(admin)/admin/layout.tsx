@@ -7,24 +7,21 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { redirect } from "next/navigation";
 
 interface AdminRouteLayoutProps {
   children: React.ReactNode;
   auth: React.ReactNode;
-  test: React.ReactNode;
 }
 
 const AdminRouteLayout = async ({
   children,
-  auth,
-  test,
+  auth
 }: AdminRouteLayoutProps) => {
-  const isAdmin = await checkRole(ROLES.Administrator);
+  const isAuth = await checkRole([ROLES.Administrator, ROLES.Manager, ROLES.Staff]);
 
   return (
     <>
-      {isAdmin ? (
+      {isAuth ? (
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>

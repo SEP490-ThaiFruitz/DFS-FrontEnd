@@ -32,16 +32,11 @@ export default function ImprovedLoadingPage() {
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           <WaitingSpinner
-            // outerSize="h-10 w-10"
-            // childSize="h-8 w-8"
-
-            label="Đang tải..."
+            label="Đang tải dữ liệu..."
+            classNameLabel="text-xl font-semibold text-gray-700"
             variant="pinwheel"
-            className="bg-gradient-to-bl from-pink-500 to-blue-600"
+            className="bg-gradient-to-bl from-pink-500 to-blue-600 rounded-full"
           />
-          <span className="text-xl font-semibold text-gray-700">
-            Loading...
-          </span>
         </motion.div>
 
         <motion.div

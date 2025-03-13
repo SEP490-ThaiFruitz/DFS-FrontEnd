@@ -26,7 +26,7 @@ export function EmptyState({
       className={cn(
         "bg-background border-border hover:border-border/80 text-center",
         "border-2 border-dashed rounded-xl p-14 w-full max-w-[620px]",
-        "group hover:bg-muted/50 transition duration-500 hover:duration-200",
+        "group hover:bg-muted/50 transition duration-500 hover:duration-200 ",
         className
       )}
     >
@@ -59,14 +59,14 @@ export function EmptyState({
         )}
       </div>
       <h2 className="text-foreground font-medium mt-6">{title}</h2>
-      <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
+      <span className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
         {description}
-      </p>
+      </span>
       {action && (
         <Button
           onClick={action.onClick}
           variant="outline"
-          className={cn("mt-4", "shadow-sm active:shadow-none")}
+          className={cn("mt-4", "shadow-sm active:shadow-none ")}
         >
           {action.label}
         </Button>

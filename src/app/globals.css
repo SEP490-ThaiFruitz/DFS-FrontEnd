@@ -86,6 +86,41 @@ body {
   }
 }
 
+.hoverAnimate {
+  transition: transform 200ms; /* [Blue] This class applies a smooth transition effect for transformations over 200ms. */
+  cursor: pointer; /* [Blue] Changes the cursor to a pointer on hover, indicating the element is clickable. */
+}
+.hoverAnimate:hover {
+  transform: scale(
+    1.05
+  ); /* [Blue] On hover, this class slightly scales up the element by 5%, creating a subtle zoom effect. */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  /* background: currentColor; */
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  /* background: green; */
+  background: #a2d0af;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  /* background-color: #f5f5f5; */
+}
+
 @layer base {
   * {
     @apply border-border;

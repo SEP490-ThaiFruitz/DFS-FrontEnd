@@ -13,6 +13,8 @@ import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 import { type DragEvent, useEffect, useRef, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import ImagePreview from "@/components/custom/_custom-image/image-preview";
 
 interface FileWithPreview extends File {
   preview: string;
@@ -21,10 +23,7 @@ interface FileWithPreview extends File {
 interface FormFileControlProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   name: Path<T>;
-  placeholder?: string;
-  onSubmit?: (data: T) => void;
   label?: string;
-  formSubmit?: React.ReactNode;
   classNameLabel?: string;
   disabled?: boolean;
   classNameInput?: string;
@@ -32,7 +31,8 @@ interface FormFileControlProps<T extends FieldValues> {
   icon?: React.ReactElement;
   type: string;
   mutiple: boolean;
-  require?: boolean
+  require?: boolean,
+  maxFiles?: number
 }
 
 export const FormFileControl = <T extends FieldValues>({
@@ -46,7 +46,8 @@ export const FormFileControl = <T extends FieldValues>({
   icon,
   type,
   mutiple,
-  require
+  require,
+  maxFiles,
 }: FormFileControlProps<T>) => {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isDragActive, setIsDragActive] = useState(false);
@@ -87,9 +88,12 @@ export const FormFileControl = <T extends FieldValues>({
 
   const handleFiles = (fileList: File[]) => {
     form.clearErrors(name);
-    if (!mutiple && fileList?.length > 1) {
+    if (!mutiple && fileList?.length > 1 || (maxFiles && fileList?.length > maxFiles)) {
+      const errorMessage = maxFiles && fileList?.length > maxFiles
+        ? `Vui lòng chọn tối đa ${maxFiles}`
+        : 'Vui lòng chọn 1 files';
       form.setError(name, {
-        message: "Vui lòng chọn 1 file",
+        message: errorMessage,
       });
       return;
     }
@@ -130,7 +134,7 @@ export const FormFileControl = <T extends FieldValues>({
     <FormField
       control={form.control}
       name={name}
-      render={({ field, fieldState, formState }) => {
+      render={({ field, fieldState }) => {
         if (value !== undefined && value !== null && field.value !== value) {
           form.setValue(name, value);
         }
@@ -213,10 +217,9 @@ export const FormFileControl = <T extends FieldValues>({
                           key={file.name}
                         >
                           {file.type.startsWith("image/") ? (
-                            <img
-                              alt={file.name}
-                              className="mr-2 size-10 rounded object-cover"
-                              src={file.preview}
+                            <ImagePreview
+                              images={[file.preview]}
+                              className="mr-2 size-10 rounded object-cover hover:cursor-pointer"
                             />
                           ) : (
                             <File className="mr-2 size-10 text-neutral-500" />

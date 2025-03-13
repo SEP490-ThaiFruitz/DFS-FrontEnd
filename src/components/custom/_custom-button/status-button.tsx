@@ -35,7 +35,7 @@ export default function StatusButton({
     // console.log("loading 1");
     await wait(700);
     handleAddToCart(e);
-    toast.success("Added to cart");
+    toast.success("Đã thêm vào giỏ hàng");
     setStatus("Added to cart");
     // console.log("Added to cart 2");
 
@@ -52,7 +52,7 @@ export default function StatusButton({
       onClick={(e) => changeStatus(e)}
       disabled={!isEnabled}
       className={cn(
-        `group relative overflow-hidden rounded-md text-sm bg-slate-200 size-10
+        `group relative overflow-hidden rounded-md text-sm bg-green-500 size-10
         font-semibold text-white transition-colors duration-300 flex items-center
         justify-center`,
         className
@@ -87,7 +87,7 @@ export default function StatusButton({
               <div className="flex items-center gap-x-1">
                 <ShoppingCart
                   className={cn(
-                    `size-10 cursor-pointer rounded-lg p-1 text-slate-600 duration-200
+                    `size-10 cursor-pointer rounded-lg p-2 text-white duration-200
                       hover:scale-110 hover:bg-slate-200 hover:text-slate-800 hover:shadow-lg`,
                     classNameIcon
                   )}

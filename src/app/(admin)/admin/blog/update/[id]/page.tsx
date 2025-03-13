@@ -4,12 +4,11 @@ import { ButtonCustomized } from '@/components/custom/_custom-button/button-cust
 import { FormFileControl } from '@/components/global-components/form/form-file-control';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
 import { FormSelectControl } from '@/components/global-components/form/form-select-control';
-import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control';
 import { FormValues } from '@/components/global-components/form/form-values';
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ApiResponse } from '@/types/types';
-import { FormBlogSafeTypes } from '@/zod-safe-types/blog-safe-types';
+import { UpdateBlogSafeTypes } from '@/zod-safe-types/blog-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import React from 'react';
@@ -20,6 +19,8 @@ import { updateBlog } from '@/actions/blog';
 import { BlogCategory } from '../../category/page';
 import { useParams } from 'next/navigation';
 import { Blog } from '../../page';
+import FormTextEditorControl from '@/components/global-components/form/form-text-editor-control';
+import { FormSwitchControl } from '@/components/global-components/form/form-switch-control';
 
 function UpdateBlogPage() {
     const { id } = useParams();
@@ -35,7 +36,6 @@ function UpdateBlogPage() {
             }
         },
         onSuccess: (value) => {
-            form.reset();
             toast.success(value)
         },
         onError: (value) => {
@@ -43,24 +43,27 @@ function UpdateBlogPage() {
         }
     })
 
-    const form = useForm<z.infer<typeof FormBlogSafeTypes>>({
-        resolver: zodResolver(FormBlogSafeTypes),
+    const form = useForm<z.infer<typeof UpdateBlogSafeTypes>>({
+        resolver: zodResolver(UpdateBlogSafeTypes),
     });
 
-    const onSubmit = async (values: z.infer<typeof FormBlogSafeTypes>) => {
+    const onSubmit = async (values: z.infer<typeof UpdateBlogSafeTypes>) => {
         const formData = new FormData();
         const id = blog?.value?.id;
         if (id !== undefined) {
             formData.append("id", id);
         }
         formData.append("title", values.title);
+        formData.append("isPublished", values.isPublished.toString());
         formData.append("content", values.content);
-        formData.append("thumbnail", values.image);
+        if (values.image) {
+            formData.append("thumbnail", values.image);
+        }
         formData.append("blogCategoryId", values.categoryBlogId);
 
         updateBlogMutation(formData);
     };
-
+    console.log({ blog })
     return (
         <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
             <Card>
@@ -69,52 +72,56 @@ function UpdateBlogPage() {
                 </CardHeader>
                 {blog && (
                     <CardContent>
-                        <div className="grid sm:grid-cols-2 gap-6 sm:gap-20">
-                            <div className="space-y-6">
-                                <FormInputControl
-                                    form={form}
-                                    name="title"
-                                    defaultValue={blog?.value?.title}
-                                    disabled={isPending}
-                                    require
-                                    label="Tên bài viết"
-                                />
-                                <FormSelectControl
-                                    form={form}
-                                    name="categoryBlogId"
-                                    classNameInput='h-fit'
-                                    placeholder='Chọn loại loại bài viết'
-                                    items={categoriesBlog?.value?.map((blogCategory) => ({
-                                        id: blogCategory.id.toString(),
-                                        name: blogCategory.name
-                                    })) || []}
-                                    disabled={isPending}
-                                    label="Chọn loại loại bài viết"
-                                    require
-                                />
-                                <FormFileControl
-                                    form={form}
-                                    name="image"
-                                    classNameInput="h-30 w-full"
-                                    mutiple={false}
-                                    type={"image/jpeg, image/jpg, image/png, image/webp"}
-                                    disabled={isPending}
-                                    label="Ảnh bài viết"
-                                    require
-                                />
-                            </div>
-                            <div className="space-y-6">
-                                <FormTextareaControl
-                                    form={form}
-                                    name="content"
-                                    classNameInput='h-fit'
-                                    placeholder='Nhập mô tả'
-                                    disabled={isPending}
-                                    label="Nội dung bài viết"
-                                    defaultValue={blog?.value?.content}
-                                    require
-                                />
-                            </div>
+                        <div className="space-y-6">
+                            <FormInputControl
+                                form={form}
+                                name="title"
+                                defaultValue={blog?.value?.title}
+                                disabled={isPending}
+                                require
+                                label="Tên bài viết"
+                            />
+                            <FormSelectControl
+                                form={form}
+                                name="categoryBlogId"
+                                classNameInput='h-fit'
+                                placeholder='Chọn loại loại bài viết'
+                                items={categoriesBlog?.value?.map((blogCategory) => ({
+                                    id: blogCategory.id.toString(),
+                                    name: blogCategory.name
+                                })) || []}
+                                disabled={isPending}
+                                defaultValue={blog?.value?.blogCategory.id.toString()}
+                                label="Chọn loại loại bài viết"
+                                require
+                            />
+                            <FormFileControl
+                                form={form}
+                                name="image"
+                                classNameInput="h-30 w-full"
+                                mutiple={false}
+                                type={"image/jpeg, image/jpg, image/png, image/webp"}
+                                disabled={isPending}
+                                label="Ảnh bài viết"
+                            />
+                            <FormSwitchControl
+                                form={form}
+                                name="isPublished"
+                                label='Trạng thái'
+                                disabled={isPending}
+                                classNameInput='!mt-0'
+                                classNameForm='flex items-center space-x-3'
+                                defaultValue={blog?.value?.isPublished}
+                            />
+                            <FormTextEditorControl
+                                form={form}
+                                name="content"
+                                placeholder='Nhập mô tả'
+                                disabled={isPending}
+                                label="Nội dung bài viết"
+                                defaultValue={blog?.value?.content}
+                                require
+                            />
                         </div>
                     </CardContent>
                 )}
@@ -122,14 +129,14 @@ function UpdateBlogPage() {
 
             <ButtonCustomized
                 type="submit"
-                className="max-w-32 bg-green-500 hover:bg-green-700"
+                className="w-fit px-3 bg-green-500 hover:bg-green-700"
                 variant="secondary"
                 disabled={isPending}
                 label={
                     isPending ? (
                         <WaitingSpinner
                             variant="pinwheel"
-                            label="Đang tạo..."
+                            label="Đang cập nhật..."
                             className="font-semibold"
                             classNameLabel="font-semibold text-sm"
                         />

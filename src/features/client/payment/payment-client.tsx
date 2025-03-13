@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { CreditCard, Truck, Tag, ShoppingCart } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { CreditCard, Truck, Tag, ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,33 @@ import { ButtonCustomized } from "@/components/custom/_custom-button/button-cust
 import { Logo } from "@/components/global-components/logo";
 import { Separator } from "@/components/ui/separator";
 import Maps from "@/components/global-components/maps";
+import { useAuth } from "@/providers/auth-provider";
+import AddressChoices from "./address-choices";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { CartProductTypes } from "@/types/cart.types";
+import { ViewCardProductActions } from "@/components/global-components/card/view-card-product-actions";
+import { CART_KEY } from "@/app/key/comm-key";
+import { useData } from "@/providers/data-provider";
+import { useForm } from "react-hook-form";
+import {
+  DeliveryMethod,
+  PaymentMethod,
+  PaymentSafeTypes,
+} from "@/zod-safe-types/payment-safe-types";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormValues } from "@/components/global-components/form/form-values";
+import {
+  FormRadioControl,
+  RadioItem,
+} from "@/components/global-components/form/form-radio-control";
+import { FormControl, FormLabel } from "@/components/ui/form";
+import { formatVND } from "@/lib/format-currency";
+
+import Cookies from "js-cookie";
+import axios from "axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
@@ -29,7 +56,7 @@ interface Product {
   image: string;
 }
 
-interface DeliveryMethod {
+interface DeliveryMethodType {
   id: string;
   name: string;
   price: number;
@@ -93,18 +120,18 @@ function PaymentClientPage() {
     },
   ];
 
-  const deliveryMethods: DeliveryMethod[] = [
+  const deliveryMethods: DeliveryMethodType[] = [
     {
       id: "standard",
       name: "Standard Delivery",
-      price: 4.99,
-      duration: "3-5 business days",
+      price: 30000,
+      duration: "Khoảng 3-5 ngày",
     },
     {
-      id: "express",
-      name: "Express Delivery",
-      price: 9.99,
-      duration: "1-2 business days",
+      id: "fast",
+      name: "Giao hàng nhanh",
+      price: 3000,
+      duration: "Khoảng 1-2 ngày",
     },
   ];
 
@@ -117,48 +144,105 @@ function PaymentClientPage() {
   const discount = promoCode === "FRUIT10" ? subtotal * 0.1 : 0;
   const total = subtotal + deliveryPrice - discount;
 
+  const { user } = useAuth();
+
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof PaymentSafeTypes>>({
+    resolver: zodResolver(PaymentSafeTypes),
+    defaultValues: {
+      paymentMethod: PaymentMethod.VNPAY,
+      shipType: DeliveryMethod.STANDARD,
+
+      shippingUnitId: "fce93c8a-6dab-4ad0-a754-0ced6793d4e1",
+      voucherId: null,
+    },
+  });
+
+  const {
+    isLoading,
+    data: productCart,
+    error,
+  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", [
+    CART_KEY.CARTS,
+  ]);
+
+  const { addressData } = useData();
+
+  const { value } = useAuth();
+
+  const paymentMethods: { value: string; label: string }[] = [
+    {
+      value: PaymentMethod.VNPAY,
+      label: "VNPAY",
+    },
+    {
+      value: PaymentMethod.PAYOS,
+      label: "PayOS",
+    },
+  ];
+
+  const paymentMethodWatch = form.watch("paymentMethod");
+
+  useEffect(() => {
+    if (productCart && productCart?.value?.items?.length > 0) {
+      form.setValue(
+        "cartItemIds",
+        productCart.value.items.map((item) => item.cartItemId)
+      );
+    }
+  }, [productCart]);
+
+  const token = Cookies.get("accessToken");
+
+  const onPaymentSubmit = async (values: z.infer<typeof PaymentSafeTypes>) => {
+    console.log({ values });
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL_API}/Orders`,
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log({ response });
+
+      if (response.status === 200) {
+        toast.success("Đặt hàng thành công");
+        router.push(response.data.value.orderPaymentUrl);
+
+        return;
+      }
+    } catch (error) {
+      console.log({ error });
+
+      toast.error("Đặt hàng thất bại");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background p-4 md:p-8 ">
+      <div className="max-w-7xl mx-auto pt-20">
         <div className="flex items-center  justify-center gap-x-2 mt-4 mb-16">
           <h1 className="text-4xl font-bold text-slate-700">Thanh Toán</h1>
           <Separator className="h-16 text-gray-800" orientation="vertical" />
           <Logo height={70} width={70} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <FormValues
+          form={form}
+          onSubmit={onPaymentSubmit}
+          classNameForm="grid grid-cols-1 lg:grid-cols-2 gap-8"
+        >
           {/* Left Column - Form and Options */}
           <div className="space-y-6">
             {/* Personal Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Thông tin cá nhân của bạn</CardTitle>
-                <CardDescription>
-                  Hãy đảm bảo thông tin cá nhân của bạn chính xác khi tiến hành
-                  thanh toán
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" type="tel" />
-                </div>
-              </CardContent>
-            </Card>
+
+            <AddressChoices addressData={addressData} form={form} />
 
             {/* Delivery Method */}
             <Card>
@@ -169,30 +253,52 @@ function PaymentClientPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <RadioGroup
-                  value={selectedDelivery}
-                  onValueChange={setSelectedDelivery}
+                <FormRadioControl
+                  // value={selectedDelivery}
+                  // onValueChange={setSelectedDelivery}
+                  form={form}
+                  name="shipType"
+                  label="Chọn Phương Thức Giao Hàng"
+                  className="space-y-4"
                 >
                   {deliveryMethods.map((method) => (
-                    <div
+                    // <div
+                    //   key={method.id}
+                    //   className="flex items-center justify-between p-4 border rounded-lg"
+                    // >
+                    //   <div className="flex items-center gap-2">
+                    //     <RadioGroupItem value={method.id} id={method.id} />
+                    //     <div>
+                    //       <Label htmlFor={method.id}>{method.name}</Label>
+                    //       <p className="text-sm text-muted-foreground">
+                    //         {method.duration}
+                    //       </p>
+                    //     </div>
+                    //   </div>
+                    //   <span className="font-medium">
+                    //     ${method.price.toFixed(2)}
+                    //   </span>
+                    // </div>
+
+                    <RadioItem
                       key={method.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
+                      className="flex items-center justify-between p-4 border rounded-xl"
                     >
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value={method.id} id={method.id} />
-                        <div>
-                          <Label htmlFor={method.id}>{method.name}</Label>
-                          <p className="text-sm text-muted-foreground">
-                            {method.duration}
-                          </p>
+                      <div className="flex gap-2">
+                        <FormControl>
+                          <RadioGroupItem value={method.id} />
+                        </FormControl>
+                        <div className="flex flex-col items-center gap-2">
+                          <FormLabel>{method.name}</FormLabel>
+                          <CardDescription>{method.duration}</CardDescription>
                         </div>
                       </div>
                       <span className="font-medium">
-                        ${method.price.toFixed(2)}
+                        {formatVND(String(method.price))}
                       </span>
-                    </div>
+                    </RadioItem>
                   ))}
-                </RadioGroup>
+                </FormRadioControl>
               </CardContent>
             </Card>
 
@@ -205,44 +311,45 @@ function PaymentClientPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <RadioGroup
-                  value={selectedPayment}
-                  onValueChange={setSelectedPayment}
+                <FormRadioControl
+                  form={form}
+                  name="paymentMethod"
+                  label="Chọn Phương Thức Thanh Toán"
+                  disabled={form.formState.isSubmitting}
+                  className="space-y-2"
                 >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card">Credit/Debit Card</Label>
-                  </div>
-                </RadioGroup>
+                  {paymentMethods.map((method) => {
+                    return (
+                      <RadioItem
+                        key={method.value}
+                        className="flex justify-between"
+                      >
+                        <div className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value={method.value} />
+                          </FormControl>
+                          <FormLabel
+                            className={`font-semibold hover:underline transition cursor-pointer ${
+                              paymentMethodWatch === method.value && "underline"
+                            }`}
+                          >
+                            {method.label}
+                          </FormLabel>
+                        </div>
 
-                {selectedPayment === "card" && (
-                  <div className="mt-4 space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="cardNumber">Card Number</Label>
-                      <Input className="inputStyle" id="cardNumber" />
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="col-span-2 space-y-2">
-                        <Label htmlFor="expiry">Expiry Date</Label>
-                        <Input
-                          className="inputStyle"
-                          id="expiry"
-                          placeholder="MM/YY"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="cvc">CVC</Label>
-                        <Input id="cvc" />
-                      </div>
-                    </div>
-                  </div>
-                )}
+                        {paymentMethodWatch === method.value && (
+                          <Check className="text-green-500 mr-2" />
+                        )}
+                      </RadioItem>
+                    );
+                  })}
+                </FormRadioControl>
               </CardContent>
             </Card>
           </div>
 
           {/* Right Column - Order Summary */}
-          <div>
+          <div className="pt-9">
             <Card className="sticky top-8">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -252,7 +359,7 @@ function PaymentClientPage() {
               </CardHeader>
               <CardContent>
                 <ScrollArea className="space-y-4 max-h-[300px] overflow-auto">
-                  {cartItems.map((item) => (
+                  {/* {cartItems.map((item) => (
                     <ViewCardProduct
                       key={item.id}
                       productImage={item.image}
@@ -260,7 +367,16 @@ function PaymentClientPage() {
                       productPrice={item.price}
                       productQuantity={item.quantity}
                     />
-                  ))}
+                  ))} */}
+
+                  {productCart?.value?.items.map((product) => {
+                    return (
+                      <ViewCardProductActions
+                        key={product.productId}
+                        product={product}
+                      />
+                    );
+                  })}
                 </ScrollArea>
 
                 <div className="mt-6 space-y-4">
@@ -313,13 +429,14 @@ function PaymentClientPage() {
               </CardContent>
               <CardFooter>
                 <ButtonCustomized
+                  type="submit"
                   className="w-full bg-sky-400/75 hover:bg-sky-600/80 font-semibold text-lg hover:motion-preset-confetti "
-                  label="Place Order"
+                  label="Tiến hành thanh toán"
                 />
               </CardFooter>
             </Card>
           </div>
-        </div>
+        </FormValues>
       </div>
     </div>
   );

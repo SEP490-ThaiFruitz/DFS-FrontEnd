@@ -22,7 +22,6 @@ function InformationPersonal() {
     const { data: user } = useQuery<Profile>({
         queryKey: ["authUser"]
     });
-    console.log({ user })
     const queryClient = useQueryClient();
     const { mutate: updateProfileMutation, isPending } = useMutation({
         mutationFn: async (values: FormData) => {
@@ -30,7 +29,6 @@ function InformationPersonal() {
                 const res = await updateProfile(values);
                 if (!res?.isSuccess) {
                     if (res?.status === 409) {
-                        console.log(res?.detail)
                         if (res?.detail.includes("phone")) {
                             throw new Error("Số điện thoại đã tồn tại")
                         }

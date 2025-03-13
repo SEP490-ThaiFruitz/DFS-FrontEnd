@@ -203,6 +203,7 @@ function VoucherPage() {
                             <TableHead className="w-fit min-w-[120px]">Mã</TableHead>
                             <TableHead className="w-fit min-w-[130px]">Loại</TableHead>
                             <TableHead className="w-fit min-w-[150px]">Giảm Giá</TableHead>
+                            <TableHead className="w-fit min-w-[150px]">Số lượng</TableHead>
                             <TableHead className="w-fit min-w-[180px]">Trạng thái</TableHead>
                             <TableHead className="w-fit min-w-[140px]">Hành động</TableHead>
                         </TableRow>
@@ -222,6 +223,9 @@ function VoucherPage() {
                                 </TableCell>
                                 <TableCell className="font-bold">
                                     {voucher.discountType === "Percentage" ? formatNumberWithUnit(voucher.value, "%") : formatVND(voucher.value)}
+                                </TableCell>
+                                <TableCell>
+                                    {formatNumberWithUnit(voucher.quantity)}
                                 </TableCell>
                                 <TableCell>
                                     <div className={`w-fit py-1 px-2 rounded-lg ${colorStatus?.color}`}>

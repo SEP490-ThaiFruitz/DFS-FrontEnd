@@ -101,7 +101,6 @@ const put = async <TValues>(endpoint: string, body: TValues) => {
 const remove = async <T>(endpoint: string, payload?: T) => {
   const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
 
-  const tokenData = await getToken();
   try {
     const requestOptions = {
       method: "DELETE",
@@ -131,8 +130,7 @@ async function handleResponse(response: Response) {
   if (response.ok) {
     return { isSuccess: true, data: data };
   } else {
-    // console.log(response);
-    // console.log(data);
+    console.log(data);
     return {
       isSuccess: false,
       status: response.status,

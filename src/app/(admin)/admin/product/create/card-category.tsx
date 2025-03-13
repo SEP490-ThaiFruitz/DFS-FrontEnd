@@ -22,7 +22,7 @@ const CardCategory = ({ category, onChange }: Readonly<CardCategoryProps>) => {
     return (
         <button type='button' onClick={handlerChooseCategory} className={`relative border p-1 shadow-md rounded-md text-center hover:cursor-pointer hover:scale-105 ${isChoseCategory ? 'border-2 border-green-500' : 'hover:border-2 hover:border-green-500'}`} key={category.id}>
             <Image src={category.thumbnail ?? "/images/dried-fruit.webp"} height={1000} width={1000} alt={category.name} />
-            <p>{category.name}</p>
+            <span>{category.name}</span>
             {isChoseCategory && (<p className='absolute -top-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full' />)}
         </button>
     )

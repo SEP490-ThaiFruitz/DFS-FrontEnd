@@ -106,7 +106,6 @@ function UpdateVoucherPage() {
     }
     formData.append("minimumOrderAmount", values.minimumOrderAmount)
     formData.append("maximumDiscountAmount", values.maximumDiscount)
-    alert(values.maximumDiscount)
     formData.append("quantity", values.quantity)
 
     updateVoucherMutation(formData)

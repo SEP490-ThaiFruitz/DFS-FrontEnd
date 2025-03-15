@@ -24,43 +24,48 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Logo } from "../global-components/logo";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/actions/user";
 import { ApiResponse, Profile } from "@/types/types";
 import { toast } from "sonner";
+import { Logo } from "@/components/global-components/logo";
 
 const data = {
   navMain: [
     {
-      title: "Sản phẩm",
+      title: "Quản lý đơn hàng",
       url: "#",
       icon: LayoutList,
-      isActive: true,
       items: [
         {
-          title: "Danh sách",
-          url: "/admin/product",
+          title: "Các đơn hàng",
+          url: "#",
         },
         {
-          title: "Thêm mới",
-          url: "/admin/product/create",
+          title: "",
+          url: "#",
         },
       ],
     },
     {
-      title: "Bài viết",
+      title: "Quản lý sản phẩm",
       url: "/admin/blog",
       icon: BookOpen,
       items: [
         {
-          title: "Loại bài viết",
-          url: "/admin/blog/category",
+          title: "Sản phẩm trong kho",
+          url: "#",
           icon: BookKey,
         },
         {
-          title: "Bài viết",
-          url: "/admin/blog",
+          title: "Tình trạng sản phẩm",
+          url: "#",
+          icon: BookOpenText,
+        },
+
+        {
+          title: "Phương pháp sấy",
+          url: "#",
           icon: BookOpenText,
         },
       ],
@@ -80,47 +85,31 @@ const data = {
   ],
   projects: [
     {
-      name: "Loại sản phẩm",
-      url: "/admin/category",
+      name: "Báo cáo Doanh Thu",
+      url: "/manager",
       icon: TableProperties,
     },
     {
-      name: "Mã giảm giá",
-      url: "/admin/voucher",
-      icon: TicketPercent,
-    },
-    {
-      name: "Người dùng",
-      url: "/admin/user",
+      name: "Báo cáo người dùng",
+      url: "/manager/user-report",
       icon: UserRound,
     },
     {
-      name: "Đánh giá",
-      url: "/admin/feedback",
+      name: "Quản Lý Sự Kiện",
+      url: "#",
+      icon: TicketPercent,
+    },
+    {
+      name: "Các phản hồi",
+      url: "#",
       icon: MessageSquareMore,
     },
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // useQuery({
-  //   queryKey: ["authUser, mange"],
-  //   queryFn: async () => {
-  //     try {
-  //       const res = await getProfile();
-  //       if (res?.isSuccess) {
-  //         const data: ApiResponse<Profile> = res?.data
-  //         return data.value;
-  //       }
-  //       return null;
-  //     } catch (error) {
-  //       console.log(error);
-  //       toast.error("Lỗi hệ thống")
-  //     }
-  //   },
-  //   retry: false,
-  //   initialData: null,
-  // });
+export function ManagerAppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

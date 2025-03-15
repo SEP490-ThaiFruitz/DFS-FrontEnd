@@ -27,7 +27,41 @@ export const checkRole = async (roles: string[]) => {
   try {
     const decode: DecodeData = jwtDecode<DecodeData>(token?.accessToken);
     const userRole = decode.Role.toUpperCase();
-    return roles.find(role => role.toUpperCase() === userRole);
+    return roles.find((role) => role.toUpperCase() === userRole);
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const isAdmin = async () => {
+  const token: any = await getToken();
+
+  if (!token?.accessToken) {
+    return null;
+  }
+
+  try {
+    const decode: DecodeData = jwtDecode<DecodeData>(token?.accessToken);
+    const userRole = decode.Role.toUpperCase();
+
+    return userRole.toUpperCase() === ROLES.Administrator.toUpperCase();
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+export const isManager = async () => {
+  const token: any = await getToken();
+
+  if (!token?.accessToken) {
+    return null;
+  }
+
+  try {
+    const decode: DecodeData = jwtDecode<DecodeData>(token?.accessToken);
+    const userRole = decode.Role.toUpperCase();
+
+    return userRole.toUpperCase() === ROLES.Manager.toUpperCase();
   } catch (error) {
     console.log({ error });
   }

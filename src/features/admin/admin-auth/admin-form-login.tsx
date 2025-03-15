@@ -14,46 +14,97 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import Cookies from "js-cookie";
+import { DecodeData } from "@/actions/checkrole";
+import { jwtDecode } from "jwt-decode";
+
+enum ROLES {
+  Administrator = "Administrator",
+  Staff = "Staff",
+  Manager = "Manager",
+  Customer = "Customer",
+}
 
 export const AdminFormLogin = () => {
   const queryClient = useQueryClient();
+
+  let decode: DecodeData | null = null;
+
+  const token = Cookies.get("accessToken");
+
+  // const decode: DecodeData = jwtDecode<DecodeData>(token ?? "");
 
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
     resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
   const forgetPasswordDialog = useForgetPasswordDialog();
   const { isPending, mutate: loginMutation } = useMutation({
-    mutationFn: async ({ username, password }: { username: string, password: string }) => {
+    mutationFn: async ({
+      username,
+      password,
+    }: {
+      username: string;
+      password: string;
+    }) => {
       try {
         const response = await loginAction({ username, password });
+
+        console.log({ response });
 
         if (!response?.isSuccess) {
           if (response?.status === 400 || response?.status === 404) {
             if (response?.message.includes("banned.")) {
-              throw new Error("Tài khoản của bạn đã bị khóa")
+              throw new Error("Tài khoản của bạn đã bị khóa");
             }
-            throw new Error("Tài khoản hoặc mật khẩu không đúng")
+            throw new Error("Tài khoản hoặc mật khẩu không đúng");
           }
-          throw new Error(response?.message || "Lỗi hệ thống")
+          throw new Error(response?.message || "Lỗi hệ thống");
         }
       } catch (error: unknown) {
-        throw new Error(error instanceof Error ? error.message : "Unknown error");
+        throw new Error(
+          error instanceof Error ? error.message : "Unknown error"
+        );
       }
     },
     onSuccess: () => {
+      if (token) {
+        try {
+          decode = jwtDecode<DecodeData>(token);
+        } catch (error) {
+          console.error("Token không hợp lệ:", error);
+
+          decode = null;
+        }
+      }
+
       toast.success("Đăng nhập thành công", {
-        duration: 1000
+        duration: 1000,
       });
-      queryClient.invalidateQueries({ queryKey: ["authUser, mange"] })
-      window.location.href = "/admin/dashboard"
+
+      console.log(decode);
+
+      const userRole = decode?.Role.toUpperCase() as string;
+
+      console.log(userRole);
+
+      const admin = userRole === ROLES.Administrator.toUpperCase();
+      const manager = userRole === ROLES.Manager.toUpperCase();
+
+      queryClient.invalidateQueries({ queryKey: ["authUser, mange"] });
+
+      if (admin) {
+        window.location.href = "/admin/dashboard";
+      } else if (manager) {
+        window.location.href = "/manager";
+      }
     },
     onError: (error) => {
-      toast.error(error.message)
-    }
+      toast.error(error.message);
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof LoginSafeTypesHaveEmail>) => {
-    loginMutation({ username: values.email, password: values?.password })
+    loginMutation({ username: values.email, password: values?.password });
   };
 
   const styleInput =
@@ -75,6 +126,7 @@ export const AdminFormLogin = () => {
           form={form}
           name="password"
           disabled={isPending}
+          placeholder="Nhập mật khẩu"
           label="Mật khẩu"
           className={styleInput}
         />
@@ -83,7 +135,8 @@ export const AdminFormLogin = () => {
             onClick={() => forgetPasswordDialog.onOpen()}
             type="button"
             className="ml-auto text-base font-semibold hover:scale-105 cursor-pointer 
-              hover:font-bold hover:underline">
+              hover:font-bold hover:underline"
+          >
             Quên mật khẩu?
           </button>
         </div>
@@ -109,7 +162,7 @@ export const AdminFormLogin = () => {
           />
         </div>
       </FormValues>
-      {forgetPasswordDialog.isOpen && (<FormForgetPassword />)}
+      {forgetPasswordDialog.isOpen && <FormForgetPassword />}
     </div>
   );
 };

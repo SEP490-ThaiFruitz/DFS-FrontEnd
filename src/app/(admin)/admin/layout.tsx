@@ -1,4 +1,4 @@
-import { ROLES, checkRole } from "@/actions/checkrole";
+import { ROLES, checkRole, isAdmin } from "@/actions/checkrole";
 import { AppSidebar } from "@/components/_sidebar-configuration/app-sidebar";
 import { DynamicBreadcrumb } from "@/components/_sidebar-configuration/dynamic-breadcrumb";
 import { Separator } from "@/components/ui/separator";
@@ -7,44 +7,68 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { notFound } from "next/navigation";
 
 interface AdminRouteLayoutProps {
   children: React.ReactNode;
   auth: React.ReactNode;
 }
 
-const AdminRouteLayout = async ({
-  children,
-  auth
-}: AdminRouteLayoutProps) => {
-  const isAuth = await checkRole([ROLES.Administrator, ROLES.Manager, ROLES.Staff]);
+const AdminRouteLayout = async ({ children, auth }: AdminRouteLayoutProps) => {
+  const isAuth = await checkRole([
+    ROLES.Administrator,
+    ROLES.Manager,
+    ROLES.Staff,
+  ]);
+
+  const admin = await isAdmin();
+
+  if (!admin) {
+    return notFound();
+  }
 
   return (
-    <>
-      {isAuth ? (
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-              <div className="flex items-center gap-2 px-4">
-                <SidebarTrigger className="-ml-1" />
-                <Separator orientation="vertical" className="mr-2 h-4" />
-                <DynamicBreadcrumb />
-              </div>
-            </header>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <DynamicBreadcrumb />
+          </div>
+        </header>
 
-            <div className="flex flex-col">{children}</div>
-          </SidebarInset>
-        </SidebarProvider>
-      ) : (
-        <div className="absolute size-full h-screen overflow-hidden ">
-          {auth}
-        </div>
-      )}
-    </>
-
-    // <div className="absolute size-full h-screen overflow-hidden ">{auth}</div>
+        <div className="flex flex-col">{children}</div>
+      </SidebarInset>
+    </SidebarProvider>
   );
+
+  // return (
+  //   <>
+  //     {isAuth ? (
+  //       <SidebarProvider>
+  //         <AppSidebar />
+  //         <SidebarInset>
+  //           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+  //             <div className="flex items-center gap-2 px-4">
+  //               <SidebarTrigger className="-ml-1" />
+  //               <Separator orientation="vertical" className="mr-2 h-4" />
+  //               <DynamicBreadcrumb />
+  //             </div>
+  //           </header>
+
+  //           <div className="flex flex-col">{children}</div>
+  //         </SidebarInset>
+  //       </SidebarProvider>
+  //     ) : (
+  //       <div className="absolute size-full h-screen overflow-hidden ">
+  //         {auth}
+  //       </div>
+  //     )}
+  //   </>
+
+  // );
 };
 
 export default AdminRouteLayout;

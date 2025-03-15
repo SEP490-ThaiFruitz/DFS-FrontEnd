@@ -17,7 +17,10 @@ export const Logo = ({
   className,
 }: LogoProps) => {
   return (
-    <Link href={"/"} className={cn("flex flex-col items-center ", className)}>
+    <Link
+      href={"/"}
+      className={cn("hidden md:flex flex-col items-center ", className)}
+    >
       <Image
         src="/images/dried-fruit.webp"
         alt="Picture of the author"

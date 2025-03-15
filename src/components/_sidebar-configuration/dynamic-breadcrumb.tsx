@@ -20,7 +20,6 @@ export const DynamicBreadcrumb = () => {
 
   const breadcrumbs = path.map((item, index) => {
     return "/" + path.slice(0, index + 1).join("/");
-    // return "/".concat(item);
   });
 
   return (

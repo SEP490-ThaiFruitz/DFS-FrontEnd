@@ -42,7 +42,7 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      {label && (<SidebarGroupLabel>{label}</SidebarGroupLabel>)}
+      {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -54,7 +54,16 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton
-                  isActive={item.url === pathname}
+                  // isActive={item.url === pathname}
+
+                  className={` py-4 h-10 hover:scale-110 cursor-pointer transition duration-300 ${
+                    item.url === pathname && "bg-slate-400/50 font-bold"
+                  }
+                  
+                  
+                  
+                  
+                  `}
                   tooltip={item.title}
                 >
                   {item.icon && <item.icon />}
@@ -64,20 +73,32 @@ export function NavMain({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        asChild
-                        isActive={subItem.url === pathname}
-                        className="group-hover:bg-slate-100 my-2"
-                      >
-                        <Link href={subItem.url}>
-                          {subItem.icon && <subItem.icon />}
-                          <span>{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
+                  {item.items?.map((subItem) => {
+                    const isActive = subItem.url === pathname;
+
+                    return (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          asChild
+                          // isActive={subItem.url === pathname}
+                          className={` py-4 h-10 hover:scale-110 cursor-pointer transition duration-300 ${
+                            isActive && "bg-slate-400/50 font-bold"
+                          }`}
+                        >
+                          <Link href={subItem.url}>
+                            {subItem.icon && (
+                              <subItem.icon
+                                className={`${
+                                  isActive && "text-slate-700 font-bold"
+                                }`}
+                              />
+                            )}
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    );
+                  })}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>

@@ -7,7 +7,8 @@ interface ViewCardProductProps {
   productPrice: number;
   productQuantity: number;
   productImage: string;
-
+  productPercentage: number;
+  productDiscountPrice: number;
   className?: string;
 }
 export const ViewCardProduct = ({
@@ -15,6 +16,8 @@ export const ViewCardProduct = ({
   productImage,
   productPrice,
   productQuantity,
+  productPercentage,
+  productDiscountPrice,
   className,
 }: ViewCardProductProps) => {
   return (
@@ -32,11 +35,13 @@ export const ViewCardProduct = ({
           Số lượng: {productQuantity}
         </p>
       </div>
-      <p className="font-light text-slate-400 line-through">
-        {formatVND((productPrice * productQuantity * 15000).toFixed(2))}
-      </p>
+      {productPercentage > 0 && (
+        <p className="font-light text-slate-400 line-through">
+          {formatVND((productPrice * productQuantity).toFixed(2))}
+        </p>
+      )}
       <p className="font-medium">
-        {formatVND((productPrice * productQuantity * 10000).toFixed(2))}
+        {productPercentage > 0 ? formatVND((productDiscountPrice * productQuantity).toFixed(2)) : formatVND((productPrice * productQuantity).toFixed(2))}
       </p>
     </div>
   );

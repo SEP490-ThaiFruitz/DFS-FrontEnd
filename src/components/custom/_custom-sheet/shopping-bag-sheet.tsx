@@ -71,10 +71,6 @@ export const ShoppingBagSheet = () => {
 
   const cartCondition = cart?.length! > 0;
 
-  // console.log({ isLoading, isFetching });
-
-  // console.log(productCart);
-
   let total = 0;
 
   if (cart) {
@@ -90,8 +86,6 @@ export const ShoppingBagSheet = () => {
     );
   }
 
-  // console.log(cart);
-
   const increaseQuantity = useCartStore((state) => state.addOrder);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
@@ -101,28 +95,6 @@ export const ShoppingBagSheet = () => {
       decreaseQuantity(product);
     }
   };
-
-  // const discountPriceCondition = Number(product.variant) > 0;
-  // const discountPercentageToNumber = Number(product?.discountPercentage);
-  // const discountPriceToNumber = Number(product?.discountPrice);
-  // const MAX_LENGTH = 10;
-
-  // const [items, setItems] = useState<CartItem[]>(
-  //   products.map((product) => ({
-  //     ...product,
-  //     quantity: 1,
-  //   }))
-  // );
-
-  // const handleQuantityChange = (id: string, quantity: number) => {
-  //   setItems(
-  //     items.map((item) => (item.id === id ? { ...item, quantity } : item))
-  //   );
-  // };
-
-  // const handleRemove = (id: string) => {
-  //   setItems(items.filter((item) => item.id !== id));
-  // };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>

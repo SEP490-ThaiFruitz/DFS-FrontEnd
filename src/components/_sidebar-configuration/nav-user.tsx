@@ -1,17 +1,8 @@
-"use client"
+"use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  LogOut,
-} from "lucide-react"
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,32 +11,32 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { logOut } from "@/actions/auth"
-import { useRouter } from "next/navigation"
-import { Profile } from "@/types/types"
+} from "@/components/ui/sidebar";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { logOut } from "@/actions/auth";
+import { useRouter } from "next/navigation";
+import { Profile } from "@/types/types";
 
 export function NavUser() {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: user } = useQuery<Profile>({ queryKey: ["authUser, mange"] })
+  const { data: user } = useQuery<Profile>({ queryKey: ["authUser, mange"] });
 
   const getRoleLabel = (role: string | undefined) => {
     switch (role) {
-      case 'Administrator':
-        return 'Quản trị viên';
-      case 'Manager':
-        return 'Quản lí';
+      case "Administrator":
+        return "Quản trị viên";
+      case "Manager":
+        return "Quản lí";
       default:
-        return 'Nhân viên';
+        return "Nhân viên";
     }
   };
 
@@ -64,7 +55,9 @@ export function NavUser() {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs">{getRoleLabel(user?.role)}</span>
+                <span className="truncate text-xs">
+                  {getRoleLabel(user?.role)}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -83,7 +76,9 @@ export function NavUser() {
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user?.name}</span>
-                  <span className="truncate text-xs">{getRoleLabel(user?.role)}</span>
+                  <span className="truncate text-xs">
+                    {getRoleLabel(user?.role)}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -99,11 +94,14 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={async () => {
-              await logOut()
-              queryClient.removeQueries({ queryKey: ["authUser"] });
-              router.push("/admin/login");
-            }} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={async () => {
+                await logOut();
+                queryClient.removeQueries({ queryKey: ["authUser"] });
+                router.push("/manage");
+              }}
+              className="cursor-pointer"
+            >
               <LogOut />
               Đăng xuất
             </DropdownMenuItem>
@@ -111,5 +109,5 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

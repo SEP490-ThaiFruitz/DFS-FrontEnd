@@ -22,8 +22,8 @@ export const CartSummary = ({ cart }: CartSummaryProps) => {
     const subtotal = cart.reduce(
       (acc, item) =>
         acc +
-          (item.variant.discountPrice || item.variant.price) *
-            item.quantityOrder! ?? 0,
+          (item.variant?.discountPrice || item.variant.price) *
+            item.quantityOrder! || 0,
       0
     );
     const total = cart.reduce(

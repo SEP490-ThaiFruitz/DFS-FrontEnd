@@ -56,7 +56,7 @@ export const ViewCardProduct = ({
       {orderStatus === "Delivered" && isFeedback === false && (
         <Button onClick={() => setFeedback(orderItemId)} size={"sm"}>Đánh giá</Button>
       )}
-      <FeedbackDialog orderItemId={orderItemId} isOpen={feedback !== undefined} onClose={() => setFeedback(undefined)} />
+      <FeedbackDialog refreshKey={["Customer", "Orders"]} isUpdateFeedback={false} orderItemId={orderItemId} isOpen={feedback !== undefined} onClose={() => setFeedback(undefined)} />
     </div>
   );
 };

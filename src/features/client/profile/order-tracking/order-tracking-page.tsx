@@ -49,7 +49,7 @@ export const OrderTrackingPage = () => {
   ];
   const [orderId, setOrderId] = useState<string | undefined>(undefined);
   const [activeStatus, setActiveStatus] = useState("All");
-  const { data: orders, isPending, refetch } = useFetch<ApiResponse<PageResult<Order>>>(`/Orders/user/orders?pageIndex=1&pageSize=10&status=${activeStatus === "All" ? "" : activeStatus}`, ["Customer", "Orders"])
+  const { data: orders, isPending, refetch } = useFetch<ApiResponse<PageResult<Order>>>(`/Orders/user/orders?pageIndex=1&pageSize=100&status=${activeStatus === "All" ? "" : activeStatus}`, ["Customer", "Orders"])
 
   useEffect(() => {
     refetch()

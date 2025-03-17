@@ -17,6 +17,7 @@ import { Star } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FeedbackDialogProps {
+    orderItemId: string,
     feedback?: {
         id: string;
         rating: number;
@@ -26,7 +27,7 @@ interface FeedbackDialogProps {
     onClose: () => void;
 }
 
-export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProps) => {
+export const FeedbackDialog = ({ feedback, isOpen, onClose, orderItemId }: FeedbackDialogProps) => {
     const form = useForm<z.infer<typeof FeedbackSafeTypes>>({
         resolver: zodResolver(FeedbackSafeTypes),
         defaultValues: feedback || { content: "", star: 3 },
@@ -49,7 +50,7 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
 
     const title = (
         <div className="text-center">
-            {feedback ? "Cập nhật đánh giá sản phẩm" : "Thêm mới đánh giá sản phẩm"}
+            {feedback ? "Cập nhật đánh giá sản phẩm" : "Đánh giá sản phẩm"}
         </div>
     );
 

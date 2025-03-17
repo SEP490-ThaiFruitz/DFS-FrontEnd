@@ -1,14 +1,20 @@
+import { FeedbackDialog } from "@/components/custom/_custom-dialog/feedback-dialog";
+import { Button } from "@/components/ui/button";
 import { formatVND } from "@/lib/format-currency";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 interface ViewCardProductProps {
+  orderItemId: string;
   productName: string;
   productPrice: number;
   productQuantity: number;
   productImage: string;
   productPercentage: number;
   productDiscountPrice: number;
+  orderStatus: string,
+  isFeedback: boolean;
   className?: string;
 }
 export const ViewCardProduct = ({
@@ -18,8 +24,12 @@ export const ViewCardProduct = ({
   productQuantity,
   productPercentage,
   productDiscountPrice,
+  orderStatus,
+  isFeedback,
+  orderItemId,
   className,
 }: ViewCardProductProps) => {
+  const [feedback, setFeedback] = useState<string | undefined>(undefined);
   return (
     <div className={cn("flex items-center gap-4 my-2", className)}>
       <Image
@@ -43,6 +53,10 @@ export const ViewCardProduct = ({
       <p className="font-medium">
         {productPercentage > 0 ? formatVND((productDiscountPrice * productQuantity).toFixed(2)) : formatVND((productPrice * productQuantity).toFixed(2))}
       </p>
+      {orderStatus === "Delivered" && isFeedback === false && (
+        <Button onClick={() => setFeedback(orderItemId)} size={"sm"}>Đánh giá</Button>
+      )}
+      <FeedbackDialog orderItemId={orderItemId} isOpen={feedback !== undefined} onClose={() => setFeedback(undefined)} />
     </div>
   );
 };

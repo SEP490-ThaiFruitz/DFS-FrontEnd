@@ -30,6 +30,7 @@ interface Cancel {
 }
 
 interface OrderItem {
+    id: string;
     referenceId: string;
     name: string;
     image: string;
@@ -38,6 +39,7 @@ interface OrderItem {
     unitPrice: number;
     percentage: number;
     discountPrice: number;
+    isFeedback: boolean;
 }
 
 interface Delivery {
@@ -188,12 +190,13 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
                 </div>
                 <div className='xl:col-span-2'>
                     <OrderDetaiSummary
-                        feePrice={order?.value?.delivery.fee}
+                        orderStatus={order?.value?.orderStatus ?? ""}
+                        feePrice={order?.value?.delivery.fee ?? 0}
                         orderItems={order?.value?.orderItems ?? []}
                         shipCode={order?.value?.paymentMethod === "COD"}
-                        totalPrice={order?.value?.totalPrice}
-                        usedPoint={order?.value?.pointUsed}
-                        voucherPrice={order?.value?.voucherPrice ?? undefined}
+                        totalPrice={order?.value?.totalPrice ?? 0}
+                        usedPoint={order?.value?.pointUsed ?? 0}
+                        voucherPrice={order?.value?.voucherPrice ?? null}
                     />
                 </div>
             </div>

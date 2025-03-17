@@ -11,14 +11,15 @@ import { OrderItem } from '../order-tracking/product-list';
 
 
 interface OrderDetaiSummaryProps {
-    totalPrice: number | undefined,
-    feePrice: number | undefined,
-    voucherPrice: number | undefined,
-    usedPoint: number | undefined,
+    totalPrice: number,
+    feePrice: number,
+    voucherPrice: number | null,
+    usedPoint: number,
     orderItems: OrderItem[],
-    shipCode: boolean | undefined,
+    shipCode: boolean,
+    orderStatus: string,
 }
-const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, voucherPrice, shipCode }: Readonly<OrderDetaiSummaryProps>) => {
+const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, voucherPrice, shipCode, orderStatus }: Readonly<OrderDetaiSummaryProps>) => {
     const price = orderItems.reduce((total: number, item: OrderItem) =>
         total + ((item.discountPrice ?? item.unitPrice) * item.quantity),
         0);
@@ -77,7 +78,10 @@ const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, vouche
                             {orderItems.map((item: OrderItem) => (
                                 <ViewCardProduct
                                     key={item.referenceId}
+                                    orderItemId={item.id}
                                     productName={item.name}
+                                    isFeedback={item.isFeedback}
+                                    orderStatus={orderStatus}
                                     productPrice={item.unitPrice}
                                     productQuantity={item.quantity}
                                     productImage={item.image}

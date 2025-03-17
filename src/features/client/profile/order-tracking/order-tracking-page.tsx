@@ -39,17 +39,17 @@ const MotionCard = motion.div;
 
 export const OrderTrackingPage = () => {
   const status = [
-    { value: "all", label: "Tất cả", icon: Columns4 },
-    { value: "waiting", label: "Chờ xác nhận", icon: FileBox },
+    { value: "All", label: "Tất cả", icon: Columns4 },
+    { value: "Pending", label: "Chờ xác nhận", icon: FileBox },
     { value: "packing", label: "Đang đóng gói", icon: PackagePlus },
     { value: "delivering", label: "Đang vận chuyển", icon: Truck },
-    { value: "delivered", label: "Đã giao hàng", icon: PackageCheck },
+    { value: "Delivered", label: "Đã giao hàng", icon: PackageCheck },
     { value: "feedbacked", label: "Đã đánh giá", icon: MessageSquareQuote },
     { value: "canceled", label: "Đã hủy", icon: PackageX },
   ];
   const [orderId, setOrderId] = useState<string | undefined>(undefined);
-  const [activeStatus, setActiveStatus] = useState("all");
-  const { data: orders, isPending, refetch } = useFetch<ApiResponse<PageResult<Order>>>(`/Orders/user/orders?pageIndex=1&pageSize=10&status=${activeStatus === "all" ? "" : activeStatus}`, ["Customer", "Orders"])
+  const [activeStatus, setActiveStatus] = useState("All");
+  const { data: orders, isPending, refetch } = useFetch<ApiResponse<PageResult<Order>>>(`/Orders/user/orders?pageIndex=1&pageSize=10&status=${activeStatus === "All" ? "" : activeStatus}`, ["Customer", "Orders"])
 
   useEffect(() => {
     refetch()
@@ -102,7 +102,7 @@ export const OrderTrackingPage = () => {
               onClickDetail={() => setOrderId(order.orderId)} />
             <CardContent className="p-6 space-y-6">
               <ScrollArea className="h-[220px] -mx-6 px-6">
-                <ProductList orderItems={order.orderItems} />
+                <ProductList orderStatus={order.status} orderItems={order.orderItems} />
               </ScrollArea>
               <div className="grid gap-6 sm:grid-cols-2">
                 <ShippingInfo orderAddressDelivery={order.orderAddressDelivery} />

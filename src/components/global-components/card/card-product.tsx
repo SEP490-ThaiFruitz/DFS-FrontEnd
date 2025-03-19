@@ -5,19 +5,9 @@ import { formatNumberWithUnit, formatVND } from "@/lib/format-currency";
 import { truncate } from "lodash";
 import Image from "next/image";
 import { AdvancedColorfulBadges } from "../badge/advanced-badge";
-import { cartActions } from "@/actions/cart/use-cart";
-import { CART_KEY } from "@/app/key/comm-key";
-import { Heart } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { favoriteProduct } from "@/actions/favorite";
+
 import { toast } from "sonner";
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+
 import { Product, useCartStore } from "@/hooks/use-cart-store";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 

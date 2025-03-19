@@ -132,7 +132,7 @@ export const ShoppingBagSheet = () => {
         </div>
       </SheetTrigger>
 
-      <SheetContent className="min-w-full md:min-w-[600px] lg:min-w-[50%] rounded-2xl">
+      <SheetContent className="min-w-full md:min-w-[600px] lg:min-w-[50%] rounded-2xl mr-2">
         <SheetHeader>
           <SheetTitle>
             <div className="text-center">

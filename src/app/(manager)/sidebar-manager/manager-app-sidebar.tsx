@@ -91,7 +91,7 @@ const data = {
     },
     {
       name: "Báo cáo người dùng",
-      url: "/manager/user-report",
+      url: "/manager/users-report",
       icon: UserRound,
     },
     {

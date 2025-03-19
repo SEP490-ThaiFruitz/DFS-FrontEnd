@@ -25,6 +25,7 @@ import AnimatedLoadingSkeleton from "@/components/global-components/custom-skele
 import { getFavoriteProducts } from "@/actions/favorite";
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, Favorite, PageResult } from "@/types/types";
+import { Product } from "@/hooks/use-cart-store";
 
 const FormSchema = z.object({
   categories: z.array(z.string()).refine((value) => value.length > 0, {
@@ -56,16 +57,6 @@ interface Promotion {
   startDate: string;
   endDate: string;
   percentage: number;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  mainImageUrl: string;
-  variant: ProductVariant;
-  categoryId?: string;
-  quantitySold: number;
-  rating: number;
 }
 
 export function SidebarFilter() {
@@ -218,15 +209,7 @@ export function SidebarFilter() {
           {products?.value?.items?.length! > 0 ? (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
               {products?.value?.items?.map((product: Product) => (
-                <CardProduct
-                  key={product.id}
-                  isFavorite={
-                    Array.isArray(favorites)
-                      ? !!favorites.find((x) => x.productId === product.id)
-                      : false
-                  }
-                  {...product}
-                />
+                <CardProduct key={product.id} {...product} />
               ))}
             </div>
           ) : (

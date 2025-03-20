@@ -51,7 +51,7 @@ export default function RootLayout({
                   closeButton
                 />
                 {children}
-                {/* <FloatingButton /> */}
+                <FloatingButton />
               </NuqsAdapter>
             </DataProvider>
           </AuthProvider>

@@ -53,19 +53,6 @@ export const FloatingButton = () => {
     isLoading,
   } = useChat(props);
 
-  const SpaceChat = () => {
-    return (
-      <Chat
-        messages={messages}
-        input={input}
-        handleInputChange={handleInputChange}
-        handleSubmit={handleSubmit}
-        isGenerating={isLoading}
-        // stop={stop}
-      />
-    );
-  };
-
   return (
     <GooeyMenu
       className="fixed h-10 w-10 bottom-28 right-10 z-20 "
@@ -135,7 +122,7 @@ export function ChatDemo(props: ChatDemoProps) {
 
       <Chat
         className="grow"
-        messages={messages}
+        messages={messages as any}
         handleSubmit={handleSubmit}
         input={input}
         handleInputChange={handleInputChange}

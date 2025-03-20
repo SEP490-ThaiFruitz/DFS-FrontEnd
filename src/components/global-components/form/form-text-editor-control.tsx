@@ -3,7 +3,6 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { cn } from '@/lib/utils';
 import React, { useMemo } from 'react'
 import { FieldValues, Path, UseFormReturn } from 'react-hook-form';
-import JoditEditor from 'jodit-react';
 
 
 interface FormTextEditorControlProps<T extends FieldValues, K> {
@@ -58,11 +57,11 @@ export const FormTextEditorControl = <T extends FieldValues, K>({
                             {label}
                         </FormLabel>
                         <FormControl>
-                            <JoditEditor
+                            {/* <JoditEditor
                                 {...field}
                                 config={config}
                                 value={defaultValue ?? ""}
-                            />
+                            /> */}
                         </FormControl>
                         <FormMessage>{fieldState.error?.message}</FormMessage>
                     </FormItem>

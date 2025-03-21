@@ -12,6 +12,7 @@ import {
   UserRound,
   Settings,
   MessageSquareMore,
+  Fan,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -98,6 +99,11 @@ const data = {
       name: "Đánh giá",
       url: "/admin/feedback",
       icon: MessageSquareMore,
+    },
+    {
+      name: "Khuyến mãi",
+      url: "/admin/promotion",
+      icon: Fan ,
     },
   ],
 };

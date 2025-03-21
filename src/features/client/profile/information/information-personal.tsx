@@ -1,6 +1,7 @@
 "use client"
 import { updateProfile } from '@/actions/user'
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized'
+import { FormDateControl } from '@/components/global-components/form/form-date-control'
 import { FormInputControl } from '@/components/global-components/form/form-input-control'
 import { FormValues } from '@/components/global-components/form/form-values'
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner'
@@ -58,7 +59,7 @@ function InformationPersonal() {
         formData.append('name', values.name);
         formData.append('phone', values.phone);
         formData.append('email', values.email);
-        formData.append('birthday', values.birthday);
+        formData.append('birthday', values.birthday.toDateString());
         formData.append('gender', values.gender);
 
         updateProfileMutation(formData)
@@ -91,15 +92,14 @@ function InformationPersonal() {
                         label='Email'
                         defaultValue={user?.email}
                     />
-                    <FormInputControl
+                    <FormDateControl
+                        maxDate={new Date(new Date().setHours(0, 0, 0, 0))}
                         name='birthday'
                         form={form}
-                        type='Date'
-                        isMaxDate
                         disabled={isPending}
                         label='Ngày sinh nhật'
-                        classNameInput='block'
                         defaultValue={user?.birthday}
+                        require
                     />
                 </div>
                 <Controller

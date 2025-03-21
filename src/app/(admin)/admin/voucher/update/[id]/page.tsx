@@ -19,6 +19,7 @@ import { Voucher } from '../../page';
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 import { updateVoucher } from '@/actions/voucher';
 import { useEffect } from 'react';
+import { FormDateControl } from '@/components/global-components/form/form-date-control';
 
 function UpdateVoucherPage() {
   const { id } = useParams();
@@ -55,8 +56,8 @@ function UpdateVoucherPage() {
       discountType: 'Amount',
       moneyDiscount: '',
       percentDiscount: '',
-      startDate: '',
-      endDate: '',
+      startDate: undefined,
+      endDate: undefined,
       minimumOrderAmount: '',
       maximumDiscount: '',
       quantity: '',
@@ -75,11 +76,11 @@ function UpdateVoucherPage() {
         percentDiscount:
           voucher.value.discountType === 'Percentage' ? voucher.value.value?.toString() ?? '' : undefined,
         startDate: voucher.value.startDate
-          ? new Date(voucher.value.startDate).toISOString().split('T')[0]
-          : '',
+          ? new Date(voucher.value.startDate)
+          : undefined,
         endDate: voucher.value.endDate
-          ? new Date(voucher.value.endDate).toISOString().split('T')[0]
-          : '',
+          ? new Date(voucher.value.endDate)
+          : undefined,
         minimumOrderAmount: voucher.value.minimumOrderAmount?.toString() ?? '',
         maximumDiscount: voucher.value.maximumDiscountAmount?.toString() ?? '',
         quantity: voucher.value.quantity?.toString() ?? '',
@@ -99,8 +100,8 @@ function UpdateVoucherPage() {
       formData.append("value", values.percentDiscount)
     }
     formData.append("discountType", values.discountType)
-    formData.append("startDate", values.startDate)
-    formData.append("endDate", values.endDate)
+    formData.append("startDate", values.startDate.toUTCString())
+    formData.append("endDate", values.endDate.toUTCString())
     if (values.image) {
       formData.append("image", values.image[0])
     }
@@ -162,23 +163,19 @@ function UpdateVoucherPage() {
                 require
               /> : null}
               <div className='grid sm:grid-cols-2 gap-5'>
-                <FormInputControl
-                  isMinDate
-                  classNameInput="block"
+                <FormDateControl
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="startDate"
                   disabled={isPending}
-                  type="Date"
                   label="Ngày bắt đầu"
                   require
                 />
-                <FormInputControl
-                  isMinDate
-                  classNameInput="block"
+                <FormDateControl
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="endDate"
                   disabled={isPending}
-                  type="Date"
                   label="Ngày kết thúc"
                   require
                 />

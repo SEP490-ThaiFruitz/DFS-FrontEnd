@@ -20,13 +20,14 @@ import { FormInputControl } from "@/components/global-components/form/form-input
 import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import { toast } from "sonner"
+import { FormDateControl } from "@/components/global-components/form/form-date-control"
 
 export interface Certificate {
     id: string
     name: string
     agency: string
-    issueDate: string
-    expiryDate: string
+    issueDate: Date
+    expiryDate: Date | undefined
     details: string
 }
 
@@ -40,13 +41,12 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
     const [certificateDelete, setCertificateDelete] = useState<Certificate | undefined>(undefined)
     const [isCerticicateForm, setIsCerticicateForm] = useState<boolean>(false);
     const queryClient = useQueryClient();
-    const isCertificateValid = (expiryDate: string) => {
-        if (expiryDate === null)
+    const isCertificateValid = (expiryDate: Date | undefined) => {
+        if (expiryDate === undefined)
             return true;
 
         const today = new Date()
-        const expiry = new Date(expiryDate)
-        return today < expiry
+        return today < expiryDate
     }
 
     useEffect(() => {
@@ -74,7 +74,7 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
                     return expiryDate !== "" ? { ...baseData, expiryDate } : baseData;
                 };
 
-                const res = id === undefined 
+                const res = id === undefined
                     ? await createCertificate(createCertificateData())
                     : await updateCertificate(values)
                 if (!res?.isSuccess) {
@@ -107,8 +107,8 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
             id: cert.id,
             agency: cert.agency,
             name: cert.name,
-            issueDate: new Date(cert.issueDate).toISOString().split('T')[0],
-            expiryDate: cert.expiryDate ? new Date(cert.expiryDate).toISOString().split('T')[0] : "",
+            issueDate: cert.issueDate,
+            expiryDate: cert.expiryDate ?? undefined,
             details: cert.details
         })
     }
@@ -119,8 +119,8 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
             id: undefined,
             agency: "",
             name: "",
-            issueDate: "",
-            expiryDate: "",
+            issueDate: new Date(),
+            expiryDate: undefined,
             details: ""
         });
         setIsCerticicateForm(false)
@@ -183,7 +183,7 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
                                                 <span className="ml-2 font-medium">{formatTimeVietNam(new Date(cert.expiryDate))}</span>
                                             </div>
                                         )}
-                                        <p className="mt-3 text-sm text-muted-foreground line-clamp-2 cursor-help">{cert.details}</p>
+                                        <div className="mt-3 text-sm text-muted-foreground line-clamp-2 cursor-help">{cert.details}</div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -221,22 +221,18 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
                                 label='Cấp bởi'
                                 require
                             />
-                            <FormInputControl
+                            <FormDateControl
                                 form={form}
-                                type="date"
-                                disabled={isPending}
+                                disabled={form.formState.isSubmitting}
                                 name='issueDate'
                                 label='Ngày cấp'
-                                classNameInput="block"
                                 require
                             />
-                            <FormInputControl
+                            <FormDateControl
                                 form={form}
-                                type="date"
-                                disabled={isPending}
+                                disabled={form.formState.isSubmitting}
                                 name='expiryDate'
                                 label='Ngày hết hạn'
-                                classNameInput="block"
                             />
                             <FormTextareaControl
                                 form={form}

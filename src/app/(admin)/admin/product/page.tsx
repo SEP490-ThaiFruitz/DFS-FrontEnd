@@ -127,7 +127,7 @@ function ProductPage() {
     return (
         <div className='m-10'>
             <div className='flex justify-between items-center'>
-                <p className='text-2xl font-semibold leading-none tracking-tight'>Sản phẩm</p>
+                <div className='text-2xl font-semibold leading-none tracking-tight'>Sản phẩm</div>
                 <Link href="/admin/product/create">
                     <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
                         <CirclePlus />

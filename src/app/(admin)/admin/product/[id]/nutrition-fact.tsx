@@ -207,7 +207,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                     <TableCell>{fact.dailyValue}</TableCell>
                                     <TableCell className='flex space-x-3'>
                                         <Button type='button' size="sm" variant="ghost" onClick={(e) => {
-                                             e.preventDefault();
+                                            e.preventDefault();
                                             handleEdit(fact)
                                         }}>
                                             <Pencil className="h-4 w-4" />
@@ -220,7 +220,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                             )
                         )}
 
-                        {!nutritionFacts.some(x => x.id === 0) && (
+                        {editingId === null && !nutritionFacts.some(x => x.id === 0) && (
                             <TableRow>
                                 <TableCell colSpan={4}>
                                     <button type='button' disabled={isPending} onClick={handleAddNew} className="flex items-center justify-center sm:p-5 space-x-5 font-bold hover:cursor-pointer">

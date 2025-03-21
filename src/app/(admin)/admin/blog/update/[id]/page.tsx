@@ -19,7 +19,6 @@ import { updateBlog } from '@/actions/blog';
 import { BlogCategory } from '../../category/page';
 import { useParams } from 'next/navigation';
 import { Blog } from '../../page';
-import FormTextEditorControl from '@/components/global-components/form/form-text-editor-control';
 import { FormSwitchControl } from '@/components/global-components/form/form-switch-control';
 
 function UpdateBlogPage() {
@@ -113,15 +112,7 @@ function UpdateBlogPage() {
                                 classNameForm='flex items-center space-x-3'
                                 defaultValue={blog?.value?.isPublished}
                             />
-                            <FormTextEditorControl
-                                form={form}
-                                name="content"
-                                placeholder='Nhập mô tả'
-                                disabled={isPending}
-                                label="Nội dung bài viết"
-                                defaultValue={blog?.value?.content}
-                                require
-                            />
+     
                         </div>
                     </CardContent>
                 )}

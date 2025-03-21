@@ -57,6 +57,7 @@ export const FormPassword = <T extends FieldValues>({
       render={({ field, fieldState, formState }) => {
         const errorMessage =
           getErrorMessage(fieldState.error) ?? getErrorMessage(formError);
+        const value = field.value ?? "";
         return (
           <FormItem>
             <FormLabel className={cn("text-text-foreground", classNameLabel)}>
@@ -67,7 +68,7 @@ export const FormPassword = <T extends FieldValues>({
                 id={name}
                 typeInputPassword={typeInput}
                 onToggle={onToggleType}
-                field={field}
+                field={{ ...field, value }}
                 disabled={disabled}
                 className={cn("h-10", className)}
                 placeholder={placeholder}

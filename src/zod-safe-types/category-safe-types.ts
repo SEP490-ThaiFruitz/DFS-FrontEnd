@@ -28,6 +28,5 @@ export const UpdateCategorySafeTypes = z.object({
     }).refine(isNotEmpty, {
         message: "Vui lòng nhập mô tả loại sản phẩm",
     }),
-    isActive: z.boolean(),
     image: z.any()
 });

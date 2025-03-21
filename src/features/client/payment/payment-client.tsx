@@ -169,7 +169,7 @@ function PaymentClientPage() {
     CART_KEY.CARTS,
   ]);
 
-  const { addressData } = useData();
+  const { addresses } = useData();
 
   const { value } = useAuth();
 
@@ -264,7 +264,13 @@ function PaymentClientPage() {
           <div className="space-y-6">
             {/* Personal Information */}
 
-            <AddressChoices addressData={addressData} form={form} />
+            <AddressChoices
+              addressData={{
+                addresses: addresses.data?.value?.items,
+                isAddressPending: addresses.isLoading,
+              }}
+              form={form}
+            />
 
             {/* Delivery Method */}
             <Card>

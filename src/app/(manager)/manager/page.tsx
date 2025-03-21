@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -260,12 +260,36 @@ export default function RevenueDashboard() {
       reportRevenue.data?.value.totalOrder
     : 0;
 
+  // product performance chart data
+
+  const productPerformance = useMemo(() => {
+    if (reportRevenue?.data?.value?.topProductRevenueStatistics) {
+      return reportRevenue.data.value.topProductRevenueStatistics.map(
+        (product) => {
+          return {
+            productName: product.name,
+            revenue: product.revenue,
+            sold: product.quantity,
+          };
+        }
+      );
+    } else {
+      return [
+        {
+          productName: "No data",
+          revenue: 0,
+          sold: 0,
+        },
+      ];
+    }
+  }, [reportRevenue.data?.value?.topProductRevenueStatistics]);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/20">
       <div className="flex flex-col">
         <HeaderTitle />
         <main className="flex-1 space-y-6 p-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
             <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -554,7 +578,7 @@ export default function RevenueDashboard() {
                   </CardContent>
                 </Card>
 
-                <ProductPerformance />
+                <ProductPerformance productPerformance={productPerformance} />
               </div>
             </TabsContent>
             <TabsContent value="customers" className="space-y-4">

@@ -15,6 +15,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { truncate } from "lodash";
+
+interface ProductPerformanceProps {
+  productPerformance: typeof chartData;
+}
+
 const chartData = [
   { productName: "Sấy Khô Mít", sold: 450, revenue: 300 },
   { productName: "Sấy Khô Chuối", sold: 380, revenue: 420 },
@@ -35,7 +41,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ProductPerformance() {
+export function ProductPerformance({
+  productPerformance,
+}: ProductPerformanceProps) {
+  console.log(productPerformance);
+
   return (
     <Card className="col-span-1 md:col-span-1 cardStyle">
       <CardHeader>
@@ -46,17 +56,15 @@ export function ProductPerformance() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="w-full">
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={productPerformance}>
             <XAxis
               dataKey="productName"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              // tickFormatter={(value) => {
-              //   return new Date(value).toLocaleDateString("en-US", {
-              //     weekday: "short",
-              //   });
-              // }}
+              tickFormatter={(value) => {
+                return truncate(value, { length: 20 });
+              }}
             />
 
             <CartesianGrid strokeDasharray="2 2" vertical={false} />
@@ -64,14 +72,14 @@ export function ProductPerformance() {
             <Bar
               dataKey="revenue"
               stackId="revenue"
-              fill="var(--color-sold)"
+              fill="var(--color-revenue)"
               radius={[0, 0, 8, 8]}
             />
 
             <Bar
               dataKey="sold"
               stackId="revenue"
-              fill="var(--color-revenue)"
+              fill="var(--color-sold)"
               radius={[16, 16, 0, 0]}
             />
             <ChartTooltip

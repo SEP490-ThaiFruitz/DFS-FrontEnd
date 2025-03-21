@@ -23,6 +23,8 @@ export const CardProduct = ({ ...props }: Product) => {
 
   let variant = props.variant;
 
+  console.log(variant);
+
   return (
     <CardContainer
       className="inter-var cursor-pointer w-96 lg:w-[450px] motion-preset-pop hover:shadow-xl flex items-center justify-center hover:scale-105  rounded-3xl transition duration-300
@@ -58,7 +60,7 @@ export const CardProduct = ({ ...props }: Product) => {
           <Image
             // src="/images/third-background.png"
             src={props.mainImageUrl}
-            alt={`Image of ${name}`}
+            alt={`Image of ${props.name}`}
             height="1000"
             width="1000"
             className="h-60 w-full object-cover rounded-xl z-40  group-hover/card:scale-105  cursor-pointer transition duration-300"
@@ -98,29 +100,15 @@ export const CardProduct = ({ ...props }: Product) => {
               as="h2"
               className="text-lg font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
             >
-              {formatVND(variant.price)}
+              {formatVND(variant?.price?.toString())}
             </CardItem>
           </CardItem>
 
           <CardItem translateY={10} translateZ={10} as="h4">
             {/* <StatusButton handleAddToCart={() => {}} /> */}
             <StatusButton
-              // handleAddToCart={() => {
-              //   cartActions.addToCart({
-              //     itemType: "single",
-              //     referenceId: variant.productVariantId,
-              //     quantity: 1,
-              //   });
-              //   queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
-              // }}
               handleAddToCart={(e) =>
                 addOrder({
-                  // id,
-                  // name,
-                  // mainImageUrl,
-                  // variant,
-                  // rating,
-                  // quantitySold,
                   ...props,
                 })
               }

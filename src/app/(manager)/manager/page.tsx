@@ -33,6 +33,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   Area,
   AreaChart,
@@ -45,6 +52,44 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { ProductPerformance } from "./product-performance-chart";
+import { formatVND } from "@/lib/format-currency";
+import { format } from "date-fns";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { ApiResponse } from "@/types/types";
+import { DataTable } from "@/components/global-components/data-table/data-table";
+import { productTopRevenueColumn } from "@/features/manager/report-revenue/product-top-revenue-column";
+import { REPORT_KEY } from "@/app/key/manager-key";
+import { TotalCard } from "./components/total-card";
+
+type TopProductRevenueStatistics = {
+  type: "Single" | "Combo";
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+  revenue: number;
+  revenueDiscount: number;
+};
+
+type TopCustomerRevenueStatistics = {
+  userName: string;
+  email: string;
+  phone: string;
+  address: string;
+  moneySpend: number;
+  lastBuyDate: string;
+  quantityOfOrder: number;
+};
+
+type RevenueData = {
+  totalRevenue: number;
+  totalOrder: number;
+  numberOfProductSold: number;
+  topProductRevenueStatistics: TopProductRevenueStatistics[];
+  topCustomerRevenueStatistics: TopCustomerRevenueStatistics[];
+};
 
 export default function RevenueDashboard() {
   const [timeRange, setTimeRange] = useState("month");
@@ -149,13 +194,13 @@ export default function RevenueDashboard() {
 
   // Revenue chart data
   const revenueData = [
-    { name: "Tháng 1", revenue: 12500 },
-    { name: "Tháng 2", revenue: 18200 },
-    { name: "Tháng 3", revenue: 15800 },
-    { name: "Tháng 4", revenue: 14300 },
-    { name: "Tháng 5", revenue: 19500 },
-    { name: "Tháng 6", revenue: 22800 },
-    { name: "Tháng 7", revenue: 21400 },
+    { date: "Tháng 1", revenue: 12500 },
+    { date: "Tháng 2", revenue: 18200 },
+    { date: "Tháng 3", revenue: 15800 },
+    { date: "Tháng 4", revenue: 14300 },
+    { date: "Tháng 5", revenue: 19500 },
+    { date: "Tháng 6", revenue: 22800 },
+    { date: "Tháng 7", revenue: 21400 },
   ];
 
   // Product performance chart data
@@ -169,15 +214,6 @@ export default function RevenueDashboard() {
     ),
     units: product.sold,
   }));
-
-  const formatCurrency = (value: any) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
 
   const HeaderTitle = () => {
     return (
@@ -202,13 +238,35 @@ export default function RevenueDashboard() {
     );
   };
 
+  const currentDate = format(new Date(), "yyyy-MM-dd");
+
+  const reportRevenue = useFetch<ApiResponse<RevenueData>>(
+    `/Statistics/manager/report-revenue?fromDate=2025-01-22&toDate=${currentDate}`,
+    [REPORT_KEY.REPORT_REVENUE]
+  );
+  // console.log(currentDate);
+
+  console.log(reportRevenue);
+
+  const chartConfig = {
+    revenue: {
+      label: "Doanh thu",
+      color: "hsl(var(--chart-5))",
+    },
+  } satisfies ChartConfig;
+
+  const sumOrder = reportRevenue.data?.value
+    ? reportRevenue.data.value.totalRevenue /
+      reportRevenue.data?.value.totalOrder
+    : 0;
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/20">
       <div className="flex flex-col">
         <HeaderTitle />
         <main className="flex-1 space-y-6 p-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+            <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Tổng doanh thu
@@ -216,8 +274,10 @@ export default function RevenueDashboard() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalRevenue}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold">
+                  {formatVND(reportRevenue.data?.value?.totalRevenue ?? 0)}
+                </div>
+                {/* <p className="text-xs text-muted-foreground">
                   <span
                     className={`inline-flex items-center ${
                       stats.revenueChange.startsWith("+")
@@ -233,13 +293,30 @@ export default function RevenueDashboard() {
                     {stats.revenueChange}
                   </span>{" "}
                   Từ kỳ trước
-                </p>
+                </p> */}
               </CardContent>
             </Card>
-            <Card>
+            <TotalCard
+              title="Tổng đơn hàng"
+              value={reportRevenue?.data?.value?.totalOrder ?? 0}
+              icon={ShoppingCart}
+            />
+
+            <TotalCard
+              title="Số lượng sản phẩm đã bán"
+              value={reportRevenue?.data?.value?.numberOfProductSold ?? 0}
+              icon={ShoppingCart}
+            />
+
+            <TotalCard
+              title="Trung bình mỗi đơn hàng"
+              value={formatVND(sumOrder)}
+              icon={ShoppingCart}
+            />
+            {/* <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Total Orders
+                  Tổng đơn hàng
                 </CardTitle>
                 <ShoppingCart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
@@ -263,8 +340,8 @@ export default function RevenueDashboard() {
                   Từ kỳ trước
                 </p>
               </CardContent>
-            </Card>
-            <Card>
+            </Card> */}
+            {/* <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Trung bình mỗi đơn hàng
@@ -291,8 +368,8 @@ export default function RevenueDashboard() {
                   từ kỳ trước
                 </p>
               </CardContent>
-            </Card>
-            <Card>
+            </Card> */}
+            <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Tỷ lệ chuyển đổi
@@ -323,7 +400,7 @@ export default function RevenueDashboard() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="col-span-1 md:col-span-2">
+            <Card className="col-span-1 md:col-span-2 cardStyle">
               <CardHeader>
                 <CardTitle>Tổng quan doanh thu</CardTitle>
                 <CardDescription>
@@ -331,44 +408,53 @@ export default function RevenueDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
-                      data={revenueData}
-                      margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                      }}
-                    >
-                      <defs>
-                        <linearGradient
-                          id="colorRevenue"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="hsl(var(--primary))"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="hsl(var(--primary))"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="name" />
-                      <YAxis tickFormatter={formatCurrency} width={80} />
-                      <Tooltip
+                {/* <div className="h-[300px]"> */}
+                <ChartContainer
+                  config={chartConfig}
+                  className="h-[300px] w-full"
+                >
+                  <AreaChart
+                    accessibilityLayer
+                    data={revenueData}
+                    margin={{
+                      top: 10,
+                      right: 30,
+                      left: 0,
+                      bottom: 0,
+
+                      // left: 12,
+                      // right: 12,
+                    }}
+                    // className="h-[300px]"
+                  >
+                    <defs>
+                      <linearGradient
+                        id="colorRevenue"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="hsl(var(--primary))"
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="hsl(var(--primary))"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
+                    <CartesianGrid vertical={false} />
+                    <XAxis dataKey="date" />
+                    <YAxis tickFormatter={formatVND} width={80} />
+                    {/* <Tooltip
                         formatter={(value) => [
                           formatCurrency(value),
-                          "Revenue",
+                          "Doanh thu",
                         ]}
                         contentStyle={{
                           backgroundColor: "hsl(var(--background))",
@@ -376,17 +462,22 @@ export default function RevenueDashboard() {
                           borderColor: "hsl(var(--border))",
                           borderRadius: "var(--radius)",
                         }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="revenue"
-                        stroke="hsl(var(--primary))"
-                        fillOpacity={1}
-                        fill="url(#colorRevenue)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
+                      /> */}
+
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent indicator="line" />}
+                    />
+                    <Area
+                      type="natural"
+                      dataKey="revenue"
+                      stroke="var(--color-revenue)"
+                      fillOpacity={0.4}
+                      fill="var(--color-revenue)"
+                    />
+                  </AreaChart>
+                </ChartContainer>
+                {/* </div> */}
               </CardContent>
             </Card>
           </div>
@@ -400,7 +491,7 @@ export default function RevenueDashboard() {
             </div>
             <TabsContent value="products" className="space-y-4">
               <div className="grid gap-6 md:grid-cols-2">
-                <Card className="col-span-1 md:col-span-1">
+                <Card className="col-span-1 md:col-span-1 cardStyle">
                   <CardHeader>
                     <CardTitle>Top 5 sản phẩm doanh thu</CardTitle>
                     <CardDescription>
@@ -408,7 +499,7 @@ export default function RevenueDashboard() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Table>
+                    {/* <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Sản Phẩm</TableHead>
@@ -449,85 +540,25 @@ export default function RevenueDashboard() {
                           </TableRow>
                         ))}
                       </TableBody>
-                    </Table>
+                    </Table> */}
+
+                    <DataTable
+                      columns={productTopRevenueColumn}
+                      data={
+                        reportRevenue.data?.value
+                          ?.topProductRevenueStatistics || []
+                      }
+                      searchFiled="name"
+                      isLoading={reportRevenue.isLoading}
+                    />
                   </CardContent>
                 </Card>
-                <Card className="col-span-1 md:col-span-1">
-                  <CardHeader>
-                    <CardTitle>Product Performance</CardTitle>
-                    <CardDescription>
-                      Revenue distribution by product
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[300px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={productPerformanceData}
-                          margin={{
-                            top: 20,
-                            right: 30,
-                            left: 20,
-                            bottom: 60,
-                          }}
-                        >
-                          <CartesianGrid
-                            strokeDasharray="3 3"
-                            vertical={false}
-                          />
-                          <XAxis
-                            dataKey="name"
-                            angle={-45}
-                            textAnchor="end"
-                            height={60}
-                            interval={0}
-                          />
-                          <YAxis
-                            yAxisId="left"
-                            orientation="left"
-                            tickFormatter={formatCurrency}
-                            width={80}
-                          />
-                          <YAxis
-                            yAxisId="right"
-                            orientation="right"
-                            tickFormatter={(value) => `${value} units`}
-                            width={80}
-                          />
-                          <Tooltip
-                            formatter={(value, name) => {
-                              if (name === "revenue")
-                                return [formatCurrency(value), "Revenue"];
-                              return [value, "Units Sold"];
-                            }}
-                            contentStyle={{
-                              backgroundColor: "hsl(var(--background))",
-                              borderColor: "hsl(var(--border))",
-                              borderRadius: "var(--radius)",
-                            }}
-                          />
-                          <Legend />
-                          <Bar
-                            yAxisId="left"
-                            dataKey="revenue"
-                            fill="hsl(var(--primary))"
-                            name="Revenue"
-                          />
-                          <Bar
-                            yAxisId="right"
-                            dataKey="units"
-                            fill="hsl(var(--secondary))"
-                            name="Units Sold"
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
+
+                <ProductPerformance />
               </div>
             </TabsContent>
             <TabsContent value="customers" className="space-y-4">
-              <Card>
+              <Card className="cardStyle">
                 <CardHeader>
                   <CardTitle>Top 5 Khách hàng</CardTitle>
                   <CardDescription>
@@ -535,7 +566,17 @@ export default function RevenueDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Table>
+                  <DataTable
+                    columns={productTopRevenueColumn}
+                    data={
+                      reportRevenue.data?.value?.topProductRevenueStatistics ||
+                      []
+                    }
+                    searchFiled="name"
+                    isLoading={reportRevenue.isLoading}
+                  />
+
+                  {/* <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Khách hàng</TableHead>
@@ -562,7 +603,7 @@ export default function RevenueDashboard() {
                         </TableRow>
                       ))}
                     </TableBody>
-                  </Table>
+                  </Table> */}
                 </CardContent>
               </Card>
             </TabsContent>

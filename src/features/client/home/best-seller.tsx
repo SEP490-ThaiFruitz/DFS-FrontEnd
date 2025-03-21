@@ -28,7 +28,7 @@ const BestSellter = ({ favorites }: Readonly<BestSellterProps>) => {
     addOrder(product);
   };
 
-  // console.log({ products });
+  console.log({ products });
   return (
     <div className="p-10 sm:p-20">
       <div className="font-bold text-2xl mb-5">Danh sách sản phẩm bán chạy</div>

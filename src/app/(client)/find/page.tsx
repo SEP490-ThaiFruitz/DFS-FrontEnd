@@ -40,12 +40,13 @@ const FindPage = () => {
   const [editorState, setEditorState] =
     useState<SerializedEditorState>(initialValue);
 
-  console.log(editorState);
+  console.log(JSON.stringify(editorState));
 
   return (
     <div className="h-auto py-20">
       {/* <SidebarFilter /> */}
       <Editor
+        maxLength={2500}
         editorSerializedState={editorState}
         onSerializedChange={(value) => setEditorState(value)}
       />

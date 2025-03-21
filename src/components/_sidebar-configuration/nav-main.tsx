@@ -55,15 +55,9 @@ export function NavMain({
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton
                   // isActive={item.url === pathname}
-
-                  className={` py-4 h-10 hover:scale-110 cursor-pointer transition duration-300 ${
-                    item.url === pathname && "bg-slate-400/50 font-bold"
-                  }
-                  
-                  
-                  
-                  
-                  `}
+                  className={`py-4 h-10 hover:scale-110 cursor-pointer transition mx-auto duration-300 ${
+                    item.url === pathname && "bg-slate-400/25 font-bold"
+                  }`}
                   tooltip={item.title}
                 >
                   {item.icon && <item.icon />}

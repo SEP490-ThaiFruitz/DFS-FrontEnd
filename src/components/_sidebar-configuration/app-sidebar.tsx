@@ -23,12 +23,9 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Logo } from "../global-components/logo";
-import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "@/actions/user";
-import { ApiResponse, Profile } from "@/types/types";
-import { toast } from "sonner";
 
 const data = {
   navMain: [
@@ -103,28 +100,13 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // useQuery({
-  //   queryKey: ["authUser, mange"],
-  //   queryFn: async () => {
-  //     try {
-  //       const res = await getProfile();
-  //       if (res?.isSuccess) {
-  //         const data: ApiResponse<Profile> = res?.data
-  //         return data.value;
-  //       }
-  //       return null;
-  //     } catch (error) {
-  //       console.log(error);
-  //       toast.error("Lỗi hệ thống")
-  //     }
-  //   },
-  //   retry: false,
-  //   initialData: null,
-  // });
+  const sidebar = useSidebar();
+
+  console.log(sidebar);
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props} variant="inset">
       <SidebarHeader>
-        <Logo />
+        <Logo height={100} width={100} isTextHidden={!sidebar.open} />
       </SidebarHeader>
       <SidebarContent>
         <NavProjects projects={data.projects} />

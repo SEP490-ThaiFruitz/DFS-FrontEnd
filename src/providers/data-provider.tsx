@@ -9,35 +9,18 @@ import Cookies from "js-cookie";
 import { cookies } from "next/headers";
 import { CART_KEY } from "@/app/key/comm-key";
 import { AddressTypes } from "@/types/address.types";
+import { Product } from "@/hooks/use-cart-store";
+import { UseQueryResult } from "@tanstack/react-query";
+import { USER_KEY } from "@/app/key/user-key";
 
 export type DataContextType = {
-  productList: ProductTransformType | undefined;
+  products: UseQueryResult<ProductTransformType, Error>;
 
-  addressData: {
-    isAddressPending: boolean;
-    addresses: AddressTypes[] | undefined;
-  };
+  addresses: UseQueryResult<ApiResponse<PageResult<AddressTypes>>, Error>;
 };
 
-export interface ProductTypes {
-  id: string;
-  name: string;
-  description: string;
-  origin: string;
-  mainImageUrl: string;
-
-  productVariantSummaryResponse: {
-    productVariantId: string;
-    sku: string;
-    netWeight: number;
-    price: number;
-    discountPrice: number | null;
-    stockQuantity: number;
-  };
-}
-
-export type ProductTransformType = Omit<PageResult<ProductTypes>, "items"> & {
-  value: { items: ProductTypes[] };
+export type ProductTransformType = Omit<PageResult<Product>, "items"> & {
+  value: { items: Product[] };
 };
 
 export const DataContext = createContext<DataContextType | null>(null);
@@ -52,31 +35,18 @@ export const useData = () => {
 
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   // const { token } = useAuth();
-
   const cookieToken = Cookies.get("accessToken");
 
-  const {
-    isLoading,
-    data: productList,
-    error,
-    isError,
-  } = useFetch<ProductTransformType>("/Products", [ProductKey.PRODUCTS]);
-
-  const {
-    isLoading: isLoadingCart,
-    data: carts,
-    error: errorCart,
-    isError: isErrorCart,
-  } = useFetch<ProductTransformType>("/Carts", [CART_KEY.CARTS]);
-
-  const {
-    isLoading: isAddressLoading,
-    data: addressesDelivery,
-    error: errorAddress,
-    isError: isErrorAddress,
-  } = useFetch<ApiResponse<PageResult<AddressTypes>>>("/Addresses", [
-    "address",
+  const products = useFetch<ProductTransformType>("/Products", [
+    ProductKey.PRODUCTS,
   ]);
+
+  // console.log(productList);
+
+  const addresses = useFetch<ApiResponse<PageResult<AddressTypes>>>(
+    "/Addresses",
+    [USER_KEY.ADDRESS]
+  );
 
   // console.log({ productList });
   // console.log({ carts });
@@ -89,11 +59,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <DataContext.Provider
       value={{
-        productList,
-        addressData: {
-          isAddressPending: isAddressLoading,
-          addresses: addressesDelivery?.value?.items! || [],
-        },
+        products,
+        addresses,
       }}
     >
       {children}

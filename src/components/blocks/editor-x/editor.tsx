@@ -30,11 +30,14 @@ export function Editor({
   editorSerializedState,
   onChange,
   onSerializedChange,
+  maxLength,
 }: {
   editorState?: EditorState;
   editorSerializedState?: SerializedEditorState;
   onChange?: (editorState: EditorState) => void;
   onSerializedChange?: (editorSerializedState: SerializedEditorState) => void;
+
+  maxLength?: number;
 }) {
   return (
     <div className="overflow-hidden rounded-lg border bg-background shadow">
@@ -50,7 +53,7 @@ export function Editor({
         <TooltipProvider>
           <SharedAutocompleteContext>
             <FloatingLinkContext>
-              <Plugins />
+              <Plugins maxLength={maxLength} />
 
               <OnChangePlugin
                 ignoreSelectionChange={true}

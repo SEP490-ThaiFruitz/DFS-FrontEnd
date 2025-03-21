@@ -34,6 +34,18 @@ export const AdminFormLogin = () => {
 
   // const decode: DecodeData = jwtDecode<DecodeData>(token ?? "");
 
+  if (token) {
+    try {
+      decode = jwtDecode<DecodeData>(token);
+    } catch (error) {
+      console.log("Token không hợp lệ:", error);
+
+      decode = null;
+    }
+  }
+
+  console.log({ decode });
+
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
     resolver: zodResolver(LoginSafeTypesHaveEmail),
   });
@@ -67,16 +79,6 @@ export const AdminFormLogin = () => {
       }
     },
     onSuccess: () => {
-      if (token) {
-        try {
-          decode = jwtDecode<DecodeData>(token);
-        } catch (error) {
-          console.error("Token không hợp lệ:", error);
-
-          decode = null;
-        }
-      }
-
       toast.success("Đăng nhập thành công", {
         duration: 1000,
       });

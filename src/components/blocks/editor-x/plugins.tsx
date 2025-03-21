@@ -95,11 +95,13 @@ import { TypingPerfPlugin } from "@/components/editor/plugins/typing-pref-plugin
 import { MARKDOWN_TRANSFORMERS } from "@/components/editor/transformers/markdown-transformers";
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable";
 
-interface PluginsProps {}
+interface PluginsProps {
+  maxLength?: number;
+}
 export const placeholder = "Press / for commands...";
-const maxLength = 500;
+// const maxLength = 500;
 
-export function Plugins({}: PluginsProps) {
+export function Plugins({ maxLength = 500 }: PluginsProps) {
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
 

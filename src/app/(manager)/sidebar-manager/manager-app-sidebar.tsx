@@ -23,6 +23,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/actions/user";
@@ -39,10 +40,6 @@ const data = {
       items: [
         {
           title: "Các đơn hàng",
-          url: "#",
-        },
-        {
-          title: "",
           url: "#",
         },
       ],
@@ -91,7 +88,7 @@ const data = {
     },
     {
       name: "Báo cáo người dùng",
-      url: "/manager/user-report",
+      url: "/manager/users-report",
       icon: UserRound,
     },
     {
@@ -110,10 +107,18 @@ const data = {
 export function ManagerAppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const sidebar = useSidebar();
+
+
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      variant="inset"
+      // classNameChildren="border-[2px] rounded-3xl border-gray-200 shadow-lg bg-zinc-50"
+    >
       <SidebarHeader>
-        <Logo />
+        <Logo height={100} width={100} isTextHidden={!sidebar.open} />
       </SidebarHeader>
       <SidebarContent>
         <NavProjects projects={data.projects} />

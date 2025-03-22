@@ -58,7 +58,7 @@ export function UserStatisticChart() {
   }, []);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col cardStyle">
       <CardHeader className="items-center pb-0">
         <CardTitle>Lượng truy cập</CardTitle>
         <CardDescription>Từ tháng 3 - 2024</CardDescription>

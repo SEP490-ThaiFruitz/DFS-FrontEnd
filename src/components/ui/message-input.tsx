@@ -1,14 +1,25 @@
 "use client";
 
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, Paperclip, Square, X } from "lucide-react";
+import {
+  ArrowUp,
+  Info,
+  Loader2,
+  Mic,
+  Paperclip,
+  Square,
+  X,
+} from "lucide-react";
 import { omit } from "remeda";
 
 import { cn } from "@/lib/utils";
+import { useAudioRecording } from "@/hooks/use-audio-recording";
 import { useAutosizeTextArea } from "@/hooks/use-autosize-textarea";
+import { AudioVisualizer } from "@/components/ui/audio-visualizer";
 import { Button } from "@/components/ui/button";
 import { FilePreview } from "@/components/ui/file-preview";
+import { InterruptPrompt } from "@/components/ui/interrupt-prompt";
 
 interface MessageInputBaseProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -17,6 +28,7 @@ interface MessageInputBaseProps
   stop?: () => void;
   isGenerating: boolean;
   enableInterrupt?: boolean;
+  transcribeAudio?: (blob: Blob) => Promise<string>;
 }
 
 interface MessageInputWithoutAttachmentProps extends MessageInputBaseProps {
@@ -41,10 +53,26 @@ export function MessageInput({
   stop,
   isGenerating,
   enableInterrupt = true,
+  transcribeAudio,
   ...props
 }: MessageInputProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [showInterruptPrompt, setShowInterruptPrompt] = useState(false);
+
+  const {
+    isListening,
+    isSpeechSupported,
+    isRecording,
+    isTranscribing,
+    audioStream,
+    toggleListening,
+    stopRecording,
+  } = useAudioRecording({
+    transcribeAudio,
+    onTranscriptionComplete: (text) => {
+      props.onChange?.({ target: { value: text } } as any);
+    },
+  });
 
   useEffect(() => {
     if (!isGenerating) {
@@ -139,13 +167,22 @@ export function MessageInput({
     onKeyDownProp?.(event);
   };
 
-  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(
+    null
+  ) as React.RefObject<HTMLTextAreaElement>;
+  const [textAreaHeight, setTextAreaHeight] = useState<number>(0);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      setTextAreaHeight(textAreaRef.current.offsetHeight);
+    }
+  }, [props.value]);
 
   const showFileList =
     props.allowAttachments && props.files && props.files.length > 0;
 
   useAutosizeTextArea({
-    ref: textAreaRef as RefObject<HTMLTextAreaElement>,
+    ref: textAreaRef,
     maxHeight: 240,
     borderWidth: 1,
     dependencies: [props.value, showFileList],
@@ -165,49 +202,58 @@ export function MessageInput({
         />
       )}
 
-      <textarea
-        aria-label="Write your prompt here"
-        placeholder={placeholder}
-        ref={textAreaRef}
-        onPaste={onPaste}
-        onKeyDown={onKeyDown}
-        className={cn(
-          "z-10 w-full grow resize-none rounded-xl border border-input bg-background p-3 pr-24 text-sm ring-offset-background transition-[border] placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
-          showFileList && "pb-16",
-          className
-        )}
-        {...(props.allowAttachments
-          ? omit(props, ["allowAttachments", "files", "setFiles"])
-          : omit(props, ["allowAttachments"]))}
+      <RecordingPrompt
+        isVisible={isRecording}
+        onStopRecording={stopRecording}
       />
 
-      {props.allowAttachments && (
-        <div className="absolute inset-x-3 bottom-0 z-20 overflow-x-scroll py-3">
-          <div className="flex space-x-3">
-            <AnimatePresence mode="popLayout">
-              {props.files?.map((file) => {
-                return (
-                  <FilePreview
-                    key={file.name + String(file.lastModified)}
-                    file={file}
-                    onRemove={() => {
-                      props.setFiles((files) => {
-                        if (!files) return null;
+      <div className="relative flex w-full items-center space-x-2">
+        <div className="relative flex-1">
+          <textarea
+            aria-label="Write your prompt here"
+            placeholder={placeholder}
+            ref={textAreaRef}
+            onPaste={onPaste}
+            onKeyDown={onKeyDown}
+            className={cn(
+              "z-10 w-full grow resize-none rounded-xl border border-input bg-background p-3 pr-24 text-sm ring-offset-background transition-[border] placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+              showFileList && "pb-16",
+              className
+            )}
+            {...(props.allowAttachments
+              ? omit(props, ["allowAttachments", "files", "setFiles"])
+              : omit(props, ["allowAttachments"]))}
+          />
 
-                        const filtered = Array.from(files).filter(
-                          (f) => f !== file
-                        );
-                        if (filtered.length === 0) return null;
-                        return filtered;
-                      });
-                    }}
-                  />
-                );
-              })}
-            </AnimatePresence>
-          </div>
+          {props.allowAttachments && (
+            <div className="absolute inset-x-3 bottom-0 z-20 overflow-x-scroll py-3">
+              <div className="flex space-x-3">
+                <AnimatePresence mode="popLayout">
+                  {props.files?.map((file) => {
+                    return (
+                      <FilePreview
+                        key={file.name + String(file.lastModified)}
+                        file={file}
+                        onRemove={() => {
+                          props.setFiles((files) => {
+                            if (!files) return null;
+
+                            const filtered = Array.from(files).filter(
+                              (f) => f !== file
+                            );
+                            if (filtered.length === 0) return null;
+                            return filtered;
+                          });
+                        }}
+                      />
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       <div className="absolute right-3 top-3 z-20 flex gap-2">
         {props.allowAttachments && (
@@ -223,6 +269,18 @@ export function MessageInput({
             }}
           >
             <Paperclip className="h-4 w-4" />
+          </Button>
+        )}
+        {isSpeechSupported && (
+          <Button
+            type="button"
+            variant="outline"
+            className={cn("h-8 w-8", isListening && "text-primary")}
+            aria-label="Voice input"
+            size="icon"
+            onClick={toggleListening}
+          >
+            <Mic className="h-4 w-4" />
           </Button>
         )}
         {isGenerating && stop ? (
@@ -249,47 +307,18 @@ export function MessageInput({
       </div>
 
       {props.allowAttachments && <FileUploadOverlay isDragging={isDragging} />}
+
+      <RecordingControls
+        isRecording={isRecording}
+        isTranscribing={isTranscribing}
+        audioStream={audioStream}
+        textAreaHeight={textAreaHeight}
+        onStopRecording={stopRecording}
+      />
     </div>
   );
 }
 MessageInput.displayName = "MessageInput";
-
-interface InterruptPromptProps {
-  isOpen: boolean;
-  close: () => void;
-}
-
-function InterruptPrompt({ isOpen, close }: InterruptPromptProps) {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ top: 0, filter: "blur(5px)" }}
-          animate={{
-            top: -40,
-            filter: "blur(0px)",
-            transition: {
-              type: "spring",
-              filter: { type: "tween" },
-            },
-          }}
-          exit={{ top: 0, filter: "blur(5px)" }}
-          className="absolute left-1/2 flex -translate-x-1/2 overflow-hidden whitespace-nowrap rounded-full border bg-background py-1 text-center text-sm text-muted-foreground"
-        >
-          <span className="ml-2.5">Press Enter again to interrupt</span>
-          <button
-            className="ml-1 mr-2.5 flex items-center"
-            type="button"
-            onClick={close}
-            aria-label="Close"
-          >
-            <X className="h-3 w-3" />
-          </button>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
 
 interface FileUploadOverlayProps {
   isDragging: boolean;
@@ -335,4 +364,111 @@ function showFileUploadDialog() {
       resolve(null);
     };
   });
+}
+
+function TranscribingOverlay() {
+  return (
+    <motion.div
+      className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-background/80 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="relative">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <motion.div
+          className="absolute inset-0 h-8 w-8 animate-pulse rounded-full bg-primary/20"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1.2, opacity: 1 }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            repeatType: "reverse",
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+      <p className="mt-4 text-sm font-medium text-muted-foreground">
+        Transcribing audio...
+      </p>
+    </motion.div>
+  );
+}
+
+interface RecordingPromptProps {
+  isVisible: boolean;
+  onStopRecording: () => void;
+}
+
+function RecordingPrompt({ isVisible, onStopRecording }: RecordingPromptProps) {
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ top: 0, filter: "blur(5px)" }}
+          animate={{
+            top: -40,
+            filter: "blur(0px)",
+            transition: {
+              type: "spring",
+              filter: { type: "tween" },
+            },
+          }}
+          exit={{ top: 0, filter: "blur(5px)" }}
+          className="absolute left-1/2 flex -translate-x-1/2 cursor-pointer overflow-hidden whitespace-nowrap rounded-full border bg-background py-1 text-center text-sm text-muted-foreground"
+          onClick={onStopRecording}
+        >
+          <span className="mx-2.5 flex items-center">
+            <Info className="mr-2 h-3 w-3" />
+            Click to finish recording
+          </span>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+interface RecordingControlsProps {
+  isRecording: boolean;
+  isTranscribing: boolean;
+  audioStream: MediaStream | null;
+  textAreaHeight: number;
+  onStopRecording: () => void;
+}
+
+function RecordingControls({
+  isRecording,
+  isTranscribing,
+  audioStream,
+  textAreaHeight,
+  onStopRecording,
+}: RecordingControlsProps) {
+  if (isRecording) {
+    return (
+      <div
+        className="absolute inset-[1px] z-50 overflow-hidden rounded-xl"
+        style={{ height: textAreaHeight - 2 }}
+      >
+        <AudioVisualizer
+          stream={audioStream}
+          isRecording={isRecording}
+          onClick={onStopRecording}
+        />
+      </div>
+    );
+  }
+
+  if (isTranscribing) {
+    return (
+      <div
+        className="absolute inset-[1px] z-50 overflow-hidden rounded-xl"
+        style={{ height: textAreaHeight - 2 }}
+      >
+        <TranscribingOverlay />
+      </div>
+    );
+  }
+
+  return null;
 }

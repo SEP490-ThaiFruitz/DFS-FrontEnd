@@ -5,6 +5,8 @@ interface ProductVariant {
   productVariantId: string;
   netWeight: number;
   price: number;
+  packageType: string;
+
   discountPrice?: number;
   stockQuantity: number;
   promotion?: Promotion;
@@ -20,8 +22,15 @@ export interface Product {
   id: string;
   name: string;
   mainImageUrl: string;
+
+  categories: {
+    id: string;
+    name: string;
+    thumbnail: string;
+  }[];
+  description: string;
   variant: ProductVariant;
-  categoryId?: string;
+  // categoryId?: string;
   quantitySold: number;
   rating: number;
 
@@ -29,6 +38,28 @@ export interface Product {
 
   quantityOrder?: number;
 }
+
+// type Product = {
+//   id: string;
+//   name: string;
+//   mainImageUrl: string;
+//   description: string;
+//   categories: {
+//     id: string;
+//     name: string;
+//     thumbnail: string;
+//   }[];
+//   variant: {
+//     productVariantId: string;
+//     packageType: string;
+//     netWeight: number;
+//     price: number;
+//     stockQuantity: number;
+//     promotion: string | null;
+//   };
+//   rating: number;
+//   quantitySold: number;
+// };
 interface State {
   orders: Product[];
   totalPrice: number;

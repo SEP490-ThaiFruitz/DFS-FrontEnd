@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { TooltipContent } from "../ui/tooltip";
 
 export function NavProjects({
   projects,
@@ -43,7 +44,8 @@ export function NavProjects({
   const pathname = usePathname();
 
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    // <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup>
       {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}
       <SidebarMenu>
         {projects.map((item) => {
@@ -53,17 +55,16 @@ export function NavProjects({
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton
                 asChild
-                // isActive={isActive}
-                className={` py-4 h-10 hover:scale-110 cursor-pointer transition duration-300 ${
-                  isActive && "bg-slate-400/50 font-bold"
+                className={`py-4 h-10 hover:scale-110 cursor-pointer mx-auto transition duration-300 ${
+                  isActive && "bg-slate-400/25 font-bold "
                 }`}
+                tooltip={item.name}
               >
-                <Link
-                  href={item.url}
-                  className={isActive ? "bg-red-300 py-4" : ""}
-                >
+                <Link href={item.url}>
                   <item.icon
-                    className={`${isActive && "text-slate-700 font-bold"}`}
+                    className={`size-full ${
+                      isActive && "text-slate-700 font-bold "
+                    } `}
                   />
                   <span>{item.name}</span>
                 </Link>

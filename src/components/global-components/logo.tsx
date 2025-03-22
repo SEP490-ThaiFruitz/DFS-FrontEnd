@@ -9,12 +9,16 @@ interface LogoProps {
   width?: number;
 
   className?: string;
+
+  isTextHidden?: boolean;
 }
 export const Logo = ({
   classNameLabel,
   height = 50,
   width = 50,
   className,
+
+  isTextHidden,
 }: LogoProps) => {
   return (
     <Link
@@ -23,24 +27,26 @@ export const Logo = ({
     >
       <Image
         src="/images/dried-fruit.webp"
-        alt="Picture of the author"
+        alt="the logo of the website"
         width={width}
         height={height}
       />
-      <h1
-        className={cn(
-          "text-slate-700 text-base font-serif italic",
-          classNameLabel
-        )}
-      >
-        <TextShimmerWave
-          spread={0.3}
-          rotateYDistance={5}
-          className="text-black"
+      {!isTextHidden && (
+        <h1
+          className={cn(
+            "text-slate-700 text-base font-serif italic",
+            classNameLabel
+          )}
         >
-          ThaiFruitz
-        </TextShimmerWave>
-      </h1>
+          <TextShimmerWave
+            spread={0.3}
+            rotateYDistance={5}
+            className="text-black italic"
+          >
+            ThaiFruitz
+          </TextShimmerWave>
+        </h1>
+      )}
     </Link>
   );
 };

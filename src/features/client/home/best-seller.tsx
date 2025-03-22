@@ -3,10 +3,12 @@ import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiResponse, Favorite, PageResult } from "@/types/types";
 import React from "react";
-import { Product } from "../sidebar-filter/sidebar-filter";
 import { CardProduct } from "@/components/global-components/card/card-product";
-import { useCartStore } from "@/hooks/use-cart-store";
+import { Product, useCartStore } from "@/hooks/use-cart-store";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/global-components/empty-state";
+import { ShoppingCart, StickyNote } from "lucide-react";
+import AnimatedLoadingSkeleton from "@/components/global-components/custom-skeleton/animated-loading-skeleton";
 
 interface BestSellterProps {
   favorites: Favorite[] | undefined;
@@ -26,37 +28,28 @@ const BestSellter = ({ favorites }: Readonly<BestSellterProps>) => {
     addOrder(product);
   };
 
-  // console.log({ products });
+  console.log({ products });
   return (
     <div className="p-10 sm:p-20">
       <div className="font-bold text-2xl mb-5">Danh sách sản phẩm bán chạy</div>
+
       {!isLoading ? (
-        (products?.value?.items?.length ?? 0) > 0 ? (
+        products?.value?.items?.length! > 0 ? (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
             {products?.value?.items?.map((product: Product) => {
-              return (
-                <CardProduct
-                  key={product.id}
-                  // handleAddToCart={(e) => handleAddToCart(e, product)}
-                  isFavorite={
-                    Array.isArray(favorites)
-                      ? !!favorites.find((x) => x.productId === product.id)
-                      : false
-                  }
-                  {...product}
-                />
-              );
+              return <CardProduct key={product.id} {...product} />;
             })}
           </div>
         ) : (
-          <div className="text-center py-8">No products match your filters</div>
+          <EmptyState
+            icons={[StickyNote]}
+            title="Chưa có sản phẩm"
+            description="Có vẻ như chưa có sản phảm nào hãy tải lại trang"
+            className="min-w-full flex flex-col"
+          />
         )
       ) : (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
-          {[...Array(9)].map((_, index: number) => (
-            <Skeleton className="h-96" key={index + 1} />
-          ))}
-        </div>
+        <AnimatedLoadingSkeleton className="min-w-full" />
       )}
     </div>
   );

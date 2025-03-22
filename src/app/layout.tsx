@@ -45,11 +45,16 @@ export default function RootLayout({
           <AuthProvider>
             <DataProvider>
               <NuqsAdapter>
-                <Toaster richColors position="top-right" duration={3000} />
+                <Toaster
+                  richColors
+                  position="top-right"
+                  duration={2500}
+                  closeButton
+                />
                 <SignalRProvider>
                   {children}
                 </SignalRProvider>
-                {/* <FloatingButton /> */}
+                <FloatingButton />
               </NuqsAdapter>
             </DataProvider>
           </AuthProvider>

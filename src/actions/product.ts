@@ -51,17 +51,17 @@ export const createProductImages = async<TValue>(values: TValue, id: string) => 
 // }
 
 
-export const createProduct = async<TValue>(values: TValue) => {
-    return await interactApi.post("/Products", values);
-}
+export const createProduct = async <TValue>(values: TValue) => {
+  return await interactApi.post("/Products", values);
+};
 
 export const deleteProduct = async (id: string) => {
     return await interactApi.remove(`/Products/${id}`);
 }
 
 export const deleteProductImage = async (id: string) => {
-    return await interactApi.remove(`/Products/images/${id}`);
-}
+  return await interactApi.remove(`/Products/images/${id}`);
+};
 
 export const updateProductNutrition = async <TValue>(values: TValue, productId: string) => {
     return await interactApi.put(`/Products/products/${productId}/nutrition`, values);

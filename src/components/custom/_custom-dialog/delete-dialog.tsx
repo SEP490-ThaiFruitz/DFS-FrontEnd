@@ -6,19 +6,7 @@ import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteDialogProps {
-    deleteFunction: (id: string) => Promise<{
-        isSuccess: boolean;
-        data: any;
-        status?: undefined;
-        message?: undefined;
-        detail?: undefined;
-    } | {
-        isSuccess: boolean;
-        status: number;
-        message: string;
-        detail: string;
-        data?: undefined;
-    } | undefined>;
+    deleteFunction: (id: string) => Promise<any>;
     isOpen: boolean;
     onClose: () => void
     id: string,
@@ -38,9 +26,9 @@ export function DeleteDialog({ deleteFunction, id, onClose, isOpen, button, refr
         mutationFn: async () => {
             try {
                 const res = await deleteFunction(id)
-                if (!res?.isSuccess)
-                    throw new Error(res?.message);
-                return res.message;
+                if (res)
+                    return
+                throw new Error(res);
             } catch (error: any) {
                 console.log(error);
                 throw new Error(error?.message);

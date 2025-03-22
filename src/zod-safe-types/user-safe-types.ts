@@ -20,10 +20,10 @@ export const ProfileSafeTypes = z.object({
         .string()
         .email('Email không hợp lệ'),
 
-    birthday: z
-        .string()
-        .refine((val) => !isNaN(Date.parse(val)), 'Ngày sinh nhật không hợp lệ')
-    ,
+    birthday: z.date({
+        message: "Vui lòng chọn ngày sinh nhật",
+        required_error: "Vui lòng chọn ngày sinh nhật"
+    }),
     gender: z
         .string()
         .refine((val) => ['Male', 'Female', 'Other'].includes(val), 'Giới tính không hợp lệ'),

@@ -4,35 +4,59 @@ import { motion } from "framer-motion";
 import { CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { OrderHeader } from "./order-header";
-import { ProductList } from "./product-list";
-import { ShippingInfo } from "./shipping-info";
+import { OrderItem, ProductList } from "./product-list";
+import { OrderAddressDelivery, ShippingInfo } from "./shipping-info";
 import { OrderSummary } from "./order-summary";
 import { Policies } from "./policy";
-import {  Columns4, FileBox, MessageSquareQuote, PackageCheck, PackagePlus, PackageX, Search, Truck } from "lucide-react";
+import { Columns4, FileBox, MessageSquareQuote, PackageCheck, PackagePlus, PackageX, Search, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OrderDetailPage from "../order-detail/order-detail-page";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { ApiResponse, PageResult } from "@/types/types";
+import { number, string } from "zod";
 
+
+interface Order {
+  orderId: string;
+  status: string;
+  buyDate: string;
+  orderItems: OrderItem[];
+  delivery: Delivery | null;
+  voucherPrice: number | null;
+  pointUsed: number;
+  totalPrice: number,
+  orderAddressDelivery: OrderAddressDelivery;
+}
+
+interface Delivery {
+  fee: number,
+  estimateDate: string
+}
 
 const MotionCard = motion.div;
 
 export const OrderTrackingPage = () => {
   const status = [
-    { value: "all", label: "Tất cả", icon: Columns4 },
-    { value: "waiting", label: "Chờ xác nhận", icon: FileBox },
+    { value: "All", label: "Tất cả", icon: Columns4 },
+    { value: "Pending", label: "Chờ xác nhận", icon: FileBox },
     { value: "packing", label: "Đang đóng gói", icon: PackagePlus },
     { value: "delivering", label: "Đang vận chuyển", icon: Truck },
-    { value: "delivered", label: "Đã giao hàng", icon: PackageCheck },
+    { value: "Delivered", label: "Đã giao hàng", icon: PackageCheck },
     { value: "feedbacked", label: "Đã đánh giá", icon: MessageSquareQuote },
     { value: "canceled", label: "Đã hủy", icon: PackageX },
   ];
+  const [orderId, setOrderId] = useState<string | undefined>(undefined);
+  const [activeStatus, setActiveStatus] = useState("All");
+  const { data: orders, isPending, refetch } = useFetch<ApiResponse<PageResult<Order>>>(`/Orders/user/orders?pageIndex=1&pageSize=100&status=${activeStatus === "All" ? "" : activeStatus}`, ["Customer", "Orders"])
 
-  const [activeStatus, setActiveStatus] = useState("all");
-  const isOrder = true;
+  useEffect(() => {
+    refetch()
+  }, [refetch, activeStatus])
 
   return (
-    isOrder ? <OrderDetailPage/> : <>
+    orderId !== undefined ? <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} /> : <>
       <div className="grid w-full grid-cols-7 h-auto py-4 mb-4 bg-white rounded-md px-5">
         {status.map((trigger) => (
           <button
@@ -62,22 +86,32 @@ export const OrderTrackingPage = () => {
       </div>
       <div className="min-h-screen grid lg:grid-cols-2 gap-10">
         {/* <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center"> */}
-        {[...Array(4)].map((index: number) => (
+        {orders?.value?.items.map((order: Order) => (
           <MotionCard
-            key={index + 1}
+            key={order.orderId}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="w-full max-w-2xl bg-white/60 dark:bg-gray-800/80 backdrop-blur-md text-gray-800 dark:text-gray-200 shadow-lg rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700"
           >
-            <OrderHeader />
+            <OrderHeader
+              orderId={order.orderId}
+              status={order.status}
+              buyDate={order.buyDate}
+              timeEstimateDelivery={order.delivery?.estimateDate}
+              onClickDetail={() => setOrderId(order.orderId)} />
             <CardContent className="p-6 space-y-6">
               <ScrollArea className="h-[220px] -mx-6 px-6">
-                <ProductList />
+                <ProductList orderStatus={order.status} orderItems={order.orderItems} />
               </ScrollArea>
               <div className="grid gap-6 sm:grid-cols-2">
-                <ShippingInfo />
-                <OrderSummary />
+                <ShippingInfo orderAddressDelivery={order.orderAddressDelivery} />
+                <OrderSummary
+                  discountPrice={order.voucherPrice}
+                  feeShip={order.delivery?.fee}
+                  pointUsed={order.pointUsed}
+                  orderItems={order.orderItems}
+                  totalPrice={order.totalPrice} />
               </div>
               <Policies />
             </CardContent>

@@ -193,22 +193,6 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
     {},
     { enabled: !!district }
   );
-  useEffect(() => {
-    if (address) {
-      form.setValue(
-        "district",
-        `${address?.districtID}-${
-          address?.receiverAddress?.split(",")[2]?.trim() ?? ""
-        }`
-      );
-      form.setValue(
-        "ward",
-        `${address?.wardID}-${
-          address?.receiverAddress?.split(",")[1]?.trim() ?? ""
-        }`
-      );
-    }
-  }, [address, form, wards]);
 
   if (!provinces) {
     return (
@@ -221,10 +205,6 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
       </ResizablePanel>
     );
   }
-
-  const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
 
   const isEditMode = !!address;
   const title = isEditMode

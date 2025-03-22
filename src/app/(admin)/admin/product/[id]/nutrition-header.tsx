@@ -7,6 +7,7 @@ import { FormValues } from '@/components/global-components/form/form-values'
 import { Spinner } from '@/components/global-components/spinner'
 import { Button } from '@/components/ui/button'
 import { CardHeader, CardTitle } from '@/components/ui/card'
+import { formatNumberWithUnit } from '@/lib/format-currency'
 import { FromNutritionSafeTypes } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -118,10 +119,10 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
                     </div>
                 </FormValues>
             ) : (
-                <p className="text-sm text-muted-foreground">
+                <div className="text-sm text-muted-foreground">
                     Khối lượng khẩu phần: {servingSize}g<br />
-                    Thành phần: {ingredients}
-                </p>
+                    Thành phần: {formatNumberWithUnit(ingredients)}
+                </div>
             )}
         </CardHeader>
     )

@@ -66,7 +66,6 @@ function ProductPage() {
 
         let bgColor = "bg-gradient-to-r from-green-400 to-green-600";
         let textColor = "text-green-700";
-        let bgPercentage = `w-[${displayPercentage}%]`;
 
         if (displayPercentage < 25) {
             bgColor = "bg-gradient-to-r from-red-400 to-red-600";
@@ -74,17 +73,15 @@ function ProductPage() {
         } else if (displayPercentage < 50) {
             bgColor = "bg-gradient-to-r from-orange-400 to-orange-600";
             textColor = "text-orange-700";
-        } else if (displayPercentage < 75) {
+        } else if (displayPercentage < 100) {
             bgColor = "bg-gradient-to-r from-yellow-400 to-yellow-600";
             textColor = "text-yellow-700";
-        } else {
-            bgPercentage = `w-[100%]`;
-        }
+        } 
 
         return (
             <div className='flex gap-5 items-center'>
                 <div className="w-full bg-slate-50 h-3.5 rounded-full relative">
-                    <div className={`absolute h-3.5 rounded-full ${bgPercentage} ${bgColor}`}></div>
+                    <div  style={{ width: `${displayPercentage}%` }} className={`absolute h-3.5 rounded-full ${bgColor}`}></div>
                 </div>
                 <span className={`text-md font-medium w-fit ${textColor}`}>{displayPercentage}%</span>
             </div>
@@ -130,7 +127,7 @@ function ProductPage() {
     return (
         <div className='m-10'>
             <div className='flex justify-between items-center'>
-                <p className='text-2xl font-semibold leading-none tracking-tight'>Sản phẩm</p>
+                <div className='text-2xl font-semibold leading-none tracking-tight'>Sản phẩm</div>
                 <Link href="/admin/product/create">
                     <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
                         <CirclePlus />

@@ -120,8 +120,9 @@ const CategoryPage = () => {
     setOpenDelete(true);
   };
   return (
-    <div className="p-4">
-      <div className="flex justify-end">
+    <div className="m-10">
+      <div className='flex justify-between items-center'>
+        <p className='text-2xl font-semibold leading-none tracking-tight'>Loại sản phẩm</p>
         <CreateCategoryDialog />
       </div>
       <div className="py-4">

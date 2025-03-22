@@ -1,73 +1,37 @@
 import { ViewCardProduct } from "@/components/global-components/card/view-card-product";
 
-interface Product {
-  id: number;
+export interface OrderItem {
+  id: string;
+  referenceId: string;
   name: string;
-  price: number;
-  quantity: number;
   image: string;
+  itemType: string;
+  quantity: number;
+  unitPrice: number;
+  percentage: number;
+  discountPrice: number;
+  isFeedback: boolean;
 }
-const cartItems: Product[] = [
-  {
-    id: 1,
-    name: "Dried Mango Slices",
-    price: 12.99,
-    quantity: 2,
-    image: "/images/third-background.png",
-  },
-  {
-    id: 2,
-    name: "Mixed Dried Berries",
-    price: 15.99,
-    quantity: 1,
-    image: "/images/third-background.png",
-  },
-  {
-    id: 3,
-    name: "Mixed Dried Berries",
-    price: 15.99,
-    quantity: 1,
-    image: "/images/third-background.png",
-  },
-  {
-    id: 4,
-    name: "Mixed Dried Berries",
-    price: 15.99,
-    quantity: 1,
-    image: "/images/third-background.png",
-  },
-  {
-    id: 5,
-    name: "Mixed Dried Berries",
-    price: 15.99,
-    quantity: 1,
-    image: "/images/third-background.png",
-  },
-  {
-    id: 6,
-    name: "Mixed Dried Berries",
-    price: 15.99,
-    quantity: 1,
-    image: "/images/third-background.png",
-  },
-  {
-    id: 7,
-    name: "Mixed Dried Berries",
-    price: 15.99,
-    quantity: 1,
-    image: "/images/third-background.png",
-  },
-];
-export const ProductList = () => {
+
+interface ProductListProps {
+  orderItems: OrderItem[],
+  orderStatus: string,
+}
+export const ProductList = ({ orderItems, orderStatus }: Readonly<ProductListProps>) => {
   return (
     <div className="space-y-4">
-      {cartItems.map((item) => (
+      {orderItems.map((item: OrderItem) => (
         <ViewCardProduct
-          key={item.id}
+          orderItemId={item.id}
+          orderStatus={orderStatus}
+          key={item.referenceId}
+          isFeedback={item.isFeedback}
           productName={item.name}
-          productPrice={item.price}
+          productPrice={item.unitPrice}
           productQuantity={item.quantity}
           productImage={item.image}
+          productPercentage={item.percentage}
+          productDiscountPrice={item.discountPrice}
         />
       ))}
     </div>

@@ -1,13 +1,20 @@
+import { FeedbackDialog } from "@/components/custom/_custom-dialog/feedback-dialog";
+import { Button } from "@/components/ui/button";
 import { formatVND } from "@/lib/format-currency";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 interface ViewCardProductProps {
+  orderItemId: string;
   productName: string;
   productPrice: number;
   productQuantity: number;
   productImage: string;
-
+  productPercentage: number;
+  productDiscountPrice: number;
+  orderStatus: string,
+  isFeedback: boolean;
   className?: string;
 }
 export const ViewCardProduct = ({
@@ -15,8 +22,14 @@ export const ViewCardProduct = ({
   productImage,
   productPrice,
   productQuantity,
+  productPercentage,
+  productDiscountPrice,
+  orderStatus,
+  isFeedback,
+  orderItemId,
   className,
 }: ViewCardProductProps) => {
+  const [feedback, setFeedback] = useState<string | undefined>(undefined);
   return (
     <div className={cn("flex items-center gap-4 my-2", className)}>
       <Image
@@ -32,12 +45,18 @@ export const ViewCardProduct = ({
           Số lượng: {productQuantity}
         </p>
       </div>
-      <p className="font-light text-slate-400 line-through">
-        {formatVND((productPrice * productQuantity * 15000).toFixed(2))}
-      </p>
+      {productPercentage > 0 && (
+        <p className="font-light text-slate-400 line-through">
+          {formatVND((productPrice * productQuantity).toFixed(2))}
+        </p>
+      )}
       <p className="font-medium">
-        {formatVND((productPrice * productQuantity * 10000).toFixed(2))}
+        {productPercentage > 0 ? formatVND((productDiscountPrice * productQuantity).toFixed(2)) : formatVND((productPrice * productQuantity).toFixed(2))}
       </p>
+      {orderStatus === "Delivered" && isFeedback === false && (
+        <Button onClick={() => setFeedback(orderItemId)} size={"sm"}>Đánh giá</Button>
+      )}
+      <FeedbackDialog refreshKey={["Customer", "Orders"]} isUpdateFeedback={false} orderItemId={orderItemId} isOpen={feedback !== undefined} onClose={() => setFeedback(undefined)} />
     </div>
   );
 };

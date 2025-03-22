@@ -4,39 +4,56 @@ import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
-import { fail } from "assert";
 import React from "react";
+import { OrderAddressDelivery } from "../order-tracking/shipping-info";
 
 interface OrderDetailsProps {
   orderId?: string;
   orderDate?: string;
-  deliveryType?: string;
   orderStatus?: string;
   paymentStatus?: string;
   paymentMethod?: string;
+  cancel: Cancel | null;
+  delivery: Delivery | undefined;
+  orderAddressDelivery: OrderAddressDelivery | undefined;
+}
+
+interface Delivery {
+  fee: number;
+  estimateDate: string;
+}
+
+interface Cancel {
+  role: string,
+  date: string,
+  reason: string
 }
 
 const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   orderId = "#983912",
   orderDate = "2025-01-16 12:00:00+00",
-  deliveryType = "GHN",
   orderStatus = "waiting",
   paymentStatus = "unpaid",
   paymentMethod = "Tiền mặt ",
+  cancel,
+  delivery,
+  orderAddressDelivery,
 }) => {
   const orderStatusColors: Record<string, { color: string; text: string }> = {
-    waiting: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
-    packing: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
-    delivering: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
-    delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
-    feedbacked: { color: "bg-green-100 text-green-800", text: "Đã đánh giá" },
-    canceled: { color: "bg-gray-100 text-gray-800", text: "Đã hủy" },
+    Pending: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
+    Confirmed: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
+    Packing: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
+    Shipped: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
+    Delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
+    Feedbacked: { color: "bg-green-100 text-green-800", text: "Đã đánh giá" },
+    Cancelled: { color: "bg-gray-100 text-gray-800", text: "Đã hủy" },
+    Returned: { color: "bg-gray-100 text-gray-800", text: "Đã trả hàng" },
   };
 
   const paymentStatusColors: Record<string, { color: string; text: string }> = {
-    paid: { color: "bg-green-100 text-green-800", text: "Đã thanh toán" },
-    unpaid: { color: "bg-red-100 text-red-700", text: "Chưa thanh toán" },
-    refunded: { color: "bg-purple-100 text-purple-800", text: "Đã hoàn tiền" },
+    Pending: { color: "bg-green-100 text-green-800", text: "Đã thanh toán" },
+    Fail: { color: "bg-red-100 text-red-700", text: "Chưa thanh toán" },
+    Paid: { color: "bg-purple-100 text-purple-800", text: "Đã hoàn tiền" },
   };
   const steps: TimelineEvent[] = [
     {
@@ -152,12 +169,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
 
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Ngày đặt:</span>
-            <span className="text-gray-900">{orderDate}</span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-gray-700 font-semibold">Bên vận chuyển:</span>
-            <span className="text-gray-900">{deliveryType}</span>
+            <span className="text-gray-900">{formatTimeVietNam(new Date(orderDate), true)}</span>
           </div>
 
           <div className="flex justify-between items-center">
@@ -184,24 +196,32 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             <span className="text-gray-700 font-semibold">Phương thức thanh toán:</span>
             <span className="text-gray-900">{paymentMethod}</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-700 font-semibold">Người hủy đơn:</span>
-            <span className="text-gray-900">Khách hàng</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-700 font-semibold">Thời gian hủy đơn:</span>
-            <span className="text-gray-900 text-right">{formatTimeVietNam(new Date(), true)}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-gray-700 font-semibold">Lí do hủy:</span>
-            <span className="text-gray-900 border p-2 rounded-md mt-2">
-              Tôi đã đặt sân vào thời gian này nhưng do có việc đột xuất nên không thể tham gia. Mong chủ sân thông cảm và hỗ trợ hoàn tiền nếu có thể. Xin cảm ơn!
-            </span>
-          </div>
+          {cancel && (
+            <>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 font-semibold">Người hủy đơn:</span>
+                <span className="text-gray-900">{cancel.role}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 font-semibold">Thời gian hủy đơn:</span>
+                <span className="text-gray-900 text-right">{formatTimeVietNam(new Date(cancel.date), true)}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-gray-700 font-semibold">Lí do hủy:</span>
+                <span className="text-gray-900 border p-2 rounded-md mt-2">
+                  {cancel.reason}
+                </span>
+              </div>
+            </>
+          )}
         </CardContent>
         <CardFooter className="space-x-5">
-          <Button className="ml-auto" variant={"destructive"}>Hoàn trả</Button>
-          <Button variant={"destructive"}>Huỷ đơn hàng</Button>
+          {orderStatus === "Delivered" && (
+            <Button className="ml-auto" variant={"destructive"}>Hoàn trả</Button>
+          )}
+          {(orderStatus === "Pending" || orderStatus === "Confirmed" || orderStatus === "Packing") && (
+            <Button variant={"destructive"}>Huỷ đơn hàng</Button>
+          )}
         </CardFooter>
       </Card>
       <Card className="pt-5">
@@ -211,17 +231,22 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Tên:</span>
-            <span className="text-gray-900 font-semibold">Nguyễn văn minh</span>
+            <span className="text-gray-900 font-semibold">{orderAddressDelivery?.receiverName}</span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Số điện thoại:</span>
-            <span className="text-gray-900">0931287525</span>
+            <span className="text-gray-900">{orderAddressDelivery?.receiverPhone}</span>
           </div>
 
           <div className="flex justify-between items-start space-x-6">
             <span className="text-gray-700 font-semibold min-w-fit">Địa chỉ:</span>
-            <span className="text-gray-900">Quốc lộ 1K, Đông Hoà, Dĩ An, Bình Dương, Vietnam</span>
+            <span className="text-gray-900">{orderAddressDelivery?.receiverAddress}</span>
+          </div>
+
+          <div className="flex justify-between items-start space-x-6">
+            <span className="text-gray-700 font-semibold min-w-fit">Thời gian dự tính:</span>
+            <span className="text-gray-900">{formatTimeVietNam(new Date(delivery?.estimateDate ?? ""))}</span>
           </div>
         </CardContent>
         <Separator />

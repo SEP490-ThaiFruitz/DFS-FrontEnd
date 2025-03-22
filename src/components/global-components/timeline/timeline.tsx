@@ -17,7 +17,7 @@ interface TimelineProps {
 export interface TimelineEvent {
     icon?: LucideIcon,
     title: string,
-    date: string,
+    date?: string,
     completed: boolean,
     subEvents?: SubEvent[],
 }
@@ -69,7 +69,7 @@ const Timeline = ({
                                 </div>
                                 <div className={`${orientation === "Vertical" ? 'text-left' : 'text-center'} mt-2`}>
                                     <p className="font-medium text-sm">{event.title}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{event.date}</p>
+                                    {event?.date && (<p className="text-xs text-gray-500 mt-1">{event.date}</p>)}
                                 </div>
                             </div>
                             {orientation === "Vertical" && event?.subEvents?.map((event: SubEvent, indexSubEvent: number) => (

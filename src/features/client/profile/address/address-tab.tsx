@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import FormAddress from "./form-address";
 import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { CirclePlusIcon, Trash2 } from "lucide-react";
+import { CirclePlusIcon, MapPin, Phone, Trash2, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAddresses, deleteAddress } from "@/actions/address";
 import { ApiResponse, PageResult } from "@/types/types";
@@ -36,30 +36,46 @@ function AddressTab() {
       direction="horizontal"
       className="min-h-[600px] rounded-lg border bg-card"
     >
-      <ResizablePanel defaultSize={70} minSize={30} className="p-4">
+      <ResizablePanel defaultSize={80} minSize={70} className="p-4">
         <div className="m-5 grid sm:grid-cols-3 gap-6">
           {addresses?.value?.items.map((item: AddressTypes) => (
-            <button
+            <div
               key={item.id}
               onClick={() => {
                 setIsCreate(false);
                 setAddress(item);
               }}
-              className={`relative group text-left border shadow-sm rounded-xl p-2 hover:cursor-pointer ${
-                item.id == address?.id ? "border-purple-700" : ""
-              }`}
+              className={`relative group text-left border shadow-sm rounded-xl p-2 hover:cursor-pointer ${item.id == address?.id ? "border-purple-700" : ""
+                }`}
             >
-              {item.isDefault ? (
-                <div className="flex justify-between">
-                  <h3 className="font-bold mb-3">{item.tagName}</h3>
-                  <p className="h-5 w-5 bg-purple-500 rounded-full" />
+
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-bold text-lg">{item.tagName}</h3>
+                {item.isDefault && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">Mặc định</span>
+                    <div className="h-3 w-3 bg-purple-500 rounded-full" />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2 text-gray-700">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                  <span className="line-clamp-2 whitespace-pre-line">{item.receiverName}</span>
                 </div>
-              ) : (
-                <h3 className="font-bold mb-3">{item.tagName}</h3>
-              )}
-              <span className="line-clamp-3 whitespace-pre-line">
-                {item.receiverAddress}
-              </span>
+
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                  <span className="whitespace-pre-line">{item.receiverPhone}</span>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                  <span className="line-clamp-3 whitespace-pre-line">{item.receiverAddress}</span>
+                </div>
+              </div>
+
 
               <button
                 onClick={(e) => {
@@ -74,7 +90,7 @@ function AddressTab() {
               >
                 <Trash2 className="h-4 w-4" />
               </button>
-            </button>
+            </div>
           ))}
           <button
             className={`text-left border shadow-sm rounded-xl p-2 hover:cursor-pointer`}

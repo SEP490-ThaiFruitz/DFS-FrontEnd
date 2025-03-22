@@ -117,6 +117,25 @@ const remove = async <T>(endpoint: string, payload?: T) => {
   }
 };
 
+const patch = async <TValues>(endpoint: string, body: TValues) => {
+  try {
+    const requestOptions = {
+      method: "PATCH",
+      headers: await getHeaders(),
+      body: JSON.stringify(body),
+    };
+
+    const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
+
+    const response = await fetch(url, requestOptions);
+
+    return await handleResponse(response);
+  } catch (error) {
+    console.log("Error in updating data:", error);
+    handleError(error, "Error in updating data");
+  }
+};
+
 async function handleResponse(response: Response) {
   const text = await response.text();
 
@@ -145,4 +164,5 @@ export const interactApi = {
   post,
   put,
   remove,
+  patch
 };

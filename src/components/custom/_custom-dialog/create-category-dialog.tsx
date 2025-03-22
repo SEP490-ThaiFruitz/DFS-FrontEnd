@@ -16,12 +16,15 @@ import { Button } from "@/components/ui/button";
 import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control";
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const CreateCategoryDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof CreateCategorySafeTypes>>({
     resolver: zodResolver(CreateCategorySafeTypes),
   });
+
+  const queryClient = useQueryClient();
 
   const onSubmit = async (values: z.infer<typeof CreateCategorySafeTypes>) => {
     try {
@@ -37,6 +40,7 @@ export const CreateCategoryDialog = () => {
         form.reset();
         setIsOpen(false);
         toast.success("Tạo loại bài viết thành công")
+        queryClient.invalidateQueries({ queryKey: ["categories"] })
       } else {
         toast.error(response?.status == 409 ? "Tên loại bài viết đã tồn tại" : "Lỗi hệ thống")
       }

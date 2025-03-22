@@ -118,7 +118,7 @@ export const OrderTrackingClientPage = () => {
       </CardHeader>
 
       <CardContent>
-        <ScrollArea className="max-h-[150px] overflow-auto">
+        {/* <ScrollArea className="max-h-[150px] overflow-auto">
           {cartItems.map((item) => (
             <ViewCardProduct
               key={item.id}
@@ -128,7 +128,7 @@ export const OrderTrackingClientPage = () => {
               productQuantity={item.quantity}
             />
           ))}
-        </ScrollArea>
+        </ScrollArea> */}
 
         <Separator className="my-4 h-2 w-full" orientation="horizontal" />
 

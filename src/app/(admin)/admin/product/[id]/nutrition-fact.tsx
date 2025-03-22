@@ -161,9 +161,9 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {nutritionFacts?.map((fact: NutritionFact, index: number) =>
+                        {nutritionFacts?.map((fact: NutritionFact) =>
                             editingId === fact.id ? (
-                                <TableRow key={index + 1} >
+                                <TableRow key={fact.id} >
                                     <TableCell className="font-medium">
                                         <FormSelectControl
                                             form={form}
@@ -206,7 +206,10 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                     <TableCell>{`${fact.amount} ${fact?.nutrient?.unit}`}</TableCell>
                                     <TableCell>{fact.dailyValue}</TableCell>
                                     <TableCell className='flex space-x-3'>
-                                        <Button type='button' size="sm" variant="ghost" onClick={() => handleEdit(fact)}>
+                                        <Button type='button' size="sm" variant="ghost" onClick={(e) => {
+                                            e.preventDefault();
+                                            handleEdit(fact)
+                                        }}>
                                             <Pencil className="h-4 w-4" />
                                         </Button>
                                         <Button type='button' size="sm" variant="ghost" onClick={() => handleRemoveFact(fact)}>
@@ -217,7 +220,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                             )
                         )}
 
-                        {!nutritionFacts.some(x => x.id === 0) && (
+                        {editingId === null && !nutritionFacts.some(x => x.id === 0) && (
                             <TableRow>
                                 <TableCell colSpan={4}>
                                     <button type='button' disabled={isPending} onClick={handleAddNew} className="flex items-center justify-center sm:p-5 space-x-5 font-bold hover:cursor-pointer">

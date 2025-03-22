@@ -1,207 +1,239 @@
-"use client";
-import { createProduct } from '@/actions/product';
-import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
-import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
-import { FormFileControl } from '@/components/global-components/form/form-file-control';
-import { FormInputControl } from '@/components/global-components/form/form-input-control';
-import { FormSelectControl, SelectData } from '@/components/global-components/form/form-select-control';
-import FormTextEditorControl from '@/components/global-components/form/form-text-editor-control';
-import { FormValues } from '@/components/global-components/form/form-values';
-import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { ApiResponse } from '@/types/types';
-import { CreateProductSafeTypes } from '@/zod-safe-types/product-safe-types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import CardCategory from './card-category';
-import { useRouter } from 'next/navigation';
+"use client"
 
-export interface CategorySelect extends SelectData {
-  isChose: boolean;
-}
+import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized"
+import { FormValues } from "@/components/global-components/form/form-values"
+import { WaitingSpinner } from "@/components/global-components/waiting-spinner"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { zodResolver } from "@hookform/resolvers/zod"
+import React, { useState } from "react"
+import { useForm } from "react-hook-form"
+import { type z } from "zod"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Separator } from "@/components/ui/separator"
+import { toast } from "sonner"
+import { API } from "@/actions/client/api-config"
+import FormInformation from "./create-form-information"
+import { CreateProductSafeTypes } from "@/zod-safe-types/product-safe-types"
+import Variant from "./variant"
+import Certification from "./certification"
+import Nutrition from "./nutrition"
+import ConfirmInformation from "./confirm-information"
 
-function CreateProductPage() {
-  const router = useRouter();
-  const dryingMethods = [
-    { id: "SunDrying", name: "Sấy bằng ánh nắng mặt trời" },
-    { id: "HotAirDrying", name: "Sấy bằng không khí nóng" },
-    { id: "FreezeDrying", name: "Sấy đông khô" },
-    { id: "MicrowaveDrying", name: "Sấy bằng sóng vi ba" },
-    { id: "VacuumDrying", name: "Sấy theo phương pháp chân không" },
-    { id: "InfraredDrying", name: "Sấy bằng bức xạ hồng ngoại" },
-    { id: "DrumDrying", name: "Sấy trong máy trống" }
-  ];
 
-  const { data: categories } = useFetch<ApiResponse<CategorySelect[]>>("/Categories/get-all-non-paging", ["categories"], {}, {
-    staleTime: 1000 * 60 * 1,
-  })
-  const { mutate: createProductMutation, isPending } = useMutation({
-    mutationFn: async (values: FormData) => {
-      const response = await createProduct(values);
-      if (response?.isSuccess) {
-        return "Tạo sản phẩm thành công"
-      } else {
-        console.log(response?.detail)
-        throw new Error(response?.status === 409 ? "Tên sản phẩm đã tồn tại" : "Lỗi hệ thống");
-      }
-    },
-    onSuccess: (value) => {
-      router.push("/admin/product")
-      toast.success(value)
-    },
-    onError: (value) => {
-      toast.error(value.message)
-    }
-  })
+const CreateProductPage = () => {
+  const [currentStep, setCurrentStep] = useState(1)
+  const totalSteps = 5
 
   const form = useForm<z.infer<typeof CreateProductSafeTypes>>({
     resolver: zodResolver(CreateProductSafeTypes),
     defaultValues: {
-      description: "",
-      categoryIds: []
+      categoryIds: [],
+      productVariants: [],
+      servingSize: "0",
+      nutritionFacts: [],
+      certificates: [],
     }
-  });
+  })
 
   const onSubmit = async (values: z.infer<typeof CreateProductSafeTypes>) => {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("description", values.description);
+      formData.append("origin", values.origin);
+      formData.append("dryingMethod", values.dryingMethod);
+      formData.append("moistureContent", values.moistureContent);
 
-    formData.append("name", values.name);
-    values.categoryIds.forEach(categoryId => {
-      formData.append("categoryIds", categoryId);
-    });
-    formData.append("description", values.description);
+      values.categoryIds.forEach((value) => {
+        formData.append("categoryIds", value);
+      })
 
-    formData.append("origin", values.origin);
+      formData.append("image", values.image[0]);
 
-    formData.append("dryingMethod", values.dryingMethod);
+      values.other.forEach((value: any) => {
+        formData.append("other", value);
+      })
 
-    formData.append("moistureContent", values.moistureContent.toString());
+      let index = 0
+      values.certificates.forEach((certificate) => {
+        formData.append(`certificates[${index}][name]`, certificate.name);
+        formData.append(`certificates[${index}][agency]`, certificate.agency);
+        formData.append(`certificates[${index}][issueDate]`, certificate.issueDate.toLocaleDateString());
+        formData.append(`certificates[${index}][expiryDate]`, certificate.expiryDate ? certificate.expiryDate.toLocaleDateString() : '');
+        formData.append(`certificates[${index}][details]`, certificate.details ?? '');
+        index += 1;
+      });
 
-    if (values.mainImageUrl) {
-      formData.append("mainImageUrl", values.mainImageUrl[0]);
+      formData.append("nutrition.ingredients", values.ingredients);
+      formData.append("nutrition.servingSize", values.servingSize);
+
+      index = 0
+      values.nutritionFacts.forEach((nutritionFact) => {
+        formData.append(`nutrition.nutritionFacts[${index}][nutrientId]`, nutritionFact.nutrientId);
+        formData.append(`nutrition.nutritionFacts[${index}][amount]`, nutritionFact.amount);
+        index += 1;
+      });
+
+      index = 0
+      values.productVariants.forEach((productVariant) => {
+        console.log(productVariant.image[0])
+        formData.append(`variants[${index}][stockQuantity]`, productVariant.stockQuantity);
+        formData.append(`variants[${index}][packagingWidth]`, productVariant.packagingWidth);
+        formData.append(`variants[${index}][shelfLife]`, productVariant.shelfLife);
+        formData.append(`variants[${index}][packagingLength]`, productVariant.packagingLength);
+        formData.append(`variants[${index}][price]`, productVariant.price);
+        formData.append(`variants[${index}][packagingHeight]`, productVariant.packagingHeight);
+        formData.append(`variants[${index}][reOrderPoint]`, productVariant.reOrderPoint);
+        formData.append(`variants[${index}][netWeight]`, productVariant.netWeight);
+        formData.append(`variants[${index}][packagingTypeId]`, productVariant.packagingTypeId);
+        formData.append(`variants[${index}][grossWeight]`, productVariant.grossWeight);
+        formData.append(`productVariantImages`, productVariant.image[0]);
+        index += 1;
+      });
+
+      const response = await API.post("/Products", formData)
+
+      if (response) {
+        toast.success("Tạo sản phẩm thành công")
+      } else {
+        toast.error("Tạo sản phẩm thất bại")
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+
+  const nextStep = () => {
+    let currentFields: string[] = [];
+    if (currentStep === 1) {
+      currentFields = ["name", "percentage", "description", "origin", "dryingMethod", "image", "other", "moistureContent", "categoryIds"];
+    } else if (currentStep === 2) {
+      currentFields = ["productVariants"];
+    } else if (currentStep === 3) {
+      currentFields = ["ingredients", "servingSize", "nutritionFacts"];
+    } else if (currentStep === 4) {
+      currentFields = ["certificates"];
     }
 
-    createProductMutation(formData);
+    form.trigger(currentFields as any).then((isValid) => {
+      if (isValid) {
+        setCurrentStep((prev) => Math.min(prev + 1, totalSteps))
+      }
+    })
+  }
 
-  };
+  const prevStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1))
+  }
+
+  const isLastStep = currentStep === totalSteps
+  const isFirstStep = currentStep === 1
+  const steps = [
+    { id: 1, title: "Thông tin sản phẩm" },
+    { id: 2, title: "Các biến thể" },
+    { id: 3, title: "Chất dinh dưỡng" },
+    { id: 4, title: "Các chứng chỉ" },
+    { id: 5, title: "Xác nhận thông tin" },
+  ]
 
   return (
     <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
+      <div className="mb-6">
+        <div className="w-full mx-auto border p-5 sm:p-10 rounded-lg">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <React.Fragment key={step.id}>
+                <div className="flex items-center gap-5">
+                  <div className="flex flex-col justify-center items-center min-w-fit">
+                    <div
+                      className={`flex items-center justify-center min-w-8 h-8 rounded-full text-sm font-medium
+                                                    ${currentStep >= step.id
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 text-gray-500"
+                        }`}
+                    >
+                      {step.id}
+                    </div>
+                    <div className="mt-2 text-sm font-medium text-gray-700 min-w-fit text-center">
+                      {step.title}
+                    </div>
+                  </div>
+                </div>
+
+                {index !== steps.length - 1 && <Separator className="max-w-10" />}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Tạo mới sản phẩm</CardTitle>
+          <CardTitle>{steps[currentStep - 1].title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid sm:grid-cols-2 gap-6 sm:gap-20">
-            <div className="space-y-6">
-              <FormInputControl
-                form={form}
-                name="name"
-                disabled={isPending}
-                label="Tên sản phẩm"
-                require
-              />
-              <FormInputControl
-                form={form}
-                name="origin"
-                disabled={isPending}
-                label="Nguồn gốc"
-                require
-              />
-              <FormInputControl
-                form={form}
-                name="moistureContent"
-                disabled={isPending}
-                label="Độ ẩm"
-                require
-              />
-              <FormSelectControl
-                form={form}
-                name="dryingMethod"
-                classNameInput='h-fit'
-                placeholder='Chọn một phương pháp xấy'
-                items={dryingMethods}
-                disabled={isPending}
-                label="Phương pháp xấy"
-                require
-              />
-            </div>
-            <div className="space-y-6">
-              <FormFileControl
-                form={form}
-                name="mainImageUrl"
-                classNameInput="h-30 w-full"
-                mutiple={false}
-                type={"image/jpeg, image/jpg, image/png, image/webp"}
-                disabled={isPending}
-                label="Ảnh chính sản phẩm"
-                require
-              />
-            </div>
-          </div>
-          <div className='mt-5'>
-            <Label className={`after:content-['(*)'] after:text-red-500 after:ml-1`}>Chọn loại sản phẩm</Label>
-            <div className='mt-2 grid grid-cols-8 gap-10'>
-              {categories?.value?.map((category: CategorySelect) =>
-                <CardCategory
-                  key={category.id}
-                  category={category}
-                  onChange={(isChoseCategory: boolean) => {
-                    const categoryIds = form.getValues("categoryIds") || [];
-                    const categoryId = category.id.toString();
-                    if (!isChoseCategory) {
-                      const index = categoryIds.findIndex(x => x === categoryId)
-                      if (index !== -1) {
-                        categoryIds.splice(index, 1)
-                        form.setValue("categoryIds", categoryIds);
-                      }
-                      console.log(form.getValues("categoryIds"))
-                    } else {
-                      form.setValue("categoryIds", [...categoryIds, categoryId]);
-                    }
-                  }}
-                />)}
-            </div>
-            <p className='text-sm font-medium text-destructive mt-2'>{form.getFieldState("categoryIds").error?.message}</p>
-          </div>
-          <div className='mt-5'>
-            <FormTextEditorControl
-              form={form}
-              name="description"
-              disabled={isPending}
-              placeholder='Nhập mô tả sản phẩm'
-              label="Mô tả sản phẩm"
-              defaultValue={""}
-              require
-            />
-          </div>
+          {(() => {
+            switch (currentStep) {
+              case 1:
+                return <FormInformation formProduct={form} />;
+              case 2:
+                return <Variant formProduct={form} />;
+              case 3:
+                return <Nutrition formProduct={form} />;
+              case 4:
+                return <Certification formProduct={form} />;
+              case 5:
+                return <ConfirmInformation formProduct={form} />;
+              default:
+                return null;
+            }
+          })()}
         </CardContent>
       </Card>
 
-      <ButtonCustomized
-        type="submit"
-        className="max-w-32 bg-green-500 hover:bg-green-700"
-        variant="secondary"
-        disabled={isPending}
-        label={
-          isPending ? (
-            <WaitingSpinner
-              variant="pinwheel"
-              label="Đang tạo..."
-              className="font-semibold"
-              classNameLabel="font-semibold text-sm"
-            />
-          ) : (
-            "Tạo mới"
-          )
-        }
-      />
+
+      <div className="flex justify-between mt-6">
+        {!isFirstStep && (
+          <Button type="button" variant="outline" onClick={prevStep} className="flex items-center gap-2">
+            <ChevronLeft size={16} />
+            Quay lại
+          </Button>
+        )}
+
+        {!isLastStep ? (
+          <Button
+            type="button"
+            onClick={nextStep}
+            className="ml-auto flex items-center gap-2 bg-green-500 hover:bg-green-700"
+          >
+            Tiếp theo
+            <ChevronRight size={16} />
+          </Button>
+        ) : (
+          <ButtonCustomized
+            type="submit"
+            className="max-w-32 bg-green-500 hover:bg-green-700 ml-auto"
+            variant="secondary"
+            disabled={form.formState.isSubmitting}
+            label={
+              form.formState.isSubmitting ? (
+                <WaitingSpinner
+                  variant="pinwheel"
+                  label="Đang tạo..."
+                  className="font-semibold"
+                  classNameLabel="font-semibold text-sm"
+                />
+              ) : (
+                "Tạo mới"
+              )
+            }
+          />
+        )}
+      </div>
     </FormValues >
-  );
+  )
 }
 
-export default CreateProductPage;
+export default CreateProductPage
+

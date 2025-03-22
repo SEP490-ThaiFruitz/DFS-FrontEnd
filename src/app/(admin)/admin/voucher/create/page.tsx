@@ -1,6 +1,7 @@
 "use client";
 import { createVoucher } from '@/actions/voucher';
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
+import { FormDateControl } from '@/components/global-components/form/form-date-control';
 import { FormFileControl } from '@/components/global-components/form/form-file-control';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control';
@@ -57,8 +58,8 @@ function CreateVoucherPage() {
       formData.append("value", values.percentDiscount)
     }
     formData.append("discountType", values.discountType)
-    formData.append("startDate", values.startDate)
-    formData.append("endDate", values.endDate)
+    formData.append("startDate", values.startDate.toLocaleDateString())
+    formData.append("endDate", values.endDate.toLocaleDateString())
     if (values.image) {
       formData.append("image", values.image[0])
     }
@@ -125,23 +126,19 @@ function CreateVoucherPage() {
                 require
               /> : null}
               <div className='grid sm:grid-cols-2 gap-5'>
-                <FormInputControl
-                  isMinDate
-                  classNameInput='block'
+                <FormDateControl
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="startDate"
                   disabled={isPending}
-                  type='Date'
                   label="Ngày bắt đầu"
                   require
                 />
-                <FormInputControl
-                  isMinDate
-                  classNameInput='block'
+                <FormDateControl
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="endDate"
                   disabled={isPending}
-                  type='Date'
                   label="Ngày kết thúc"
                   require
                 />

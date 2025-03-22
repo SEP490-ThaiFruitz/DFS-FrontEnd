@@ -44,6 +44,7 @@ import { AdvancedColorfulBadges } from "@/components/global-components/badge/adv
 export type Customer = {
   userName: string;
   email: string;
+  image: string | null;
   phone: string;
   address: string;
   moneySpend: number;
@@ -178,9 +179,12 @@ export const customerRevenueColumns: ColumnDef<Customer>[] = [
         <div className="flex items-center gap-3 min-w-[250px]">
           <Avatar>
             <AvatarImage
-              src={`/placeholder.svg?height=40&width=40&text=${getInitials(
-                customer.userName
-              )}`}
+              src={
+                customer.image ||
+                `/placeholder.svg?height=40&width=40&text=${getInitials(
+                  customer.userName
+                )}`
+              }
               alt={customer.userName}
             />
             <AvatarFallback className={avatarColor}>

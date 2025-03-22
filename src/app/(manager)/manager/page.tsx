@@ -61,6 +61,12 @@ import { DataTable } from "@/components/global-components/data-table/data-table"
 import { productTopRevenueColumn } from "@/features/manager/report-revenue/product-top-revenue-column";
 import { REPORT_KEY } from "@/app/key/manager-key";
 import { TotalCard } from "./components/total-card";
+import {
+  createDateRange,
+  fillMissingDates,
+  fillMissingDatesDynamics,
+} from "@/utils/date";
+import { customerRevenueColumns } from "@/features/manager/report-revenue/user-top-revenue-column";
 
 type TopProductRevenueStatistics = {
   type: "Single" | "Combo";
@@ -194,13 +200,13 @@ export default function RevenueDashboard() {
 
   // Revenue chart data
   const revenueData = [
-    { date: "Tháng 1", revenue: 12500 },
-    { date: "Tháng 2", revenue: 18200 },
-    { date: "Tháng 3", revenue: 15800 },
-    { date: "Tháng 4", revenue: 14300 },
-    { date: "Tháng 5", revenue: 19500 },
-    { date: "Tháng 6", revenue: 22800 },
-    { date: "Tháng 7", revenue: 21400 },
+    { date: "2025-01-12", revenue: 12500 },
+    { date: "2024-12-12", revenue: 18200 },
+    { date: "2024-12-15", revenue: 15800 },
+    { date: "2025-01-15", revenue: 14300 },
+    { date: "2025-02-15", revenue: 19500 },
+    { date: "2025-03-15", revenue: 22800 },
+    { date: "2025-03-17", revenue: 21400 },
   ];
 
   // Product performance chart data
@@ -238,10 +244,12 @@ export default function RevenueDashboard() {
     );
   };
 
+  const fromDate = "2025-01-22";
+
   const currentDate = format(new Date(), "yyyy-MM-dd");
 
   const reportRevenue = useFetch<ApiResponse<RevenueData>>(
-    `/Statistics/manager/report-revenue?fromDate=2025-01-22&toDate=${currentDate}`,
+    `/Statistics/manager/report-revenue?fromDate=${fromDate}&toDate=${currentDate}`,
     [REPORT_KEY.REPORT_REVENUE]
   );
   // console.log(currentDate);
@@ -283,6 +291,15 @@ export default function RevenueDashboard() {
       ];
     }
   }, [reportRevenue.data?.value?.topProductRevenueStatistics]);
+
+  const allDates = createDateRange(fromDate, currentDate);
+
+  const filledRevenueData = fillMissingDatesDynamics(
+    revenueData,
+    allDates,
+    "date",
+    ["revenue"]
+  );
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/20">
@@ -337,72 +354,25 @@ export default function RevenueDashboard() {
               value={formatVND(sumOrder)}
               icon={ShoppingCart}
             />
-            {/* <Card className="cardStyle">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Tổng đơn hàng
-                </CardTitle>
-                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.totalOrders}</div>
-                <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.ordersChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.ordersChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.ordersChange}
-                  </span>{" "}
-                  Từ kỳ trước
-                </p>
-              </CardContent>
-            </Card> */}
-            {/* <Card className="cardStyle">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Trung bình mỗi đơn hàng
-                </CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.averageOrder}</div>
-                <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.averageChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.averageChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.averageChange}
-                  </span>{" "}
-                  từ kỳ trước
-                </p>
-              </CardContent>
-            </Card> */}
+
             <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Tỷ lệ chuyển đổi
+                  Tỷ lệ đơn hàng trung bình
                 </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.conversionRate}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold">
+                  {reportRevenue?.data?.value
+                    ? (
+                        reportRevenue?.data?.value?.numberOfProductSold /
+                        reportRevenue?.data?.value?.totalOrder
+                      ).toFixed(2)
+                    : 0}
+                  %
+                </div>
+                {/* <p className="text-xs text-muted-foreground">
                   <span
                     className={`inline-flex items-center ${
                       stats.conversionChange.startsWith("+")
@@ -416,9 +386,9 @@ export default function RevenueDashboard() {
                       <ArrowDown className="mr-1 h-3 w-3" />
                     )}
                     {stats.conversionChange}
-                  </span>{" "}
+                  </span>
                   from last period
-                </p>
+                </p> */}
               </CardContent>
             </Card>
           </div>
@@ -439,7 +409,7 @@ export default function RevenueDashboard() {
                 >
                   <AreaChart
                     accessibilityLayer
-                    data={revenueData}
+                    data={filledRevenueData}
                     margin={{
                       top: 10,
                       right: 30,
@@ -591,12 +561,12 @@ export default function RevenueDashboard() {
                 </CardHeader>
                 <CardContent>
                   <DataTable
-                    columns={productTopRevenueColumn}
+                    columns={customerRevenueColumns}
                     data={
-                      reportRevenue.data?.value?.topProductRevenueStatistics ||
+                      reportRevenue.data?.value?.topCustomerRevenueStatistics ||
                       []
                     }
-                    searchFiled="name"
+                    searchFiled="userName"
                     isLoading={reportRevenue.isLoading}
                   />
 

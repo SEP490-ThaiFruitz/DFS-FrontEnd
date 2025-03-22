@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -66,6 +66,8 @@ export function ProductPerformance({
                 return truncate(value, { length: 20 });
               }}
             />
+
+            <YAxis dataKey="sold" tickLine={false} tickMargin={10} />
 
             <CartesianGrid strokeDasharray="2 2" vertical={false} />
 

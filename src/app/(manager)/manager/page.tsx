@@ -83,6 +83,7 @@ type TopCustomerRevenueStatistics = {
   userName: string;
   email: string;
   phone: string;
+  image: string | null;
   address: string;
   moneySpend: number;
   lastBuyDate: string;

@@ -9,6 +9,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { QueryProvider } from "@/providers/query-client";
 import { AuthProvider } from "@/providers/auth-provider";
 import { DataProvider } from "@/providers/data-provider";
+import SignalRProvider from "@/providers/signalr-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,7 +46,9 @@ export default function RootLayout({
             <DataProvider>
               <NuqsAdapter>
                 <Toaster richColors position="top-right" duration={3000} />
-                {children}
+                <SignalRProvider>
+                  {children}
+                </SignalRProvider>
                 {/* <FloatingButton /> */}
               </NuqsAdapter>
             </DataProvider>

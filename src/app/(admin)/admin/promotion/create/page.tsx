@@ -34,8 +34,8 @@ const CreatePromotion = () => {
         const formData = new FormData();
         formData.append("name", values.name);
         formData.append("percentage", values.percentage);
-        formData.append("startDate", values.startDate.toLocaleDateString());
-        formData.append("endDate", values.endDate.toLocaleDateString());
+        formData.append("startDate", values.startDate.toISOString());
+        formData.append("endDate", values.endDate.toISOString());
         formData.append("description", values.description);
         formData.append("image", values.image[0]);
 

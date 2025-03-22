@@ -1,6 +1,6 @@
 "use client"
 
-import { createNutrition, updateNutrition } from '@/actions/product'
+import { createNutrition, updateProductNutrition } from '@/actions/product'
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
 import { FormValues } from '@/components/global-components/form/form-values'
@@ -36,7 +36,6 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
     const form = useForm<z.infer<typeof FromNutritionSafeTypes>>({
         resolver: zodResolver(FromNutritionSafeTypes),
         defaultValues: {
-            id: id,
             productId: productId,
             ingredients: ingredients ?? "",
             servingSize: servingSize.toString() ?? "0"
@@ -49,8 +48,7 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
     const { mutate: updateNutritionMutation, isPending } = useMutation({
         mutationFn: async (values: any) => {
             try {
-                const { productId, id, ...restValues } = values
-                const response = id ? await updateNutrition({ id, ...restValues }, id) : await createNutrition({ productId, ...restValues }, productId)
+                const response = await updateProductNutrition(values, productId)
                 if (!response?.isSuccess) {
                     throw new Error(id ? "Cập nhật thất bại" : "Thêm mới thất bại")
                 }

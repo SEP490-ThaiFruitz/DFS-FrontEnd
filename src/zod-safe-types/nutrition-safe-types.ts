@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const FromNutritionSafeTypes = z.object({
-    id: z.string().optional(),
     productId: z.string().optional(),
     servingSize: z.string({
         required_error: "Vui lòng nhập khối lượng khẩu phần"

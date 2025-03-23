@@ -8,80 +8,77 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { type z } from "zod"
-import ProductSelection from "./product-selection"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { CreatePromotionSafeTypes } from "@/zod-safe-types/promotion-safe-types"
 import { Separator } from "@/components/ui/separator"
+import { CreateComboSafeTypes } from "@/zod-safe-types/combo-safe-types"
 import FormInformation from "./form-information"
+import SellectProductVariant from "./sellect-product-variant"
 import ConfirmInformation from "./confirm-information"
 import { toast } from "sonner"
 import { API } from "@/actions/client/api-config"
 
 
-const CreatePromotion = () => {
+const CreateProductPage = () => {
     const [currentStep, setCurrentStep] = useState(1)
 
     const steps = [
-        { id: 1, title: "Thông tin khuyến mãi" },
-        { id: 2, title: "Chọn sản phẩm" },
+        { id: 1, title: "Thông tin gói quá" },
+        { id: 2, title: "Các sản phẩm" },
         { id: 3, title: "Xác nhận thông tin" },
     ]
 
     const totalSteps = steps.length
 
-    const form = useForm<z.infer<typeof CreatePromotionSafeTypes>>({
-        resolver: zodResolver(CreatePromotionSafeTypes),
+    const form = useForm<z.infer<typeof CreateComboSafeTypes>>({
+        resolver: zodResolver(CreateComboSafeTypes),
         defaultValues: {
-            selectedProducts: [],
-        },
+            selectedProducts: []
+        }
     })
 
-    const onSubmit = async (values: z.infer<typeof CreatePromotionSafeTypes>) => {
-        const formData = new FormData();
-        formData.append("name", values.name);
-        formData.append("percentage", values.percentage);
-        formData.append("startDate", values.startDate.toISOString());
-        formData.append("endDate", values.endDate.toISOString());
-        formData.append("description", values.description);
-        formData.append("image", values.image[0]);
-
-        let index = 0
-        values.selectedProducts.forEach((product) => {
-            product.variants.forEach((variant) => {
-                formData.append(`createProductVariant[${index}][productVariantId]`, variant.variantId);
-                formData.append(`createProductVariant[${index}][quantity]`, variant.quantity.toString());
-                index += 1;
-            });
-        });
-
+    const onSubmit = async (values: z.infer<typeof CreateComboSafeTypes>) => {
         try {
-            const res = await API.post("/Promotions", formData);
-            if (res) {
-                toast.success("Tạo mới chương trình giảm giá thành công")
+            const formData = new FormData();
+
+            Object.entries(values).forEach(([key, value]) => {
+                if (key === "image") {
+                    formData.append("image", value[0])
+                } else if (key === "selectedProducts") {
+                    value.forEach((value: any, index: number) => {
+                        formData.append(`comboItemsRequest[${index}].productVariantId`, String(value.variantId))
+                        formData.append(`comboItemsRequest[${index}].quantity`, String(value.quantity))
+                    });
+                } else {
+                    formData.append(key, String(value))
+                }
+            })
+
+            const response = await API.post("/Combos", formData)
+            if (response) {
+                toast.success("Tạo gói quà thành công")
                 form.reset({
-                    selectedProducts: [],
+                    selectedProducts: []
                 });
-                setCurrentStep(1);
+                setCurrentStep(1)
             } else {
-                toast.error("Tạo mới chương trình giảm giá thất bại")
+                toast.error("Tạo gói quà thất bại")
             }
-        } catch (error: unknown) {
-            console.log(error instanceof Error ? error?.message : "Lỗi hệ thống")
+        } catch {
             toast.error("Lỗi hệ thống")
         }
+
     }
 
     const nextStep = () => {
         let currentFields: string[] = [];
         if (currentStep === 1) {
-            currentFields = ["name", "percentage", "description", "startDate", "endDate", "image"];
+            currentFields = ["name", "capacity", "description", "type", "eventId", "image"];
         } else if (currentStep === 2) {
             currentFields = ["selectedProducts"];
         }
 
         form.trigger(currentFields as any).then((isValid) => {
-
             if (isValid) {
                 setCurrentStep((prev) => Math.min(prev + 1, totalSteps))
             }
@@ -94,7 +91,6 @@ const CreatePromotion = () => {
 
     const isLastStep = currentStep === totalSteps
     const isFirstStep = currentStep === 1
-
 
     return (
         <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
@@ -135,11 +131,11 @@ const CreatePromotion = () => {
                     {(() => {
                         switch (currentStep) {
                             case 1:
-                                return <FormInformation form={form} />;
+                                return <FormInformation formCombo={form} />;
                             case 2:
-                                return <ProductSelection form={form} />;
+                                return <SellectProductVariant formCombo={form} />;
                             case 3:
-                                return <ConfirmInformation form={form} />;
+                                return <ConfirmInformation formCombo={form} />;
                             default:
                                 return null;
                         }
@@ -190,5 +186,5 @@ const CreatePromotion = () => {
     )
 }
 
-export default CreatePromotion
+export default CreateProductPage
 

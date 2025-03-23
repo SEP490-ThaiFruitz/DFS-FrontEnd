@@ -33,8 +33,6 @@ import {
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getProfile } from "@/actions/user";
-import { toast } from "sonner";
 import { VerifyDialog } from "../custom/_custom-dialog/verify-account-dialog";
 import { useRouter } from "next/navigation";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
@@ -53,26 +51,11 @@ export const Navigate = () => {
   const queryClient = useQueryClient();
   const loginDialog = useLoginDialog();
 
-  const { data: user } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      try {
-        const res = await getProfile();
-        if (res?.isSuccess) {
-          const data: ApiResponse<Profile> = res?.data;
-          return data.value;
-        }
-        return null;
-      } catch (error) {
-        console.log(error);
-        toast.error("Lỗi hệ thống");
-      }
-    },
-    retry: false,
-    initialData: null,
+  const { data: user } = useQuery<Profile>({
+    queryKey: ["authUser"]
   });
 
-  const token = Cookies.get("accessToken");
+  // const token = Cookies.get("accessToken");
 
   const navItemClassName =
     "relative inline-flex text-sm h-11 w-full md:w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0 before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";

@@ -13,6 +13,7 @@ import {
   Settings,
   MessageSquareMore,
   Fan,
+  Gift,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -100,7 +101,12 @@ const data = {
     {
       name: "Khuyến mãi",
       url: "/admin/promotion",
-      icon: Fan ,
+      icon: Fan,
+    },
+    {
+      name: "Gói quà",
+      url: "/admin/combo",
+      icon: Gift,
     },
   ],
 };

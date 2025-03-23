@@ -77,12 +77,13 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                     productNutritionId,
                     amount,
                     nutrientId
-                }) : await updateNutritionFact(
+                }, productId) : await updateNutritionFact(
                     {
                         nutritionFactId,
                         amount,
                         nutrientId
-                    }
+                    },
+                    productId
                 );
                 if (!res?.isSuccess) {
                     throw new Error(nutritionFactId == 0 ? "Thêm dinh dưỡng thất bại" : "Cập nhật dinh dưỡng thất bại")

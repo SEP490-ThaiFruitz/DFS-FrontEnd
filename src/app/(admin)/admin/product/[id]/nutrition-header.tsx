@@ -1,6 +1,6 @@
 "use client"
 
-import { createNutrition, updateProductNutrition } from '@/actions/product'
+import { updateProductNutrition } from '@/actions/product'
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
 import { FormValues } from '@/components/global-components/form/form-values'

@@ -23,7 +23,16 @@ import ConfirmInformation from "./confirm-information"
 
 const CreateProductPage = () => {
   const [currentStep, setCurrentStep] = useState(1)
-  const totalSteps = 5
+
+  const steps = [
+    { id: 1, title: "Thông tin sản phẩm" },
+    { id: 2, title: "Các biến thể" },
+    { id: 3, title: "Chất dinh dưỡng" },
+    { id: 4, title: "Các chứng chỉ" },
+    { id: 5, title: "Xác nhận thông tin" },
+  ]
+
+  const totalSteps = steps.length
 
   const form = useForm<z.infer<typeof CreateProductSafeTypes>>({
     resolver: zodResolver(CreateProductSafeTypes),
@@ -96,6 +105,14 @@ const CreateProductPage = () => {
 
       if (response) {
         toast.success("Tạo sản phẩm thành công")
+        form.reset({
+          categoryIds: [],
+          productVariants: [],
+          servingSize: "0",
+          nutritionFacts: [],
+          certificates: [],
+        });
+        setCurrentStep(1)
       } else {
         toast.error("Tạo sản phẩm thất bại")
       }
@@ -129,13 +146,6 @@ const CreateProductPage = () => {
 
   const isLastStep = currentStep === totalSteps
   const isFirstStep = currentStep === 1
-  const steps = [
-    { id: 1, title: "Thông tin sản phẩm" },
-    { id: 2, title: "Các biến thể" },
-    { id: 3, title: "Chất dinh dưỡng" },
-    { id: 4, title: "Các chứng chỉ" },
-    { id: 5, title: "Xác nhận thông tin" },
-  ]
 
   return (
     <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">

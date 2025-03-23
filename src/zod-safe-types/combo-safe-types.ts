@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const CreateComboSafeTypes = z.object({
     name: z.string({
-        required_error: "Vui lòng nhập tên loại sản phẩm.",
+        required_error: "Vui lòng nhập tên gói quà.",
     })
-        .min(1, { message: "Vui lòng nhập tên loại sản phẩm." })
+        .min(1, { message: "Vui lòng nhập tên gói quà." })
         .nonempty(),
     capacity: z.string().refine((val) => parseFloat(val) > 0, "Khối lượng tổng phải lớn hơn 0"),
     type: z.string({
@@ -14,9 +14,9 @@ export const CreateComboSafeTypes = z.object({
     }),
     eventId: z.string(),
     description: z.string({
-        required_error: "Vui lòng nhập mô tả loại sản phẩm.",
+        required_error: "Vui lòng nhập mô tả gói quà.",
     }).nonempty({
-        message: "Vui lòng nhập mô tả loại sản phẩm",
+        message: "Vui lòng nhập mô tả gói quà",
     }),
     image: z.any()
         .refine((file) => file != null, "Vui lòng chọn ảnh"),
@@ -39,9 +39,9 @@ export const CreateComboSafeTypes = z.object({
 export const UpdateComboSafeTypes = z.object({
     comboId: z.string(),
     name: z.string({
-        required_error: "Vui lòng nhập tên loại sản phẩm.",
+        required_error: "Vui lòng nhập tên gói quà.",
     })
-        .min(1, { message: "Vui lòng nhập tên loại sản phẩm." })
+        .min(1, { message: "Vui lòng nhập tên gói quà." })
         .nonempty(),
     capacity: z.string().refine((val) => parseFloat(val) > 0, "Khối lượng tổng phải lớn hơn 0"),
     type: z.string({
@@ -51,9 +51,9 @@ export const UpdateComboSafeTypes = z.object({
     }),
     eventId: z.string(),
     description: z.string({
-        required_error: "Vui lòng nhập mô tả loại sản phẩm.",
+        required_error: "Vui lòng nhập mô tả gói quà.",
     }).nonempty({
-        message: "Vui lòng nhập mô tả loại sản phẩm",
+        message: "Vui lòng nhập mô tả gói quà",
     }),
     image: z.any().optional()
 });

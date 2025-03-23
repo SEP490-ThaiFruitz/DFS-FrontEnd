@@ -35,12 +35,13 @@ interface InformationProps {
 interface Event {
     id: string;
     name: string;
+    image: string,
 }
 
 
 const Information = ({ combo }: Readonly<InformationProps>) => {
     const [isEditing, setIsEditing] = useState(false)
-    const { data: events } = useFetch<ApiResponse<PageResult<Event>>>("/Events?pageIndex=1&pageSize=1000", ["events"])
+    const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", ["events"])
     const comboTypes = [
         { id: "Fixed", name: "Cố định" },
         { id: "Custom", name: "Tùy chỉnh" },
@@ -150,7 +151,12 @@ const Information = ({ combo }: Readonly<InformationProps>) => {
                                     name="eventId"
                                     classNameInput='h-fit'
                                     placeholder='Chọn một sự kiện'
-                                    items={events?.value?.items}
+                                    items={events?.value?.map((event: Event) => ({
+                                        id: event.id,
+                                        name: event.name,
+                                        thumbnail: event.image
+                                    }))}
+                                    isImage
                                     disabled={form.formState.isSubmitting}
                                     label="Sự kiện"
                                 />

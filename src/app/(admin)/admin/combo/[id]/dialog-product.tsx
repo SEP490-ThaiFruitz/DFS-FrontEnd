@@ -10,6 +10,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { API } from '@/actions/client/api-config'
 import { AddSelectedProducts } from '@/zod-safe-types/combo-safe-types'
+import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized'
+import { WaitingSpinner } from '@/components/global-components/waiting-spinner'
 
 interface DialogProductProps {
     isOpen: boolean,
@@ -60,12 +62,24 @@ const DialogProduct = ({ maxQuantity, comboId, onClose, isOpen, oldProductVarian
                     <Button disabled={form.formState.isSubmitting} type="button" variant="outline" onClick={onClose}>
                         Hủy
                     </Button>
-                    <Button disabled={form.formState.isSubmitting}
-                        type="button"
-                        className='bg-green-700 hover:bg-green-700/60 text-white'
-                        onClick={form.handleSubmit(onSubmit)}>
-                        Xác nhận
-                    </Button>
+                    <ButtonCustomized
+                        type="submit"
+                        className="max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
+                        variant="secondary"
+                        disabled={form.formState.isSubmitting}
+                        label={
+                            form.formState.isSubmitting ? (
+                                <WaitingSpinner
+                                    variant="pinwheel"
+                                    label="Đang xác nhận..."
+                                    className="font-semibold "
+                                    classNameLabel="font-semibold text-sm"
+                                />
+                            ) : (
+                                "Xác nhận"
+                            )
+                        }
+                    />
                 </DialogFooter>
             </DialogContent>
         </Dialog>

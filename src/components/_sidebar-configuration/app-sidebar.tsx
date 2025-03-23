@@ -14,6 +14,7 @@ import {
   MessageSquareMore,
   Fan,
   Gift,
+  CalendarRange,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -107,6 +108,11 @@ const data = {
       name: "Gói quà",
       url: "/admin/combo",
       icon: Gift,
+    },
+    {
+      name: "Sự kiện",
+      url: "/admin/event",
+      icon: CalendarRange,
     },
   ],
 };

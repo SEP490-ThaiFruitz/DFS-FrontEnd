@@ -43,18 +43,14 @@ const ProductSelection = ({ form, maxQuantity, oldProductVariant }: ProductSelec
   )
 
   const products = apiResponse?.value?.map(product => {
-    const productVariants = product.productVariants.filter((variant: ProductVariant) =>
-      !oldProductVariant?.includes(variant.productVariantId)
-    );
-    if (productVariants.length > 0) {
-      return {
-        ...product,
-        productVariants
-      };
-    }
-    
-    return null;
-  })?.filter(product => product !== null) ?? [];
+    return {
+      ...product,
+      productVariants: product.productVariants.filter((variant: ProductVariant) =>
+        !oldProductVariant?.includes(variant.productVariantId)
+      )
+    };
+  }
+  )?.filter(product => product.productVariants.length > 0) ?? [];
 
   const [searchTerm, setSearchTerm] = useState("")
   const [quantities, setQuantities] = useState<Record<string, number>>(

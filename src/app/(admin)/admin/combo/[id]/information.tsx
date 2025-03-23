@@ -20,7 +20,7 @@ import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { API } from '@/actions/client/api-config';
 import { toast } from 'sonner';
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
-import { ApiResponse, PageResult } from '@/types/types';
+import { ApiResponse } from '@/types/types';
 import { FormSelectControl } from '@/components/global-components/form/form-select-control';
 import { UpdateComboSafeTypes } from '@/zod-safe-types/combo-safe-types';
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control';
@@ -228,7 +228,7 @@ const Information = ({ combo }: Readonly<InformationProps>) => {
                                     <div className="font-bold">Sự kiện:</div>
                                     <div className="text-base font-medium">
                                         {
-                                            events?.value?.items?.find((event: Event) => event.id === combo?.eventId)?.name ?? "—"
+                                            events?.value?.find((event: Event) => event.id === combo?.eventId)?.name ?? "—"
                                         }
                                     </div>
                                 </div>

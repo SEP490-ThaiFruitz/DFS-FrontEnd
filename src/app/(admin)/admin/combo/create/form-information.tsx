@@ -7,7 +7,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
-import { ApiResponse, PageResult } from '@/types/types'
+import { ApiResponse } from '@/types/types'
 
 
 interface FormInformationProps {
@@ -17,10 +17,11 @@ interface FormInformationProps {
 interface Event {
     id: string;
     name: string;
+    image: string;
 }
 
 const FormInformation = ({ formCombo }: Readonly<FormInformationProps>) => {
-    const { data: events } = useFetch<ApiResponse<PageResult<Event>>>("/Events?pageIndex=1&pageSize=1000", ["events"])
+    const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", ["events"])
     const comboTypes = [
         { id: "Fixed", name: "Cố định" },
         { id: "Custom", name: "Tùy chỉnh" },
@@ -59,7 +60,11 @@ const FormInformation = ({ formCombo }: Readonly<FormInformationProps>) => {
                         name="eventId"
                         classNameInput='h-fit'
                         placeholder='Chọn một sự kiện'
-                        items={events?.value?.items}
+                        items={events?.value?.map((event: Event) => ({
+                            id: event.id,
+                            name: event.name,
+                            thumbnail: event.image
+                        }))}
                         disabled={formCombo.formState.isSubmitting}
                         label="Sự kiện"
                     />

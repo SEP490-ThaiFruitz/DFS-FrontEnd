@@ -103,7 +103,7 @@ export function EnhanceDataTable<TData, TValue>({
             <TabsTrigger value="reorderable">Thay dổi vị trí dòng</TabsTrigger>
           </TabsList>
           <TabsContent value="full-featured">
-            <Card>
+            <Card className="cardStyle">
               <CardHeader>
                 <CardTitle>Tất cả tính năng</CardTitle>
                 <CardDescription>
@@ -114,7 +114,7 @@ export function EnhanceDataTable<TData, TValue>({
               </CardHeader>
               <CardContent>
                 <EnhancedTable.Root
-                  data={data}
+                  data={initialData}
                   columns={columns}
                   enableExpansion={enableExpansion}
                   enableSelection={enableSelection}
@@ -163,7 +163,7 @@ export function EnhanceDataTable<TData, TValue>({
             </Card>
           </TabsContent>
           <TabsContent value="sortable">
-            <Card>
+            <Card className="cardStyle">
               <CardHeader>
                 <CardTitle>Sắp xếp cột</CardTitle>
                 <CardDescription>
@@ -173,7 +173,7 @@ export function EnhanceDataTable<TData, TValue>({
               </CardHeader>
               <CardContent>
                 <EnhancedTable.Root
-                  data={data}
+                  data={initialData}
                   columns={columns}
                   enableColumnReorder
                 >
@@ -192,7 +192,7 @@ export function EnhanceDataTable<TData, TValue>({
             </Card>
           </TabsContent>
           <TabsContent value="reorderable">
-            <Card>
+            <Card className="cardStyle">
               <CardHeader>
                 <CardTitle>Sắp xếp dòng</CardTitle>
                 <CardDescription>
@@ -202,7 +202,7 @@ export function EnhanceDataTable<TData, TValue>({
               </CardHeader>
               <CardContent>
                 <EnhancedTable.Root
-                  data={data}
+                  data={initialData}
                   columns={columns}
                   enableRowReorder
                   rowReorderKey="lastName"

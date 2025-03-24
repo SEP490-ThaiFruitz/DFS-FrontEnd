@@ -39,36 +39,46 @@ import {
 import { format, formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { OrderData } from "@/types/report-orders.types";
-import { OrderStatusBadge } from "./order-status-badge";
+import {
+  OrderData,
+  OrderStatusEnum,
+  OrderStatusKey,
+} from "@/types/report-orders.types";
+import {
+  OrderStatusBadge,
+  StatusBar,
+  UpdateStatusButtonDropdown,
+} from "./order-status-badge";
 import { formatVND } from "@/lib/format-currency";
 import { formatRelativeTime, vietnameseDate } from "@/utils/date";
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
+import axios from "axios";
+import { API } from "@/app/key/url";
+import { toast } from "sonner";
 
 // Update the getStatusStep function to reflect the new order flow
 // Get status step
 const getStatusStep = (status: string) => {
   switch (status.toLowerCase()) {
-    case "waiting":
+    case OrderStatusEnum.PENDING:
       return 0;
-    case "packaging":
+    case OrderStatusEnum.CONFIRMED:
       return 1;
-    case "delivering":
+    case OrderStatusEnum.PACKAGING:
       return 2;
-    case "delivered":
+    case OrderStatusEnum.SHIPPING:
       return 3;
-    case "cancel":
+    case OrderStatusEnum.DELIVERING:
+      return 4;
+    case OrderStatusEnum.DELIVERED:
+      return 5;
+    case OrderStatusEnum.RECEIVED:
+      return 6;
+    case OrderStatusEnum.CANCELLED:
       return -1;
-    // Keep backward compatibility with old status names
-    case "pending":
-      return 0;
-    case "confirmed":
-      return 1;
-    case "shipped":
-      return 2;
-    case "cancelled":
-      return -1;
+    case OrderStatusEnum.RETURNED: // Old status name
+      return 7;
     default:
       return 0;
   }
@@ -82,55 +92,7 @@ const getUserInitials = (name: string) => {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 };
 
-interface SortButtonProps<T> {
-  column: ColumnDef<T>;
-  label: string;
-}
-
-const SortButton = <T,>({
-  column,
-  label,
-}: Partial<HeaderContext<T, unknown>> & { label: string }) => {
-  return (
-    <Button
-      variant="ghost"
-      onClick={() => column?.toggleSorting(column?.getIsSorted() === "asc")}
-      className="whitespace-nowrap"
-    >
-      {label}
-      <ArrowUpDown className="ml-2 h-4 w-4" />
-    </Button>
-  );
-};
-
 export const orderListColumns: ColumnDef<OrderData>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //       className="rounded-md"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //       className="rounded-md"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  //   filterFn: "filterRows",
-
-  //   meta: { export: { pdf: false } },
-  // },
   {
     id: "id",
     accessorKey: "id",
@@ -164,12 +126,11 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     },
     minSize: 180,
 
-    meta: { align: "center", export: { pdf: { header: "Id" } } },
+    meta: { align: "center", export: { pdf: { header: "Mã đơn hàng" } } },
     filterFn: "filterRows",
   },
   {
     id: "status",
-
     accessorKey: "status",
     header: ({ column }) => {
       return <span>Trạng thái đơn hàng</span>;
@@ -180,48 +141,34 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
 
       if (statusStep === -1) {
         return (
-          <Badge
-            variant="destructive"
+          <AdvancedColorfulBadges
             className="flex items-center gap-1 w-fit"
+            color="red"
           >
             <XCircle className="h-3.5 w-3.5" />
             <span>Đã hủy</span>
-          </Badge>
+          </AdvancedColorfulBadges>
+        );
+      } else if (statusStep === 7) {
+        return (
+          <AdvancedColorfulBadges
+            className="flex items-center gap-1 w-fit"
+            color="rose"
+          >
+            <XCircle className="h-3.5 w-3.5" />
+            <span>Đã trả hàng</span>
+          </AdvancedColorfulBadges>
         );
       }
 
       return (
         <div className="flex flex-col gap-2">
-          <OrderStatusBadge status={status} />
+          <OrderStatusBadge
+            status={status.toLowerCase()}
+            orderId={row.original.id}
+          />
 
-          <div className="flex items-center gap-1 w-full max-w-[180px]">
-            <div
-              className={`h-1.5 w-1/4 rounded-l-full ${
-                statusStep >= 0
-                  ? "bg-amber-500"
-                  : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            ></div>
-            <div
-              className={`h-1.5 w-1/4 ${
-                statusStep >= 1 ? "bg-sky-500" : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            ></div>
-            <div
-              className={`h-1.5 w-1/4 ${
-                statusStep >= 2
-                  ? "bg-indigo-500"
-                  : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            ></div>
-            <div
-              className={`h-1.5 w-1/4 rounded-r-full ${
-                statusStep >= 3
-                  ? "bg-green-500"
-                  : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            ></div>
-          </div>
+          <StatusBar statusStep={statusStep} />
         </div>
       );
     },
@@ -311,12 +258,12 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
       if (!hasDiscount) {
         return (
           <div className="flex items-center">
-            <Badge
-              variant="outline"
+            <AdvancedColorfulBadges
+              // variant="outline"
               className="text-slate-700 bg-slate-50 dark:bg-slate-800/30 font-thin"
             >
               Không có
-            </Badge>
+            </AdvancedColorfulBadges>
           </div>
         );
       }
@@ -455,7 +402,16 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     header: "Thao tác",
     cell: ({ row }) => {
       const order = row.original;
-      const status = order.status.toLowerCase();
+
+      const status = (row.getValue("status") as string).toLowerCase();
+      // const status = order.status.toLowerCase();
+
+      const conditionalUpdate =
+        status !== "received" &&
+        status !== "cancelled" &&
+        status !== "returned";
+
+      console.log("status", status);
 
       return (
         <div className="flex items-center justify-end gap-2">
@@ -467,12 +423,12 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Xem chi tiết</p>
+                <span>Xem chi tiết</span>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
-          <TooltipProvider>
+          {/* <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
@@ -480,10 +436,10 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Chỉnh sửa</p>
+                <span>Chỉnh sửa</span>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -495,53 +451,50 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             <DropdownMenuContent align="end" className="w-[200px]">
               <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(order.id)}
-                className="flex items-center gap-2"
+                onClick={() => {
+                  navigator.clipboard.writeText(order.code);
+                  toast.success("Đã sao chép mã đơn hàng");
+                }}
+                className="flex items-center gap-2 cursor-pointer"
               >
                 <Copy className="h-4 w-4" />
                 <span>Sao chép mã</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
-              {(status === "waiting" || status === "pending") && (
-                <DropdownMenuItem className="flex items-center gap-2 text-sky-600 focus:text-sky-600">
-                  <PackageOpen className="h-4 w-4" />
-                  <span>Chuyển sang đóng gói</span>
-                </DropdownMenuItem>
+              {conditionalUpdate && (
+                <UpdateStatusButtonDropdown
+                  orderId={row.original.id}
+                  status={status.toLowerCase()}
+                />
               )}
 
-              {status === "packaging" && (
-                <DropdownMenuItem className="flex items-center gap-2 text-indigo-600 focus:text-indigo-600">
-                  <Truck className="h-4 w-4" />
-                  <span>Chuyển sang đang giao</span>
-                </DropdownMenuItem>
-              )}
+              <DropdownMenuSeparator />
 
-              {(status === "delivering" || status === "shipped") && (
-                <DropdownMenuItem className="flex items-center gap-2 text-green-600 focus:text-green-600">
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>Xác nhận đã giao</span>
-                </DropdownMenuItem>
+              {conditionalUpdate && (
+                <>
+                  <UpdateStatusButtonDropdown
+                    orderId={row.original.id}
+                    status="returned"
+                    isReturned
+                  />
+                </>
               )}
-
-              {status !== "cancel" &&
-                status !== "cancelled" &&
-                status !== "delivered" && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="flex items-center gap-2 text-destructive focus:text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                      <span>Hủy đơn hàng</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
+              {conditionalUpdate && (
+                <>
+                  <UpdateStatusButtonDropdown
+                    orderId={row.original.id}
+                    status="cancelled"
+                    isCancelled
+                  />
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       );
     },
 
-    // meta: { align: "center", export: { pdf: { header: "Id" } } },
     meta: {
       align: "right",
       export: { pdf: false },

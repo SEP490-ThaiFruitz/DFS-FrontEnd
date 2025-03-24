@@ -172,7 +172,7 @@ export default function RevenueDashboard() {
   );
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/20">
+    <div className="flex min-h-screen w-full flex-col ">
       <div className="flex flex-col">
         <HeaderTitle />
         <main className="flex-1 space-y-6 p-6">
@@ -188,23 +188,6 @@ export default function RevenueDashboard() {
                 <div className="text-2xl font-bold">
                   {formatVND(reportRevenue.data?.value?.totalRevenue ?? 0)}
                 </div>
-                {/* <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.revenueChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.revenueChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.revenueChange}
-                  </span>{" "}
-                  Từ kỳ trước
-                </p> */}
               </CardContent>
             </Card>
             <TotalCard
@@ -314,7 +297,11 @@ export default function RevenueDashboard() {
                     {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="date" />
-                    <YAxis tickFormatter={formatVND} width={80} />
+                    <YAxis
+                      tickFormatter={formatVND}
+                      width={80}
+                      allowDataOverflow
+                    />
                     {/* <Tooltip
                         formatter={(value) => [
                           formatCurrency(value),

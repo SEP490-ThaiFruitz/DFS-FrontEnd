@@ -48,14 +48,29 @@ export type OrderData = {
   modifiedOnUtc: string | null;
 };
 
-export enum OrderStatus {
-  Pending = "Đơn hàng đang chờ xử lý", // Đơn hàng đang chờ xử lý
-  Confirmed = "Đơn hàng đã được xác nhận", // Đơn hàng đã được xác nhận
-  Packing = "Đơn hàng đang được đóng gói", // Đơn hàng đang được đóng gói
-  Shipping = "Đơn hàng đang được vận chuyển", // Đơn hàng đang được vận chuyển
-  Delivering = "Đơn hàng đang trên đường giao tới khách hàng", // Đơn hàng đang trên đường giao tới khách hàng
-  Delivered = "Đơn hàng đã được giao đến khách hàng", // Đơn hàng đã được giao đến khách hàng
-  Received = "Đơn hàng đã được nhận bởi khách hàng", // Đơn hàng đã được nhận bởi khách hàng
-  Cancelled = "Đơn hàng đã bị hủy", // Đơn hàng đã bị hủy
-  Returned = "Đơn hàng đã được trả lại", // Đơn hàng đã được trả lại
+export enum OrderStatusEnum {
+  PENDING = "pending",
+  CONFIRMED = "confirmed",
+  PACKAGING = "packaging",
+  SHIPPING = "shipping",
+  DELIVERING = "delivering",
+  DELIVERED = "delivered",
+  RECEIVED = "received",
+  CANCELLED = "cancelled",
+  RETURNED = "returned",
 }
+export const OrderStatus = {
+  pending: "Đơn hàng đang chờ xử lý",
+  confirmed: "Đơn hàng đã được xác nhận",
+  packaging: "Đơn hàng đang được đóng gói",
+  shipping: "Đơn hàng đang được vận chuyển",
+  delivering: "Đơn hàng đang trên đường giao tới khách hàng",
+  delivered: "Đơn hàng đã được giao đến khách hàng",
+  received: "Đơn hàng đã được nhận bởi khách hàng",
+  cancelled: "Đơn hàng bị hủy",
+  returned: "Đơn hàng được trả lại",
+} as const;
+
+export type OrderStatusType = keyof typeof OrderStatus;
+
+export const OrderStatusKey = Object.keys(OrderStatus) as OrderStatusType[];

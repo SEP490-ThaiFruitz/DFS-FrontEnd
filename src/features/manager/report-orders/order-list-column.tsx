@@ -42,27 +42,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { OrderData } from "@/types/report-orders.types";
 import { OrderStatusBadge } from "./order-status-badge";
 import { formatVND } from "@/lib/format-currency";
-
-// Format date
-const formatDate = (dateString: string) => {
-  try {
-    return format(new Date(dateString), "dd/MM/yyyy HH:mm");
-  } catch (error) {
-    return dateString;
-  }
-};
-
-// Format relative time
-const formatRelativeTime = (dateString: string) => {
-  try {
-    return formatDistanceToNow(new Date(dateString), {
-      addSuffix: true,
-      locale: vi,
-    });
-  } catch (error) {
-    return dateString;
-  }
-};
+import { formatRelativeTime, vietnameseDate } from "@/utils/date";
+import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
+import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 
 // Update the getStatusStep function to reflect the new order flow
 // Get status step
@@ -122,34 +104,38 @@ const SortButton = <T,>({
 };
 
 export const orderListColumns: ColumnDef<OrderData>[] = [
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //       className="rounded-md"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //       className="rounded-md"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  //   filterFn: "filterRows",
+
+  //   meta: { export: { pdf: false } },
+  // },
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="rounded-md"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="rounded-md"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
+    id: "id",
     accessorKey: "id",
     header: ({ column }) => {
-      return <SortButton<OrderData> column={column} label="Mã đơn hàng" />;
+      return <span className="">Mã đơn hàng</span>;
     },
     cell: ({ row }) => {
       const order = row.original;
@@ -157,7 +143,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
       const statusColor =
         statusStep === -1
           ? "bg-red-50 text-red-600 dark:bg-red-900/20"
-          : "bg-blue-50 text-blue-600 dark:bg-blue-900/20";
+          : "bg-sky-50 text-sky-600 dark:bg-sky-900/20";
 
       return (
         <div className="flex flex-col min-w-[180px]">
@@ -177,12 +163,16 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
       );
     },
     minSize: 180,
+
+    meta: { align: "center", export: { pdf: { header: "Id" } } },
+    filterFn: "filterRows",
   },
-  // Update the cell renderer for the status column
   {
+    id: "status",
+
     accessorKey: "status",
     header: ({ column }) => {
-      return <SortButton<OrderData> column={column} label="Trạng thái" />;
+      return <span>Trạng thái đơn hàng</span>;
     },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
@@ -214,7 +204,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             ></div>
             <div
               className={`h-1.5 w-1/4 ${
-                statusStep >= 1 ? "bg-blue-500" : "bg-gray-200 dark:bg-gray-700"
+                statusStep >= 1 ? "bg-sky-500" : "bg-gray-200 dark:bg-gray-700"
               }`}
             ></div>
             <div
@@ -235,22 +225,19 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
         </div>
       );
     },
+
+    meta: {
+      align: "center",
+      export: { pdf: { header: "Trạng thái đơn hàng" } },
+    },
+    filterFn: "filterRows",
   },
   {
+    id: "totalPrice",
+
     accessorKey: "totalPrice",
     header: ({ column }) => {
-      return (
-        <div className="">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="whitespace-nowrap"
-          >
-            Tổng tiền
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      );
+      return <span className="">Tổng tiền</span>;
     },
     cell: ({ row }) => {
       const totalPrice = row.getValue("totalPrice") as number;
@@ -270,7 +257,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                 priceTier === "high"
                   ? "bg-green-50 text-green-600 dark:bg-green-900/20"
                   : priceTier === "medium"
-                  ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
+                  ? "bg-sky-50 text-sky-600 dark:bg-sky-900/20"
                   : "bg-gray-50 text-gray-600 dark:bg-gray-800/20"
               }`}
             >
@@ -281,32 +268,40 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                 priceTier === "high"
                   ? "text-green-600"
                   : priceTier === "medium"
-                  ? "text-blue-600"
+                  ? "text-sky-600"
                   : ""
               }`}
             >
               {formatVND(totalPrice)}
             </span>
           </div>
-          <div className="flex flex-col mt-1 text-xs text-muted-foreground pl-9">
+          <div className="flex flex-col mt-1 text-xs text-muted-foreground pl-9 gap-2">
             <div className="flex justify-between">
-              <span>Tiền hàng:</span>
-              <span className="font-semibold">{formatVND(subtotal)}</span>
+              <span className="font-semibold">Tiền hàng:</span>
+              <span className="font-semibold text-sky-600">
+                {formatVND(subtotal)}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span>Phí ship:</span>
-              <span className="font-semibold">{formatVND(shipFee)}</span>
+              <span className="font-semibold">Phí ship:</span>
+              <span className="font-semibold text-sky-600">
+                {formatVND(shipFee)}
+              </span>
             </div>
           </div>
         </div>
       );
     },
     sortDescFirst: true,
+
+    meta: { align: "center", export: { pdf: { header: "Tổng tiền" } } },
+    filterFn: "filterRows",
   },
   {
+    id: "voucher",
     accessorKey: "voucher",
     header: ({ column }) => {
-      return <SortButton<OrderData> column={column} label="Giảm giá" />;
+      return <span>Giảm giá</span>;
     },
     cell: ({ row }) => {
       const voucher = row.original.voucher;
@@ -318,7 +313,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
           <div className="flex items-center">
             <Badge
               variant="outline"
-              className="text-muted-foreground bg-gray-50 dark:bg-gray-800/30"
+              className="text-slate-700 bg-slate-50 dark:bg-slate-800/30 font-thin"
             >
               Không có
             </Badge>
@@ -329,39 +324,46 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
       return (
         <div className="flex flex-col gap-1">
           {voucher !== null && (
-            <Badge
-              variant="secondary"
-              className="w-fit bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300"
+            <AdvancedColorfulBadges
+              // variant="secondary"
+              className="w-fit font-thin"
+              color={voucher !== null ? "indigo" : "blush"}
+              // className="w-fit bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300"
             >
               {voucher.name}
-            </Badge>
+            </AdvancedColorfulBadges>
           )}
           {pointUsed > 0 && (
-            <Badge
-              variant="secondary"
-              className="w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300"
+            <AdvancedColorfulBadges
+              className="w-fit font-thin"
+              color={pointUsed > 0 ? "amber" : "sapphire"}
+              // variant="secondary"
+              // className="w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300"
             >
               Điểm: {pointUsed} pts
-            </Badge>
+            </AdvancedColorfulBadges>
           )}
         </div>
       );
     },
+    meta: { align: "center", export: { pdf: { header: "Voucher" } } },
+    filterFn: "filterRows",
   },
   {
+    id: "user",
     accessorKey: "user",
     header: ({ column }) => {
-      return <SortButton<OrderData> column={column} label="Khách hàng" />;
+      return <span>Khách hàng</span>;
     },
     cell: ({ row }) => {
       const user = row.original.user;
       const userInitials = getUserInitials(user.name);
 
       return (
-        <TooltipProvider>
+        <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 max-w-[150px]">
+              <div className="flex items-center gap-2 max-w-[150px] hover:underline transition duration-300 cursor-pointer">
                 <Avatar className="h-8 w-8">
                   {user.avatar ? (
                     <AvatarImage src={user.avatar} alt={user.name} />
@@ -370,11 +372,11 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex flex-col">
-                  <span className="truncate font-medium text-sm">
+                <div className="flex flex-col items-start">
+                  <span className="truncate font-bold text-sm ">
                     {user.name}
                   </span>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1 text-xs text-violet-600">
                     <ExternalLink className="h-3 w-3" />
                     <span className="truncate">{user.email}</span>
                   </div>
@@ -383,35 +385,32 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
-                <p className="font-medium">{user.name}</p>
+                <p className="text-sm font-bold">{user.name}</p>
                 <p className="text-xs">{user.email}</p>
-                {user.phone && <p className="text-xs">SĐT: {user.phone}</p>}
+                {user.phone && (
+                  <p className="text-xs">
+                    SĐT: {formatVietnamesePhoneNumber(user.phone)}
+                  </p>
+                )}
               </div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
     },
+
+    meta: { align: "center", export: { pdf: { header: "Khách hàng" } } },
+    filterFn: "filterRows",
   },
   {
+    id: "createdOnUtc",
     accessorKey: "createdOnUtc",
     header: ({ column }) => {
-      return (
-        <div className="">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="whitespace-nowrap"
-          >
-            Ngày tạo
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      );
+      return <span className="">Ngày tạo</span>;
     },
     cell: ({ row }) => {
       const createdOnUtc = row.getValue("createdOnUtc") as string;
-      const formattedDate = formatDate(createdOnUtc);
+      const formattedDate = vietnameseDate(new Date(createdOnUtc));
       const relativeTime = formatRelativeTime(createdOnUtc);
 
       // Calculate how recent the order is
@@ -422,22 +421,22 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
       const isRecent = daysSince < 1;
 
       return (
-        <div className="flex flex-col min-w-[150px]">
+        <div className="flex flex-col items-start  min-w-[150px]">
           <div className="flex items-center gap-2">
             <div
               className={`p-1.5 rounded-md ${
                 isRecent
-                  ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                  : "bg-gray-50 text-gray-600 dark:bg-gray-800/20"
+                  ? "bg-sky-50 text-sky-600 dark:bg-sky-900/20"
+                  : "bg-slate-50 text-slate-600 dark:bg-slate-800/20"
               }`}
             >
               <Calendar className="h-4 w-4" />
             </div>
-            <span>{formattedDate}</span>
+            <span className="font-light">{formattedDate}</span>
           </div>
           <span
             className={`text-xs pl-9 mt-0.5 ${
-              isRecent ? "text-blue-600 font-medium" : "text-muted-foreground"
+              isRecent ? "text-sky-600 font-medium" : "text-slate-700"
             }`}
           >
             {relativeTime}
@@ -446,11 +445,13 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
         </div>
       );
     },
+
+    meta: { align: "center", export: { pdf: { header: "Ngày tạo" } } },
+    filterFn: "filterRows",
   },
   // Update the actions dropdown menu to match the new status flow
   {
     id: "actions",
-    enableHiding: false,
     header: "Thao tác",
     cell: ({ row }) => {
       const order = row.original;
@@ -458,7 +459,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
 
       return (
         <div className="flex items-center justify-end gap-2">
-          <TooltipProvider>
+          <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
@@ -503,7 +504,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
               <DropdownMenuSeparator />
 
               {(status === "waiting" || status === "pending") && (
-                <DropdownMenuItem className="flex items-center gap-2 text-blue-600 focus:text-blue-600">
+                <DropdownMenuItem className="flex items-center gap-2 text-sky-600 focus:text-sky-600">
                   <PackageOpen className="h-4 w-4" />
                   <span>Chuyển sang đóng gói</span>
                 </DropdownMenuItem>
@@ -539,5 +540,14 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
         </div>
       );
     },
+
+    // meta: { align: "center", export: { pdf: { header: "Id" } } },
+    meta: {
+      align: "right",
+      export: { pdf: false },
+    },
+    filterFn: "filterRows",
+
+    // enableHiding: false,
   },
 ];

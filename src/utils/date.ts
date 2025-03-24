@@ -1,4 +1,5 @@
-import { eachDayOfInterval, format } from "date-fns";
+import { eachDayOfInterval, format, formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
 
 export const YYYY_MM_DD = "yyyy-MM-dd";
 
@@ -7,24 +8,6 @@ export const createDateRange = (fromDate: string, toDate: string) => {
     start: new Date(fromDate),
     end: new Date(toDate),
   }).map((date) => format(date, YYYY_MM_DD)); // Đảm bảo định dạng ngày giống trong dữ liệu của bạn
-};
-
-export const fillMissingDates = <T>(
-  data: T[],
-  allDates: string[],
-  fieldDate: keyof T & string,
-  fieldValue: keyof T & string
-) => {
-  // Khởi tạo dataMap với kiểu Record<string, number> để đảm bảo giá trị là số
-  const dataMap = data.reduce((acc, curr) => {
-    acc[curr[fieldDate] as string] = curr[fieldValue] as number; // Đảm bảo giá trị của fieldValue là số
-    return acc;
-  }, {} as Record<string, number>);
-
-  return allDates.map((date) => ({
-    date,
-    revenue: dataMap[date] || 0, // Nếu không có doanh thu cho ngày này thì gán 0
-  }));
 };
 
 export const formatDateFns = (date: Date) => {
@@ -79,4 +62,31 @@ export const fillMissingDatesDynamics = <T>(
 
     return result;
   });
+};
+
+export const formatDate = (dateString: string) => {
+  try {
+    return format(new Date(dateString), "dd/MM/yyyy HH:mm");
+  } catch (error) {
+    return dateString;
+  }
+};
+
+export const formatRelativeTime = (dateString: string) => {
+  try {
+    return formatDistanceToNow(new Date(dateString), {
+      addSuffix: true,
+      locale: vi,
+    });
+  } catch (error) {
+    return dateString;
+  }
+};
+
+const daysSince = (date: string | Date) => {
+  return (
+    Math.floor(
+      (new Date().getTime() - new Date(date).getTime()) / (1000 * 3600 * 24)
+    ) < 1
+  );
 };

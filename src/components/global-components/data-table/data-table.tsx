@@ -94,6 +94,7 @@ import { exportTableToCSV } from "@/lib/export-excel";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableSkeleton } from "../custom-skeleton/data-table-skeleton";
+import { filterRows } from "@/components/enhanced-table/composition-pattern/filters/utils";
 
 interface DataTableProps<T> {
   data: T[];
@@ -156,6 +157,10 @@ export function DataTable<T>({
       columnFilters,
       columnVisibility,
       rowSelection,
+    },
+
+    filterFns: {
+      filterRows: filterRows,
     },
   });
 

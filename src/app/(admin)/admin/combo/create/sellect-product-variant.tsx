@@ -44,10 +44,14 @@ const SellectProductVariant = ({ formCombo }: Readonly<SellectProductVariantProp
                                     </Button>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm mt-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-3 text-sm mt-2">
                                     <div className="space-y-1.5">
                                         <div className="text-muted-foreground font-medium">Trọng lượng</div>
                                         <div className="font-semibold text-xl text-primary">{variant.netWeight}g</div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <div className="text-muted-foreground font-medium">Số lượng</div>
+                                        <div className="font-semibold text-xl text-primary">{variant.quantity}</div>
                                     </div>
                                     <div className="space-y-1.5">
                                         <div className="text-muted-foreground font-medium">Giá</div>

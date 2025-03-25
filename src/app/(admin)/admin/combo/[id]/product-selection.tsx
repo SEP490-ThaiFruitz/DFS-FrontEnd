@@ -38,7 +38,7 @@ interface ProductSelectionProps {
 const ProductSelection = ({ form, maxQuantity, oldProductVariant }: ProductSelectionProps) => {
 
   const { data: apiResponse } = useFetch<ApiResponse<Product[]>>(
-    '/Combos/products',
+    '/Products/select-products',
     ["Combos", "Products"],
   )
 

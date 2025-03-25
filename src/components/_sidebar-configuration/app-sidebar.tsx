@@ -15,6 +15,8 @@ import {
   Fan,
   Gift,
   CalendarRange,
+  Warehouse,
+  NotebookPen,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -113,6 +115,16 @@ const data = {
       name: "Sự kiện",
       url: "/admin/event",
       icon: CalendarRange,
+    },
+    {
+      name: "Kho",
+      url: "/admin/inventory",
+      icon: Warehouse,
+    },
+    {
+      name: "Kế hoạch",
+      url: "/admin/plan",
+      icon: NotebookPen,
     },
   ],
 };

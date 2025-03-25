@@ -66,6 +66,7 @@ const DialogProduct = ({ maxQuantity, comboId, onClose, isOpen, oldProductVarian
                         type="submit"
                         className="max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
                         variant="secondary"
+                        onClick={form.handleSubmit(onSubmit)}
                         disabled={form.formState.isSubmitting}
                         label={
                             form.formState.isSubmitting ? (

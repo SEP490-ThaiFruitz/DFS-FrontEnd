@@ -89,7 +89,7 @@ const Variant = ({ combo }: Readonly<VariantProps>) => {
             <Tabs>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between border-b-2">
-                        <CardTitle>Sản phẩm</CardTitle>
+                        <CardTitle>Sản phẩm ({totalQuantity})</CardTitle>
                         {totalQuantity < combo.capacity && !combo.isLocked && (<Button onClick={() => setIsCreate(true)} variant="outline">
                             <CirclePlus />
                             Thêm mới

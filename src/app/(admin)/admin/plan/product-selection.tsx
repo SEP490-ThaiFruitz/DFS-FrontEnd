@@ -8,18 +8,19 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { formatVND } from "@/lib/format-currency"
 import type { ApiResponse } from "@/types/types"
-import { ChevronDown, ChevronRight, MinusCircle, PlusCircle, Search } from "lucide-react"
+import { AlertTriangle, ChevronDown, ChevronRight, MinusCircle, PlusCircle, Search } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
-import { toast } from "sonner"
 
 interface ProductVariant {
   productVariantId: string
   image: string
   netWeight: number
   packageType: string
-  price: number
+  price: number,
+  lowQuantity: number,
+  warningPercentage: number,
 }
 
 interface Product {
@@ -31,7 +32,7 @@ interface Product {
 
 interface ProductSelectionProps {
   form: UseFormReturn<any>,
-  isUpdate: boolean,
+  isUpdate: boolean
 }
 
 const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
@@ -39,19 +40,19 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
     '/Products/select-products',
     ["Combos", "Products"],
   )
-  const maxQuantity = form.getValues("capacity")
 
   const products = apiResponse?.value || []
+  const defaultProducrs = form.getValues("requestItems")
   const [searchTerm, setSearchTerm] = useState("")
   const [quantities, setQuantities] = useState<Record<string, number>>(
-    form.getValues("selectedProducts").reduce((quantities: Record<string, number>, variant: any) => {
+    defaultProducrs.reduce((quantities: Record<string, number>, variant: any) => {
       quantities[variant.variantId] = variant.quantity;
       return quantities;
     }, {})
   );
-  const totalQuantity = Object.values(quantities).reduce((total, num) => total + num, 0)
+
   const [expandedProducts, setExpandedProducts] = useState<string[]>(
-    form.getValues("selectedProducts").reduce((expandedProducts: string[], variant: any) => {
+    defaultProducrs.reduce((expandedProducts: string[], variant: any) => {
 
       expandedProducts.push(variant.productId);
 
@@ -61,7 +62,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
   const filteredProducts = products.filter((product: Product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
   const [selectedVariants, setSelectedVariants] = useState<string[]>(
-    form.getValues("selectedProducts").reduce((variants: string[], variant: any) => {
+    defaultProducrs.reduce((variants: string[], variant: any) => {
       return [...variants, variant.variantId];
     }, [])
   );
@@ -95,9 +96,6 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
     }, [])
 
     if (isChecked) {
-      if (!handleMaxQuantity(variantIds.length)) {
-        return []
-      }
       // Select all variants of this product
       const newSelectedVariants = [...selectedVariants]
 
@@ -132,9 +130,6 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
   // Handle variant selection
   const handleSelectVariant = (variantId: string, isChecked: boolean) => {
     if (isChecked) {
-      if (!handleMaxQuantity(1)) {
-        return;
-      }
       setSelectedVariants((prev) => [...prev, variantId])
 
       setQuantities((prev) => ({ ...prev, [variantId]: 1 }))
@@ -165,13 +160,12 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
             packageType: variant.packageType,
             netWeight: variant.netWeight,
             price: variant.price,
-            quantity: quantities[variant.productVariantId] || 1,
-
+            quantity: quantities[variant.productVariantId] || 1
           })
         })
       }
     }
-    form.setValue("selectedProducts", selectedItems, { shouldValidate: true })
+    form.setValue("requestItems", selectedItems.length > 0 ? selectedItems : defaultProducrs, { shouldValidate: true })
   }
 
   useEffect(() => {
@@ -185,8 +179,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
   const handleQuantityChange = (variantId: string, value: number) => {
     // Ensure quantity is at least 1
     const newValue = Math.max(1, value)
-    if (handleMaxQuantity(quantities[variantId] > value ? -1 : 1))
-      setQuantities((prev) => ({ ...prev, [variantId]: newValue }))
+    setQuantities((prev) => ({ ...prev, [variantId]: newValue }))
   }
 
   // Handle select all
@@ -213,9 +206,6 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
           acc[id] = 1
           return acc
         }, {} as Record<string, number>)
-        if (!handleMaxQuantity(Object.values(newQuantities).reduce((total, num) => total + num, 0))) {
-          return [...selectedVariants]
-        }
         setQuantities(newQuantities)
         setExpandedProducts(products.map((p) => p.productId))
         return allVariantIds
@@ -223,13 +213,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
     })
 
   }
-  const handleMaxQuantity = (quantity: number) => {
-    if ((totalQuantity + quantity) > maxQuantity) {
-      toast.error(`Số lượng tối đa ${maxQuantity}`)
-      return false;
-    }
-    return true;
-  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -247,11 +231,8 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
           Xóa bộ lọc
         </Button>
       </div>
-      <div className="mt-3">
-        (Số lượng tối đa {totalQuantity}  /{maxQuantity})
-      </div>
-      {form.formState.errors.selectedProducts && (
-        <div className="text-sm text-red-500 mt-1">{form.formState.errors.selectedProducts.message as string}</div>
+      {form.formState.errors.requestItems && (
+        <div className="text-sm text-red-500 mt-1">{form.formState.errors.requestItems.message as string}</div>
       )}
 
       <div className="border rounded-md">
@@ -272,6 +253,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
               <TableHead>Tên sản phẩm / Biến thể</TableHead>
               <TableHead className="text-right">Giá gốc</TableHead>
               <TableHead className="text-center">Số lượng</TableHead>
+              <TableHead className="text-center">Cảnh báo</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -286,6 +268,9 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                 const isExpanded = expandedProducts.includes(product.productId)
                 const isFullySelected = isProductFullySelected(product)
                 const isPartiallySelected = isProductPartiallySelected(product)
+                const lowStocks = product.productVariants.reduce((variantTotal: number, productVariant: ProductVariant) => {
+                  return productVariant.warningPercentage < 100 ? variantTotal + 1 : variantTotal;
+                }, 0);
 
                 // Product row
                 const productRow = (
@@ -321,6 +306,14 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell className="text-right">-</TableCell>
                     <TableCell className="text-right">-</TableCell>
+                    <TableCell className="text-right">
+                      {lowStocks > 0 && (
+                        <div className="flex items-center gap-1">
+                          {lowStocks}
+                          <AlertTriangle className="w-4 h-4 text-red-500" />
+                        </div>
+                      )}
+                    </TableCell>
                   </TableRow>
                 )
 
@@ -399,6 +392,9 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                               </Button>
                             </div>
                           )}
+                        </TableCell>
+                        <TableCell className={`font-bold ${variant.warningPercentage < 100 ? 'text-red-500' : 'text-green-500'}`}>
+                          {variant.warningPercentage} %
                         </TableCell>
                       </TableRow>
                     )

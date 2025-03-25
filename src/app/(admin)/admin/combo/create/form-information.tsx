@@ -65,6 +65,7 @@ const FormInformation = ({ formCombo }: Readonly<FormInformationProps>) => {
                             name: event.name,
                             thumbnail: event.image
                         }))}
+                        isImage
                         disabled={formCombo.formState.isSubmitting}
                         label="Sự kiện"
                     />
@@ -88,7 +89,7 @@ const FormInformation = ({ formCombo }: Readonly<FormInformationProps>) => {
                     name="description"
                     label="Mô tả"
                     rows={8}
-                    placeholder='Nhập mô tả sản phẩm...'
+                    placeholder='Nhập mô tả gói quà...'
                     require
                 />
             </div>

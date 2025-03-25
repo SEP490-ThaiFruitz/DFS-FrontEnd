@@ -10,6 +10,8 @@ import Promotion from "@/features/client/home/promotion";
 import Suggest from "@/features/client/home/suggest";
 import BestSellter from "@/features/client/home/best-seller";
 import CategorySlide from "@/features/client/home/category-slide";
+import { ThreeDMarquee } from "@/components/ui/3d-marque";
+import Image from "next/image";
 
 const ClientPage = () => {
   const images = [
@@ -17,6 +19,15 @@ const ClientPage = () => {
     "/images/third-background.png",
     "/images/second-background.png",
     "/images/forth-background.png",
+
+    "/marque/image-1.avif",
+    "/marque/image-2.avif",
+    "/marque/image-3.avif",
+    "/marque/image-4.avif",
+    "/marque/image-5.avif",
+    "/marque/image-6.avif",
+    "/marque/image-7.avif",
+    "/marque/image-8.avif",
   ];
 
   const { data: favorites } = useQuery({
@@ -36,7 +47,74 @@ const ClientPage = () => {
       </ImagesSlider>
       <VoucherSlide />
       <Promotion />
+
       <CategorySlide />
+
+      {/* <div className=" my-10 max-w-full rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 dark:bg-neutral-800"> 
+      
+      */}
+      <div className="mx-auto my-10 max-w-8xl rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 dark:bg-neutral-800">
+        <ThreeDMarquee
+          images={[
+            "/images/first-background.jpg",
+            "/images/third-background.png",
+            "/images/second-background.png",
+            "/images/forth-background.png",
+
+            "/marque/image-1.avif",
+            "/marque/image-2.avif",
+            "/marque/image-3.avif",
+            "/marque/image-4.avif",
+            "/marque/image-5.avif",
+            "/marque/image-6.avif",
+            "/marque/image-7.avif",
+            "/marque/image-8.avif",
+
+            "/images/first-background.jpg",
+            "/images/third-background.png",
+            "/images/second-background.png",
+            "/images/forth-background.png",
+
+            "/marque/image-1.avif",
+            "/marque/image-2.avif",
+            "/marque/image-3.avif",
+            "/marque/image-4.avif",
+            "/marque/image-5.avif",
+            "/marque/image-6.avif",
+            "/marque/image-7.avif",
+            "/marque/image-8.avif",
+
+            "/images/first-background.jpg",
+            "/images/third-background.png",
+            "/images/second-background.png",
+            "/images/forth-background.png",
+
+            "/marque/image-1.avif",
+            "/marque/image-2.avif",
+            "/marque/image-3.avif",
+            "/marque/image-4.avif",
+            "/marque/image-5.avif",
+            "/marque/image-6.avif",
+            "/marque/image-7.avif",
+            "/marque/image-8.avif",
+
+            "/images/first-background.jpg",
+            "/images/third-background.png",
+            "/images/second-background.png",
+            "/images/forth-background.png",
+
+            "/marque/image-1.avif",
+            "/marque/image-2.avif",
+            "/marque/image-3.avif",
+            "/marque/image-4.avif",
+            "/marque/image-5.avif",
+            "/marque/image-6.avif",
+            "/marque/image-7.avif",
+            "/marque/image-8.avif",
+          ]}
+        />
+      </div>
+
       {/* <Suggest favorites={favorites} /> */}
       <BestSellter favorites={favorites} />
     </div>

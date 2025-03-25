@@ -21,23 +21,38 @@ const BestSellter = ({ favorites }: Readonly<BestSellterProps>) => {
 
   const addOrder = useCartStore((state) => state.addOrder);
 
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    e.stopPropagation();
-    toast.success("Thêm sản phẩm vào giỏ hàng thành công");
+  // const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+  //   e.stopPropagation();
+  //   toast.success("Thêm sản phẩm vào giỏ hàng thành công");
 
-    addOrder(product);
-  };
+  //   addOrder(product);
+  // };
 
-  console.log({ products });
   return (
     <div className="p-10 sm:p-20">
       <div className="font-bold text-2xl mb-5">Danh sách sản phẩm bán chạy</div>
 
       {!isLoading ? (
-        products?.value?.items?.length! > 0 ? (
+        products?.value?.items?.length ? (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
             {products?.value?.items?.map((product: Product) => {
-              return <CardProduct key={product.id} {...product} />;
+              const variant = product.variant;
+
+              return product.variant.map((variantItem) => {
+                return (
+                  <CardProduct
+                    key={variantItem.productVariantId}
+                    productId={product.id}
+                    description={product.description}
+                    name={product.name}
+                    mainImageUrl={product.mainImageUrl}
+                    quantitySold={product.quantitySold}
+                    categories={product.categories}
+                    rating={product.rating}
+                    variant={variantItem}
+                  />
+                );
+              });
             })}
           </div>
         ) : (

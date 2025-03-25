@@ -13,7 +13,7 @@ interface ViewCardProductProps {
   productImage: string;
   productPercentage: number;
   productDiscountPrice: number;
-  orderStatus: string,
+  orderStatus: string;
   isFeedback: boolean;
   className?: string;
 }
@@ -41,22 +41,32 @@ export const ViewCardProduct = ({
       />
       <div className="flex-1">
         <h3 className="font-medium">{productName}</h3>
-        <p className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           Số lượng: {productQuantity}
-        </p>
+        </span>
       </div>
       {productPercentage > 0 && (
-        <p className="font-light text-slate-400 line-through">
+        <span className="font-light text-slate-400 line-through">
           {formatVND((productPrice * productQuantity).toFixed(2))}
-        </p>
+        </span>
       )}
-      <p className="font-medium">
-        {productPercentage > 0 ? formatVND((productDiscountPrice * productQuantity).toFixed(2)) : formatVND((productPrice * productQuantity).toFixed(2))}
-      </p>
+      <span className="font-medium">
+        {productPercentage > 0
+          ? formatVND((productDiscountPrice * productQuantity).toFixed(2))
+          : formatVND((productPrice * productQuantity).toFixed(2))}
+      </span>
       {orderStatus === "Delivered" && isFeedback === false && (
-        <Button onClick={() => setFeedback(orderItemId)} size={"sm"}>Đánh giá</Button>
+        <Button onClick={() => setFeedback(orderItemId)} size={"sm"}>
+          Đánh giá
+        </Button>
       )}
-      <FeedbackDialog refreshKey={["Customer", "Orders"]} isUpdateFeedback={false} orderItemId={orderItemId} isOpen={feedback !== undefined} onClose={() => setFeedback(undefined)} />
+      <FeedbackDialog
+        refreshKey={["Customer", "Orders"]}
+        isUpdateFeedback={false}
+        orderItemId={orderItemId}
+        isOpen={feedback !== undefined}
+        onClose={() => setFeedback(undefined)}
+      />
     </div>
   );
 };

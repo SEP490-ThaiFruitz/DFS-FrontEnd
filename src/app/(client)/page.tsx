@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { ImagesSlider } from "@/components/global-components/images-slider";
 import { BannerText } from "@/components/global-components/banner-text";
@@ -31,13 +31,13 @@ const ClientPage = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <ImagesSlider images={images}  className="h-[85vh]">
+      <ImagesSlider images={images} className="h-[85vh]">
         <BannerText />
       </ImagesSlider>
       <VoucherSlide />
       <Promotion />
       <CategorySlide />
-      <Suggest favorites={favorites} />
+      {/* <Suggest favorites={favorites} /> */}
       <BestSellter favorites={favorites} />
     </div>
   );

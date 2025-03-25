@@ -11,18 +11,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import Link from "next/link";
-import { Product } from "@/hooks/use-cart-store";
+import { CartData } from "@/hooks/use-cart-store";
+import { token } from "@/lib/token";
+import { useRouter } from "next/navigation";
+import { useLoginDialog } from "@/hooks/use-login-dialog";
 
 interface CartSummaryProps {
-  cart: Product[];
+  cart: CartData[];
+  close: () => void;
 }
 
-export const CartSummary = ({ cart }: CartSummaryProps) => {
+export const CartSummary = ({ cart, close }: CartSummaryProps) => {
   const { subtotal, discount, total } = useMemo(() => {
     const subtotal = cart.reduce(
       (acc, item) =>
         acc +
-          (item.variant?.discountPrice || item.variant.price) *
+          (item.variant?.promotion?.price || item.variant.price) *
             item.quantityOrder! || 0,
       0
     );
@@ -42,6 +46,20 @@ export const CartSummary = ({ cart }: CartSummaryProps) => {
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  // const auth = token;
+
+  // console.log(auth);
+
+  // const isAuthenticated = Boolean(token);
+
+  // const router = useRouter();
+
+  // const loginDialog = useLoginDialog();
+
+  // const conditionToPayment = isAuthenticated
+  //   ? router.push("/payment")
+  //   : loginDialog.onOpen();
 
   return (
     <Card className="w-full">
@@ -65,9 +83,9 @@ export const CartSummary = ({ cart }: CartSummaryProps) => {
         </div>
       </CardContent>
       <CardFooter>
-        <Link href={"/payment"} className="w-full">
+        <Link href={"/payment"} onClick={close} className="w-full">
           <ButtonCustomized
-            className="w-full bg-sky-400 hover:bg-sky-600/75 transition duration-300 font-bold text-slate-700"
+            className="w-full bg-sky-500 hover:bg-sky-600/75 transition duration-300 font-bold text-slate-700"
             variant="secondary"
             size="lg"
             label={`Thanh toán (${cart.length} sản phẩm)`}

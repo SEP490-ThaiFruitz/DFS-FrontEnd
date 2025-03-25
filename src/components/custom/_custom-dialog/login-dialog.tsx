@@ -21,6 +21,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForgetPasswordDialog } from "@/hooks/use-forget-password-dialog";
 import { FormForgetPassword } from "@/features/auth/forget-password/form-forget-password";
 import { useAuth } from "@/providers/auth-provider";
+import { useRouter } from "next/navigation";
 
 export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypes>>({
@@ -29,6 +30,8 @@ export const LoginDialog = () => {
   const registerDialog = useRegisterDialog();
   const loginDialog = useLoginDialog();
   const forgetPasswordDialog = useForgetPasswordDialog();
+
+  const router = useRouter();
 
   const queryClient = useQueryClient();
 
@@ -66,6 +69,7 @@ export const LoginDialog = () => {
 
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
       registerDialog.onClose();
+      router.refresh();
       loginDialog.onClose();
     },
     onError: (error) => {

@@ -25,31 +25,11 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import { CART_KEY } from "@/app/key/comm-key";
 import { useFromStore } from "@/hooks/use-from-store";
-import { Product, useCartStore } from "@/hooks/use-cart-store";
+import { CartData, Product, useCartStore } from "@/hooks/use-cart-store";
 
 import { AnimatePresence, motion } from "framer-motion";
 
 //
-
-interface Cart {
-  cartItemId: string;
-  productId: string;
-  name: string;
-  productVariant: {
-    productVariantId: string;
-    image: string;
-    weight: number;
-    type: string;
-    unitPrice: number;
-    stock: number;
-    discount: {
-      startDate: string;
-      endDate: string;
-      percentage: number;
-    };
-  };
-  quantity: string;
-}
 
 export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -58,18 +38,20 @@ export const ShoppingBagSheet = () => {
 
   // console.log({ token });
 
-  const {
-    isLoading,
-    isFetching,
-    data: productCart,
-    error,
-  } = useFetch<{ value: { items: CartProductTypes[] } }>("/Carts/", [
-    CART_KEY.CARTS,
-  ]);
+  // const {
+  //   isLoading,
+  //   isFetching,
+  //   data: productCart,
+  //   error,
+  // } = useFetch<{ value: { items: CartProductTypes[] } }>("/Carts/", [
+  //   CART_KEY.CARTS,
+  // ]);
 
   const cart = useFromStore(useCartStore, (state) => state.orders);
 
-  const cartCondition = cart?.length! > 0;
+  const cartCondition = (cart?.length || 0) > 0;
+
+  console.log(cart);
 
   let total = 0;
 
@@ -77,7 +59,7 @@ export const ShoppingBagSheet = () => {
     total = cart.reduce(
       (acc, product) =>
         acc +
-        (Number(product?.variant.discountPrice!) > 0
+        (Number(product?.variant.discountPrice) > 0
           ? Number(product?.variant.discountPrice) *
             (product.quantityOrder as number)
           : Number(product.variant.discountPrice) *
@@ -90,10 +72,14 @@ export const ShoppingBagSheet = () => {
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
 
-  const handleDecreaseQuantity = (product: Product) => {
+  const handleDecreaseQuantity = (product: CartData) => {
     if (product.quantityOrder! > 1) {
       decreaseQuantity(product);
     }
+  };
+
+  const close = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -141,57 +127,46 @@ export const ShoppingBagSheet = () => {
           </SheetTitle>
           <SheetDescription>
             <div className="w-full overflow-hidden">
-              {!isLoading || !isFetching ? (
-                cart?.length ? (
-                  <div className="container mx-auto p-4 md:p-6 w-full">
-                    <>
-                      <h1 className="text-2xl font-semibold">
-                        Giỏ hàng ({cart?.length})
-                      </h1>
-                      <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px] ">
-                        {cart.map((product) => (
-                          <ViewCardProductActions
-                            key={product.id}
-                            // cartItemId=
-                            decreaseQuantity={(): void =>
-                              handleDecreaseQuantity(product)
-                            }
-                            increaseQuantity={(): void =>
-                              increaseQuantity(product)
-                            }
-                            removeFromCart={(): void => removeFromCart(product)}
-                            product={product}
-                            className="m-4"
-                          />
-                        ))}
-                      </ScrollArea>
+              {cart?.length ? (
+                <div className="container mx-auto p-4 md:p-6 w-full">
+                  <>
+                    <h1 className="text-2xl font-semibold">
+                      Giỏ hàng ({cart?.length})
+                    </h1>
+                    <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px] ">
+                      {cart?.map((product) => (
+                        <ViewCardProductActions
+                          key={product.variant.productVariantId}
+                          // cartItemId=
+                          decreaseQuantity={(): void =>
+                            handleDecreaseQuantity(product)
+                          }
+                          increaseQuantity={(): void =>
+                            increaseQuantity(product)
+                          }
+                          removeFromCart={(): void => removeFromCart(product)}
+                          product={product}
+                          className="m-4"
+                        />
+                      ))}
+                    </ScrollArea>
 
-                      <div className=" mt-14 w-full">
-                        <CartSummary cart={cart} />
-                      </div>
-                    </>
-                  </div>
-                ) : (
-                  <EmptyState
-                    icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
-                    title="Giỏ hàng của bạn"
-                    description="Có vẻ như giỏ hàng của bạn đang trống"
-                    action={{
-                      label: "Mua ngay nào",
-                      onClick: () => setIsOpen(false),
-                    }}
-                    className="min-w-full flex flex-col"
-                  />
-                )
+                    <div className=" mt-14 w-full">
+                      <CartSummary cart={cart as CartData[]} close={close} />
+                    </div>
+                  </>
+                </div>
               ) : (
-                Array.from({ length: 3 }).map((_, index) => {
-                  return (
-                    <ViewCardProductActionsSkeleton
-                      key={index}
-                      className="m-4"
-                    />
-                  );
-                })
+                <EmptyState
+                  icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
+                  title="Giỏ hàng của bạn"
+                  description="Có vẻ như giỏ hàng của bạn đang trống"
+                  action={{
+                    label: "Mua ngay nào",
+                    onClick: () => setIsOpen(false),
+                  }}
+                  className="min-w-full flex flex-col"
+                />
               )}
             </div>
           </SheetDescription>

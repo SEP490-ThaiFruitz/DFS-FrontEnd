@@ -9,7 +9,7 @@ export interface ProductVariant {
 
   discountPrice?: number;
   stockQuantity: number;
-  promotion?: Promotion;
+  promotion?: Promotion | null;
 }
 
 export interface Promotion {
@@ -19,18 +19,24 @@ export interface Promotion {
   price: number;
 }
 
+export interface CategoryTypes {
+  id: string;
+  name: string;
+  thumbnail: string;
+}
+
 export interface Product {
   id: string;
   name: string;
   mainImageUrl: string;
 
-  categories: {
-    id: string;
-    name: string;
-    thumbnail: string;
-  }[];
+  categories: CategoryTypes[];
   description: string;
   variant: ProductVariant[];
+
+  tags?: string[];
+
+  nutritionFacts?: Record<string, string | number>;
   // categoryId?: string;
   quantitySold: number;
   rating: number;
@@ -38,6 +44,8 @@ export interface Product {
   quantity?: number;
 
   quantityOrder?: number;
+
+  [key: string]: any;
 }
 
 // type Product = {

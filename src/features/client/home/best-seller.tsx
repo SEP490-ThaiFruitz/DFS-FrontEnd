@@ -10,11 +10,7 @@ import { EmptyState } from "@/components/global-components/empty-state";
 import { ShoppingCart, StickyNote } from "lucide-react";
 import AnimatedLoadingSkeleton from "@/components/global-components/custom-skeleton/animated-loading-skeleton";
 
-interface BestSellterProps {
-  favorites: Favorite[] | undefined;
-}
-
-const BestSellter = ({ favorites }: Readonly<BestSellterProps>) => {
+const BestSellter = () => {
   const { data: products, isLoading } = useFetch<
     ApiResponse<PageResult<Product>>
   >("/Products", ["products"]);

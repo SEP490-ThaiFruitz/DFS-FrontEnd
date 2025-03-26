@@ -8,10 +8,15 @@ import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 
 import { toast } from "sonner";
 
-import { Product, ProductVariant, useCartStore } from "@/hooks/use-cart-store";
+import {
+  CategoryTypes,
+  Product,
+  ProductVariant,
+  useCartStore,
+} from "@/hooks/use-cart-store";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 
-interface CardProductProps {
+export interface CardProductProps {
   variant: ProductVariant;
 
   // product: Product;
@@ -23,16 +28,10 @@ interface CardProductProps {
   quantitySold: number;
   rating: number;
 
-  categories: {
-    id: string;
-    name: string;
-    thumbnail: string;
-  }[];
+  categories: CategoryTypes[];
 }
 export const CardProduct = ({
   variant,
-
-  // product,
   productId,
   name,
   description,

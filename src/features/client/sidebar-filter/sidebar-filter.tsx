@@ -100,7 +100,6 @@ export function SidebarFilter() {
         {isMobileFiltersOpen ? "Hide Filters" : "Show Filters"}
       </Button>
 
-      {/* Sidebar/Filters */}
       <div
         className={`
         w-full md:w-64 

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface ProductVariant {
+export interface ProductVariant {
   productVariantId: string;
   netWeight: number;
   price: number;
@@ -12,10 +12,11 @@ interface ProductVariant {
   promotion?: Promotion;
 }
 
-interface Promotion {
+export interface Promotion {
   startDate: string;
   endDate: string;
   percentage: number;
+  price: number;
 }
 
 export interface Product {
@@ -29,7 +30,7 @@ export interface Product {
     thumbnail: string;
   }[];
   description: string;
-  variant: ProductVariant;
+  variant: ProductVariant[];
   // categoryId?: string;
   quantitySold: number;
   rating: number;
@@ -61,15 +62,15 @@ export interface Product {
 //   quantitySold: number;
 // };
 interface State {
-  orders: Product[];
+  orders: CartData[];
   totalPrice: number;
   totalItems: number;
 }
 
 interface Actions {
-  addOrder: (product: Product) => void;
-  removeFromCart: (product: Product) => void;
-  decreaseQuantity: (product: Product) => void;
+  addOrder: (product: CartData) => void;
+  removeFromCart: (product: CartData) => void;
+  decreaseQuantity: (product: CartData) => void;
   clearCart: () => void;
 }
 
@@ -79,6 +80,25 @@ const INITIAL_STATE: State = {
   totalItems: 0,
 };
 
+export type CartData = {
+  id: string;
+  name: string;
+  mainImageUrl: string;
+  description: string;
+  categories: {
+    id: string;
+    name: string;
+    thumbnail: string;
+  }[];
+  variant: ProductVariant;
+  quantitySold: number;
+  rating: number;
+
+  type: string; // combo | single | custom
+
+  quantityOrder?: number;
+};
+
 export const useCartStore = create(
   persist<State & Actions>(
     (set, get) => ({
@@ -86,18 +106,22 @@ export const useCartStore = create(
       totalPrice: INITIAL_STATE.totalPrice,
       totalItems: INITIAL_STATE.totalItems,
       clearCart: () => set({ orders: [], totalPrice: 0, totalItems: 0 }),
-      addOrder: (product: Product) => {
+      addOrder: (product: CartData) => {
         const cartOrders = get().orders;
 
         const cartOrdersItems = cartOrders.find(
-          (order) => order.id === product.id
+          (order) =>
+            order.variant.productVariantId === product.variant.productVariantId
         );
 
-        const discountPriceCondition = Number(product?.variant?.discountPrice!);
+        const discountPriceCondition = Number(
+          product.variant?.promotion?.price
+        );
 
         if (cartOrdersItems) {
           const updatedCartOrders = cartOrders.map((cart) => {
-            return cart.id === product.id
+            return cart.variant.productVariantId ===
+              product.variant.productVariantId
               ? { ...cart, quantityOrder: cart.quantityOrder! + 1 }
               : cart;
           });
@@ -131,12 +155,18 @@ export const useCartStore = create(
         }
       },
 
-      removeFromCart: (product: Product) => {
+      removeFromCart: (product: CartData) => {
         const cartOrders = get().orders;
-        const discountPriceCondition = Number(product?.variant.price!);
+        const discountPriceCondition = Number(
+          product?.variant?.promotion?.price
+        );
 
         set((state) => ({
-          orders: state.orders.filter((order) => order.id !== product.id),
+          orders: state.orders.filter(
+            (order) =>
+              order.variant.productVariantId !==
+              product.variant.productVariantId
+          ),
           totalItems: state.totalItems - 1,
           totalPrice:
             state.totalPrice -
@@ -144,19 +174,22 @@ export const useCartStore = create(
         }));
       },
 
-      decreaseQuantity: (product: Product) => {
+      decreaseQuantity: (product: CartData) => {
         const cartOrders = get().orders;
 
         const cartOrderItems = cartOrders.find(
-          (order) => order.id === product.id
+          (order) =>
+            order.variant.productVariantId === product.variant.productVariantId
         );
 
-        const discountPriceCondition = Number(product?.variant.discountPrice!);
+        const discountPriceCondition = Number(
+          product.variant?.promotion?.price
+        );
 
         if (cartOrderItems) {
           const updatedCartOrders = cartOrders.map((cart) =>
-            cart.id === product.id
-              ? { ...cart, quantityOrder: cart?.quantityOrder! - 1 }
+            cart.variant.productVariantId === product.variant.productVariantId
+              ? { ...cart, quantityOrder: (cart?.quantityOrder as number) - 1 }
               : cart
           );
 

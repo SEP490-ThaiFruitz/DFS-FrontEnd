@@ -25,14 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 import {
   ChartConfig,
@@ -40,18 +32,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ProductPerformance } from "./product-performance-chart";
 import { formatVND } from "@/lib/format-currency";
 import { format } from "date-fns";
@@ -61,11 +42,7 @@ import { DataTable } from "@/components/global-components/data-table/data-table"
 import { productTopRevenueColumn } from "@/features/manager/report-revenue/product-top-revenue-column";
 import { REPORT_KEY } from "@/app/key/manager-key";
 import { TotalCard } from "./components/total-card";
-import {
-  createDateRange,
-  fillMissingDates,
-  fillMissingDatesDynamics,
-} from "@/utils/date";
+import { createDateRange, fillMissingDatesDynamics } from "@/utils/date";
 import { customerRevenueColumns } from "@/features/manager/report-revenue/user-top-revenue-column";
 
 type TopProductRevenueStatistics = {
@@ -83,6 +60,7 @@ type TopCustomerRevenueStatistics = {
   userName: string;
   email: string;
   phone: string;
+  image: string | null;
   address: string;
   moneySpend: number;
   lastBuyDate: string;
@@ -100,104 +78,6 @@ type RevenueData = {
 export default function RevenueDashboard() {
   const [timeRange, setTimeRange] = useState("month");
 
-  // Dummy data
-  const stats = {
-    totalRevenue: "$124,750.89",
-    revenueChange: "+12.5%",
-    totalOrders: "1,429",
-    ordersChange: "+8.2%",
-    averageOrder: "$87.30",
-    averageChange: "+3.1%",
-    conversionRate: "3.2%",
-    conversionChange: "+0.8%",
-  };
-
-  const topProducts = [
-    {
-      id: 1,
-      name: "Premium Wireless Headphones",
-      price: "$199.99",
-      sold: 245,
-      revenue: "$48,997.55",
-      growth: "+18%",
-    },
-    {
-      id: 2,
-      name: "Smart Fitness Tracker",
-      price: "$129.99",
-      sold: 187,
-      revenue: "$24,308.13",
-      growth: "+24%",
-    },
-    {
-      id: 3,
-      name: "Ultra HD Streaming Device",
-      price: "$89.99",
-      sold: 156,
-      revenue: "$14,038.44",
-      growth: "+5%",
-    },
-    {
-      id: 4,
-      name: "Ergonomic Desk Chair",
-      price: "$249.99",
-      sold: 52,
-      revenue: "$12,999.48",
-      growth: "+10%",
-    },
-    {
-      id: 5,
-      name: "Portable Power Bank 20000mAh",
-      price: "$59.99",
-      sold: 203,
-      revenue: "$12,177.97",
-      growth: "-2%",
-    },
-  ];
-
-  const topCustomers = [
-    {
-      id: 1,
-      name: "Hữu Phúc",
-      email: "huuphuc@gmail.com",
-      orders: 12,
-      spent: "$2,458.32",
-      lastPurchase: "2 ngày trước",
-    },
-    {
-      id: 2,
-      name: "Văn Minh",
-      email: "vanminh@gmail.com",
-      orders: 9,
-      spent: "$1,879.",
-      lastPurchase: "1 tuần trước",
-    },
-    {
-      id: 3,
-      name: "Thanh Toàn",
-      email: "thanhtoan@gmail.com",
-      orders: 8,
-      spent: "$1,654.21",
-      lastPurchase: "3 ngày trước",
-    },
-    {
-      id: 4,
-      name: "Mai Hà",
-      email: "maiha@gmail.com",
-      orders: 7,
-      spent: "$1,432",
-      lastPurchase: "5 ngày trước",
-    },
-    {
-      id: 5,
-      name: "Ái Khanh",
-      email: "aikhanh@gmail.com",
-      orders: 6,
-      spent: "$1,298.56",
-      lastPurchase: "2 tuần trước",
-    },
-  ];
-
   // Revenue chart data
   const revenueData = [
     { date: "2025-01-12", revenue: 12500 },
@@ -210,16 +90,6 @@ export default function RevenueDashboard() {
   ];
 
   // Product performance chart data
-  const productPerformanceData = topProducts.map((product) => ({
-    name:
-      product.name.length > 15
-        ? product.name.substring(0, 15) + "..."
-        : product.name,
-    revenue: Number.parseFloat(
-      product.revenue.replace("$", "").replace(",", "")
-    ),
-    units: product.sold,
-  }));
 
   const HeaderTitle = () => {
     return (
@@ -254,7 +124,7 @@ export default function RevenueDashboard() {
   );
   // console.log(currentDate);
 
-  console.log(reportRevenue);
+  console.log(reportRevenue.data);
 
   const chartConfig = {
     revenue: {
@@ -302,7 +172,7 @@ export default function RevenueDashboard() {
   );
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/20">
+    <div className="flex min-h-screen w-full flex-col ">
       <div className="flex flex-col">
         <HeaderTitle />
         <main className="flex-1 space-y-6 p-6">
@@ -318,23 +188,6 @@ export default function RevenueDashboard() {
                 <div className="text-2xl font-bold">
                   {formatVND(reportRevenue.data?.value?.totalRevenue ?? 0)}
                 </div>
-                {/* <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.revenueChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.revenueChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.revenueChange}
-                  </span>{" "}
-                  Từ kỳ trước
-                </p> */}
               </CardContent>
             </Card>
             <TotalCard
@@ -444,7 +297,11 @@ export default function RevenueDashboard() {
                     {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="date" />
-                    <YAxis tickFormatter={formatVND} width={80} />
+                    <YAxis
+                      tickFormatter={formatVND}
+                      width={80}
+                      allowDataOverflow
+                    />
                     {/* <Tooltip
                         formatter={(value) => [
                           formatCurrency(value),

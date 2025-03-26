@@ -12,21 +12,21 @@ export enum PaymentMethod {
 }
 
 export const PaymentSafeTypes = z.object({
-  cartItemIds: z.array(z.string()).min(1, {
-    message: "Cần ít nhất một sản phẩm để thanh toán",
-  }),
+  items: z.array(
+    z.object({
+      id: z.string(),
+      quantity: z.number(),
+      type: z.string(),
+    })
+  ),
 
   paymentMethod: z.enum([PaymentMethod.VNPAY, PaymentMethod.PAYOS]),
 
   voucherId: z.string().optional().nullable(),
 
-  shippingUnitId: z.string(),
+  // shippingUnitId: z.string(),
 
-  shipType: z.enum([
-    DeliveryMethod.GHN,
-    DeliveryMethod.FAST,
-    DeliveryMethod.STANDARD,
-  ]),
+  shipType: z.enum([DeliveryMethod.STANDARD]),
   addressId: z.string({
     message: "Bạn hãy chọn địa chỉ giao hàng",
   }),

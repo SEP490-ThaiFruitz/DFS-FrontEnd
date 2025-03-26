@@ -25,6 +25,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DataTable } from "@/components/global-components/data-table/data-table";
+import Image from "next/image";
 
 type User = {
   id: number;
@@ -176,9 +177,12 @@ const columns: ColumnDef<User>[] = [
     header: "Name",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <img
+        <Image
           src={row.original.profilePicture}
           alt={`${row.original.name}'s profile`}
+
+          width={32}
+          height={32}
           className="w-8 h-8 rounded-full"
         />
         <span>{row.original.name}</span>

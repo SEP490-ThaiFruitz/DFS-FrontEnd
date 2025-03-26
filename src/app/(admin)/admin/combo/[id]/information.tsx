@@ -54,6 +54,7 @@ const Information = ({ combo }: Readonly<InformationProps>) => {
             capacity: combo?.capacity.toString() ?? "",
             type: combo?.type ?? "",
             eventId: combo?.eventId ?? "",
+            quantity: combo?.quantity.toString() ?? "",
             description: combo?.description ?? ""
         }
     });
@@ -65,6 +66,7 @@ const Information = ({ combo }: Readonly<InformationProps>) => {
             capacity: combo?.capacity.toString() ?? "",
             type: combo?.type ?? "",
             eventId: combo?.eventId ?? "",
+            quantity: combo?.quantity.toString() ?? "",
             description: combo?.description ?? ""
         })
     }, [combo])
@@ -131,6 +133,14 @@ const Information = ({ combo }: Readonly<InformationProps>) => {
                                 <FormNumberInputControl
                                     form={form}
                                     name="capacity"
+                                    disabled={form.formState.isSubmitting}
+                                    label="Sức chứa"
+                                    require
+                                />
+
+                                <FormNumberInputControl
+                                    form={form}
+                                    name="quantity"
                                     disabled={form.formState.isSubmitting}
                                     label="Số lượng"
                                     require
@@ -215,8 +225,12 @@ const Information = ({ combo }: Readonly<InformationProps>) => {
                                     <div className="text-base font-medium">{combo?.name}</div>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <div className="font-bold">Số lượng:</div>
+                                    <div className="font-bold">Sức chứa:</div>
                                     <div className="text-base font-medium">{combo?.capacity}</div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="font-bold">Số lượng:</div>
+                                    <div className="text-base font-medium">{combo?.quantity}</div>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <div className="font-bold">Loại quà:</div>

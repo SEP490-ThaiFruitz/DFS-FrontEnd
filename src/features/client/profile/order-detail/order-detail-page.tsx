@@ -1,6 +1,6 @@
 "use client"
 import Timeline, { TimelineEvent } from '@/components/global-components/timeline/timeline'
-import { ArrowLeft, DollarSign, Download, FileText, Star, Truck } from 'lucide-react'
+import { ArrowLeft, DollarSign, Download, FileText, Package, Star, Truck, Wallet } from 'lucide-react'
 import React from 'react'
 import OrderDetailInformation from './order-detail-information'
 import OrderDetaiSummary from './order-detail-summary'
@@ -24,7 +24,7 @@ interface Order {
 }
 
 interface Cancel {
-    role: string,
+    cancelBy: string,
     date: string,
     reason: string
 }
@@ -101,7 +101,7 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
             ]
         },
         {
-            icon: DollarSign,
+            icon: Wallet,
             title: "Đã Xác Nhận Thông Tin Thanh Toán",
             date: "20:18 23-02-2025",
             completed: true,
@@ -151,29 +151,28 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
             completed: true,
         },
         {
-            icon: Download,
+            icon: Package,
             title: "Đã Nhận Được Hàng",
             date: "12:06 25-02-2025",
             completed: true,
-        },
-        {
-            icon: Star,
-            title: "Đơn Hàng Đã Được Đánh Giá",
-            date: "18:57 05-03-2025",
-            completed: false,
-        },
+        }
     ]
     return (
 
         <div className="py-10">
-            <div className="flex items-center bg-white">
-                <button onClick={onBack} className="h-fit py-3 px-2 rounded-md flex items-center gap-2 hover:bg-slate-50">
-                    <ArrowLeft />
-                    <p className="w-fit text-nowrap">Quay lại</p>
+            <div className="p-4 border-b flex items-center justify-between bg-white sticky top-0 z-10 border rounded-lg shadow-sm">
+                <button 
+                    onClick={onBack}
+                    className="flex items-center text-sm font-medium text-gray-700 hover:text-primary transition-colors">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Quay lại
                 </button>
-                <p className="w-full text-center font-bold text-xl">Mã đơn hàng: {order?.value?.orderId}</p>
+                <h1 className="text-lg font-semibold">
+                    Mã đơn hàng: <span className="text-primary">{order?.value?.orderId}</span>
+                </h1>
+                <div></div>
             </div>
-            <div className="my-20 rounded-md">
+            <div className="my-20 border rounded-lg shadow-sm overflow-hidden">
                 <Timeline events={steps} orientation="Horizontal" classNameTimelinePositon="left-0 right-0 md:mx-20 h-0.5 top-8" classNameTimeline="h-16 w-16" classNameIcon="h-5 w-5" showIcon={true} />
             </div>
             <div className='grid xl:grid-cols-3 gap-5 sm:gap-16'>

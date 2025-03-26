@@ -6,9 +6,11 @@ import { Logo } from "./logo";
 import { LoginDialog } from "../custom/_custom-dialog/login-dialog";
 import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
 import { ShoppingBagSheet } from "../custom/_custom-sheet/shopping-bag-sheet";
-import { HoveredLink, Menu, MenuItem } from "../ui/navbar-menu";
+import { HoveredLink, Menu, MenuItem, ProductItem } from "../ui/navbar-menu";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
+import { Event } from "@/app/(admin)/admin/event/page";
+
 import { ApiResponse, Profile } from "@/types/types";
 import Link from "next/link";
 import {
@@ -45,6 +47,8 @@ export const Navigate = () => {
     "/BlogCategories",
     ["BlogCategories", "Guest"]
   );
+  const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", ["events"])
+
   const [active, setActive] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
@@ -99,11 +103,22 @@ export const Navigate = () => {
             item="Quà tặng"
             className={navItemClassName}
           >
-            <div className="flex flex-col space-y-4 text-sm">
-              <HoveredLink href="/hobby">Hobby</HoveredLink>
-              <HoveredLink href="/individual">Individual</HoveredLink>
-              <HoveredLink href="/team">Team</HoveredLink>
-              <HoveredLink href="/enterprise">Enterprise</HoveredLink>
+            <div className="  text-sm grid grid-cols-2 gap-10 p-4">
+              <ProductItem
+                title="Tất cả"
+                href="/combo"
+                src="/images/combo.jpg"
+                description=""
+              />
+              {events?.value?.map((event: Event) => (
+                <ProductItem
+                  key={event.id}
+                  title={event.name}
+                  src={event.image}
+                  href={`/combo?event=${event.name}`}
+                  description=""
+                />
+              ))}
             </div>
           </MenuItem>
           <MenuItem

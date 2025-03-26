@@ -7,6 +7,7 @@ export const CreateComboSafeTypes = z.object({
         .min(1, { message: "Vui lòng nhập tên gói quà." })
         .nonempty(),
     capacity: z.string().refine((val) => parseFloat(val) > 0, "Khối lượng tổng phải lớn hơn 0"),
+    quantity: z.string().refine((val) => parseFloat(val) > 1, "Số lượng phải lớn hơn 1"),
     type: z.string({
         required_error: "Vui lòng nhập chọn loại quà.",
     }).nonempty({
@@ -44,6 +45,7 @@ export const UpdateComboSafeTypes = z.object({
         .min(1, { message: "Vui lòng nhập tên gói quà." })
         .nonempty(),
     capacity: z.string().refine((val) => parseFloat(val) > 0, "Khối lượng tổng phải lớn hơn 0"),
+    quantity: z.string().refine((val) => parseFloat(val) > 1, "Số lượng phải lớn hơn 1"),
     type: z.string({
         required_error: "Vui lòng nhập chọn loại quà.",
     }).nonempty({

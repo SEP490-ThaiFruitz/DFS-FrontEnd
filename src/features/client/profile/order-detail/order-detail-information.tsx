@@ -1,11 +1,14 @@
+"use client"
+
 import Timeline, { TimelineEvent } from "@/components/global-components/timeline/timeline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
-import React from "react";
+import React, { useState } from "react";
 import { OrderAddressDelivery } from "../order-tracking/shipping-info";
+import { CancelDialog } from "@/components/custom/_custom-dialog/cancel-dialog";
 
 interface OrderDetailsProps {
   orderId?: string;
@@ -24,7 +27,7 @@ interface Delivery {
 }
 
 interface Cancel {
-  role: string,
+  cancelBy: string,
   date: string,
   reason: string
 }
@@ -39,10 +42,12 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   delivery,
   orderAddressDelivery,
 }) => {
+  const [isCancel, setIsCancel] = useState<boolean>(false)
+
   const orderStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
     Confirmed: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
-    Packing: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
+    Packaging: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
     Shipped: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
     Delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
     Feedbacked: { color: "bg-green-100 text-green-800", text: "Đã đánh giá" },
@@ -200,7 +205,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             <>
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 font-semibold">Người hủy đơn:</span>
-                <span className="text-gray-900">{cancel.role}</span>
+                <span className="text-gray-900">{cancel.cancelBy === "Customer" ? "Khách hàng" : "Cửa hàng"}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 font-semibold">Thời gian hủy đơn:</span>
@@ -220,7 +225,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             <Button className="ml-auto" variant={"destructive"}>Hoàn trả</Button>
           )}
           {(orderStatus === "Pending" || orderStatus === "Confirmed" || orderStatus === "Packing") && (
-            <Button variant={"destructive"}>Huỷ đơn hàng</Button>
+            <Button onClick={() => setIsCancel(true)} variant={"destructive"}>Huỷ đơn hàng</Button>
           )}
         </CardFooter>
       </Card>
@@ -263,6 +268,12 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           </ScrollArea>
         </div>
       </Card>
+      {isCancel && <CancelDialog
+        isOpen={isCancel}
+        onClose={() => setIsCancel(false)}
+        orderId={orderId}
+        refreshKey={["OrderDetail", orderId]}
+      />}
     </>
   );
 };

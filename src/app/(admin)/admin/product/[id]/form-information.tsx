@@ -21,6 +21,7 @@ import { CardCategory } from '@/components/global-components/card/card-category'
 import { API } from '@/actions/client/api-config'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
+import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 
 export interface CategorySelect extends SelectData {
     isChose: boolean;
@@ -109,11 +110,12 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                         label="Nguồn gốc"
                         require
                     />
-                    <FormInputControl
+                    <FormNumberInputControl
                         form={form}
                         name="moistureContent"
                         disabled={form.formState.isSubmitting}
                         label="Độ ẩm"
+                        unit='%'
                         require
                     />
                     <FormSelectControl

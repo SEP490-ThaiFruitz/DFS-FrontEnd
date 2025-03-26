@@ -37,9 +37,18 @@ const FormInformation = ({ formCombo }: Readonly<FormInformationProps>) => {
                         label="Tên gói quà"
                         require
                     />
+
                     <FormNumberInputControl
                         form={formCombo}
                         name="capacity"
+                        disabled={formCombo.formState.isSubmitting}
+                        label="Sức chứa"
+                        require
+                    />
+
+                    <FormNumberInputControl
+                        form={formCombo}
+                        name="quantity"
                         disabled={formCombo.formState.isSubmitting}
                         label="Số lượng"
                         require

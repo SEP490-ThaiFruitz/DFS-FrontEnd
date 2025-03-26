@@ -8,14 +8,14 @@ import { OrderItem, ProductList } from "./product-list";
 import { OrderAddressDelivery, ShippingInfo } from "./shipping-info";
 import { OrderSummary } from "./order-summary";
 import { Policies } from "./policy";
-import { Columns4, FileBox, MessageSquareQuote, PackageCheck, PackagePlus, PackageX, Search, Truck } from "lucide-react";
+import { Columns4, FileBox, PackageCheck, PackagePlus, PackageX, Search, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import OrderDetailPage from "../order-detail/order-detail-page";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ApiResponse, PageResult } from "@/types/types";
-import { number, string } from "zod";
+import { Badge } from "@/components/ui/badge";
 
 
 interface Order {
@@ -25,6 +25,7 @@ interface Order {
   orderItems: OrderItem[];
   delivery: Delivery | null;
   voucherPrice: number | null;
+  paymentStatus: string,
   pointUsed: number;
   totalPrice: number,
   orderAddressDelivery: OrderAddressDelivery;
@@ -44,7 +45,6 @@ export const OrderTrackingPage = () => {
     { value: "packing", label: "Đang đóng gói", icon: PackagePlus },
     { value: "delivering", label: "Đang vận chuyển", icon: Truck },
     { value: "Delivered", label: "Đã giao hàng", icon: PackageCheck },
-    { value: "feedbacked", label: "Đã đánh giá", icon: MessageSquareQuote },
     { value: "canceled", label: "Đã hủy", icon: PackageX },
   ];
   const [orderId, setOrderId] = useState<string | undefined>(undefined);
@@ -57,7 +57,7 @@ export const OrderTrackingPage = () => {
 
   return (
     orderId !== undefined ? <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} /> : <>
-      <div className="grid w-full grid-cols-7 h-auto py-4 mb-4 bg-white rounded-md px-5">
+      <div className="grid w-full grid-cols-6 h-auto py-4 mb-4 bg-white rounded-md px-5">
         {status.map((trigger) => (
           <button
             key={trigger.value}
@@ -100,6 +100,32 @@ export const OrderTrackingPage = () => {
               buyDate={order.buyDate}
               timeEstimateDelivery={order.delivery?.estimateDate}
               onClickDetail={() => setOrderId(order.orderId)} />
+
+            <div className="px-6 pb-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="font-medium">Trạng thái thanh toán:</span>
+                  {order.paymentStatus === "Paid" ?
+                    <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 font-medium">
+                      Đã thanh toán
+                    </Badge> : <Badge variant="outline" className="bg-amber-100 text-amber-700 border-amber-200 font-medium">
+                      Chưa thanh toán
+                    </Badge>
+                  }
+                </div>
+                {order.paymentStatus === "Fail" && (
+                  <Badge variant="outline" className="bg-red-100 text-red-700 border-red-200 font-medium">
+                    Thanh toán thất bại
+                  </Badge>
+                )}
+                {order.paymentStatus !== "Paid" && (
+                  <Button className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+                    Thanh toán ngay
+                  </Button>
+                )}
+              </div>
+            </div>
+
             <CardContent className="p-6 space-y-6">
               <ScrollArea className="h-[220px] -mx-6 px-6">
                 <ProductList orderStatus={order.status} orderItems={order.orderItems} />

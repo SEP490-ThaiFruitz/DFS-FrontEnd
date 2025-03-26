@@ -60,9 +60,24 @@ const remove = async (endpoint: string) => {
   }
 };
 
+const patch = async <TValues>(endpoint: string, body: TValues) => {
+  try {
+    const response = await axios.patch(
+      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
+      body,
+      { headers }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
 export const API = {
   get,
   post,
   update,
   remove,
+  patch
 };

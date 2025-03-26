@@ -18,6 +18,7 @@ export interface Combo {
     eventId: string,
     description: string,
     userId: string,
+    quantity: number,
     isLocked: boolean,
     isCustomer: boolean,
     createdOnUtc: string,
@@ -29,8 +30,8 @@ export interface Combo {
 
 const ComboDetailPage = () => {
     const { id } = useParams();
-    const { data: combo } = useFetch<ApiResponse<Combo>>(`/Combos/${id}`, [`${id}`])
-    console.log(combo)
+    const { data: combo } = useFetch<ApiResponse<Combo>>(`/Combos/${id}/manage`, [`${id}`])
+
     return (
         <div className='p-10 w-full'>
             <div className='Container'>

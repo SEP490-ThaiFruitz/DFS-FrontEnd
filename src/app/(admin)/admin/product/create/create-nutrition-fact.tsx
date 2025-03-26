@@ -14,7 +14,7 @@ import { useForm, UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 export interface NutritionFact {
-    id: number | null;
+    nutritionFactId: number;
     amount: number;
     nutrientId: number;
 }
@@ -44,22 +44,22 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
     }, [formProduct.getValues("nutritionFacts")]);
 
     const handleEdit = (fact: NutritionFact) => {
-        setEditingId(fact.id)
-        form.setValue("nutritionFactId", fact?.id?.toString());
+        setEditingId(fact.nutritionFactId)
+        form.setValue("nutritionFactId", fact?.nutritionFactId?.toString());
         form.setValue("amount", fact?.amount.toString())
         form.setValue("nutrientId", fact?.nutrientId.toString() ?? "1")
     }
 
 
     const onSubmit = async (values: z.infer<typeof FromNutrionFact>) => {
-        const { amount, nutrientId } = values;
+        const { amount, nutrientId, nutritionFactId } = values;
         const createNutritionFacts = formProduct.getValues("nutritionFacts");
         const nutritionFactIndex = createNutritionFacts.findIndex((fact: any) => fact.nutrientId == nutrientId);
 
-        if (nutritionFactIndex !== -1) {    
-            createNutritionFacts[nutritionFactIndex] = { amount, nutrientId }
+        if (nutritionFactIndex !== -1) {
+            createNutritionFacts[nutritionFactIndex] = { amount, nutrientId, nutritionFactId }
         } else {
-            formProduct.setValue("nutritionFacts", [...createNutritionFacts, { amount, nutrientId }])
+            formProduct.setValue("nutritionFacts", [...createNutritionFacts, { amount, nutrientId, nutritionFactId }])
         }
         form.reset();
         setEditingId(null)
@@ -80,7 +80,7 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
 
     const handleCancel = () => {
         setEditingId(null)
-        setNutritionFacts(nutritionFacts.filter((f: NutritionFact) => f.id !== 0))
+        setNutritionFacts(nutritionFacts.filter((f: NutritionFact) => f.nutritionFactId !== 0))
     }
 
     const handleUnit = () => {
@@ -90,15 +90,14 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
 
     const handleAddNew = () => {
         const newNutritionFact: NutritionFact = {
-            id: nutritionFacts.length + 1,
+            nutritionFactId: nutritionFacts.length + 1,
             amount: 0,
-            nutrientId: 0
+            nutrientId: 1
         }
         setNutritionFacts([...nutritionFacts, newNutritionFact])
         handleEdit(newNutritionFact)
     }
     const handleRemoveFact = (fact: NutritionFact) => {
-        setNutritionFacts(nutritionFacts.filter((f: NutritionFact) => f.nutrientId != fact.nutrientId))
         const values = formProduct.getValues("nutritionFacts");
         formProduct.setValue("nutritionFacts", values.filter((f: any) => f.nutrientId != fact.nutrientId))
     }
@@ -109,19 +108,19 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[50%]">Dinh dưỡng</TableHead>
-                        <TableHead>Số lượng</TableHead>
+                        <TableHead>Hàm lượng</TableHead>
                         <TableHead className="w-[100px]"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {nutritionFacts?.map((fact: NutritionFact) =>
-                        editingId === fact.id ? (
-                            <TableRow key={fact.nutrientId}>
+                        editingId === fact.nutritionFactId ? (
+                            <TableRow key={`edit-${fact.nutritionFactId}`}>
                                 <TableCell className="font-medium">
                                     <FormSelectControl
                                         form={form}
                                         name="nutrientId"
-                                        defaultValue={fact?.nutrientId.toString()}
+                                        defaultValue={fact?.nutrientId.toString() ?? 1}
                                         items={nutritionSelect
                                             .filter(item =>
                                                 item.Id == fact.nutrientId ||
@@ -151,7 +150,7 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
                             </TableRow>
 
                         ) : (
-                            <TableRow key={fact.nutrientId}>
+                            <TableRow key={fact.nutritionFactId}>
                                 <TableCell className="font-medium">{nutritionSelect.find(x => x.Id == fact.nutrientId)?.Name}</TableCell>
                                 <TableCell>{`${formatNumberWithUnit(fact.amount)} ${nutritionSelect.find(x => x.Id == fact.nutrientId)?.Unit}`}</TableCell>
                                 <TableCell className='flex space-x-3'>
@@ -169,7 +168,7 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
                         )
                     )}
 
-                    {editingId === null && !nutritionFacts.some(x => x.id === 0) && (
+                    {editingId === null && !nutritionFacts.some(x => x.nutritionFactId === 0) && (
                         <TableRow>
                             <TableCell colSpan={4}>
                                 <button type='button' onClick={handleAddNew} className="flex items-center justify-center sm:p-5 space-x-5 font-bold hover:cursor-pointer">

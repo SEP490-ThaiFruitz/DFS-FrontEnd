@@ -4,7 +4,7 @@ import { UseFormReturn } from 'react-hook-form'
 import Image from "next/image"
 import { Separator } from '@/components/ui/separator'
 import { useQuery } from '@tanstack/react-query'
-import { ApiResponse, PageResult } from '@/types/types'
+import { ApiResponse } from '@/types/types'
 import { Card, CardContent } from '@/components/ui/card'
 import ImagePreview from '@/components/custom/_custom-image/image-preview'
 import { formatVND } from '@/lib/format-currency'
@@ -19,7 +19,7 @@ interface Event {
 }
 
 const ConfirmInformation = ({ formCombo }: Readonly<ConfirmInformationProps>) => {
-    const { data: events } = useQuery<ApiResponse<PageResult<Event>>>({ queryKey: ["events"] })
+    const { data: events } = useQuery<ApiResponse<Event[]>>({ queryKey: ["events"] })
     const formValues = formCombo.watch()
     return (
 
@@ -47,7 +47,7 @@ const ConfirmInformation = ({ formCombo }: Readonly<ConfirmInformationProps>) =>
                         <div>
                             <div className="text-sm font-medium text-gray-500">Sự kiện</div>
                             <div className="text-base font-medium">
-                                {events?.value?.items?.find((event: Event) => event.id === formValues.eventId)?.name ?? "—"}
+                                {events?.value?.find((event: Event) => event.id === formValues.eventId)?.name ?? "—"}
                             </div>
                         </div>
                         <div>

@@ -7,10 +7,11 @@ import ImagePreview from "@/components/custom/_custom-image/image-preview"
 import { DataTable } from "@/components/global-components/data-table/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { formatVND } from "@/lib/format-currency"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import type { ApiResponse } from "@/types/types"
 import type { ColumnDef } from "@tanstack/react-table"
-import { CirclePlus, Eye, Images, Star, Trash2 } from "lucide-react"
+import { CirclePlus, Eye, Images, RotateCw, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -18,17 +19,19 @@ interface Combo {
     id: string
     name: string
     image: string
-    capacity: number
-    comboType: string
-    event: string
-    isLocked: boolean
-    isCustomer: boolean
-    createdOnUtc: string
-    isDeleted: boolean
+    capacity: number,
+    quantity: number,
+    price: number,
+    comboType: string,
+    event: string,
+    isLocked: boolean,
+    isCustomer: boolean,
+    createdOnUtc: string,
+    isDeleted: boolean,
 }
 
 function ComboPage() {
-    const { data: combos } = useFetch<ApiResponse<Combo[]>>("/Combos", ["combos"])
+    const { data: combos } = useFetch<ApiResponse<Combo[]>>("/Combos/manage", ["combos"])
     const [comboRemove, setComboRemove] = useState<Combo | undefined>(undefined)
 
     const columns: ColumnDef<Combo>[] = [
@@ -61,9 +64,19 @@ function ComboPage() {
             cell: ({ row }) => <div>{row.original.event}</div>,
         },
         {
+            accessorKey: "quantity",
+            header: "Số lượng",
+            cell: ({ row }) => <div className="text-center">{row.original.quantity}</div>,
+        },
+        {
             accessorKey: "capacity",
             header: "Sức chứa",
             cell: ({ row }) => <div className="text-center">{row.original.capacity}</div>,
+        },
+        {
+            accessorKey: "price",
+            header: "Sức chứa",
+            cell: ({ row }) => <div className="text-center">{formatVND(row.original.price)}</div>,
         },
         {
             accessorKey: "comboType",
@@ -83,12 +96,11 @@ function ComboPage() {
                 <div className="flex justify-center">
                     {row.original.isCustomer ? (
                         <Badge variant="secondary" className="flex items-center gap-1">
-                            <Star className="h-3 w-3" />
                             <span>Khách</span>
                         </Badge>
                     ) : (
                         <Badge variant="outline" className="flex items-center gap-1">
-                            <span>Công ty</span>
+                            <span>Cửa hàng</span>
                         </Badge>
                     )}
                 </div>
@@ -98,23 +110,6 @@ function ComboPage() {
             accessorKey: "createdOnUtc",
             header: "Ngày tạo",
             cell: ({ row }) => <div>{formatTimeVietNam(new Date(row.original.createdOnUtc), true)}</div>,
-        },
-        {
-            accessorKey: "isLocked",
-            header: "Trạng thái",
-            cell: ({ row }) => (
-                <div className="flex justify-center">
-                    {row.original.isLocked ? (
-                        <Badge variant="destructive" className="flex items-center gap-1">
-                            <span>Khóa</span>
-                        </Badge>
-                    ) : (
-                        <Badge variant="default" className="flex items-center gap-1">
-                            <span>Hoạt động</span>
-                        </Badge>
-                    )}
-                </div>
-            ),
         },
         {
             id: "actions",
@@ -129,7 +124,15 @@ function ComboPage() {
                             <Eye />
                         </Button>
                     </Link>
-                    {!row.original.isLocked && (
+
+                    {row.original.isDeleted ? <Button
+                        variant="outline"
+                        onClick={() => setComboRemove(row.original)}
+                        className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
+                    >
+                        <RotateCw />
+                    </Button> :
+
                         <Button
                             variant="outline"
                             onClick={() => setComboRemove(row.original)}
@@ -137,7 +140,7 @@ function ComboPage() {
                         >
                             <Trash2 />
                         </Button>
-                    )}
+                    }
                 </div>
             ),
         },
@@ -168,6 +171,10 @@ function ComboPage() {
                     onClose={() => {
                         setComboRemove(undefined);
                     }}
+                    content={comboRemove.isDeleted && comboRemove.isLocked
+                        ? `Bạn có muốn hiện ${comboRemove.name} không ?`
+                        : comboRemove.isDeleted === false && comboRemove.isLocked ? `Bạn có muốn ẩn ${comboRemove.name} không ?` : undefined}
+                    message={comboRemove.isDeleted && comboRemove.isLocked ? 'Hiện' : comboRemove.isDeleted === false && comboRemove.isLocked ? 'Ẩn' : 'Xóa'}
                     refreshKey={[["combos"]]}
                     id={comboRemove.id}
                 />

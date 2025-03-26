@@ -156,7 +156,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[50%]">Dinh dưỡng</TableHead>
-                            <TableHead>Số lượng</TableHead>
+                            <TableHead>Hàm lượng</TableHead>
                             <TableHead>% Giá trị hàng ngày</TableHead>
                             <TableHead className="w-[100px]"></TableHead>
                         </TableRow>

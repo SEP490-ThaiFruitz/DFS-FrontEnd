@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react"
+import React from "react";
 interface TimelineProps {
     orientation?: "Horizontal" | "Vertical",
     showIcon?: boolean
@@ -59,7 +60,7 @@ const Timeline = ({
 
                 <div className={`flex justify-between relative ${orientation === "Vertical" ? 'flex-col gap-10' : 'space-x-5'}`}>
                     {events.map((event: TimelineEvent, index) => (
-                        <>
+                        <React.Fragment key={index + 1}>
                             <div key={index + 1} className={`flex items-center ${orientation === "Vertical" ? 'flex-row space-x-5' : 'flex-col'}`}>
 
                                 <div
@@ -82,7 +83,7 @@ const Timeline = ({
                                     </div>
                                 </div>
                             ))}
-                        </>
+                        </React.Fragment>
 
                     ))}
                 </div>

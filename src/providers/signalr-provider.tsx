@@ -64,8 +64,8 @@ export default function SignalRProvider({ children }: Props) {
 
         connection.current.on('ReceivePayment', handlePayment);
         if (user) {
-            console.log({ user })
-            connection.current.send('RegistHook', user.id, user.role, connection.current.connectionId);
+            connection.current.send('RegistHook', user.id, user.role, connection.current.connectionId)
+                .catch((error) => console.log(error));
         }
 
         return () => {

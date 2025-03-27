@@ -10,7 +10,7 @@ export interface OrderItem {
   unitPrice: number;
   percentage: number;
   discountPrice: number;
-  isFeedback: boolean;
+  isCanFeedback: boolean;
 }
 
 interface ProductListProps {
@@ -25,7 +25,7 @@ export const ProductList = ({ orderItems, orderStatus }: Readonly<ProductListPro
           orderItemId={item.id}
           orderStatus={orderStatus}
           key={item.referenceId}
-          isFeedback={item.isFeedback}
+          isCanFeedback={item.isCanFeedback}
           productName={item.name}
           productPrice={item.unitPrice}
           productQuantity={item.quantity}

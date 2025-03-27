@@ -8,15 +8,22 @@ import { OrderItem, ProductList } from "./product-list";
 import { OrderAddressDelivery, ShippingInfo } from "./shipping-info";
 import { OrderSummary } from "./order-summary";
 import { Policies } from "./policy";
-import { Columns4, FileBox, PackageCheck, PackagePlus, PackageX, Search, Truck } from "lucide-react";
+import { Columns4, CreditCard, FileBox, PackageCheck, PackagePlus, PackageX, Search, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import OrderDetailPage from "../order-detail/order-detail-page";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
-import { ApiResponse, PageResult } from "@/types/types";
+import { ApiResponse } from "@/types/types";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { API } from "@/actions/client/api-config";
 
+
+interface OrderResponse {
+  orders: Order[],
+  statusCounts: StatusCounts
+}
 
 interface Order {
   orderId: string;
@@ -24,11 +31,12 @@ interface Order {
   buyDate: string;
   orderItems: OrderItem[];
   delivery: Delivery | null;
-  voucherPrice: number | null;
+  discountPrice: number | null;
   paymentStatus: string,
   pointUsed: number;
   totalPrice: number,
   orderAddressDelivery: OrderAddressDelivery;
+
 }
 
 interface Delivery {
@@ -36,24 +44,49 @@ interface Delivery {
   estimateDate: string
 }
 
+interface StatusCounts {
+  "Pending": number;
+  "Packaging": number;
+  "Delivering": number;
+}
+
 const MotionCard = motion.div;
 
 export const OrderTrackingPage = () => {
-  const status = [
-    { value: "All", label: "Tất cả", icon: Columns4 },
-    { value: "Pending", label: "Chờ xác nhận", icon: FileBox },
-    { value: "packing", label: "Đang đóng gói", icon: PackagePlus },
-    { value: "delivering", label: "Đang vận chuyển", icon: Truck },
-    { value: "Delivered", label: "Đã giao hàng", icon: PackageCheck },
-    { value: "canceled", label: "Đã hủy", icon: PackageX },
-  ];
   const [orderId, setOrderId] = useState<string | undefined>(undefined);
   const [activeStatus, setActiveStatus] = useState("All");
-  const { data: orders, isPending, refetch } = useFetch<ApiResponse<PageResult<Order>>>(`/Orders/user/orders?pageIndex=1&pageSize=100&status=${activeStatus === "All" ? "" : activeStatus}`, ["Customer", "Orders"])
+  const { data: orders, isPending, refetch } = useFetch<ApiResponse<OrderResponse>>('/Orders/user/orders', ["Customer", "Orders"])
+  const [searchText, setSearchText] = useState<string | undefined>()
 
-  useEffect(() => {
-    refetch()
-  }, [refetch, activeStatus])
+  const status = [
+    { value: "All", label: "Tất cả", icon: Columns4 },
+    { value: "Pending", label: "Chờ xác nhận", icon: FileBox, quantity: orders?.value?.statusCounts["Pending"] },
+    { value: "Packaging", label: "Đang đóng gói", icon: PackagePlus, quantity: orders?.value?.statusCounts["Packaging"] },
+    { value: "Delivering", label: "Đang vận chuyển", icon: Truck, quantity: orders?.value?.statusCounts["Delivering"] },
+    { value: "Delivered", label: "Đã giao hàng", icon: PackageCheck },
+    { value: "Canceled", label: "Đã hủy", icon: PackageX },
+  ];
+
+  const orderSearch = searchText ? orders?.value?.orders.filter((order: Order) => order.orderId.includes(searchText))
+    : orders?.value?.orders
+
+  const orderFilter = activeStatus === "All" ? orderSearch :
+    orderSearch?.filter((order: Order) => order.status === activeStatus);
+
+  const handleReceivedOrder = async (orderId: string) => {
+    try {
+      const response = await API.patch(`/Orders/${orderId}/confirm`, "")
+      if (response) {
+        refetch();
+        toast.success("Xác nhận nhận hàng thành công")
+      } else {
+        toast.error("Xác nhận nhận hàng thất bại")
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("Lỗi hệ thống")
+    }
+  }
 
   return (
     orderId !== undefined ? <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} /> : <>
@@ -61,7 +94,7 @@ export const OrderTrackingPage = () => {
         {status.map((trigger) => (
           <button
             key={trigger.value}
-            className={`flex items-center justify-center gap-2 py-3 transition-all duration-200 ease-in-out font-bold rounded-sm ${activeStatus === trigger.value
+            className={`relative flex items-center justify-center gap-2 py-3 transition-all duration-200 ease-in-out font-bold rounded-sm ${activeStatus === trigger.value
               ? "bg-slate-100 text-slate-700"
               : "hover:bg-gray-100"
               }`}
@@ -69,13 +102,17 @@ export const OrderTrackingPage = () => {
           >
             <trigger.icon className="h-5 w-5" />
             <span className="hidden lg:inline">{trigger.label}</span>
+
+            <span className={`absolute right-0 top-0 bg-red-500 text-white leading-6 w-6 text-sm rounded-full ${trigger.quantity && trigger.quantity > 0 ? 'block' : 'hidden'}`}>{trigger.quantity}</span>
+
           </button>
         ))}
       </div>
       <div className="py-2 flex items-center space-x-2 mb-4 w-full">
         <div className="relative w-full">
           <Input
-            placeholder="Tìm kiếm đơn hàng"
+            placeholder="Tìm kiếm mã đơn hàng"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value.toLocaleUpperCase())}
             className="h-14 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -86,7 +123,7 @@ export const OrderTrackingPage = () => {
       </div>
       <div className="min-h-screen grid lg:grid-cols-2 gap-10">
         {/* <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center"> */}
-        {orders?.value?.items.map((order: Order) => (
+        {orderFilter?.map((order: Order) => (
           <MotionCard
             key={order.orderId}
             initial={{ opacity: 0, y: 20 }}
@@ -123,6 +160,11 @@ export const OrderTrackingPage = () => {
                     Thanh toán ngay
                   </Button>
                 )}
+                {order.status === "Delivered" && (
+                  <Button onClick={() => handleReceivedOrder(order.orderId)} className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+                    Đã nhận hàng
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -133,7 +175,7 @@ export const OrderTrackingPage = () => {
               <div className="grid gap-6 sm:grid-cols-2">
                 <ShippingInfo orderAddressDelivery={order.orderAddressDelivery} />
                 <OrderSummary
-                  discountPrice={order.voucherPrice}
+                  discountPrice={order.discountPrice}
                   feeShip={order.delivery?.fee}
                   pointUsed={order.pointUsed}
                   orderItems={order.orderItems}

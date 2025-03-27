@@ -11,6 +11,11 @@ export const CreateProductSafeTypes = z.object({
   }).nonempty({
     message: "Vui lòng nhập nguồn gốc xuất sứ"
   }),
+  tagNames: z.string({
+    required_error: "Vui lòng nhập tag name"
+  }).nonempty({
+    message: "Vui lòng nhập tag name"
+  }),
   dryingMethod: z.string({
     required_error: "Vui lòng chọn phương pháp xấy"
   }).nonempty({
@@ -114,6 +119,11 @@ export const UpdateProductSafeTypes = z.object({
     required_error: "Vui lòng nhập tên sản phẩm"
   }).nonempty({
     message: "Vui lòng nhập tên sản phẩm"
+  }),
+  tagNames: z.string({
+    required_error: "Vui lòng nhập tag name"
+  }).nonempty({
+    message: "Vui lòng nhập tag name"
   }),
   origin: z.string({
     required_error: "Vui lòng nhập nguồn gốc xuất sứ"

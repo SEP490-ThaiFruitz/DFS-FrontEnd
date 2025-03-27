@@ -229,7 +229,9 @@ export const Navigate = () => {
                       <MapPinHouse />
                       Địa chỉ
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="hover:cursor-pointer">
+                    <DropdownMenuItem
+                      onClick={() => router.push("/profile?tab=order-tracking")}
+                      className="hover:cursor-pointer">
                       <Boxes />
                       Đơn hàng
                     </DropdownMenuItem>

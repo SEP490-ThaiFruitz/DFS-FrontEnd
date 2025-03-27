@@ -22,9 +22,10 @@ export const OrderHeader = ({
 }: Readonly<OrderHeaderProps>) => {
   const orderStatusMap: Record<string, string> = {
     Pending: "Đang chờ xử lý",
-    Confirmed: "Đã xác nhận",
-    Shipped: "Đang giao",
-    Delivered: "Đã giao",
+    Packaging: "Đang đóng gói",
+    Delivering: "Đang giao",
+    Delivered: "Đã giao hàng",
+    Received: "Đã nhận hàng",
     Cancelled: "Đã hủy",
     Returned: "Đã trả hàng",
   };

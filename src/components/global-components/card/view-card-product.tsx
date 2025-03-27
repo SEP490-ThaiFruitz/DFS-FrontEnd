@@ -14,7 +14,7 @@ interface ViewCardProductProps {
   productPercentage: number;
   productDiscountPrice: number;
   orderStatus: string;
-  isFeedback: boolean;
+  isCanFeedback: boolean;
   className?: string;
 }
 export const ViewCardProduct = ({
@@ -25,7 +25,7 @@ export const ViewCardProduct = ({
   productPercentage,
   productDiscountPrice,
   orderStatus,
-  isFeedback,
+  isCanFeedback,
   orderItemId,
   className,
 }: ViewCardProductProps) => {
@@ -55,7 +55,7 @@ export const ViewCardProduct = ({
           ? formatVND((productDiscountPrice * productQuantity).toFixed(2))
           : formatVND((productPrice * productQuantity).toFixed(2))}
       </span>
-      {orderStatus === "Delivered" && isFeedback === false && (
+      {orderStatus === "Received" && isCanFeedback && (
         <Button onClick={() => setFeedback(orderItemId)} size={"sm"}>
           Đánh giá
         </Button>

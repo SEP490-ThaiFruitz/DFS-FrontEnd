@@ -53,7 +53,7 @@ const CreateProductPage = () => {
       formData.append("origin", values.origin);
       formData.append("dryingMethod", values.dryingMethod);
       formData.append("moistureContent", values.moistureContent);
-
+      formData.append("tagNames", values.tagNames);
       values.categoryIds.forEach((value) => {
         formData.append("categoryIds", value);
       })

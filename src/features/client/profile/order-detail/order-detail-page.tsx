@@ -39,7 +39,7 @@ interface OrderItem {
     unitPrice: number;
     percentage: number;
     discountPrice: number;
-    isFeedback: boolean;
+    isCanFeedback: boolean;
 }
 
 interface Delivery {
@@ -148,13 +148,13 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
             icon: Truck,
             title: "Đã Giao Cho ĐVVC",
             date: "10:24 24-02-2025",
-            completed: true,
+            completed: false,
         },
         {
             icon: Package,
             title: "Đã Nhận Được Hàng",
             date: "12:06 25-02-2025",
-            completed: true,
+            completed: false,
         }
     ]
     return (

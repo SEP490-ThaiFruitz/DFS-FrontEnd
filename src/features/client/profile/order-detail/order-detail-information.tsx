@@ -46,19 +46,18 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
 
   const orderStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
-    Confirmed: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
     Packaging: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
     Shipped: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
     Delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
-    Feedbacked: { color: "bg-green-100 text-green-800", text: "Đã đánh giá" },
+    Received: { color: "bg-green-100 text-green-800", text: "Đã nhận hàng" },
     Cancelled: { color: "bg-gray-100 text-gray-800", text: "Đã hủy" },
     Returned: { color: "bg-gray-100 text-gray-800", text: "Đã trả hàng" },
   };
 
   const paymentStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-green-100 text-green-800", text: "Đã thanh toán" },
-    Fail: { color: "bg-red-100 text-red-700", text: "Chưa thanh toán" },
-    Paid: { color: "bg-purple-100 text-purple-800", text: "Đã hoàn tiền" },
+    Fail: { color: "bg-red-100 text-red-700", text: "Thanh toán thất bại" },
+    Paid: { color: "bg-purple-100 text-purple-800", text: "Đã thanh toán" },
   };
   const steps: TimelineEvent[] = [
     {
@@ -107,7 +106,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
     {
       title: "Đã Xác Nhận Thông Tin Thanh Toán",
       date: "20:18 23-02-2025",
-      completed: true,
+      completed: false,
       subEvents: [
         {
           title: "Đơn Hàng Đã Đặt",

@@ -66,6 +66,14 @@ const FormInformation = ({ formProduct }: Readonly<FormInformationProps>) => {
                         label="Phương pháp xấy"
                         require
                     />
+                    <FormTextareaControl
+                        form={formProduct}
+                        name="tagNames"
+                        label="Tag"
+                        rows={8}
+                        placeholder='Nhập mô tả sản phẩm...'
+                        require
+                    />
                 </div>
                 <div className="space-y-6">
                     <FormFileControl

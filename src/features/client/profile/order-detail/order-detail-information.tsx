@@ -9,6 +9,10 @@ import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import React, { useState } from "react";
 import { OrderAddressDelivery } from "../order-tracking/shipping-info";
 import { CancelDialog } from "@/components/custom/_custom-dialog/cancel-dialog";
+import { API } from "@/actions/client/api-config";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { RePaymentDialog } from "@/components/custom/_custom-dialog/re-payment-dialog";
 
 interface OrderDetailsProps {
   orderId?: string;
@@ -19,6 +23,7 @@ interface OrderDetailsProps {
   cancel: Cancel | null;
   delivery: Delivery | undefined;
   orderAddressDelivery: OrderAddressDelivery | undefined;
+  timeline: Timeline[] | undefined;
 }
 
 interface Delivery {
@@ -32,6 +37,18 @@ interface Cancel {
   reason: string
 }
 
+interface Timeline {
+  status: string,
+  date: string,
+  details: SubTimeline[]
+}
+
+interface SubTimeline {
+  statusTime: string,
+  detailStatus: string,
+  content: string
+}
+
 const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   orderId = "#983912",
   orderDate = "2025-01-16 12:00:00+00",
@@ -41,13 +58,15 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   cancel,
   delivery,
   orderAddressDelivery,
+  timeline = []
 }) => {
   const [isCancel, setIsCancel] = useState<boolean>(false)
-
+  const [orderIdPayment, setOrderIdPayment] = useState<string | undefined>(undefined)
+  const queryClient = useQueryClient();
   const orderStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
     Packaging: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
-    Shipped: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
+    Shipping: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
     Delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
     Received: { color: "bg-green-100 text-green-800", text: "Đã nhận hàng" },
     Cancelled: { color: "bg-gray-100 text-gray-800", text: "Đã hủy" },
@@ -59,109 +78,31 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
     Fail: { color: "bg-red-100 text-red-700", text: "Thanh toán thất bại" },
     Paid: { color: "bg-purple-100 text-purple-800", text: "Đã thanh toán" },
   };
-  const steps: TimelineEvent[] = [
-    {
-      title: "Đơn Hàng Đã Đặt",
-      date: "19:47 23-02-2025",
-      completed: true,
-      subEvents: [
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-      ]
-    },
-    {
-      title: "Đã Xác Nhận Thông Tin Thanh Toán",
-      date: "20:18 23-02-2025",
-      completed: false,
-      subEvents: [
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        }, {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-        {
-          title: "Đơn Hàng Đã Đặt",
-          date: "19:47 23-02-2025",
-        },
-      ]
-    },
-    {
-      title: "Đã Giao Cho ĐVVC",
-      date: "10:24 24-02-2025",
-      completed: true,
-    },
-    {
-      title: "Đã Nhận Được Hàng",
-      date: "12:06 25-02-2025",
-      completed: true,
-    },
-    {
-      title: "Đơn Hàng Đã Được Đánh Giá",
-      date: "18:57 05-03-2025",
-      completed: false,
-    },
-  ]
+
+  const steps: TimelineEvent[] = timeline.map((item) => ({
+    title: item.status,
+    date: item.date,
+    completed: true,
+    subEvents: item.details.map((sub) => ({
+      title: sub.content,
+      date: sub.statusTime
+    }))
+  }));
+
+  const handleReceivedOrder = async (orderId: string) => {
+    try {
+      const response = await API.patch(`/Orders/${orderId}/confirm`, "")
+      if (response) {
+        queryClient.invalidateQueries({ queryKey: ["OrderDetail", orderId] })
+        toast.success("Xác nhận nhận hàng thành công")
+      } else {
+        toast.error("Xác nhận nhận hàng thất bại")
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("Lỗi hệ thống")
+    }
+  }
   return (
     <>
       <Card className="pt-5">
@@ -220,11 +161,21 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           )}
         </CardContent>
         <CardFooter className="space-x-5">
-          {orderStatus === "Delivered" && (
+          {orderStatus !== "Paid" && paymentMethod !== "ShipCode" && (
+            <Button onClick={() => setOrderIdPayment(orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+              Thanh toán ngay
+            </Button>
+          )}
+          {orderStatus === "Received" && (
             <Button className="ml-auto" variant={"destructive"}>Hoàn trả</Button>
           )}
-          {(orderStatus === "Pending" || orderStatus === "Confirmed" || orderStatus === "Packing") && (
-            <Button onClick={() => setIsCancel(true)} variant={"destructive"}>Huỷ đơn hàng</Button>
+          {(orderStatus === "Pending" || orderStatus === "Packing") && (
+            <Button className="ml-auto" onClick={() => setIsCancel(true)} variant={"destructive"}>Huỷ đơn hàng</Button>
+          )}
+          {orderStatus === "Delivered" && (
+            <Button onClick={() => handleReceivedOrder(orderId)} className="ml-auto px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+              Đã nhận hàng
+            </Button>
           )}
         </CardFooter>
       </Card>
@@ -259,9 +210,8 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             <Timeline
               events={steps}
               orientation="Vertical"
-              classNameTimelinePositon="top-0 bottom-0 left-3.5 w-0.5 my-10"
               classNameTimeline="h-7 w-7"
-              className=""
+              className="w-full mr-auto"
               showIcon={false}
             />
           </ScrollArea>
@@ -272,6 +222,11 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
         onClose={() => setIsCancel(false)}
         orderId={orderId}
         refreshKey={["OrderDetail", orderId]}
+      />}
+      {orderIdPayment && <RePaymentDialog
+        isOpen={orderIdPayment !== undefined}
+        onClose={() => setOrderIdPayment(undefined)}
+        orderId={orderIdPayment}
       />}
     </>
   );

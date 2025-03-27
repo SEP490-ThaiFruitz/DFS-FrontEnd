@@ -23,6 +23,7 @@ export const OrderHeader = ({
   const orderStatusMap: Record<string, string> = {
     Pending: "Đang chờ xử lý",
     Packaging: "Đang đóng gói",
+    Shipping: "Đang vận chuyển",
     Delivering: "Đang giao",
     Delivered: "Đã giao hàng",
     Received: "Đã nhận hàng",
@@ -46,7 +47,7 @@ export const OrderHeader = ({
           <Button
             size="sm"
             variant="secondary"
-            className="bg-white/20 hover:bg-white/30 text-white border-none"
+            className="bg-white/20 hover:bg-white/30 text-white border-none sm:inline-flex hidden"
           >
             <ScrollTextIcon className="w-4 h-4 mr-1" /> Hoá Đơn
           </Button>

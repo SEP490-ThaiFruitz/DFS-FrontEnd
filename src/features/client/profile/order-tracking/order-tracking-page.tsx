@@ -18,6 +18,8 @@ import { ApiResponse } from "@/types/types";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { API } from "@/actions/client/api-config";
+import { useSearchParams } from "next/navigation";
+import { RePaymentDialog } from "@/components/custom/_custom-dialog/re-payment-dialog";
 
 
 interface OrderResponse {
@@ -33,10 +35,10 @@ interface Order {
   delivery: Delivery | null;
   discountPrice: number | null;
   paymentStatus: string,
+  paymentMethod: string,
   pointUsed: number;
   totalPrice: number,
   orderAddressDelivery: OrderAddressDelivery;
-
 }
 
 interface Delivery {
@@ -53,10 +55,12 @@ interface StatusCounts {
 const MotionCard = motion.div;
 
 export const OrderTrackingPage = () => {
-  const [orderId, setOrderId] = useState<string | undefined>(undefined);
+  const searchParams = useSearchParams();
+  const [orderId, setOrderId] = useState<string | undefined>(searchParams.get("order") ?? undefined);
   const [activeStatus, setActiveStatus] = useState("All");
   const { data: orders, isPending, refetch } = useFetch<ApiResponse<OrderResponse>>('/Orders/user/orders', ["Customer", "Orders"])
   const [searchText, setSearchText] = useState<string | undefined>()
+  const [orderIdPayment, setOrderIdPayment] = useState<string | undefined>(undefined)
 
   const status = [
     { value: "All", label: "Tất cả", icon: Columns4 },
@@ -139,29 +143,29 @@ export const OrderTrackingPage = () => {
               onClickDetail={() => setOrderId(order.orderId)} />
 
             <div className="px-6 pb-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between h-14">
+                <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-3">
                   <span className="font-medium">Trạng thái thanh toán:</span>
                   {order.paymentStatus === "Paid" ?
-                    <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200 font-medium">
+                    <Badge variant="outline" className="w-fit bg-green-100 text-green-700 border-green-200 font-medium">
                       Đã thanh toán
-                    </Badge> : <Badge variant="outline" className="bg-amber-100 text-amber-700 border-amber-200 font-medium">
+                    </Badge> : <Badge variant="outline" className="w-fit bg-amber-100 text-amber-700 border-amber-200 font-medium">
                       Chưa thanh toán
                     </Badge>
                   }
                 </div>
                 {order.paymentStatus === "Fail" && (
-                  <Badge variant="outline" className="bg-red-100 text-red-700 border-red-200 font-medium">
+                  <Badge variant="outline" className="w-fit bg-red-100 text-red-700 border-red-200 font-medium">
                     Thanh toán thất bại
                   </Badge>
                 )}
-                {order.paymentStatus !== "Paid" && (
-                  <Button className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+                {order.paymentStatus !== "Paid" && order.paymentMethod !== "ShipCode" && (
+                  <Button onClick={() => setOrderIdPayment(order.orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
                     Thanh toán ngay
                   </Button>
                 )}
                 {order.status === "Delivered" && (
-                  <Button onClick={() => handleReceivedOrder(order.orderId)} className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+                  <Button onClick={() => handleReceivedOrder(order.orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
                     Đã nhận hàng
                   </Button>
                 )}
@@ -186,6 +190,13 @@ export const OrderTrackingPage = () => {
           </MotionCard>
         ))}
       </div>
+      {orderIdPayment && (
+        <RePaymentDialog
+          onClose={() => setOrderIdPayment(undefined)}
+          isOpen={orderIdPayment !== undefined}
+          orderId={orderIdPayment}
+        />
+      )}
     </>
   );
 };

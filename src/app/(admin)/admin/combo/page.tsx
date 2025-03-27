@@ -22,6 +22,7 @@ interface Combo {
     capacity: number,
     quantity: number,
     price: number,
+    origin: number,
     comboType: string,
     event: string,
     isLocked: boolean,
@@ -55,7 +56,7 @@ function ComboPage() {
         },
         {
             accessorKey: "name",
-            header: "Tên Combo",
+            header: "Tên gói quà",
             cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
         },
         {
@@ -75,12 +76,28 @@ function ComboPage() {
         },
         {
             accessorKey: "price",
-            header: "Sức chứa",
-            cell: ({ row }) => <div className="text-center">{formatVND(row.original.price)}</div>,
+            size: 200,
+            header: "Giá",
+            cell: ({ row }) => (
+                <div className="flex flex-col space-y-3">
+                    {row.original.origin > row.original.price ? (
+                        <>
+                            <div>
+                                <span>Giá niêm yết:</span> <span className="font-bold">{formatVND(row.original.price)}</span>
+                            </div>
+                            <div>
+                                <span>Giá gốc:</span> <span className="font-bold">{formatVND(row.original.origin)}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <span className="font-bold">{formatVND(row.original.price)}</span>
+                    )}
+                </div>
+            )
         },
         {
             accessorKey: "comboType",
-            header: "Loại Combo",
+            header: "Loại gói quà",
             cell: ({ row }) => (
                 <Badge variant="outline" className={`capitalize ${row.original.comboType === "Fixed" ? "bg-blue-500 text-white" : "bg-green-500 text-white"}`}>
                     {row.original.comboType === "Fixed" ? "Cố định" : "Tùy chỉnh"}

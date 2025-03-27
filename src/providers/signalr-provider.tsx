@@ -2,7 +2,7 @@
 
 import { getProfile } from '@/actions/user';
 import { ApiResponse, Profile } from '@/types/types';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
@@ -63,9 +63,11 @@ export default function SignalRProvider({ children }: Props) {
         }
 
         connection.current.on('ReceivePayment', handlePayment);
-        if (user) {
-            connection.current.send('RegistHook', user.id, user.role, connection.current.connectionId)
-                .catch((error) => console.log(error));
+        if (connection.current && connection.current.state == HubConnectionState.Connected) {
+            if (user) {
+                connection.current.send('RegistHook', user.id, user.role, connection.current.connectionId)
+                    .catch((error) => console.log(error));
+            }
         }
 
         return () => {

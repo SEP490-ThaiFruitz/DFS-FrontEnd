@@ -33,7 +33,6 @@ import {
   Menu as MenuIcon,
   UserRoundPen,
 } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VerifyDialog } from "../custom/_custom-dialog/verify-account-dialog";
 import { useRouter } from "next/navigation";
@@ -41,6 +40,7 @@ import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { logOut } from "@/actions/auth";
 
 import Cookies from "js-cookie";
+import Notification from "@/features/notification/notification";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
@@ -162,22 +162,7 @@ export const Navigate = () => {
           {user ? (
             <>
               {/* Notification Popover */}
-              <Popover>
-                <PopoverTrigger>
-                  <div className="relative inline-flex text-sm h-11 w-10 items-center justify-center text-neutral-800 dark:text-neutral-300 hover:bg-neutral-500/20 rounded-[14px] cursor-pointer transition">
-                    <Bell className="size-4" />
-                    <span
-                      className="absolute top-1 -right-1 w-4 h-4 bg-primary-500
-                    text-slate-900 rounded-full flex items-center justify-center"
-                    >
-                      0
-                    </span>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 md:w-96 max-h-[600px] overflow-y-auto">
-                  {/* Notification content remains the same */}
-                </PopoverContent>
-              </Popover>
+              <Notification/>
               <Link
                 href="/favorites"
                 className="h-11 w-10 flex items-center justify-center hover:bg-neutral-500/20 rounded-[14px]"

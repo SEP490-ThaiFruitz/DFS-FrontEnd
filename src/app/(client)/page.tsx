@@ -14,6 +14,7 @@ import { ThreeDMarquee } from "@/components/ui/3d-marque";
 import Image from "next/image";
 import { ProductFilterSidebar } from "@/components/custom/filter-product-sidebar/product-filter-sidebar";
 import { MarqueeMarketing } from "@/features/client/home/marquee-marketing";
+import { ProductFilterSidebarContainer } from "@/components/custom/filter-product-sidebar/product-filter-sidebar-container";
 
 const ClientPage = () => {
   const images = [
@@ -57,76 +58,14 @@ const ClientPage = () => {
       
       */}
 
-        {/* <div className="max-w-7xl overflow-hidden"> */}
         <MarqueeMarketing />
         {/* </div> */}
 
-        {/* <div className="container mx-auto my-10 max-w-7xl rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 ">
-          <ThreeDMarquee
-            images={[
-              "/images/first-background.jpg",
-              "/images/third-background.png",
-              "/images/second-background.png",
-              "/images/forth-background.png",
-
-              "/marque/image-1.avif",
-              "/marque/image-2.avif",
-              "/marque/image-3.avif",
-              "/marque/image-4.avif",
-              "/marque/image-5.avif",
-              "/marque/image-6.avif",
-              "/marque/image-7.avif",
-              "/marque/image-8.avif",
-
-              "/images/first-background.jpg",
-              "/images/third-background.png",
-              "/images/second-background.png",
-              "/images/forth-background.png",
-
-              "/marque/image-1.avif",
-              "/marque/image-2.avif",
-              "/marque/image-3.avif",
-              "/marque/image-4.avif",
-              "/marque/image-5.avif",
-              "/marque/image-6.avif",
-              "/marque/image-7.avif",
-              "/marque/image-8.avif",
-
-              "/images/first-background.jpg",
-              "/images/third-background.png",
-              "/images/second-background.png",
-              "/images/forth-background.png",
-
-              "/marque/image-1.avif",
-              "/marque/image-2.avif",
-              "/marque/image-3.avif",
-              "/marque/image-4.avif",
-              "/marque/image-5.avif",
-              "/marque/image-6.avif",
-              "/marque/image-7.avif",
-              "/marque/image-8.avif",
-
-              "/images/first-background.jpg",
-              "/images/third-background.png",
-              "/images/second-background.png",
-              "/images/forth-background.png",
-
-              "/marque/image-1.avif",
-              "/marque/image-2.avif",
-              "/marque/image-3.avif",
-              "/marque/image-4.avif",
-              "/marque/image-5.avif",
-              "/marque/image-6.avif",
-              "/marque/image-7.avif",
-              "/marque/image-8.avif",
-            ]}
-          />
-        </div> */}
-
-        {/* <Suggest favorites={favorites} /> */}
         {/* <BestSellter /> */}
       </div>
-      <ProductFilterSidebar />
+      {/* <ProductFilterSidebar /> */}
+
+      <ProductFilterSidebarContainer />
     </>
   );
 };

@@ -46,6 +46,14 @@ import { CardProductProps } from "@/components/global-components/card/card-produ
 import { Product } from "@/hooks/use-cart-store";
 import { FilterTypes } from "./product-filter-sidebar";
 import { Logo } from "@/components/global-components/logo";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { DualRangeSlider } from "@/components/ui/dual-range-slider";
+import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 
 // This component assumes all the variables from the original code are passed as props
 // or defined within the component's parent
@@ -134,22 +142,19 @@ const FilterSidebar = ({
   toggleCompare = (productVariantId: string) => {},
   recentlyViewed = [],
 }: FilterSidebarProps) => {
+  const commonStyle = "bg-white";
+
   return (
-    <ScrollArea className="h-full">
-      <SidebarHeader>
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-2 pt-3 px-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex-shrink-0">
-              <Logo height={40} width={40} />
-            </div>
-            {/* <h2 className="text-lg font-semibold">Bộ lọc sản phẩm</h2> */}
-          </div>
+    <ScrollArea className="h-full overflow-hidden rounded-3xl">
+      <SidebarHeader className=" rounded-xl bg-white">
+        <div className="sticky top-0 z-10 pb-2 pt-3 px-4">
+          <Logo height={70} width={70} />
 
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-700" />
             <Input
               placeholder="Tìm kiếm sản phẩm..."
-              className="pl-9 h-10 border-primary/20 focus-visible:ring-primary bg-background/80 backdrop-blur-sm"
+              className="pl-9 h-10  inputStyle"
               value={searchQuery}
               onChange={handleSearchChange}
             />
@@ -157,15 +162,15 @@ const FilterSidebar = ({
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="p-0">
+      <SidebarContent className="p-0 bg-white rounded-3xl">
         {/* Filter Summary */}
-        <div className="px-4 py-3 border-b border-border/40">
+        <div className="px-4 py-3 ">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                <Filter className="h-4 w-4 text-primary" />
+              <div className="h-7 w-7 rounded-full  flex items-center justify-center">
+                <Filter className="h-4 w-4 text-slate-700" />
               </div>
-              <h3 className="font-medium">Bộ lọc</h3>
+              <h3 className="font-medium text-sm">Bộ lọc</h3>
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-1">
                   {activeFiltersCount}
@@ -177,7 +182,7 @@ const FilterSidebar = ({
                 variant="ghost"
                 size="sm"
                 onClick={resetFilters}
-                className="h-8 px-2 text-primary hover:text-primary hover:bg-primary/10"
+                className="h-8 px-2 text-slate-700 hover:text-slate-700 hover:bg-slate-500/10 transition duration-300"
               >
                 <X className="mr-1.5 h-3.5 w-3.5" />
                 Xóa
@@ -186,16 +191,16 @@ const FilterSidebar = ({
           </div>
 
           {activeFiltersCount > 0 && (
-            <div className="mt-3 text-xs text-muted-foreground">
+            <div className="mt-3 text-xs text-slate-700">
               <div className="flex items-center justify-between">
                 <span>Sản phẩm phù hợp:</span>
                 <span className="font-medium text-foreground">
                   {filteredProducts.length}
                 </span>
               </div>
-              <div className="mt-1.5 h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div className="mt-1.5 h-2 w-full rounded-full  overflow-hidden">
                 <div
-                  className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                  className="h-full  rounded-full transition-all duration-500 ease-out"
                   style={{
                     width: `${Math.min(
                       100,
@@ -209,7 +214,7 @@ const FilterSidebar = ({
         </div>
 
         {/* Saved Filters */}
-        <div className="px-4 py-3 border-b border-border/40">
+        {/* <div className="px-4 py-3 border-b border-border/40">
           <div className="flex items-center justify-between mb-2.5">
             <h4 className="text-sm font-medium flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
@@ -263,7 +268,7 @@ const FilterSidebar = ({
               )}
             </div>
           </ScrollArea>
-        </div>
+        </div> */}
 
         {/* Popular Filters */}
         <div className="px-4 py-3 border-b border-border/40">
@@ -271,7 +276,7 @@ const FilterSidebar = ({
             <div className="h-6 w-6 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
               <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
             </div>
-            <span>Bộ lọc phổ biến</span>
+            <span className="text-sm font-semibold">Bộ lọc phổ biến</span>
           </h4>
           <div className="grid grid-cols-2 gap-2.5">
             {popularFilters.map((filter) => (
@@ -279,316 +284,393 @@ const FilterSidebar = ({
                 key={filter.id}
                 variant="outline"
                 size="sm"
-                className={`h-9 text-xs justify-between border-primary/20 hover:bg-primary/5 shadow-sm transition-colors duration-200 ${
+                className={`h-9 text-xs justify-between border-slate-200/20 hover:bg-slate-200/5 shadow-sm transition-colors duration-200 relative ${
                   filters.tags.includes(filter.name)
-                    ? "bg-primary/10 border-primary/30 text-primary"
+                    ? "bg-slate-700/10 border-slate-700/30 text-slate-700"
                     : ""
                 }`}
                 onClick={() => handleTagChange(filter.name)}
               >
                 <span>{filter.name}</span>
-                <Badge variant="secondary" className="ml-1 h-5 text-[10px]">
+                <AdvancedColorfulBadges
+                  color="green"
+                  className="ml-1 h-5 text-[10px] rounded-full absolute -top-1 -right-1"
+                >
                   {filter.count}
-                </Badge>
+                </AdvancedColorfulBadges>
               </Button>
             ))}
           </div>
         </div>
 
-        {/* Categories */}
-        <Collapsible
-          defaultOpen
-          className="border-b border-border/40 transition-all duration-300 ease-in-out"
+        <Accordion
+          type="multiple"
+          defaultValue={[
+            "categories",
+            "tags",
+            "packageTypes",
+            "priceRange",
+            "weightRange",
+          ]}
+          className="border-b border-border/40"
         >
-          <SidebarGroup className="py-0">
-            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
-              <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
-                <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shadow-sm">
-                  <CircleCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <span className="text-sm">Danh mục</span>
-              </SidebarGroupLabel>
-              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 ease-in-out group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="animate-accordion-down transition-all duration-300 ease-in-out">
-              <SidebarGroupContent className="px-4 py-2">
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <div
-                      key={category}
-                      className="flex items-center space-x-2 group"
-                    >
-                      <Checkbox
-                        id={`category-${category}`}
-                        checked={filters.categories.includes(category)}
-                        onCheckedChange={() => handleCategoryChange(category)}
-                        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                      />
-                      <Label
-                        htmlFor={`category-${category}`}
-                        className={`flex-1 cursor-pointer group-hover:text-primary transition-colors ${
-                          filters.categories.includes(category)
-                            ? "font-medium text-primary"
-                            : ""
-                        }`}
+          {/* Categories */}
+
+          <AccordionItem
+            value="categories"
+            className="border-b border-border/40"
+          >
+            <SidebarGroup className="py-0 bg-white">
+              <AccordionTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
+                <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-md bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center shadow-sm">
+                    <CircleCheck className="h-3.5 w-3.5 text-sky-600 dark:text-blue-400" />
+                  </div>
+                  <span className="text-sm font-semibold">Danh mục</span>
+                </SidebarGroupLabel>
+              </AccordionTrigger>
+              <AccordionContent className="animate-accordion-down transition-all duration-300 ease-in-out">
+                <SidebarGroupContent className="px-4 py-2">
+                  <div className="space-y-2">
+                    {categories.map((category) => (
+                      <div
+                        key={category}
+                        className="flex items-center space-x-2 group hoverAnimate"
                       >
-                        {category}
-                      </Label>
+                        <Checkbox
+                          id={`category-${category}`}
+                          checked={filters.categories.includes(category)}
+                          onCheckedChange={() => handleCategoryChange(category)}
+                          className="data-[state=checked]:bg-sky-700 data-[state=checked]:border-sky-700"
+                        />
+                        <Label
+                          htmlFor={`category-${category}`}
+                          className={`flex-1 cursor-pointer group-hover:text-primary transition-colors ${
+                            filters.categories.includes(category)
+                              ? "font-medium text-primary"
+                              : ""
+                          }`}
+                        >
+                          {category}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </SidebarGroupContent>
+              </AccordionContent>
+            </SidebarGroup>
+          </AccordionItem>
+
+          {/* Tags */}
+
+          <AccordionItem value="tags" className="border-b border-border/40">
+            <SidebarGroup className="py-0">
+              <AccordionTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
+                <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center shadow-sm">
+                    <Tag className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <span className="text-sm font-semibold">Tags</span>
+                </SidebarGroupLabel>
+              </AccordionTrigger>
+              <AccordionContent className="animate-accordion-down">
+                <SidebarGroupContent className="px-4 py-2">
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                      <AdvancedColorfulBadges
+                        key={tag}
+                        color={filters.tags.includes(tag) ? "violet" : "silver"}
+                        // variant={
+                        //   filters.tags.includes(tag) ? "default" : "outline"
+                        // }
+
+                        className="cursor-pointer transition-all duration-200 rounded-3xl"
+                        // className={`cursor-pointer transition-all duration-200 ${
+                        //   filters.tags.includes(tag)
+                        //     ? "bg-primary text-primary-foreground scale-105"
+                        //     : "hover:bg-primary/10"
+                        // }`}
+                        onClick={() => handleTagChange(tag)}
+                      >
+                        {tag}
+                      </AdvancedColorfulBadges>
+                    ))}
+                  </div>
+                </SidebarGroupContent>
+              </AccordionContent>
+            </SidebarGroup>
+          </AccordionItem>
+
+          {/* Package Types */}
+          <AccordionItem
+            value="packageTypes"
+            className="border-b border-border/40"
+          >
+            <SidebarGroup className="py-0 bg-white">
+              <AccordionTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
+                <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-md bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shadow-sm">
+                    <Package className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <span className="text-sm font-semibold">Loại đóng gói</span>
+                </SidebarGroupLabel>
+              </AccordionTrigger>
+              <AccordionContent className="animate-accordion-down">
+                <SidebarGroupContent className="px-4 py-2">
+                  <div className="space-y-2">
+                    {packageTypes.map((packageType) => (
+                      <div
+                        key={packageType}
+                        className="flex items-center space-x-2 group hoverAnimate"
+                      >
+                        <Checkbox
+                          id={`package-${packageType}`}
+                          checked={filters.packageTypes.includes(packageType)}
+                          onCheckedChange={() =>
+                            handlePackageTypeChange(packageType)
+                          }
+                          className="data-[state=checked]:bg-sky-700 data-[state=checked]:border-sky-700"
+                        />
+                        <Label
+                          htmlFor={`package-${packageType}`}
+                          className={`flex-1 cursor-pointer text-sm group-hover:text-primary transition-colors ${
+                            filters.packageTypes.includes(packageType)
+                              ? "font-medium text-slate-700"
+                              : ""
+                          }`}
+                        >
+                          {packageType}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </SidebarGroupContent>
+              </AccordionContent>
+            </SidebarGroup>
+          </AccordionItem>
+
+          {/* Price Range */}
+          <AccordionItem
+            value="priceRange"
+            className="border-b border-border/40"
+          >
+            <SidebarGroup className="py-0">
+              <AccordionTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
+                <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-md bg-red-100 dark:bg-red-900/30 flex items-center justify-center shadow-sm">
+                    <DollarSign className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
+                  </div>
+                  <span className="text-sm font-semibold">Khoảng giá</span>
+                </SidebarGroupLabel>
+              </AccordionTrigger>
+              <AccordionContent className="animate-accordion-down">
+                <SidebarGroupContent className="px-4 py-2">
+                  <div className="space-y-6">
+                    <div className="pt-2">
+                      <DualRangeSlider
+                        // value={[priceRange.min, priceRange.max]}
+                        value={filters.priceRange}
+                        min={priceRange.min}
+                        max={priceRange.max}
+                        defaultValue={[priceRange.min, priceRange.max]}
+                        className="pt-4"
+                        onValueChange={handlePriceRangeChange}
+                        step={1}
+                        locales="vi-VN"
+                        format={{ style: "currency", currency: " vi-VN" }}
+                        label={() => <>đ</>}
+                      />
                     </div>
-                  ))}
-                </div>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
+                    <div className="flex items-center justify-between">
+                      <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
+                        {filters.priceRange[0].toLocaleString()}đ
+                      </div>
+                      <div className="text-sm text-muted-foreground">-</div>
+                      <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
+                        {filters.priceRange[1].toLocaleString()}đ
+                      </div>
+                    </div>
+                  </div>
+                </SidebarGroupContent>
+              </AccordionContent>
+            </SidebarGroup>
+          </AccordionItem>
 
-        {/* Tags */}
-        <Collapsible defaultOpen className="border-b border-border/40">
-          <SidebarGroup className="py-0">
-            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
-              <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
-                <div className="h-6 w-6 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center shadow-sm">
-                  <Tag className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
-                </div>
-                <span className="text-sm">Tags</span>
-              </SidebarGroupLabel>
-              <ChevronDown className="h-4 w-4 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform duration-200" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="animate-accordion-down">
-              <SidebarGroupContent className="px-4 py-2">
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant={
-                        filters.tags.includes(tag) ? "default" : "outline"
-                      }
-                      className={`cursor-pointer transition-all duration-200 ${
-                        filters.tags.includes(tag)
-                          ? "bg-primary text-primary-foreground scale-105"
-                          : "hover:bg-primary/10"
-                      }`}
-                      onClick={() => handleTagChange(tag)}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
+          {/* Weight Range */}
+          <AccordionItem
+            value="weightRange"
+            className="border-b border-border/40"
+          >
+            <SidebarGroup className="py-0">
+              <AccordionTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
+                <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-md bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center shadow-sm">
+                    <Weight className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                  <span className="text-sm font-semibold">Trọng lượng</span>
+                </SidebarGroupLabel>
+              </AccordionTrigger>
+              <AccordionContent className="animate-accordion-down">
+                <SidebarGroupContent className="px-4 py-2">
+                  <div className="space-y-6">
+                    <div className="pt-4">
+                      <DualRangeSlider
+                        value={filters.weightRange}
+                        min={weightRange.min}
+                        max={weightRange.max}
+                        className="pt-4"
+                        onValueChange={handleWeightRangeChange}
+                        step={1}
+                        id="weight-range"
+                        label={() => <>g</>}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
+                        {filters.weightRange[0]}g
+                      </div>
+                      <div className="text-sm text-muted-foreground">-</div>
+                      <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
+                        {filters.weightRange[1]}g
+                      </div>
+                    </div>
+                  </div>
+                </SidebarGroupContent>
+              </AccordionContent>
+            </SidebarGroup>
+          </AccordionItem>
 
-        {/* Package Types */}
-        <Collapsible defaultOpen className="border-b border-border/40">
-          <SidebarGroup className="py-0">
-            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
-              <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
-                <div className="h-6 w-6 rounded-md bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shadow-sm">
-                  <Package className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                </div>
-                <span className="text-sm">Loại đóng gói</span>
-              </SidebarGroupLabel>
-              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="animate-accordion-down">
-              <SidebarGroupContent className="px-4 py-2">
-                <div className="space-y-2">
-                  {packageTypes.map((packageType) => (
-                    <div
-                      key={packageType}
-                      className="flex items-center space-x-2 group"
-                    >
-                      <Checkbox
-                        id={`package-${packageType}`}
-                        checked={filters.packageTypes.includes(packageType)}
-                        onCheckedChange={() =>
-                          handlePackageTypeChange(packageType)
+          {/* Nutrition Facts */}
+
+          <AccordionItem
+            value="nutrition"
+            className="border-b border-border/40"
+          >
+            <SidebarGroup className="py-0">
+              <AccordionTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
+                <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-md bg-lime-100 dark:bg-lime-900/30 flex items-center justify-center shadow-sm">
+                    <Apple className="h-3.5 w-3.5 text-lime-600 dark:text-lime-400" />
+                  </div>
+                  <span className="text-sm font-semibold">Dinh dưỡng</span>
+                </SidebarGroupLabel>
+              </AccordionTrigger>
+              <AccordionContent className="animate-accordion-down">
+                <SidebarGroupContent className="px-4 py-2">
+                  <div className="space-y-8">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-base font-semibold">
+                          Calories
+                        </Label>
+                        <span className="text-base text-slate-700">
+                          {filters?.nutritionRange?.calories?.[0] || 0} -{" "}
+                          {filters?.nutritionRange?.calories?.[1] || 0} kcal
+                        </span>
+                      </div>
+                      {/* <Slider
+                        defaultValue={[0, 200]}
+                        min={0}
+                        max={200}
+                        step={10}
+                        value={filters.nutritionRange.calories}
+                        onValueChange={(value) =>
+                          handleNutritionRangeChange("calories", value)
                         }
-                        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        className="[&>span]:bg-primary"
+                      /> */}
+
+                      <DualRangeSlider
+                        value={filters.nutritionRange.calories}
+                        min={0}
+                        max={200}
+                        defaultValue={[0, 200]}
+                        className="pt-4 font-semibold text-xs"
+                        onValueChange={(value) =>
+                          handleNutritionRangeChange("calories", value)
+                        }
+                        step={10}
+                        id="calories"
+                        label={() => <>kcal</>}
                       />
-                      <Label
-                        htmlFor={`package-${packageType}`}
-                        className={`flex-1 cursor-pointer text-sm group-hover:text-primary transition-colors ${
-                          filters.packageTypes.includes(packageType)
-                            ? "font-medium text-primary"
-                            : ""
-                        }`}
-                      >
-                        {packageType}
-                      </Label>
                     </div>
-                  ))}
-                </div>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
 
-        {/* Price Range */}
-        <Collapsible defaultOpen className="border-b border-border/40">
-          <SidebarGroup className="py-0">
-            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
-              <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
-                <div className="h-6 w-6 rounded-md bg-red-100 dark:bg-red-900/30 flex items-center justify-center shadow-sm">
-                  <DollarSign className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
-                </div>
-                <span className="text-sm">Khoảng giá</span>
-              </SidebarGroupLabel>
-              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="animate-accordion-down">
-              <SidebarGroupContent className="px-4 py-2">
-                <div className="space-y-6">
-                  <div className="pt-2">
-                    <Slider
-                      defaultValue={[priceRange.min, priceRange.max]}
-                      min={priceRange.min}
-                      max={priceRange.max}
-                      step={500}
-                      value={filters.priceRange}
-                      onValueChange={handlePriceRangeChange}
-                      className="[&>span]:bg-primary"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
-                      {filters.priceRange[0].toLocaleString()}đ
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-base font-semibold">
+                          Protein
+                        </Label>
+                        <span className="text-base text-slate-700">
+                          {filters?.nutritionRange?.protein?.[0] || 0} -{" "}
+                          {filters?.nutritionRange?.protein?.[1] || 0} g
+                        </span>
+                      </div>
+                      {/* <Slider
+                        defaultValue={[0, 5]}
+                        min={0}
+                        max={5}
+                        step={0.5}
+                        value={filters.nutritionRange?.protein}
+                        onValueChange={(value) =>
+                          handleNutritionRangeChange("protein", value)
+                        }
+                        className="[&>span]:bg-primary"
+                      /> */}
+                      <DualRangeSlider
+                        value={filters.nutritionRange?.protein}
+                        min={0}
+                        max={5}
+                        step={0.5}
+                        defaultValue={[0, 5]}
+                        className="pt-4 font-semibold text-xs"
+                        onValueChange={(value) =>
+                          handleNutritionRangeChange("protein", value)
+                        }
+                        id="protein"
+                        label={() => <>g</>}
+                      />
                     </div>
-                    <div className="text-sm text-muted-foreground">-</div>
-                    <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
-                      {filters.priceRange[1].toLocaleString()}đ
-                    </div>
-                  </div>
-                </div>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
 
-        {/* Weight Range */}
-        <Collapsible defaultOpen className="border-b border-border/40">
-          <SidebarGroup className="py-0">
-            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
-              <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
-                <div className="h-6 w-6 rounded-md bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center shadow-sm">
-                  <Weight className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
-                </div>
-                <span className="text-sm">Trọng lượng</span>
-              </SidebarGroupLabel>
-              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="animate-accordion-down">
-              <SidebarGroupContent className="px-4 py-2">
-                <div className="space-y-6">
-                  <div className="pt-2">
-                    <Slider
-                      defaultValue={[weightRange.min, weightRange.max]}
-                      min={weightRange.min}
-                      max={weightRange.max}
-                      step={1}
-                      value={filters.weightRange}
-                      onValueChange={handleWeightRangeChange}
-                      className="[&>span]:bg-primary"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
-                      {filters.weightRange[0]}g
-                    </div>
-                    <div className="text-sm text-muted-foreground">-</div>
-                    <div className="rounded-md border border-input px-3 py-1.5 text-sm bg-background">
-                      {filters.weightRange[1]}g
-                    </div>
-                  </div>
-                </div>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-base font-semibold">Carbs</Label>
+                        <span className="text-base text-slate-700">
+                          {filters.nutritionRange?.carbs?.[0] || 0} -{" "}
+                          {filters.nutritionRange?.carbs?.[1] || 0} g
+                        </span>
+                      </div>
+                      {/* <Slider
+                        defaultValue={[0, 40]}
+                        min={0}
+                        max={40}
+                        step={2}
+                        value={filters.nutritionRange?.carbs}
+                        onValueChange={(value) =>
+                          handleNutritionRangeChange("carbs", value)
+                        }
+                        className="[&>span]:bg-primary"
+                      /> */}
 
-        {/* Nutrition Facts */}
-        <Collapsible className="border-b border-border/40">
-          <SidebarGroup className="py-0">
-            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
-              <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
-                <div className="h-6 w-6 rounded-md bg-lime-100 dark:bg-lime-900/30 flex items-center justify-center shadow-sm">
-                  <Apple className="h-3.5 w-3.5 text-lime-600 dark:text-lime-400" />
-                </div>
-                <span className="text-sm">Dinh dưỡng</span>
-              </SidebarGroupLabel>
-              <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="animate-accordion-down">
-              <SidebarGroupContent className="px-4 py-2">
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Label className="text-xs">Calories</Label>
-                      <span className="text-xs text-muted-foreground">
-                        {filters?.nutritionRange?.calories?.[0] || 0} -{" "}
-                        {filters?.nutritionRange?.calories?.[1] || 0} kcal
-                      </span>
+                      <DualRangeSlider
+                        value={filters.nutritionRange?.carbs}
+                        min={0}
+                        max={40}
+                        step={2}
+                        defaultValue={[0, 40]}
+                        className="pt-4 font-semibold text-xs"
+                        onValueChange={(value) =>
+                          handleNutritionRangeChange("protein", value)
+                        }
+                        id="protein"
+                        label={() => <>g</>}
+                      />
                     </div>
-                    <Slider
-                      defaultValue={[0, 200]}
-                      min={0}
-                      max={200}
-                      step={10}
-                      value={filters.nutritionRange.calories}
-                      onValueChange={(value) =>
-                        handleNutritionRangeChange("calories", value)
-                      }
-                      className="[&>span]:bg-primary"
-                    />
                   </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Label className="text-xs">Protein</Label>
-                      <span className="text-xs text-muted-foreground">
-                        {filters?.nutritionRange?.protein?.[0] || 0} -{" "}
-                        {filters?.nutritionRange?.protein?.[1] || 0} g
-                      </span>
-                    </div>
-                    <Slider
-                      defaultValue={[0, 5]}
-                      min={0}
-                      max={5}
-                      step={0.5}
-                      value={filters.nutritionRange?.protein}
-                      onValueChange={(value) =>
-                        handleNutritionRangeChange("protein", value)
-                      }
-                      className="[&>span]:bg-primary"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Label className="text-xs">Carbs</Label>
-                      <span className="text-xs text-muted-foreground">
-                        {filters.nutritionRange?.carbs?.[0] || 0} -{" "}
-                        {filters.nutritionRange?.carbs?.[1] || 0} g
-                      </span>
-                    </div>
-                    <Slider
-                      defaultValue={[0, 40]}
-                      min={0}
-                      max={40}
-                      step={2}
-                      value={filters.nutritionRange?.carbs}
-                      onValueChange={(value) =>
-                        handleNutritionRangeChange("carbs", value)
-                      }
-                      className="[&>span]:bg-primary"
-                    />
-                  </div>
-                </div>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
+                </SidebarGroupContent>
+              </AccordionContent>
+            </SidebarGroup>
+          </AccordionItem>
+        </Accordion>
 
         {/* Other Filters */}
         <SidebarGroup className="border-b border-border/40 py-3">
@@ -614,7 +696,7 @@ const FilterSidebar = ({
                   id="has-promotion"
                   checked={filters.hasPromotion}
                   onCheckedChange={handlePromotionChange}
-                  className="data-[state=checked]:bg-primary"
+                  className="data-[state=checked]:bg-sky-700"
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -631,7 +713,7 @@ const FilterSidebar = ({
                   id="in-stock"
                   checked={filters.inStock}
                   onCheckedChange={handleInStockChange}
-                  className="data-[state=checked]:bg-primary"
+                  className="data-[state=checked]:bg-sky-700"
                 />
               </div>
             </div>
@@ -640,7 +722,7 @@ const FilterSidebar = ({
 
         {/* Compare Products Section */}
         {compareList.length > 0 && (
-          <div className="border-b border-border/40 py-3 bg-muted/10">
+          <div className="border-b border-border/40 py-3 ">
             <h4 className="px-4 font-medium mb-2 flex items-center gap-1.5">
               <ArrowUpDown className="h-3.5 w-3.5 text-primary" />
               So sánh sản phẩm ({compareList.length}/3)

@@ -62,6 +62,7 @@ export const useFetch = <T>(
   return useQuery<T, Error>({
     queryKey: params ? [...queryKey, params] : [...queryKey],
     queryFn: async () => await fetching(endpoint, params),
+
     ...options,
   });
 };

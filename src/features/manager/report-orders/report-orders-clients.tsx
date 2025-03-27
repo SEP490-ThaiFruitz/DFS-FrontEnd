@@ -45,7 +45,7 @@ export const ReportOrdersListClient = () => {
 
   // Đếm số đơn hàng đã xác nhận
   const confirmedOrders = data?.items.filter(
-    (order) => order.status === "Confirmed"
+    (order) => order.status === "Recieved"
   ).length;
 
   // Nếu cần, đếm số đơn hàng Pending hoặc các trạng thái khác

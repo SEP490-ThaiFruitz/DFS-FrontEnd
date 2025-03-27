@@ -1,15 +1,15 @@
-"use client"
+"use client";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { Button } from "@/components/ui/button";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import { ScrollTextIcon, Plane, Package, Boxes } from "lucide-react";
 
 interface OrderHeaderProps {
-  status: string,
-  orderId: string,
-  buyDate: string,
-  timeEstimateDelivery?: string,
-  onClickDetail: () => void
+  status: string;
+  orderId: string;
+  buyDate: string;
+  timeEstimateDelivery?: string;
+  onClickDetail: () => void;
 }
 
 export const OrderHeader = ({
@@ -17,11 +17,11 @@ export const OrderHeader = ({
   orderId,
   buyDate,
   timeEstimateDelivery,
-  onClickDetail
+  onClickDetail,
 }: Readonly<OrderHeaderProps>) => {
   const orderStatusMap: Record<string, string> = {
     Pending: "Đang chờ xử lý",
-    Confirmed: "Đã xác nhận",
+    // Confirmed: "Đã xác nhận",
     Shipped: "Đang giao",
     Delivered: "Đã giao",
     Cancelled: "Đã hủy",
@@ -84,7 +84,8 @@ export const OrderHeader = ({
           <>
             <span className="hidden sm:inline">•</span>
             <span className="flex items-center gap-1">
-              <Plane className="w-4 h-4" /> Ước tính vận chuyển: {formatTimeVietNam(new Date(timeEstimateDelivery))}
+              <Plane className="w-4 h-4" /> Ước tính vận chuyển:{" "}
+              {formatTimeVietNam(new Date(timeEstimateDelivery))}
             </span>
           </>
         )}

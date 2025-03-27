@@ -33,6 +33,7 @@ import {
   HelpCircle,
   MessageCircle,
   Sun,
+  Box,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -99,181 +100,99 @@ import { Logo } from "@/components/global-components/logo";
 import FilterSidebar from "./filter-sidebar";
 import { toLowerCaseNonAccentVietnamese } from "@/utils/non-accent";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ComboProductCard from "@/components/global-components/card/card-combo";
 
-// Sample data from the provided JSON
-// const products: Product[] = [
-//   {
-//     id: "0852ee33-dd35-4d70-b4aa-8b95249e17c9",
-//     name: "Việt quất sấy",
-//     mainImageUrl:
-//       "https://nuts.com/images/ct/images.cdn.us-central1.gcp.commercetools.com/fe6ef66f-361c-4adb-b11f-d4aa8f13c79c/1013%20Dried%20Blueberri-rJ2FbX6b-medium.jpg",
-//     description: "Việt quất sấy khô, giàu chất dinh dưỡng và thơm ngon.",
-//     categories: [
-//       {
-//         id: "9d3c7f1e-6b2a-49a8-9f7e-8d2c5b3f7e2a",
-//         name: "Việt quất sấy",
-//         thumbnail:
-//           "https://nuts.com/images/auto/228x152fill/assets/77894c411a1003e8.jpg",
-//       },
-//     ],
-//     variant: [
-//       {
-//         productVariantId: "5fe709ab-489a-4031-b890-ea4d8caf71d9",
-//         packageType: "Bao gói đơn giản cho trái cây sấy ăn liền",
-//         netWeight: 16,
-//         price: 17000,
-//         stockQuantity: 40,
-//         promotion: {
-//           startDate: "2025-03-24T17:00:00+00:00",
-//           endDate: "2025-04-05T16:59:59.999999+00:00",
-//           percentage: 50,
-//           price: 8500,
-//         },
-//       },
-//       {
-//         productVariantId: "652ade05-15d4-47f7-aadc-7d6b2ed77fc6",
-//         packageType: "Túi hút chân không cho trái cây sấy số lượng lớn",
-//         netWeight: 95,
-//         price: 13000,
-//         stockQuantity: 22,
-//         promotion: {
-//           startDate: "2025-03-24T17:00:00+00:00",
-//           endDate: "2025-04-05T16:59:59.999999+00:00",
-//           percentage: 50,
-//           price: 6500,
-//         },
-//       },
-//     ],
-//     rating: 4.5,
-//     quantitySold: 120,
-
-//     tags: ["Organic", "Superfood", "High Antioxidants"],
-//     nutritionFacts: {
-//       calories: 140,
-//       protein: 1.5,
-//       carbs: 33,
-//       fat: 0.5,
-//     },
-//   },
-//   {
-//     id: "0d7b2ed4-c4fb-4405-a64e-c60ad014e337",
-//     name: "Dâu tây sấy",
-//     mainImageUrl:
-//       "https://nuts.com/images/ct/images.cdn.us-central1.gcp.commercetools.com/fe6ef66f-361c-4adb-b11f-d4aa8f13c79c/1601%20Freeze-Dried%20St-dtpWnCzl-medium.jpg",
-//     description: "Dâu tây sấy khô, chua ngọt và giàu chất chống oxy hóa.",
-//     categories: [
-//       {
-//         id: "5b7a9c2d-3e8f-49a6-9f7e-1d2c3b7e2a5f",
-//         name: "Dâu tây sấy",
-//         thumbnail:
-//           "https://nuts.com/images/auto/228x152fill/assets/d41ddae774335f0c.jpg",
-//       },
-//     ],
-//     variant: [
-//       {
-//         productVariantId: "6d064bb4-7066-4b08-b927-5c23e05d5a3c",
-//         packageType: "Lon thiếc trái cây sấy khô bảo quản lâu",
-//         netWeight: 15,
-//         price: 16000,
-//         stockQuantity: 90,
-//         promotion: {
-//           startDate: "2025-03-24T17:00:00+00:00",
-//           endDate: "2025-04-05T16:59:59.999999+00:00",
-//           percentage: 50,
-//           price: 8000,
-//         },
-//       },
-//     ],
-//     rating: 4.8,
-//     quantitySold: 250,
-
-//     tags: ["No Added Sugar", "Vitamin C", "Freeze-Dried"],
-//     colors: ["red"],
-//     nutritionFacts: {
-//       calories: 120,
-//       protein: 1,
-//       carbs: 28,
-//       fat: 0.3,
-//     },
-//   },
-//   {
-//     id: "0f49d10d-2b07-4fdf-8f2b-4d58def6c3a3",
-//     name: "Dưa sấy",
-//     mainImageUrl:
-//       "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/38e178e7f2d03e60-zQZ7LPfZ-medium.jpg",
-//     description: "Dưa sấy khô, ngọt và thơm tự nhiên.",
-//     categories: [
-//       {
-//         id: "1d2c3b7e-4a5f-49a6-9f7e-8d2b9a7e2c5f",
-//         name: "Trái cây hỗn hợp",
-//         thumbnail:
-//           "https://nuts.com/images/auto/228x152fill/assets/ae16c735a6a560b8.jpg",
-//       },
-//     ],
-//     variant: [
-//       {
-//         productVariantId: "0a426dba-d093-4328-b7f9-ffedbd87832e",
-//         packageType: "Vỉ nhựa đựng trái cây sấy dẻo dạng viên",
-//         netWeight: 14,
-//         price: 15000,
-//         stockQuantity: 77,
-//         promotion: {
-//           startDate: "2025-03-24T17:00:00+00:00",
-//           endDate: "2025-04-05T16:59:59.999999+00:00",
-//           percentage: 50,
-//           price: 7500,
-//         },
-//       },
-//     ],
-//     rating: 4.2,
-//     quantitySold: 180,
-
-//     tags: ["Sweet", "Kids Favorite", "Chewy"],
-//     colors: ["green"],
-//     nutritionFacts: {
-//       calories: 150,
-//       protein: 0.5,
-//       carbs: 38,
-//       fat: 0.1,
-//     },
-//   },
-//   {
-//     id: "1eb8fd3f-0c65-49d5-8e44-ea4535f3a87b",
-//     name: "Nho khô",
-//     mainImageUrl:
-//       "https://nuts.com/images/ct/images.cdn.us-central1.gcp.commercetools.com/fe6ef66f-361c-4adb-b11f-d4aa8f13c79c/1512_OrganicRaisins_-_XhBXhsi-medium.jpg",
-//     description: "Nho khô ngọt dịu, thích hợp làm món ăn vặt.",
-//     categories: [
-//       {
-//         id: "4a5c3b7e-2f8d-49a6-9f7e-1d2b9a7e2c5f",
-//         name: "Nho khô",
-//         thumbnail:
-//           "https://nuts.com/images/auto/228x152fill/assets/1a32a457e3a247aa.jpg",
-//       },
-//     ],
-//     variant: [
-//       {
-//         productVariantId: "01c27ae5-2af6-4514-91dc-ded50377b351",
-//         packageType: "Túi đứng zipper cho trái cây sấy khô cao cấp",
-//         netWeight: 12,
-//         price: 14500,
-//         stockQuantity: 78,
-//         promotion: null,
-//       },
-//     ],
-//     rating: 4.7,
-//     quantitySold: 320,
-
-//     tags: ["Natural", "No Preservatives", "Iron Rich"],
-//     colors: ["purple"],
-//     nutritionFacts: {
-//       calories: 130,
-//       protein: 1.2,
-//       carbs: 31,
-//       fat: 0.2,
-//     },
-//   },
-// ];
+const comboProduct = {
+  id: "11da8525-ee4c-453b-bb80-24d0257c0179",
+  name: "Hè Rực Rỡ",
+  image:
+    "https://res.cloudinary.com/deojypwtl/image/upload/v1743090591/H%C3%A8%20R%E1%BB%B1c%20R%E1%BB%A1/0a7bcffcd7a64c8d8050445920f961a7_u8lzrq.jpg",
+  quantity: 123,
+  event: "Valentine's Day",
+  description: "31231232131",
+  price: 86136,
+  save: 2664,
+  netWeight: 86,
+  categories: [
+    {
+      id: "1d2c3b7e-4a5f-49a6-9f7e-8d2b9a7e2c5f",
+      name: "Trái cây hỗn hợp",
+      thumbnail:
+        "https://nuts.com/images/auto/228x152fill/assets/ae16c735a6a560b8.jpg",
+    },
+  ],
+  variant: [
+    {
+      productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
+      productVariantId: "cf6d9c8e-362c-4665-ae5b-4838ea745228",
+      name: "Ổi sấy",
+      image:
+        "https://setechvn.com/wp-content/uploads/2024/09/62ad6d3ee3750_1655532862_oi_do.jpg",
+      packageType: "Túi lưới mix 5 loại trái cây sấy",
+      netWeight: 14,
+      price: 12500,
+      quantity: 1,
+    },
+    {
+      productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
+      productVariantId: "cf0dddaf-393e-4314-9d4a-eca597e6068f",
+      name: "Ổi sấy",
+      image:
+        "https://goce.vn/files/product/9312f1c873bdea997f90936bb7906ca6.jpg",
+      packageType: "Bao gói đơn giản cho trái cây sấy ăn liền",
+      netWeight: 14,
+      price: 15800,
+      quantity: 1,
+    },
+    {
+      productId: "509aa7f1-c89e-468c-86c5-e53ec3388e89",
+      productVariantId: "5d0e50bb-f425-441e-b35e-d4304020479d",
+      name: "Hồng sấy",
+      image:
+        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a20a01185ff59eba-JShYgIGo-medium.jpg",
+      packageType: "Túi hút chân không cho trái cây sấy số lượng lớn",
+      netWeight: 14,
+      price: 14800,
+      quantity: 1,
+    },
+    {
+      productId: "0f49d10d-2b07-4fdf-8f2b-4d58def6c3a3",
+      productVariantId: "1c5a605b-7b65-45cf-8592-cf80aaba7a77",
+      name: "Dưa sấy",
+      image:
+        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/38e178e7f2d03e60-zQZ7LPfZ-medium.jpg",
+      packageType: "Thùng carton đóng gói các loại trái cây sấy",
+      netWeight: 14,
+      price: 14200,
+      quantity: 1,
+    },
+    {
+      productId: "d68691ec-bc88-4afa-8f7a-32e6111a0530",
+      productVariantId: "5a8bfea9-b78d-45f4-8b36-f9fd43666c4d",
+      name: "Dừa sấy",
+      image:
+        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/4056_ToastedCoconut_-O_StqUW--medium.jpg",
+      packageType: "Lọ thủy tinh bảo quản trái cây sấy",
+      netWeight: 14,
+      price: 15000,
+      quantity: 1,
+    },
+    {
+      productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
+      productVariantId: "302b4864-104e-45bf-a1ef-7c7d8c094ca1",
+      name: "Ổi sấy",
+      image:
+        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/d8df33b8f17f05d1-q0w23TMV-medium.jpg",
+      packageType: "Lon thiếc trái cây sấy khô bảo quản lâu",
+      netWeight: 16,
+      price: 16500,
+      quantity: 1,
+    },
+  ],
+  quantitySold: 0,
+  rating: 0,
+};
 
 // Extract unique categories, package types, etc. from the data
 const extractUniqueValues = (products: Product[] | []) => {
@@ -843,6 +762,10 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
     </div>
   );
 
+  const [tab, setTab] = useState("tab-1");
+
+  console.log({ tab });
+
   return (
     // <div className="bg-white min-h-screen p-4">
     <SidebarProvider className="">
@@ -915,25 +838,44 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="flex items-center border rounded-md p-1 ">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => setViewMode("grid")}
+
+            <Tabs
+              defaultValue="tab-1"
+              value={tab}
+              onValueChange={setTab}
+              className="flex items-center gap-4"
+            >
+              <TabsList
+                className="mx-auto flex max-w-xs bg-transparent"
+                // onChange={setTab}
+              >
+                <TabsTrigger
+                  value="tab-1"
+                  className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:shadow-none"
                 >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => setViewMode("list")}
+                  <Grid3X3
+                    className="mb-1.5 opacity-60"
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                  Tất cả sản phẩm
+                </TabsTrigger>
+                <TabsTrigger
+                  value="tab-2"
+                  className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:shadow-none"
+                  // className="relative flex-col rounded-none px-4 py-2 text-xs after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary"
                 >
-                  <LayoutList className="h-4 w-4" />
-                </Button>
-              </div>
+                  <Box
+                    className="mb-1.5 opacity-60"
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                  Combo sản phẩm
+                </TabsTrigger>
+              </TabsList>
+
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sắp xếp theo" />
@@ -946,7 +888,7 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </Tabs>
           </div>
 
           {/* Active Filters */}
@@ -1147,7 +1089,7 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
           {/* Product Grid */}
           {isLoading ? (
             <div
-              className={`grid grid-cols-1 ${
+              className={`grid grid-cols-1 w-full ${
                 viewMode === "grid" ? "sm:grid-cols-2 lg:grid-cols-3" : ""
               } gap-6`}
             >
@@ -1170,15 +1112,15 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
               <h3 className="mt-4 text-lg font-medium text-slate-700">
                 Không tìm thấy sản phẩm phù hợp
               </h3>
-              <p className="mt-2 text-slate-700 text-center max-w-md">
+              <span className="mt-2 text-slate-700 text-center max-w-md">
                 Không tìm thấy sản phẩm nào phù hợp với bộ lọc của bạn. Hãy thử
                 điều chỉnh lại bộ lọc.
-              </p>
+              </span>
               <Button variant="outline" className="mt-6" onClick={resetFilters}>
                 Xóa tất cả bộ lọc
               </Button>
             </div>
-          ) : (
+          ) : tab === "tab-1" ? (
             <div
               className={`grid grid-cols-1 ${
                 viewMode === "grid"
@@ -1205,6 +1147,12 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
                   });
                 })}
               </AnimatePresence>
+            </div>
+          ) : (
+            <div
+              className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 p-8`}
+            >
+              <ComboProductCard product={comboProduct} />
             </div>
           )}
         </div>

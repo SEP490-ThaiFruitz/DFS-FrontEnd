@@ -50,7 +50,7 @@ export type OrderData = {
 
 export enum OrderStatusEnum {
   PENDING = "pending",
-  CONFIRMED = "confirmed",
+  // CONFIRMED = "confirmed",
   PACKAGING = "packaging",
   SHIPPING = "shipping",
   DELIVERING = "delivering",
@@ -61,7 +61,7 @@ export enum OrderStatusEnum {
 }
 export const OrderStatus = {
   pending: "Đơn hàng đang chờ xử lý",
-  confirmed: "Đơn hàng đã được xác nhận",
+  // confirmed: "Đơn hàng đã được xác nhận",
   packaging: "Đơn hàng đang được đóng gói",
   shipping: "Đơn hàng đang được vận chuyển",
   delivering: "Đơn hàng đang trên đường giao tới khách hàng",

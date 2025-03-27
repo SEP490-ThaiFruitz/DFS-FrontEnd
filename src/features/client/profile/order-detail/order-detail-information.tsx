@@ -161,7 +161,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           )}
         </CardContent>
         <CardFooter className="space-x-5">
-          {orderStatus !== "Paid" && paymentMethod !== "ShipCode" && (
+          {paymentStatus !== "Paid" && paymentMethod !== "ShipCode" && (
             <Button onClick={() => setOrderIdPayment(orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
               Thanh toán ngay
             </Button>

@@ -103,6 +103,19 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
             orderStep.date = subTimeline?.statusTime
         }
     }
+    const OrderPayment = order?.value?.timeline.find((timeline: Timeline) =>
+        timeline.details.find((detail: SubTimeline) => detail.detailStatus === "payment_received")
+    );
+
+    if (OrderPayment) {
+        const orderStep = steps.find(step => step.title === "Đã Xác Nhận Thông Tin Thanh Toán");
+        if (orderStep) {
+            const subTimeline = OrderPayment.details.find((detail: SubTimeline) => detail.detailStatus === "payment_received")
+            orderStep.completed = true;
+            orderStep.date = subTimeline?.statusTime
+        }
+    }
+
 
     const OrderDelivery = order?.value?.timeline.find((timeline: Timeline) =>
         timeline.details.find((detail: SubTimeline) => detail.detailStatus === "transporting")
@@ -168,7 +181,7 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
                         orderStatus={order?.value?.orderStatus ?? ""}
                         feePrice={order?.value?.delivery.fee ?? 0}
                         orderItems={order?.value?.orderItems ?? []}
-                        shipCode={order?.value?.paymentMethod === "COD"}
+                        shipCode={order?.value?.paymentMethod === "ShipCode"}
                         totalPrice={order?.value?.totalPrice ?? 0}
                         usedPoint={order?.value?.pointUsed ?? 0}
                         voucherPrice={order?.value?.voucherPrice ?? null}

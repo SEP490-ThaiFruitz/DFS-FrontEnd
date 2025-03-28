@@ -52,9 +52,9 @@ export default function StatusButton({
       onClick={(e) => changeStatus(e)}
       disabled={!isEnabled}
       className={cn(
-        `group relative overflow-hidden rounded-md text-sm bg-green-500 size-10
+        `group relative overflow-hidden rounded-md text-sm bg-[#0284c7] hover:bg-[#0369a1] size-10
         font-semibold text-white transition-colors duration-300 flex items-center
-        justify-center`,
+        justify-center hoverAnimate`,
         className
       )}
     >
@@ -66,7 +66,7 @@ export default function StatusButton({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 15 }}
           transition={{ duration: 0.075 }}
-          // className={cn("flex items-center justify-center gap-1")}
+          className={cn("flex items-center justify-center gap-1")}
         >
           {status === "Added to cart" && (
             <motion.span
@@ -76,7 +76,8 @@ export default function StatusButton({
               transition={{ delay: 0.075, type: "spring" }}
             >
               <CheckCircle2
-                className={`size-8 fill-white stroke-teal-500 group-hover:stroke-teal-600 ${hoverAnimation}`}
+                // strokeWidth={2}
+                className={`size-8 fill-white stroke-green-500 group-hover:stroke-green-600  ${hoverAnimation}`}
               />
             </motion.span>
           )}
@@ -92,7 +93,9 @@ export default function StatusButton({
                     classNameIcon
                   )}
                 />
-                <span className="text-slate-100 text-base">{label}</span>
+                <span className="text-white text-base hidden md:inline-block text-ellipsis">
+                  {label}
+                </span>
               </div>
             )
           )}

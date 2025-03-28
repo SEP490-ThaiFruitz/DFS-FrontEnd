@@ -1122,11 +1122,7 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
             </div>
           ) : tab === "tab-1" ? (
             <div
-              className={`grid grid-cols-1 ${
-                viewMode === "grid"
-                  ? "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                  : ""
-              } gap-6`}
+              className={`w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-4 gap-4 `}
             >
               <AnimatePresence>
                 {filteredProducts?.map((product) => {
@@ -1150,8 +1146,11 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
             </div>
           ) : (
             <div
-              className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 p-8`}
+              className={`w-full grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4  bg-red-500`}
             >
+              <ComboProductCard product={comboProduct} />
+              <ComboProductCard product={comboProduct} />
+              <ComboProductCard product={comboProduct} />
               <ComboProductCard product={comboProduct} />
             </div>
           )}

@@ -32,6 +32,9 @@ import {
 } from "@/components/ui/accordion";
 import { formatVND } from "@/lib/format-currency";
 import { CategoryTypes } from "@/hooks/use-cart-store";
+import { AdvancedColorfulBadges } from "../badge/advanced-badge";
+import StatusButton from "@/components/custom/_custom-button/status-button";
+import { toast } from "sonner";
 
 interface ProductVariant {
   productId: string;
@@ -90,7 +93,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
   const discountPercentage = Math.round((product.save / originalPrice) * 100);
 
   return (
-    <Card className="w-full max-w-3xl mx-auto overflow-hidden shadow-md border border-border/50 cardStyle">
+    <Card className="w-full max-w-3xl mx-auto overflow-hidden shadow-md  cardStyle motion-preset-pop">
       <div className="grid md:grid-cols-5 gap-0">
         {/* Product Image */}
         <div className="relative h-[280px] md:h-full md:col-span-2 overflow-hidden">
@@ -98,19 +101,19 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
             src={product.image || "/placeholder.svg"}
             alt={product.name}
             fill
-            className="object-cover"
+            className="object-cover rounded-3xl"
             priority
           />
           {product.event && (
-            <Badge className="absolute top-3 left-3 bg-red-500 hover:bg-red-600 text-xs">
+            <Badge className="absolute top-3 left-3 bg-rose-500 hover:bg-rose-600 text-xs">
               {product.event}
             </Badge>
           )}
-          {product.save > 0 && (
+          {/* {product.save > 0 && (
             <Badge className="absolute top-3 right-3 bg-green-500 hover:bg-green-600 text-xs">
               -{discountPercentage}%
             </Badge>
-          )}
+          )} */}
         </div>
 
         {/* Product Details */}
@@ -127,7 +130,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 mt-1">
+              <div className="flex items-center  gap-1 mt-1">
                 {product.categories.map((category) => (
                   <Badge
                     key={category.id}
@@ -151,9 +154,24 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
               )}
             </div>
 
-            <p className="text-sm text-slate-800 line-clamp-2">
+            {product.save > 0 && (
+              <>
+                <span className="text-sm font-thin text-slate-700">
+                  Tiết kiệm:{" "}
+                  <AdvancedColorfulBadges
+                    color="maroon"
+                    className=" rounded-3xl text-xs"
+                    size="sm"
+                  >
+                    -{discountPercentage}%
+                  </AdvancedColorfulBadges>
+                </span>
+              </>
+            )}
+
+            <span className="text-sm text-slate-800 line-clamp-2">
               {product.description}
-            </p>
+            </span>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="flex items-center gap-1.5">
@@ -232,7 +250,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
             </div>
           </div>
 
-          <div className="mt-4 flex items-center gap-2">
+          <div className="mt-4 flex items-center w-full gap-2">
             <div className="flex items-center border rounded-md">
               <Button
                 variant="ghost"
@@ -254,10 +272,23 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                 <PlusIcon className="h-3 w-3" />
               </Button>
             </div>
-            <Button className="h-8 flex-1 text-xs">
+            {/* <Button className="h-8 flex-1 shrink  text-xs w-full">
               <ShoppingCartIcon className="mr-1.5 h-3.5 w-3.5" /> Thêm vào giỏ
               hàng
-            </Button>
+            </Button> */}
+
+            <StatusButton
+              handleAddToCart={() =>
+                toast.success("Thêm vào giỏ hàng thành công")
+              }
+              // label="Thêm vào giỏ hàng"
+              className="h-8 flex-1 min-w-0 text-xs w-full sm:w-auto"
+            />
+
+            {/* <Button className="h-8 flex-1 min-w-0 text-xs w-full sm:w-auto">
+              <ShoppingCartIcon className="mr-1.5 h-3.5 w-3.5" /> Thêm vào giỏ
+              hàng
+            </Button> */}
           </div>
         </CardContent>
       </div>
@@ -294,7 +325,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
 
                 <AccordionContent>
                   <div className="space-y-3">
-                    <div className="bg-background rounded-md p-2.5 border border-border/50">
+                    <div className="bg-background rounded-md p-2.5  cardStyle">
                       <h4 className="text-xs font-medium text-primary mb-1.5">
                         Mô tả
                       </h4>
@@ -304,8 +335,8 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-background rounded-md p-2.5 border border-border/50">
+                    <div className="grid grid-cols-2 gap-2 ">
+                      <div className="bg-background rounded-md p-2.5  cardStyle">
                         <h4 className="text-xs font-semibold text-slate-900 mb-1.5">
                           Thông số
                         </h4>
@@ -329,7 +360,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                         </ul>
                       </div>
 
-                      <div className="bg-background rounded-md p-2.5 border border-border/50">
+                      <div className="bg-background rounded-md p-2.5 cardStyle">
                         <h4 className="text-xs font-semibold text-slate-900 mb-1.5">
                           Phân loại
                         </h4>
@@ -356,7 +387,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                       </div>
                     </div>
 
-                    <div className="bg-background rounded-md p-2.5 border border-border/50">
+                    <div className="bg-background rounded-md p-2.5  cardStyle">
                       <h4 className="text-xs font-semibold text-slate-900 mb-1.5">
                         Lợi ích
                       </h4>
@@ -403,7 +434,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                 </AccordionTrigger>
 
                 <AccordionContent>
-                  <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1 scrollbar-thin">
+                  <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1 scrollbar-thin cardStyle">
                     {product.variant.map((item, index) => (
                       <div
                         key={item.productVariantId}
@@ -454,7 +485,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                     ))}
                   </div>
 
-                  <div className="mt-3 bg-background rounded-md p-2.5 border border-border/50">
+                  <div className="mt-3 bg-background rounded-md p-2.5  cardStyle">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-medium">
                         Tổng giá trị sản phẩm:
@@ -500,7 +531,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
 
                 <AccordionContent>
                   <div className="space-y-3">
-                    <div className="bg-background rounded-md p-2.5 border border-border/50">
+                    <div className="bg-background rounded-md p-2.5  cardStyle">
                       <h4 className="text-xs font-semibold text-slate-700 mb-1.5">
                         Phương thức vận chuyển
                       </h4>
@@ -541,8 +572,8 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-background rounded-md p-2.5 border border-border/50">
+                    <div className="grid grid-cols-2 gap-2 ">
+                      <div className="bg-background rounded-md p-2.5  cardStyle">
                         <h4 className="text-xs font-semibold text-slate-800 mb-1.5">
                           Chính sách đổi trả
                         </h4>
@@ -562,7 +593,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                         </ul>
                       </div>
 
-                      <div className="bg-background rounded-md p-2.5 border border-border/50">
+                      <div className="bg-background rounded-md p-2.5  cardStyle">
                         <h4 className="text-xs font-semibold text-slate-800 mb-1.5">
                           Hướng dẫn bảo quản
                         </h4>
@@ -583,7 +614,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                       </div>
                     </div>
 
-                    <div className="bg-background rounded-md p-2.5 border border-border/50">
+                    <div className="bg-background rounded-md p-2.5  cardStyle">
                       <h4 className="text-xs font-semibold text-slate-800 mb-1.5">
                         Khu vực giao hàng
                       </h4>

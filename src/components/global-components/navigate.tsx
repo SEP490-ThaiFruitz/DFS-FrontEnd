@@ -39,15 +39,17 @@ import { useRouter } from "next/navigation";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { logOut } from "@/actions/auth";
 
-import Cookies from "js-cookie";
 import Notification from "@/features/notification/notification";
+import { Skeleton } from "../ui/skeleton";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
     "/BlogCategories",
     ["BlogCategories", "Guest"]
   );
-  const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", ["events"])
+  const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", [
+    "events",
+  ]);
 
   const [active, setActive] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -55,8 +57,8 @@ export const Navigate = () => {
   const queryClient = useQueryClient();
   const loginDialog = useLoginDialog();
 
-  const { data: user } = useQuery<Profile>({
-    queryKey: ["authUser"]
+  const { data: user, isLoading: isUserLoading } = useQuery<Profile>({
+    queryKey: ["authUser"],
   });
 
   // const token = Cookies.get("accessToken");
@@ -159,10 +161,11 @@ export const Navigate = () => {
         <div className="flex items-center space-x-2">
           <ShoppingBagSheet />
 
-          {user ? (
+          {isUserLoading ? (
+            <Skeleton className="h-10 w-10 rounded-full" />
+          ) : user ? (
             <>
-              {/* Notification Popover */}
-              <Notification/>
+              <Notification />
               <Link
                 href="/favorites"
                 className="h-11 w-10 flex items-center justify-center hover:bg-neutral-500/20 rounded-[14px]"
@@ -170,55 +173,63 @@ export const Navigate = () => {
                 <Heart className="size-4" />
               </Link>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-12 w-12 rounded-full border"
-                  >
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={user?.avatar} alt={user?.name} />
-                      <AvatarFallback>SC</AvatarFallback>
-                    </Avatar>
-                  </Button>
+                <DropdownMenuTrigger asChild className="cursor-pointer">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={user?.avatar} alt={user?.name} />
+                    <AvatarFallback>{user?.name}</AvatarFallback>
+                  </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
                   <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {user?.name}
-                      </p>
-                      {user?.email ? (
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {user.email}
-                        </p>
-                      ) : (
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {user?.phone}
-                        </p>
-                      )}
+                    <div className="flex gap-1 items-start">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarFallback>{user?.name}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <span className="text-sm font-semibold italic leading-none">
+                          {user?.name}
+                        </span>
+                        {user?.email ? (
+                          <span className="text-xs leading-none text-sky-700">
+                            {user.email}
+                          </span>
+                        ) : (
+                          <span className="text-xs leading-none text-sky-700">
+                            {user?.phone}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      onClick={() => router.push("/profile")}
-                      className="hover:cursor-pointer"
-                    >
-                      <UserRoundPen />
-                      Hồ sơ
+                    <DropdownMenuItem className="hover:cursor-pointer">
+                      <Link
+                        href="/profile"
+                        className="flex flex-row w-full items-center gap-2"
+                      >
+                        <UserRoundPen size={16} />
+                        <span>Hồ sơ</span>
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.push("/profile?tab=address")}
-                      className="hover:cursor-pointer"
-                    >
-                      <MapPinHouse />
-                      Địa chỉ
+                    <DropdownMenuItem className="hover:cursor-pointer">
+                      <Link
+                        href="/profile?tab=address"
+                        className="flex flex-row w-full items-center gap-2"
+                      >
+                        <MapPinHouse size={16} />
+                        <span>Địa chỉ</span>
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.push("/profile?tab=order-tracking")}
-                      className="hover:cursor-pointer">
-                      <Boxes />
-                      Đơn hàng
+                    <DropdownMenuItem className="hover:cursor-pointer">
+                      <Link
+                        href="/profile?tab=order-tracking"
+                        className="flex flex-row w-full items-center gap-2"
+                      >
+                        <Boxes size={16} />
+                        <span>Đơn hàng</span>
+                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
@@ -232,7 +243,7 @@ export const Navigate = () => {
                     className="hover:cursor-pointer"
                   >
                     <LogOut />
-                    Đăng xuất
+                    <span>Đăng xuất</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

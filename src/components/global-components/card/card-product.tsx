@@ -30,7 +30,7 @@ export interface CardProductProps {
 
   categories: CategoryTypes[];
 
-  type: string
+  type: string;
 }
 export const CardProduct = ({
   variant,
@@ -41,7 +41,7 @@ export const CardProduct = ({
   rating,
   categories,
   quantitySold,
-  type="single",
+  type = "single",
 }: CardProductProps) => {
   const addOrder = useCartStore((state) => state.addOrder);
 
@@ -56,7 +56,7 @@ export const CardProduct = ({
       containerClassName="py-0"
     >
       {/* <CardBody className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto p-6 border transition duration-300"> */}
-      <CardBody className="relative bg-slate-50/80 border-slate-500 rounded-3xl group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto p-6 border transition duration-300">
+      <CardBody className="relative  border-slate-500 rounded-3xl group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto p-6 border transition duration-300">
         {/* <CardBody className="relative bg-slate-50/80 border-slate-500 rounded-3xl group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full sm:w-[30rem] h-auto p-6 border transition duration-300"> */}
         {discountPercent && (
           <AdvancedColorfulBadges

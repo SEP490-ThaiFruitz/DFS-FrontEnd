@@ -12,7 +12,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CartProductTypes } from "@/types/cart.types";
-import { cartActions } from "@/actions/cart/use-cart";
 import { useQueryClient } from "@tanstack/react-query";
 import { CART_KEY } from "@/app/key/comm-key";
 import { Skeleton } from "@/components/ui/skeleton";

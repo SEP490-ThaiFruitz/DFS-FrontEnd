@@ -36,6 +36,7 @@ const BestSellter = () => {
                     categories={product.categories}
                     rating={product.rating}
                     variant={variantItem}
+                    type="single"
                   />
                 );
               });

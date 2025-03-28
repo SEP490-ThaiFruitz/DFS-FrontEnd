@@ -1129,6 +1129,7 @@ export function ProductFilterSidebar({
                         quantitySold={product.quantitySold}
                         rating={product.rating}
                         variant={variantItem}
+                        type="single"
                       />
                     );
                   });

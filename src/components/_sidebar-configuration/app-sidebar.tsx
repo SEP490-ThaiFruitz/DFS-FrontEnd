@@ -17,6 +17,7 @@ import {
   CalendarRange,
   Warehouse,
   NotebookPen,
+  Banknote,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -125,6 +126,11 @@ const data = {
       name: "Kế hoạch",
       url: "/admin/plan",
       icon: NotebookPen,
+    },
+    {
+      name: "Lịch sử thanh toán",
+      url: "/admin/payment",
+      icon: Banknote,
     },
   ],
 };

@@ -29,6 +29,8 @@ export interface CardProductProps {
   rating: number;
 
   categories: CategoryTypes[];
+
+  type: "single";
 }
 export const CardProduct = ({
   variant,
@@ -39,6 +41,7 @@ export const CardProduct = ({
   rating,
   categories,
   quantitySold,
+  type,
 }: CardProductProps) => {
   const addOrder = useCartStore((state) => state.addOrder);
 
@@ -203,7 +206,7 @@ export const CardProduct = ({
                   rating,
                   categories,
                   variant: variant,
-                  type: "single",
+                  type,
                 });
               }}
             />

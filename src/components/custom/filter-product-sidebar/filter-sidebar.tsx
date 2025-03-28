@@ -146,7 +146,7 @@ const FilterSidebar = ({
 
   return (
     <ScrollArea className="h-full overflow-hidden rounded-3xl">
-      <SidebarHeader className=" rounded-xl bg-white">
+      <SidebarHeader className="  bg-white">
         <div className="sticky top-0 z-10 pb-2 pt-3 px-4">
           <Logo height={70} width={70} />
 
@@ -212,63 +212,6 @@ const FilterSidebar = ({
             </div>
           )}
         </div>
-
-        {/* Saved Filters */}
-        {/* <div className="px-4 py-3 border-b border-border/40">
-          <div className="flex items-center justify-between mb-2.5">
-            <h4 className="text-sm font-medium flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
-                <BookmarkPlus className="h-3.5 w-3.5 text-primary" />
-              </div>
-              <span>Bộ lọc đã lưu</span>
-            </h4>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 px-2.5 text-xs bg-background/80 border-primary/20 hover:bg-primary/5 hover:text-primary"
-              onClick={saveCurrentFilter}
-              disabled={activeFiltersCount === 0}
-            >
-              <BookmarkPlus className="mr-1.5 h-3.5 w-3.5" />
-              Lưu
-            </Button>
-          </div>
-          <ScrollArea className="h-[80px] w-full whitespace-nowrap">
-            <div className="flex gap-2 pb-2 pt-1">
-              {savedFilters.map((filter) => (
-                <Button
-                  key={filter.id}
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs border-primary/20 hover:bg-primary/5 relative group shadow-sm"
-                  onClick={() => applySavedFilter(filter)}
-                >
-                  {filter.name}
-                  <span className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="h-4 w-4 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSavedFilters((prev) =>
-                          prev.filter((f) => f.id !== filter.id)
-                        );
-                      }}
-                    >
-                      <X className="h-2 w-2" />
-                    </Button>
-                  </span>
-                </Button>
-              ))}
-              {savedFilters.length === 0 && (
-                <div className="flex items-center justify-center w-full h-full text-xs text-muted-foreground italic">
-                  Lưu bộ lọc để truy cập nhanh
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        </div> */}
 
         {/* Popular Filters */}
         <div className="px-4 py-3 border-b border-border/40">

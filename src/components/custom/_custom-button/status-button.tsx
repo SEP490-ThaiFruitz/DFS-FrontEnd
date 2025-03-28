@@ -89,7 +89,7 @@ export default function StatusButton({
                 <ShoppingCart
                   className={cn(
                     `size-10 cursor-pointer rounded-lg p-2 text-white duration-200
-                      hover:scale-110 hover:bg-slate-200 hover:text-slate-800 hover:shadow-lg`,
+                      hover:scale-110 hover:bg-[#0369a1] hover:text-white hover:shadow-lg`,
                     classNameIcon
                   )}
                 />

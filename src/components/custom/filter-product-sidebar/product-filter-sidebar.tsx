@@ -34,6 +34,7 @@ import {
   MessageCircle,
   Sun,
   Box,
+  StickyNote,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -66,133 +67,115 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import Image from "next/image";
-import {
-  CategoryTypes,
-  Product,
-  ProductVariant,
-  Promotion,
-} from "@/hooks/use-cart-store";
-import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { Product } from "@/hooks/use-cart-store";
+import { useCallback, useEffect, useState } from "react";
 import {
   CardProduct,
   CardProductProps,
 } from "@/components/global-components/card/card-product";
-import ProductPage from "@/app/(admin)/admin/product/page";
-import { formatVND } from "@/lib/format-currency";
-import { Logo } from "@/components/global-components/logo";
 import FilterSidebar from "./filter-sidebar";
 import { toLowerCaseNonAccentVietnamese } from "@/utils/non-accent";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ComboProductCard from "@/components/global-components/card/card-combo";
+import ComboProductCard, {
+  ComboProduct,
+} from "@/components/global-components/card/card-combo";
+import { EmptyState } from "@/components/global-components/empty-state";
 
-const comboProduct = {
-  id: "11da8525-ee4c-453b-bb80-24d0257c0179",
-  name: "Hè Rực Rỡ",
-  image:
-    "https://res.cloudinary.com/deojypwtl/image/upload/v1743090591/H%C3%A8%20R%E1%BB%B1c%20R%E1%BB%A1/0a7bcffcd7a64c8d8050445920f961a7_u8lzrq.jpg",
-  quantity: 123,
-  event: "Valentine's Day",
-  description: "31231232131",
-  price: 86136,
-  save: 2664,
-  netWeight: 86,
-  categories: [
-    {
-      id: "1d2c3b7e-4a5f-49a6-9f7e-8d2b9a7e2c5f",
-      name: "Trái cây hỗn hợp",
-      thumbnail:
-        "https://nuts.com/images/auto/228x152fill/assets/ae16c735a6a560b8.jpg",
-    },
-  ],
-  variant: [
-    {
-      productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
-      productVariantId: "cf6d9c8e-362c-4665-ae5b-4838ea745228",
-      name: "Ổi sấy",
-      image:
-        "https://setechvn.com/wp-content/uploads/2024/09/62ad6d3ee3750_1655532862_oi_do.jpg",
-      packageType: "Túi lưới mix 5 loại trái cây sấy",
-      netWeight: 14,
-      price: 12500,
-      quantity: 1,
-    },
-    {
-      productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
-      productVariantId: "cf0dddaf-393e-4314-9d4a-eca597e6068f",
-      name: "Ổi sấy",
-      image:
-        "https://goce.vn/files/product/9312f1c873bdea997f90936bb7906ca6.jpg",
-      packageType: "Bao gói đơn giản cho trái cây sấy ăn liền",
-      netWeight: 14,
-      price: 15800,
-      quantity: 1,
-    },
-    {
-      productId: "509aa7f1-c89e-468c-86c5-e53ec3388e89",
-      productVariantId: "5d0e50bb-f425-441e-b35e-d4304020479d",
-      name: "Hồng sấy",
-      image:
-        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a20a01185ff59eba-JShYgIGo-medium.jpg",
-      packageType: "Túi hút chân không cho trái cây sấy số lượng lớn",
-      netWeight: 14,
-      price: 14800,
-      quantity: 1,
-    },
-    {
-      productId: "0f49d10d-2b07-4fdf-8f2b-4d58def6c3a3",
-      productVariantId: "1c5a605b-7b65-45cf-8592-cf80aaba7a77",
-      name: "Dưa sấy",
-      image:
-        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/38e178e7f2d03e60-zQZ7LPfZ-medium.jpg",
-      packageType: "Thùng carton đóng gói các loại trái cây sấy",
-      netWeight: 14,
-      price: 14200,
-      quantity: 1,
-    },
-    {
-      productId: "d68691ec-bc88-4afa-8f7a-32e6111a0530",
-      productVariantId: "5a8bfea9-b78d-45f4-8b36-f9fd43666c4d",
-      name: "Dừa sấy",
-      image:
-        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/4056_ToastedCoconut_-O_StqUW--medium.jpg",
-      packageType: "Lọ thủy tinh bảo quản trái cây sấy",
-      netWeight: 14,
-      price: 15000,
-      quantity: 1,
-    },
-    {
-      productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
-      productVariantId: "302b4864-104e-45bf-a1ef-7c7d8c094ca1",
-      name: "Ổi sấy",
-      image:
-        "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/d8df33b8f17f05d1-q0w23TMV-medium.jpg",
-      packageType: "Lon thiếc trái cây sấy khô bảo quản lâu",
-      netWeight: 16,
-      price: 16500,
-      quantity: 1,
-    },
-  ],
-  quantitySold: 0,
-  rating: 0,
-};
+// const comboProduct = {
+//   id: "11da8525-ee4c-453b-bb80-24d0257c0179",
+//   name: "Hè Rực Rỡ",
+//   image:
+//     "https://res.cloudinary.com/deojypwtl/image/upload/v1743090591/H%C3%A8%20R%E1%BB%B1c%20R%E1%BB%A1/0a7bcffcd7a64c8d8050445920f961a7_u8lzrq.jpg",
+//   quantity: 123,
+//   event: "Valentine's Day",
+//   description: "31231232131",
+//   price: 86136,
+//   save: 2664,
+//   netWeight: 86,
+//   categories: [
+//     {
+//       id: "1d2c3b7e-4a5f-49a6-9f7e-8d2b9a7e2c5f",
+//       name: "Trái cây hỗn hợp",
+//       thumbnail:
+//         "https://nuts.com/images/auto/228x152fill/assets/ae16c735a6a560b8.jpg",
+//     },
+//   ],
+//   variant: [
+//     {
+//       productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
+//       productVariantId: "cf6d9c8e-362c-4665-ae5b-4838ea745228",
+//       name: "Ổi sấy",
+//       image:
+//         "https://setechvn.com/wp-content/uploads/2024/09/62ad6d3ee3750_1655532862_oi_do.jpg",
+//       packageType: "Túi lưới mix 5 loại trái cây sấy",
+//       netWeight: 14,
+//       price: 12500,
+//       quantity: 1,
+//     },
+//     {
+//       productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
+//       productVariantId: "cf0dddaf-393e-4314-9d4a-eca597e6068f",
+//       name: "Ổi sấy",
+//       image:
+//         "https://goce.vn/files/product/9312f1c873bdea997f90936bb7906ca6.jpg",
+//       packageType: "Bao gói đơn giản cho trái cây sấy ăn liền",
+//       netWeight: 14,
+//       price: 15800,
+//       quantity: 1,
+//     },
+//     {
+//       productId: "509aa7f1-c89e-468c-86c5-e53ec3388e89",
+//       productVariantId: "5d0e50bb-f425-441e-b35e-d4304020479d",
+//       name: "Hồng sấy",
+//       image:
+//         "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a20a01185ff59eba-JShYgIGo-medium.jpg",
+//       packageType: "Túi hút chân không cho trái cây sấy số lượng lớn",
+//       netWeight: 14,
+//       price: 14800,
+//       quantity: 1,
+//     },
+//     {
+//       productId: "0f49d10d-2b07-4fdf-8f2b-4d58def6c3a3",
+//       productVariantId: "1c5a605b-7b65-45cf-8592-cf80aaba7a77",
+//       name: "Dưa sấy",
+//       image:
+//         "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/38e178e7f2d03e60-zQZ7LPfZ-medium.jpg",
+//       packageType: "Thùng carton đóng gói các loại trái cây sấy",
+//       netWeight: 14,
+//       price: 14200,
+//       quantity: 1,
+//     },
+//     {
+//       productId: "d68691ec-bc88-4afa-8f7a-32e6111a0530",
+//       productVariantId: "5a8bfea9-b78d-45f4-8b36-f9fd43666c4d",
+//       name: "Dừa sấy",
+//       image:
+//         "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/4056_ToastedCoconut_-O_StqUW--medium.jpg",
+//       packageType: "Lọ thủy tinh bảo quản trái cây sấy",
+//       netWeight: 14,
+//       price: 15000,
+//       quantity: 1,
+//     },
+//     {
+//       productId: "ff42efb9-e69a-4fe5-9d2d-dbd6beb70d8c",
+//       productVariantId: "302b4864-104e-45bf-a1ef-7c7d8c094ca1",
+//       name: "Ổi sấy",
+//       image:
+//         "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/d8df33b8f17f05d1-q0w23TMV-medium.jpg",
+//       packageType: "Lon thiếc trái cây sấy khô bảo quản lâu",
+//       netWeight: 16,
+//       price: 16500,
+//       quantity: 1,
+//     },
+//   ],
+//   quantitySold: 0,
+//   rating: 0,
+// };
 
 // Extract unique categories, package types, etc. from the data
 const extractUniqueValues = (products: Product[] | []) => {
@@ -276,9 +259,17 @@ export type FilterTypes = {
 
 interface ProductFilterSidebarProps {
   products: Product[] | [];
+
+  combos: ComboProduct[] | [];
+
+  comboRefetch: () => void;
 }
 
-export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
+export function ProductFilterSidebar({
+  products,
+  combos,
+  comboRefetch,
+}: ProductFilterSidebarProps) {
   const { categories, packageTypes, tags, colors, priceRange, weightRange } =
     extractUniqueValues(products);
 
@@ -768,9 +759,9 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
 
   return (
     // <div className="bg-white min-h-screen p-4">
-    <SidebarProvider className="">
+    <SidebarProvider className="p-4 has-[[data-variant=inset]]:bg-white">
       <Sidebar
-        className="hidden md:flex h-[calc(100vh-2rem)] sticky top-4 overflow-hidden "
+        className="hidden md:flex h-[calc(100vh-2rem)] sticky top-4 overflow-hidden  "
         variant="inset"
       >
         <FilterSidebar
@@ -846,12 +837,12 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
               className="flex items-center gap-4"
             >
               <TabsList
-                className="mx-auto flex max-w-xs bg-transparent"
+                className="mx-auto flex max-w-xs bg-transparent transition-all"
                 // onChange={setTab}
               >
                 <TabsTrigger
                   value="tab-1"
-                  className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:shadow-none"
+                  className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:rounded-3xl data-[state=active]:border data-[state=active]:border-slate-500 data-[state=active]:shadow-none transition-all"
                 >
                   <Grid3X3
                     className="mb-1.5 opacity-60"
@@ -863,7 +854,7 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
                 </TabsTrigger>
                 <TabsTrigger
                   value="tab-2"
-                  className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:shadow-none"
+                  className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:rounded-3xl data-[state=active]:border data-[state=active]:border-slate-500 data-[state=active]:shadow-none  transition-all"
                   // className="relative flex-col rounded-none px-4 py-2 text-xs after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary"
                 >
                   <Box
@@ -1122,7 +1113,7 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
             </div>
           ) : tab === "tab-1" ? (
             <div
-              className={`w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-4 gap-4 `}
+              className={`w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4 gap-4 `}
             >
               <AnimatePresence>
                 {filteredProducts?.map((product) => {
@@ -1144,15 +1135,35 @@ export function ProductFilterSidebar({ products }: ProductFilterSidebarProps) {
                 })}
               </AnimatePresence>
             </div>
-          ) : (
+          ) : combos.length ? (
             <div
-              className={`w-full grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4  bg-red-500`}
+              className={`w-full grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 `}
             >
+              {combos.map((combo) => {
+                return (
+                  <ComboProductCard
+                    key={combo.id}
+                    product={{ ...combo, type: "combo" }}
+                  />
+                );
+              })}
+
+              {/* <ComboProductCard product={comboProduct} />
               <ComboProductCard product={comboProduct} />
               <ComboProductCard product={comboProduct} />
-              <ComboProductCard product={comboProduct} />
-              <ComboProductCard product={comboProduct} />
+              <ComboProductCard product={comboProduct} /> */}
             </div>
+          ) : (
+            <EmptyState
+              icons={[StickyNote]}
+              title="Chưa có Combo sản phẩm nào!"
+              description="Có vẻ như chưa có  Combo sản phẩm nào hãy tải lại trang"
+              className="min-w-full flex flex-col"
+              action={{
+                label: "Tải lại",
+                onClick: () => comboRefetch(),
+              }}
+            />
           )}
         </div>
       </SidebarInset>

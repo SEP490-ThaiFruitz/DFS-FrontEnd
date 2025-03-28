@@ -31,10 +31,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { formatVND } from "@/lib/format-currency";
-import { CategoryTypes } from "@/hooks/use-cart-store";
+import { CategoryTypes, useCartStore } from "@/hooks/use-cart-store";
 import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 import StatusButton from "@/components/custom/_custom-button/status-button";
 import { toast } from "sonner";
+import { useFromStore } from "@/hooks/use-from-store";
+import { omit } from "lodash";
 
 interface ProductVariant {
   productId: string;
@@ -61,6 +63,8 @@ export interface ComboProduct {
   variant: ProductVariant[];
   quantitySold: number;
   rating: number;
+
+  type: "combo";
 }
 
 interface ComboProductCardProps {
@@ -89,8 +93,42 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
     }).format(price);
   };
 
+  const cartActions = useCartStore((state) => state);
+
+  const cart = useFromStore(useCartStore, (state) => state.orders);
+
+  const existCombo = cart?.find((item) => item.id === product.id);
+
   const originalPrice = product.price + product.save;
   const discountPercentage = Math.round((product.save / originalPrice) * 100);
+
+  const ordersData = {
+    id: product.id,
+    categories: product.categories,
+    mainImageUrl: product.image,
+    name: product.name,
+    // : product.price,
+    description: product.description,
+    quantitySold: product.quantitySold,
+    rating: product.rating,
+    variant: {
+      productVariantId: product.id,
+      netWeight: product.netWeight,
+      price: originalPrice,
+      stockQuantity: product.quantity,
+      packageType: product.event,
+
+      promotion: {
+        price: product.price,
+        endDate: "",
+        startDate: "",
+        percentage: discountPercentage,
+      },
+    },
+
+    type: product.type,
+    quantityOrder: existCombo?.quantityOrder ?? 1,
+  };
 
   return (
     <Card className="w-full max-w-3xl mx-auto overflow-hidden shadow-md  cardStyle motion-preset-pop">
@@ -135,7 +173,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                   <Badge
                     key={category.id}
                     variant="outline"
-                    className="text-xs px-2 py-0 h-5"
+                    className="text-xs px-2 py-0 h-5 text-[#9333ea] border border-[#9333ea]"
                   >
                     {category.name}
                   </Badge>
@@ -144,11 +182,11 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
             </div>
 
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-primary">
+              <span className="text-3xl font-bold text-sky-600">
                 {formatVND(product.price)}
               </span>
               {product.save > 0 && (
-                <span className="text-sm text-slate-800 line-through">
+                <span className="text-base text-rose-400 line-through">
                   {formatVND(originalPrice)}
                 </span>
               )}
@@ -163,7 +201,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                     className=" rounded-3xl text-xs"
                     size="sm"
                   >
-                    -{discountPercentage}%
+                    -{formatVND(product.save)}
                   </AdvancedColorfulBadges>
                 </span>
               </>
@@ -202,7 +240,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                         <InfoIcon className="h-3.5 w-3.5" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent side="top">
                       <span className="text-xs">
                         Xem chi tiết trong tab sản phẩm
                       </span>
@@ -213,7 +251,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
               <div className="grid grid-cols-5 gap-1.5">
                 {product.variant.slice(0, 5).map((item, index) => (
                   <TooltipProvider
-                    key={item.productVariantId}
+                    key={`${item.name}-${item.productVariantId}-${index}`}
                     delayDuration={100}
                   >
                     <Tooltip>
@@ -255,40 +293,66 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={decreaseQuantity}
-                disabled={quantity <= 1}
+                onClick={() => {
+                  if (Number(existCombo?.quantityOrder) > 1) {
+                    cartActions.decreaseQuantity(ordersData);
+                    toast.success("Đã giảm số lượng Combo trong giỏ hàng");
+                  }
+                }}
+                disabled={Number(existCombo?.quantityOrder) <= 1}
                 className="h-8 w-8 rounded-none"
               >
                 <MinusIcon className="h-3 w-3" />
               </Button>
-              <span className="w-8 text-center text-sm">{quantity}</span>
+              <span className="w-8 text-center text-sm">
+                {existCombo?.quantityOrder ?? 1}
+              </span>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={increaseQuantity}
-                disabled={quantity >= product.quantity}
+                onClick={() => {
+                  cartActions.addOrder(omit(ordersData, "quantityOrder"));
+                  toast.success("Thêm số lượng Combo trong giỏ hàng");
+                }}
+                disabled={Number(existCombo?.quantityOrder) >= product.quantity}
                 className="h-8 w-8 rounded-none"
               >
                 <PlusIcon className="h-3 w-3" />
               </Button>
             </div>
-            {/* <Button className="h-8 flex-1 shrink  text-xs w-full">
-              <ShoppingCartIcon className="mr-1.5 h-3.5 w-3.5" /> Thêm vào giỏ
-              hàng
-            </Button> */}
 
             <StatusButton
               handleAddToCart={() =>
-                toast.success("Thêm vào giỏ hàng thành công")
+                cartActions.addOrder({
+                  id: product.id,
+                  categories: product.categories,
+                  mainImageUrl: product.image,
+                  name: product.name,
+                  // : product.price,
+                  description: product.description,
+                  quantitySold: product.quantitySold,
+                  rating: product.rating,
+                  variant: {
+                    productVariantId: product.id,
+                    netWeight: product.netWeight,
+                    price: originalPrice,
+                    stockQuantity: product.quantity,
+                    packageType: product.event,
+
+                    promotion: {
+                      price: product.price,
+                      endDate: "",
+                      startDate: "",
+                      percentage: discountPercentage,
+                    },
+                  },
+
+                  type: product.type,
+                  quantityOrder: quantity,
+                })
               }
-              // label="Thêm vào giỏ hàng"
               className="h-8 flex-1 min-w-0 text-xs w-full sm:w-auto"
             />
-
-            {/* <Button className="h-8 flex-1 min-w-0 text-xs w-full sm:w-auto">
-              <ShoppingCartIcon className="mr-1.5 h-3.5 w-3.5" /> Thêm vào giỏ
-              hàng
-            </Button> */}
           </div>
         </CardContent>
       </div>
@@ -326,7 +390,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
                 <AccordionContent>
                   <div className="space-y-3">
                     <div className="bg-background rounded-md p-2.5  cardStyle">
-                      <h4 className="text-xs font-medium text-primary mb-1.5">
+                      <h4 className="text-xs font-semibold text-slate-700 mb-1.5">
                         Mô tả
                       </h4>
                       <span className="text-xs text-slate-800 leading-relaxed">

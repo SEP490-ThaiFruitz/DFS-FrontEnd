@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 import { token } from "@/lib/token";
+import { Separator } from "@/components/ui/separator";
 
 interface ViewCardProductActionsProps {
   product: CartData;
@@ -78,8 +79,8 @@ export const ViewCardProductActions = ({
           src={product.mainImageUrl || "/placeholder.svg"}
           alt={product.name}
           width={96}
-          height={96}
-          className="w-24 h-24 object-cover transition-transform group-hover:scale-105"
+          height={0}
+          className="w-24 h-full object-cover transition-transform group-hover:scale-105"
         />
         {discount > 0 && (
           <AdvancedColorfulBadges
@@ -95,7 +96,7 @@ export const ViewCardProductActions = ({
       {/* Product Info */}
       <div className="flex-1 min-w-0 space-y-2">
         <div className="space-y-1">
-          <h3 className="font-medium text-base leading-tight line-clamp-1 text-slate-900 italic">
+          <h3 className="font-semibold text-base leading-tight line-clamp-1 text-slate-800 italic">
             {product.variant.packageType
               ? `${product.variant.packageType} | ${product.name}`
               : product.name}
@@ -103,23 +104,47 @@ export const ViewCardProductActions = ({
             {/* {product.name} */}
           </h3>
           {product.variant && (
-            <div className="flex gap-2 text-sm text-slate-700">
+            <div className="flex gap-2 font-normal text-slate-700">
               {/* {product.variant.netWeight && (
                 <span>Màu: {product.variant.netWeight}</span>
               )} */}
               <>
                 {product.variant.netWeight && <span>•</span>}
-                <span>Khối lượng: {product.variant.netWeight}g</span>
+                <span className="font-normal text-slate-700">
+                  Khối lượng: {product.variant.netWeight}g
+                </span>
+
+                <Separator className="h-7 w-[1px] text-slate-700" />
+
+                <span className="font-normal text-slate-700">
+                  {product.type.toLowerCase() === "single"
+                    ? "📦 Single"
+                    : "🎁 Combo"}
+                </span>
               </>
             </div>
           )}
 
           {/* <div> */}
 
-          <span className="text-ellipsis line-clamp-1 text-slate-700">
-            <span className="font-semibold text-slate-700">Gói:</span>{" "}
-            {product.variant.packageType}
-          </span>
+          {product.type.toLowerCase() === "combo" ? (
+            <span className="text-ellipsis line-clamp-1 text-slate-700">
+              <span className="font-semibold text-slate-700">Sự kiện:</span>{" "}
+              <AdvancedColorfulBadges
+                color="violet"
+                size="md"
+                className="rounded-3xl"
+              >
+                {product.variant.packageType}
+              </AdvancedColorfulBadges>
+            </span>
+          ) : (
+            <span className="text-ellipsis line-clamp-1 text-slate-700">
+              <span className="font-semibold text-slate-700">Gói:</span>{" "}
+              {product.variant.packageType}
+            </span>
+          )}
+
           {/* </div> */}
         </div>
 

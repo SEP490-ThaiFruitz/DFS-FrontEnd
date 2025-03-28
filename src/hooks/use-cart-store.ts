@@ -45,6 +45,8 @@ export interface Product {
 
   quantityOrder?: number;
 
+  type?: "single" | "combo" | "custom";
+
   [key: string]: any;
 }
 

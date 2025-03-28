@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,11 +6,11 @@ import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import { ScrollTextIcon, Plane, Package, Boxes, Wallet } from "lucide-react";
 
 interface OrderHeaderProps {
-  status: string,
-  orderId: string,
-  buyDate: string,
-  timeEstimateDelivery?: string,
-  onClickDetail: () => void
+  status: string;
+  orderId: string;
+  buyDate: string;
+  timeEstimateDelivery?: string;
+  onClickDetail: () => void;
 }
 
 export const OrderHeader = ({
@@ -18,7 +18,7 @@ export const OrderHeader = ({
   orderId,
   buyDate,
   timeEstimateDelivery,
-  onClickDetail
+  onClickDetail,
 }: Readonly<OrderHeaderProps>) => {
   const orderStatusMap: Record<string, string> = {
     Pending: "Đang chờ xử lý",

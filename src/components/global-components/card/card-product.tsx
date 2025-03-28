@@ -8,10 +8,15 @@ import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 
 import { toast } from "sonner";
 
-import { Product, ProductVariant, useCartStore } from "@/hooks/use-cart-store";
+import {
+  CategoryTypes,
+  Product,
+  ProductVariant,
+  useCartStore,
+} from "@/hooks/use-cart-store";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 
-interface CardProductProps {
+export interface CardProductProps {
   variant: ProductVariant;
 
   // product: Product;
@@ -23,16 +28,12 @@ interface CardProductProps {
   quantitySold: number;
   rating: number;
 
-  categories: {
-    id: string;
-    name: string;
-    thumbnail: string;
-  }[];
+  categories: CategoryTypes[];
+
+  type: string
 }
 export const CardProduct = ({
   variant,
-
-  // product,
   productId,
   name,
   description,
@@ -40,6 +41,7 @@ export const CardProduct = ({
   rating,
   categories,
   quantitySold,
+  type="single",
 }: CardProductProps) => {
   const addOrder = useCartStore((state) => state.addOrder);
 
@@ -48,12 +50,14 @@ export const CardProduct = ({
   const discountPercent = variant?.promotion?.percentage;
 
   return (
+    // w-96 lg:w-[450px]
     <CardContainer
-      className="inter-var cursor-pointer w-96 lg:w-[450px] motion-preset-pop hover:shadow-xl flex items-center justify-center hover:scale-105  rounded-3xl transition duration-300
-    "
+      className="inter-var cursor-pointer w-96 lg:w-[450px] motion-preset-pop hover:shadow-xl flex items-center justify-center hover:scale-105  rounded-3xl transition duration-300 "
       containerClassName="py-0"
     >
-      <CardBody className="relative bg-slate-50/80 border-slate-500 rounded-3xl group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full sm:w-[30rem] h-auto p-6 border transition duration-300">
+      {/* <CardBody className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto p-6 border transition duration-300"> */}
+      <CardBody className="relative bg-slate-50/80 border-slate-500 rounded-3xl group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto p-6 border transition duration-300">
+        {/* <CardBody className="relative bg-slate-50/80 border-slate-500 rounded-3xl group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full sm:w-[30rem] h-auto p-6 border transition duration-300"> */}
         {discountPercent && (
           <AdvancedColorfulBadges
             className="absolute top-0 right-0 z-50"
@@ -92,7 +96,7 @@ export const CardProduct = ({
         <CardItem
           translateX={10}
           translateY={10}
-          className="text-violet-700/75 text-lg font-semibold mt-2 dark:text-neutral-300 h-12 w-full text-ellipsis italic"
+          className="text-violet-700/75 text-lg font-semibold mt-2 dark:text-neutral-300 h-12 w-full text-ellipsis italic line-clamp-3"
           as="h1"
         >
           {variant.packageType ? `${variant.packageType} | ${name}` : name}
@@ -202,7 +206,7 @@ export const CardProduct = ({
                   rating,
                   categories,
                   variant: variant,
-                  type: "single",
+                  type,
                 });
               }}
             />

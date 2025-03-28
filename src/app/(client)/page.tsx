@@ -12,6 +12,9 @@ import BestSellter from "@/features/client/home/best-seller";
 import CategorySlide from "@/features/client/home/category-slide";
 import { ThreeDMarquee } from "@/components/ui/3d-marque";
 import Image from "next/image";
+import { ProductFilterSidebar } from "@/components/custom/filter-product-sidebar/product-filter-sidebar";
+import { MarqueeMarketing } from "@/features/client/home/marquee-marketing";
+import { ProductFilterSidebarContainer } from "@/components/custom/filter-product-sidebar/product-filter-sidebar-container";
 
 const ClientPage = () => {
   const images = [
@@ -30,94 +33,40 @@ const ClientPage = () => {
     "/marque/image-8.avif",
   ];
 
-  const { data: favorites } = useQuery({
-    queryKey: ["favorites"],
-    queryFn: async () => {
-      const res = await getFavoriteProducts();
-      if (!res?.isSuccess) throw new Error("Error fetching favorites");
-      const data: ApiResponse<PageResult<Favorite>> = res.data;
-      return data.value?.items;
-    },
-  });
+  // const { data: favorites } = useQuery({
+  //   queryKey: ["favorites"],
+  //   queryFn: async () => {
+  //     const res = await getFavoriteProducts();
+  //     if (!res?.isSuccess) throw new Error("Error fetching favorites");
+  //     const data: ApiResponse<PageResult<Favorite>> = res.data;
+  //     return data.value?.items;
+  //   },
+  // });
 
   return (
-    <div className="flex flex-col h-full">
-      <ImagesSlider images={images} className="h-[85vh]">
-        <BannerText />
-      </ImagesSlider>
-      <VoucherSlide />
-      <Promotion />
+    <>
+      <div className="flex flex-col h-full overflow-hidden">
+        <ImagesSlider images={images} className="h-[85vh]">
+          <BannerText />
+        </ImagesSlider>
+        <VoucherSlide />
+        <Promotion />
 
-      <CategorySlide />
+        <CategorySlide />
 
-      {/* <div className=" my-10 max-w-full rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 dark:bg-neutral-800"> 
+        {/* <div className=" my-10 max-w-full rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 dark:bg-neutral-800"> 
       
       */}
-      <div className="mx-auto my-10 max-w-8xl rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 dark:bg-neutral-800">
-        <ThreeDMarquee
-          images={[
-            "/images/first-background.jpg",
-            "/images/third-background.png",
-            "/images/second-background.png",
-            "/images/forth-background.png",
 
-            "/marque/image-1.avif",
-            "/marque/image-2.avif",
-            "/marque/image-3.avif",
-            "/marque/image-4.avif",
-            "/marque/image-5.avif",
-            "/marque/image-6.avif",
-            "/marque/image-7.avif",
-            "/marque/image-8.avif",
+        <MarqueeMarketing />
+        {/* </div> */}
 
-            "/images/first-background.jpg",
-            "/images/third-background.png",
-            "/images/second-background.png",
-            "/images/forth-background.png",
-
-            "/marque/image-1.avif",
-            "/marque/image-2.avif",
-            "/marque/image-3.avif",
-            "/marque/image-4.avif",
-            "/marque/image-5.avif",
-            "/marque/image-6.avif",
-            "/marque/image-7.avif",
-            "/marque/image-8.avif",
-
-            "/images/first-background.jpg",
-            "/images/third-background.png",
-            "/images/second-background.png",
-            "/images/forth-background.png",
-
-            "/marque/image-1.avif",
-            "/marque/image-2.avif",
-            "/marque/image-3.avif",
-            "/marque/image-4.avif",
-            "/marque/image-5.avif",
-            "/marque/image-6.avif",
-            "/marque/image-7.avif",
-            "/marque/image-8.avif",
-
-            "/images/first-background.jpg",
-            "/images/third-background.png",
-            "/images/second-background.png",
-            "/images/forth-background.png",
-
-            "/marque/image-1.avif",
-            "/marque/image-2.avif",
-            "/marque/image-3.avif",
-            "/marque/image-4.avif",
-            "/marque/image-5.avif",
-            "/marque/image-6.avif",
-            "/marque/image-7.avif",
-            "/marque/image-8.avif",
-          ]}
-        />
+        {/* <BestSellter /> */}
       </div>
+      {/* <ProductFilterSidebar /> */}
 
-      {/* <Suggest favorites={favorites} /> */}
-      <BestSellter favorites={favorites} />
-    </div>
+      <ProductFilterSidebarContainer />
+    </>
   );
 };
 

@@ -63,8 +63,8 @@ const getStatusStep = (status: string) => {
   switch (status.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return 0;
-    case OrderStatusEnum.CONFIRMED:
-      return 1;
+    // case OrderStatusEnum.CONFIRMED:
+    //   return 1;
     case OrderStatusEnum.PACKAGING:
       return 2;
     case OrderStatusEnum.SHIPPING:

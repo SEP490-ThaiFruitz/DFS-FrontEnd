@@ -41,7 +41,7 @@ interface OrderStatusBadgeProps {
 
 const ORDER_STATUS_FLOW = [
   "pending",
-  "confirmed",
+  // "confirmed",
   "packaging",
   "shipping",
   "delivering",
@@ -57,8 +57,8 @@ export const getStatusIcon = (status: string) => {
   switch (status.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return <Clock className={iconSize} />;
-    case OrderStatusEnum.CONFIRMED:
-      return <PackageOpen className={iconSize} />;
+    // case OrderStatusEnum.CONFIRMED:
+    //   return <PackageOpen className={iconSize} />;
     case OrderStatusEnum.PACKAGING:
       return <PackageIcon className={iconSize} />;
     case OrderStatusEnum.SHIPPING:
@@ -82,8 +82,8 @@ export const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300";
-    case OrderStatusEnum.CONFIRMED:
-      return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300";
+    // case OrderStatusEnum.CONFIRMED:
+    //   return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300";
     case OrderStatusEnum.PACKAGING:
       return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300";
     case OrderStatusEnum.SHIPPING:
@@ -108,8 +108,8 @@ export const getStatusText = (status: string) => {
   switch (status.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return OrderStatus.pending;
-    case OrderStatusEnum.CONFIRMED:
-      return OrderStatus.confirmed;
+    // case OrderStatusEnum.CONFIRMED:
+    //   return OrderStatus.confirmed;
     case OrderStatusEnum.PACKAGING:
       return OrderStatus.packaging;
     case OrderStatusEnum.SHIPPING:

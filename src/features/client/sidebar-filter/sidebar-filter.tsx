@@ -222,6 +222,7 @@ export function SidebarFilter() {
                       categories={product.categories}
                       rating={product.rating}
                       variant={variantItem}
+                      type="single"
                     />
                   );
                 });

@@ -25,91 +25,105 @@ const Promotion = () => {
     useFetch<ApiResponse<FlashSale[]>>("/Promotions", ["promotions", "home"]);
 
   console.log({ promotions });
-  return (
-    // <div className="p-10 w-full">
-    //   <CustomSlide
-    //     mobile={1}
-    //     tablet={2}
-    //     pc={2}
-    //     classNameSlide="w-fit lg:px-20 group"
-    //     classNameSub="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-16"
-    //     data={promotions?.value ?? []}
-    //   >
-    //     {(promotion: FlashSale) => (
-    //       <div
-    //         key={promotion.id}
-    //         className="relative rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
-    //       >
-    //         <Image
-    //           className="object-cover w-full h-72 rounded-t-lg"
-    //           src={"/images/single.jpg"}
-    //           alt={promotion.name}
-    //           height={1000}
-    //           width={1000}
-    //         />
-    //         <div className="absolute inset-0 flex items-center justify-center p-6">
-    //           <div className="text-center bg-black/50 backdrop-blur-sm p-6 rounded-xl w-full max-w-md mx-4">
-    //             <h3 className="text-3xl font-bold text-white mb-2">
-    //               {promotion.name}
-    //             </h3>
-    //             <p className="text-gray-100 text-sm mb-4">
-    //               {promotion.description}
-    //             </p>
-    //             <Link href={`/promotion/${promotion.id}`}>
-    //               <Button
-    //                 className="bg-white text-black hover:bg-gray-100 px-6 py-2 rounded-full font-medium transition-colors duration-200"
-    //                 variant={"outline"}
-    //               >
-    //                 Khám phá ngay
-    //               </Button>
-    //             </Link>
-    //           </div>
-    //         </div>
-    //       </div>
-    //     )}
-    //   </CustomSlide>
-    // </div>
 
+  if (isLoading) {
+    <PromotionSkeleton />;
+  }
+
+  return promotions?.value?.length ? (
     <CarouselCustomized title="Sự kiện giảm giá" delay={3200}>
-      {!isLoading &&
-        promotions?.value?.map((promotion: any) => {
-          return (
-            <CarouselItem className="hover:cursor-pointer" key={promotion?.id}>
-              <div
-                key={promotion.id}
-                className="relative rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
-              >
-                <Image
-                  className="object-cover w-full h-72 rounded-t-lg"
-                  src={"/images/single.jpg"}
-                  alt={promotion.name}
-                  height={1000}
-                  width={1000}
-                />
-                <div className="absolute inset-0 flex items-center justify-center p-6">
-                  <div className="text-center bg-black/50 backdrop-blur-sm p-6 rounded-xl w-full max-w-md mx-4">
-                    <h3 className="text-3xl font-bold text-white mb-2">
-                      {promotion.name}
-                    </h3>
-                    <p className="text-gray-100 text-sm mb-4">
-                      {promotion.description}
-                    </p>
-                    <Link href={`/promotion/${promotion.id}`}>
-                      <Button
-                        className="bg-white text-black hover:bg-gray-100 px-6 py-2 rounded-full font-medium transition-colors duration-200"
-                        variant={"outline"}
-                      >
-                        Khám phá ngay
-                      </Button>
-                    </Link>
-                  </div>
+      {promotions?.value?.map((promotion: any) => {
+        return (
+          <CarouselItem className="hover:cursor-pointer" key={promotion?.id}>
+            <div
+              key={promotion.id}
+              className="relative rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+            >
+              <Image
+                className="object-cover w-full h-72 rounded-t-lg"
+                src={"/images/single.jpg"}
+                alt={promotion.name}
+                height={1000}
+                width={1000}
+              />
+              <div className="absolute inset-0 flex items-center justify-center p-6">
+                <div className="text-center bg-black/50 backdrop-blur-sm p-6 rounded-xl w-full max-w-md mx-4">
+                  <h3 className="text-3xl font-bold text-white mb-2">
+                    {promotion.name}
+                  </h3>
+                  <span className="text-gray-100 text-sm mb-4">
+                    {promotion.description}
+                  </span>
+                  <Link href={`/promotion/${promotion.id}`}>
+                    <Button
+                      className="bg-white text-black hover:bg-gray-100 px-6 py-2 rounded-full font-medium transition-colors duration-200"
+                      variant={"outline"}
+                    >
+                      Khám phá ngay
+                    </Button>
+                  </Link>
                 </div>
               </div>
-            </CarouselItem>
-          );
-        })}
+            </div>
+          </CarouselItem>
+        );
+      })}
     </CarouselCustomized>
-  );
+  ) : null;
 };
 
 export default Promotion;
+
+const PromotionSkeleton = () => {
+  // Create an array of 3 items to show as skeleton placeholders
+  const skeletonItems = Array(3).fill(null);
+
+  return (
+    <div className="w-full">
+      {/* Title skeleton */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="h-7 w-48 bg-gray-200 rounded-lg animate-pulse"></div>
+        <div className="flex gap-2">
+          <div className="h-10 w-10 bg-gray-200 rounded-full animate-pulse"></div>
+          <div className="h-10 w-10 bg-gray-200 rounded-full animate-pulse"></div>
+        </div>
+      </div>
+
+      {/* Carousel skeleton */}
+      <div className="relative overflow-hidden">
+        <div className="flex gap-4">
+          {skeletonItems.map((_, index) => (
+            <div
+              key={index}
+              className="min-w-[300px] md:min-w-[400px] flex-shrink-0 relative rounded-lg border border-gray-200 shadow-md overflow-hidden"
+            >
+              {/* Image skeleton */}
+              <div className="w-full h-72 bg-gray-200 animate-pulse"></div>
+
+              {/* Content overlay skeleton */}
+              <div className="absolute inset-0 flex items-center justify-center p-6">
+                <div className="text-center bg-black/30 backdrop-blur-sm p-6 rounded-xl w-full max-w-md mx-4">
+                  {/* Title skeleton */}
+                  <div className="h-8 w-3/4 bg-white/30 rounded-lg animate-pulse mx-auto mb-2"></div>
+
+                  {/* Description skeleton - multiple lines */}
+                  <div className="space-y-2 mb-4">
+                    <div className="h-4 w-full bg-white/20 rounded-lg animate-pulse mx-auto"></div>
+                    <div className="h-4 w-5/6 bg-white/20 rounded-lg animate-pulse mx-auto"></div>
+                  </div>
+
+                  {/* Button skeleton */}
+                  <div className="h-10 w-36 bg-white/40 rounded-full animate-pulse mx-auto"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation buttons */}
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 bg-white/80 rounded-full shadow-md flex items-center justify-center animate-pulse"></div>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 bg-white/80 rounded-full shadow-md flex items-center justify-center animate-pulse"></div>
+      </div>
+    </div>
+  );
+};

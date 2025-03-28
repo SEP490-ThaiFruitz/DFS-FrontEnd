@@ -52,6 +52,7 @@ import { useCartStore } from "@/hooks/use-cart-store";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { omit } from "lodash";
 import { API } from "@/app/key/url";
+import { ApiResponse } from "@/types/types";
 
 interface Product {
   id: number;
@@ -212,7 +213,12 @@ function PaymentClientPage() {
     }
   }, [cart]);
 
-  const [shippingFee, setShippingFee] = useState(0);
+  const [shippingFee, setShippingFee] = useState<{
+    totalFee: number;
+    expectedDeliveryTime: Date;
+  }>();
+
+  const addressId = form.watch("addressId");
 
   const [calculating, setCalculating] = useState(false);
 
@@ -232,7 +238,7 @@ function PaymentClientPage() {
     setCalculating(true);
     try {
       const response = await axios.post(
-        `${API}/Orders/calculate-ship-fee`,
+        `${API}/Orders/calculate-ship-fee/${addressId}`,
         items,
         {
           headers: {
@@ -249,7 +255,7 @@ function PaymentClientPage() {
     } finally {
       setCalculating(false);
     }
-  }, [cart, token]);
+  }, [cart, token, addressId]);
 
   console.log(calculating);
   console.log(shippingFee);
@@ -442,9 +448,9 @@ function PaymentClientPage() {
                     <Button variant="outline">Apply</Button>
                   </div>
                   {promoCode === "FRUIT10" && (
-                    <p className="text-green-600 text-sm">
+                    <span className="text-green-600 text-sm">
                       10% áp dụng khi có mã giảm giá
-                    </p>
+                    </span>
                   )}
                 </div>
 
@@ -456,7 +462,9 @@ function PaymentClientPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Vận chuyển</span>
                     <span className="font-medium">
-                      {calculating ? "Đang tính..." : formatVND(shippingFee)}
+                      {calculating
+                        ? "Đang tính..."
+                        : formatVND(shippingFee?.totalFee ?? 0)}
                       {/* {formatVND(shippingFee)} */}
                     </span>
                   </div>
@@ -468,7 +476,9 @@ function PaymentClientPage() {
                   )}
                   <div className="flex justify-between text-lg font-semibold pt-2">
                     <span>Tổng</span>
-                    <span>{formatVND(total + shippingFee)}</span>
+                    <span>
+                      {formatVND(total + Number(shippingFee?.totalFee ?? 0))}
+                    </span>
                   </div>
                 </div>
               </CardContent>

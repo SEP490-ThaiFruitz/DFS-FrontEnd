@@ -15,7 +15,7 @@ import { FormFileControl } from "@/components/global-components/form/form-file-c
 import { FormNumberInputControl } from "@/components/global-components/form/form-number-control"
 import { FormInputControl } from "@/components/global-components/form/form-input-control"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
-import { FormSelectControl } from "@/components/global-components/form/form-select-control"
+import { FormSelectControl, SelectData } from "@/components/global-components/form/form-select-control"
 import { ApiResponse } from "@/types/types"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { API } from "@/actions/client/api-config"
@@ -35,6 +35,18 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
     const titleText = productVariantDetail ? "Cập nhật biến thể" : "Thêm biến thể mới"
     const buttonText = productVariantDetail ? "Cập nhật" : "Thêm mới"
     const queryClient = useQueryClient();
+    const selectExpiredDates: SelectData[] = [
+        { id: 1, name: "3 ngày" },
+        { id: 2, name: "7 ngày" },
+        { id: 3, name: "10 ngày" },
+        { id: 4, name: "15 ngày" },
+        { id: 5, name: "1 tháng" },
+        { id: 6, name: "20 ngày" },
+        { id: 7, name: "2 tháng" },
+        { id: 8, name: "3 tháng" },
+        { id: 9, name: "1 năm" },
+        { id: 10, name: "2 năm" },
+    ];
 
     const form = useForm<z.infer<typeof ProductVariantSafeTypes>>({
         resolver: zodResolver(ProductVariantSafeTypes),
@@ -62,7 +74,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                 packagingLength: productVariantDetail.packagingLength.toString(),
                 packagingWidth: productVariantDetail.packagingWidth.toString(),
                 packagingHeight: productVariantDetail.packagingHeight.toString(),
-                shelfLife: productVariantDetail.shelfLife,
+                shelfLife: selectExpiredDates.find((expiryDate) => expiryDate.name.toString() === productVariantDetail.shelfLife)?.id.toString(),
                 price: productVariantDetail.price.toString(),
                 stockQuantity: productVariantDetail.stockQuantity.toString(),
                 reOrderPoint: productVariantDetail.reOrderPoint.toString(),
@@ -78,7 +90,11 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
             Object.entries(values).forEach(([key, value]) => {
                 if (key === "image") {
                     formData.append("image", value[0])
-                } else if (key !== "image") {
+                } else if (key === "shelfLife") {
+                    const shelfLife = selectExpiredDates.find((expiryDate) => expiryDate.id.toString() === values.shelfLife)?.name
+                    formData.append("shelfLife", shelfLife ?? "")
+                }
+                else if (key !== "image") {
                     formData.append(key, String(value))
                 }
             })
@@ -184,12 +200,13 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                     />
                                 </div>
 
-                                <FormInputControl
+                                <FormSelectControl
                                     form={form}
                                     name="shelfLife"
                                     label="Hạn sử dụng"
                                     require
                                     disabled={form.formState.isSubmitting}
+                                    items={selectExpiredDates}
                                 />
 
                                 <div className="grid grid-cols-2 gap-4">

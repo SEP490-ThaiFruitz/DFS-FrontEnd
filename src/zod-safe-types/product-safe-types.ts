@@ -11,6 +11,11 @@ export const CreateProductSafeTypes = z.object({
   }).nonempty({
     message: "Vui lòng nhập nguồn gốc xuất sứ"
   }),
+  tagNames: z.string({
+    required_error: "Vui lòng nhập tag name"
+  }).nonempty({
+    message: "Vui lòng nhập tag name"
+  }),
   dryingMethod: z.string({
     required_error: "Vui lòng chọn phương pháp xấy"
   }).nonempty({
@@ -27,10 +32,10 @@ export const CreateProductSafeTypes = z.object({
     message: "Vui lòng nhập độ ẩm"
   })
     .refine((val) => {
-      if (parseFloat(val) < 0) return false;
+      if (parseFloat(val) < 0 || parseFloat(val) > 100) return false;
       return true;
     }, {
-      message: "Độ ẩm không được âm"
+      message: "Độ ẩm lớn hơn 0 và bé hơn 100"
     }),
   description: z.string({
     required_error: "Vui lòng nhập mô tả sản phẩm"
@@ -78,6 +83,7 @@ export const CreateProductSafeTypes = z.object({
     }),
   nutritionFacts: z.array(
     z.object({
+      nutritionFactId: z.string(),
       nutrientId: z.string({
         required_error: "Vui lòng chọn chất dinh dưỡng"
       }).nonempty({ message: "Vui lòng chọn chất dinh dưỡng" }),
@@ -114,6 +120,11 @@ export const UpdateProductSafeTypes = z.object({
   }).nonempty({
     message: "Vui lòng nhập tên sản phẩm"
   }),
+  tagNames: z.string({
+    required_error: "Vui lòng nhập tag name"
+  }).nonempty({
+    message: "Vui lòng nhập tag name"
+  }),
   origin: z.string({
     required_error: "Vui lòng nhập nguồn gốc xuất sứ"
   }).nonempty({
@@ -135,10 +146,10 @@ export const UpdateProductSafeTypes = z.object({
     message: "Vui lòng nhập độ ẩm"
   })
     .refine((val) => {
-      if (parseFloat(val) < 0) return false;
+      if (parseFloat(val) < 0 || parseFloat(val) > 100) return false;
       return true;
     }, {
-      message: "Độ ẩm không được âm"
+      message: "Độ ẩm lớn hơn 0 và bé hơn 100"
     }),
   description: z.string({
     required_error: "Vui lòng nhập mô tả sản phẩm"
@@ -201,4 +212,7 @@ export const ProductVariantSafeTypes = z.object({
   packagingTypeId: z.string({
     required_error: "Vui lòng chọn loại bao bì"
   }).nonempty({ message: "Vui lòng chọn loại bao bì" }),
-});
+}).refine((data) => data.netWeight <= data.grossWeight, {
+  message: "Khối lượng tịnh không thể lớn hơn khối lượng tổng",
+  path: ["netWeight"],
+});;

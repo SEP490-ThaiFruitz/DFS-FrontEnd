@@ -251,10 +251,6 @@ const ConfirmInformation = ({ formProduct }: Readonly<ConfirmInformationProps>) 
                                             <h4 className="text-xs font-medium text-muted-foreground">Chiều cao</h4>
                                             <div>{variant.packagingHeight}cm</div>
                                         </div>
-                                        <div className="space-y-1">
-                                            <h4 className="text-xs font-medium text-muted-foreground">Thể tích</h4>
-                                            <div>{variant.packagingVolume}cm³</div>
-                                        </div>
                                     </div>
                                 </div>
                             </Card>

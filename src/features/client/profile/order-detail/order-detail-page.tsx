@@ -1,6 +1,6 @@
 "use client"
 import Timeline, { TimelineEvent } from '@/components/global-components/timeline/timeline'
-import { ArrowLeft, DollarSign, Download, FileText, Star, Truck } from 'lucide-react'
+import { ArrowLeft, FileText, Package, Truck, Wallet } from 'lucide-react'
 import React from 'react'
 import OrderDetailInformation from './order-detail-information'
 import OrderDetaiSummary from './order-detail-summary'
@@ -21,10 +21,23 @@ interface Order {
     totalPrice: number,
     cancel: Cancel | null;
     orderAddressDelivery: OrderAddressDelivery;
+    timeline: Timeline[]
+}
+
+interface Timeline {
+    status: string,
+    date: string,
+    details: SubTimeline[]
+}
+
+interface SubTimeline {
+    statusTime: string,
+    detailStatus: string,
+    content: string
 }
 
 interface Cancel {
-    role: string,
+    cancelBy: string,
     date: string,
     reason: string
 }
@@ -39,7 +52,7 @@ interface OrderItem {
     unitPrice: number;
     percentage: number;
     discountPrice: number;
-    isFeedback: boolean;
+    isCanFeedback: boolean;
 }
 
 interface Delivery {
@@ -59,122 +72,96 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
         {
             icon: FileText,
             title: "Đơn Hàng Đã Đặt",
-            date: "19:47 23-02-2025",
             completed: true,
-            subEvents: [
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-            ]
         },
         {
-            icon: DollarSign,
+            icon: Wallet,
             title: "Đã Xác Nhận Thông Tin Thanh Toán",
-            date: "20:18 23-02-2025",
-            completed: true,
-            subEvents: [
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                }, {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-                {
-                    title: "Đơn Hàng Đã Đặt",
-                    date: "19:47 23-02-2025",
-                },
-            ]
+            completed: false
         },
         {
             icon: Truck,
-            title: "Đã Giao Cho ĐVVC",
-            date: "10:24 24-02-2025",
-            completed: true,
-        },
-        {
-            icon: Download,
-            title: "Đã Nhận Được Hàng",
-            date: "12:06 25-02-2025",
-            completed: true,
-        },
-        {
-            icon: Star,
-            title: "Đơn Hàng Đã Được Đánh Giá",
-            date: "18:57 05-03-2025",
+            title: "Đang Vận Chuyển",
             completed: false,
         },
+        {
+            icon: Package,
+            title: "Đã Nhận Được Hàng",
+            completed: false,
+        }
     ]
+
+    const OrderCreated = order?.value?.timeline.find((timeline: Timeline) =>
+        timeline.details.find((detail: SubTimeline) => detail.detailStatus === "order_created")
+    );
+
+    if (OrderCreated) {
+        const orderStep = steps.find(step => step.title === "Đơn Hàng Đã Đặt");
+        if (orderStep) {
+            const subTimeline = OrderCreated.details.find((detail: SubTimeline) => detail.detailStatus === "order_created")
+            orderStep.completed = true;
+            orderStep.date = subTimeline?.statusTime
+        }
+    }
+    const OrderPayment = order?.value?.timeline.find((timeline: Timeline) =>
+        timeline.details.find((detail: SubTimeline) => detail.detailStatus === "payment_received")
+    );
+
+    if (OrderPayment) {
+        const orderStep = steps.find(step => step.title === "Đã Xác Nhận Thông Tin Thanh Toán");
+        if (orderStep) {
+            const subTimeline = OrderPayment.details.find((detail: SubTimeline) => detail.detailStatus === "payment_received")
+            orderStep.completed = true;
+            orderStep.date = subTimeline?.statusTime
+        }
+    }
+
+
+    const OrderDelivery = order?.value?.timeline.find((timeline: Timeline) =>
+        timeline.details.find((detail: SubTimeline) => detail.detailStatus === "transporting")
+    );
+
+    if (OrderDelivery) {
+        const orderStep = steps.find(step => step.title === "Đang Vận Chuyển");
+        if (orderStep) {
+            const subTimeline = OrderDelivery.details.find((detail: SubTimeline) => detail.detailStatus === "transporting")
+            orderStep.completed = true;
+            orderStep.date = subTimeline?.statusTime
+        }
+    }
+
+
+    const OrderDelivered = order?.value?.timeline.find((timeline: Timeline) =>
+        timeline.details.find((detail: SubTimeline) => detail.detailStatus === "delivered")
+    );
+
+    if (OrderDelivered) {
+        const orderStep = steps.find(step => step.title === "Đã Nhận Được Hàng");
+        if (orderStep) {
+            const subTimeline = OrderDelivered.details.find((detail: SubTimeline) => detail.detailStatus === "delivered")
+            orderStep.completed = true;
+            orderStep.date = subTimeline?.statusTime
+        }
+    }
+
+
     return (
 
         <div className="py-10">
-            <div className="flex items-center bg-white">
-                <button onClick={onBack} className="h-fit py-3 px-2 rounded-md flex items-center gap-2 hover:bg-slate-50">
-                    <ArrowLeft />
-                    <p className="w-fit text-nowrap">Quay lại</p>
+            <div className="p-4 border-b flex items-center justify-between bg-white sticky top-0 z-10 border rounded-lg shadow-sm">
+                <button
+                    onClick={onBack}
+                    className="flex items-center text-sm font-medium text-gray-700 hover:text-primary transition-colors">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Quay lại
                 </button>
-                <p className="w-full text-center font-bold text-xl">Mã đơn hàng: {order?.value?.orderId}</p>
+                <h1 className="text-lg font-semibold">
+                    Mã đơn hàng: <span className="text-primary">{order?.value?.orderId}</span>
+                </h1>
+                <div></div>
             </div>
-            <div className="my-20 rounded-md">
-                <Timeline events={steps} orientation="Horizontal" classNameTimelinePositon="left-0 right-0 md:mx-20 h-0.5 top-8" classNameTimeline="h-16 w-16" classNameIcon="h-5 w-5" showIcon={true} />
+            <div className="my-20 border rounded-lg shadow-sm overflow-hidden">
+                <Timeline events={steps} orientation="Horizontal" classNameIcon="h-5 w-5" showIcon={true} />
             </div>
             <div className='grid xl:grid-cols-3 gap-5 sm:gap-16'>
                 <div className='col-span-1 space-y-10'>
@@ -186,14 +173,15 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
                         paymentStatus={order?.value?.paymentStatus}
                         cancel={order?.value?.cancel ?? null}
                         delivery={order?.value?.delivery}
-                        orderAddressDelivery={order?.value?.orderAddressDelivery} />
+                        orderAddressDelivery={order?.value?.orderAddressDelivery} 
+                        timeline={order?.value?.timeline}/>
                 </div>
                 <div className='xl:col-span-2'>
                     <OrderDetaiSummary
                         orderStatus={order?.value?.orderStatus ?? ""}
                         feePrice={order?.value?.delivery.fee ?? 0}
                         orderItems={order?.value?.orderItems ?? []}
-                        shipCode={order?.value?.paymentMethod === "COD"}
+                        shipCode={order?.value?.paymentMethod === "ShipCode"}
                         totalPrice={order?.value?.totalPrice ?? 0}
                         usedPoint={order?.value?.pointUsed ?? 0}
                         voucherPrice={order?.value?.voucherPrice ?? null}

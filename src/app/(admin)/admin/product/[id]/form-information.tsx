@@ -21,6 +21,7 @@ import { CardCategory } from '@/components/global-components/card/card-category'
 import { API } from '@/actions/client/api-config'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
+import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 
 export interface CategorySelect extends SelectData {
     isChose: boolean;
@@ -52,6 +53,7 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
             dryingMethod: product?.dryingMethod ?? "",
             moistureContent: product?.moistureContent.toString() ?? "",
             origin: product?.origin ?? "",
+            tagNames: product?.tagNames ?? "",
             description: product?.description ?? "",
             categoryIds: product?.categories?.map((category) => category.id) ?? []
         }
@@ -109,11 +111,12 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                         label="Nguồn gốc"
                         require
                     />
-                    <FormInputControl
+                    <FormNumberInputControl
                         form={form}
                         name="moistureContent"
                         disabled={form.formState.isSubmitting}
                         label="Độ ẩm"
+                        unit='%'
                         require
                     />
                     <FormSelectControl
@@ -124,6 +127,14 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                         items={dryingMethods}
                         disabled={form.formState.isSubmitting}
                         label="Phương pháp xấy"
+                        require
+                    />
+                    <FormTextareaControl
+                        form={form}
+                        name="tagNames"
+                        label="Tag"
+                        rows={8}
+                        placeholder='Nhập mô tả sản phẩm...'
                         require
                     />
                 </div>

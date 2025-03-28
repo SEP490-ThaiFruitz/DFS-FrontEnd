@@ -24,8 +24,12 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 
 export default function PaymentSuccess() {
+  const searchParams = useSearchParams();
+
+  console.log("payment", searchParams);
   const [copied, setCopied] = useState(false);
   const [progress, setProgress] = useState(0);
 

@@ -20,6 +20,7 @@ export interface Product {
     mainImageUrl: string;
     moistureContent: number;
     dryingMethod: string;
+    tagNames: string;
     categories: Category[] | null;
     productImages: ProductImage[];
     productCertifications: Certificate[];

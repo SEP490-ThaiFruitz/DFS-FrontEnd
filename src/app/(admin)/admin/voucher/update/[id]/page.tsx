@@ -100,8 +100,8 @@ function UpdateVoucherPage() {
       formData.append("value", values.percentDiscount)
     }
     formData.append("discountType", values.discountType)
-    formData.append("startDate", values.startDate.toUTCString())
-    formData.append("endDate", values.endDate.toUTCString())
+    formData.append("startDate", values.startDate.toLocaleDateString())
+    formData.append("endDate", values.endDate.toLocaleDateString())
     if (values.image) {
       formData.append("image", values.image[0])
     }

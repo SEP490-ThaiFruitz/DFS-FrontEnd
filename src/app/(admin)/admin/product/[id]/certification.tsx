@@ -41,8 +41,9 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
     const [certificateDelete, setCertificateDelete] = useState<Certificate | undefined>(undefined)
     const [isCerticicateForm, setIsCerticicateForm] = useState<boolean>(false);
     const queryClient = useQueryClient();
-    const isCertificateValid = (expiryDate: Date | undefined) => {
-        if (expiryDate === undefined)
+    const isCertificateValid = (expiryDate: Date | undefined | null) => {
+        console.log(expiryDate)
+        if (expiryDate === undefined || expiryDate === null)
             return true;
 
         const today = new Date()
@@ -75,8 +76,8 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
                 };
 
                 const res = id === undefined
-                    ? await createCertificate(createCertificateData())
-                    : await updateCertificate(values)
+                    ? await createCertificate(createCertificateData(), productId)
+                    : await updateCertificate(values, id)
                 if (!res?.isSuccess) {
 
                     throw new Error(id === undefined ? "Lỗi tạo thêm chứng chỉ" : "Lỗi cập nhật chứng chỉ")

@@ -21,7 +21,14 @@ import { API } from "@/actions/client/api-config"
 
 const CreatePromotion = () => {
     const [currentStep, setCurrentStep] = useState(1)
-    const totalSteps = 3
+
+    const steps = [
+        { id: 1, title: "Thông tin khuyến mãi" },
+        { id: 2, title: "Chọn sản phẩm" },
+        { id: 3, title: "Xác nhận thông tin" },
+    ]
+
+    const totalSteps = steps.length
 
     const form = useForm<z.infer<typeof CreatePromotionSafeTypes>>({
         resolver: zodResolver(CreatePromotionSafeTypes),
@@ -34,8 +41,8 @@ const CreatePromotion = () => {
         const formData = new FormData();
         formData.append("name", values.name);
         formData.append("percentage", values.percentage);
-        formData.append("startDate", values.startDate.toLocaleDateString());
-        formData.append("endDate", values.endDate.toLocaleDateString());
+        formData.append("startDate", values.startDate.toISOString());
+        formData.append("endDate", values.endDate.toISOString());
         formData.append("description", values.description);
         formData.append("image", values.image[0]);
 
@@ -52,7 +59,9 @@ const CreatePromotion = () => {
             const res = await API.post("/Promotions", formData);
             if (res) {
                 toast.success("Tạo mới chương trình giảm giá thành công")
-                form.reset();
+                form.reset({
+                    selectedProducts: [],
+                });
                 setCurrentStep(1);
             } else {
                 toast.error("Tạo mới chương trình giảm giá thất bại")
@@ -85,11 +94,7 @@ const CreatePromotion = () => {
 
     const isLastStep = currentStep === totalSteps
     const isFirstStep = currentStep === 1
-    const steps = [
-        { id: 1, title: "Thông tin khuyến mãi" },
-        { id: 2, title: "Chọn sản phẩm" },
-        { id: 3, title: "Xác nhận thông tin" },
-    ]
+
 
     return (
         <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">

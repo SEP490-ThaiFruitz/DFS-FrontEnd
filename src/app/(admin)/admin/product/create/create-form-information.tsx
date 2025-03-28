@@ -9,6 +9,7 @@ import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
 import { CardCategory } from '@/components/global-components/card/card-category'
+import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 
 export interface CategorySelect extends SelectData {
     isChose: boolean;
@@ -47,11 +48,12 @@ const FormInformation = ({ formProduct }: Readonly<FormInformationProps>) => {
                         label="Nguồn gốc"
                         require
                     />
-                    <FormInputControl
+                    <FormNumberInputControl
                         form={formProduct}
                         name="moistureContent"
                         disabled={formProduct.formState.isSubmitting}
                         label="Độ ẩm"
+                        unit='%'
                         require
                     />
                     <FormSelectControl
@@ -62,6 +64,14 @@ const FormInformation = ({ formProduct }: Readonly<FormInformationProps>) => {
                         items={dryingMethods}
                         disabled={formProduct.formState.isSubmitting}
                         label="Phương pháp xấy"
+                        require
+                    />
+                    <FormTextareaControl
+                        form={formProduct}
+                        name="tagNames"
+                        label="Tag"
+                        rows={8}
+                        placeholder='Nhập mô tả sản phẩm...'
                         require
                     />
                 </div>

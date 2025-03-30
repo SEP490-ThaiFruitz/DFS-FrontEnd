@@ -12,7 +12,7 @@ import { Profile } from '@/types/types'
 import { ProfileSafeTypes } from '@/zod-safe-types/user-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { RadioGroup } from '@radix-ui/react-radio-group'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronRight } from 'lucide-react'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -20,10 +20,8 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 function InformationPersonal() {
-    const { data: user } = useQuery<Profile>({
-        queryKey: ["authUser"]
-    });
     const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<Profile>(["authUser"]);
     const { mutate: updateProfileMutation, isPending } = useMutation({
         mutationFn: async (values: FormData) => {
             try {

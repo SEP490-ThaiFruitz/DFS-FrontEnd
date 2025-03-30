@@ -3,20 +3,15 @@ import { deleteProduct } from '@/actions/product'
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
 import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog'
 import { DataTable } from '@/components/global-components/data-table/data-table'
-import PaginationCustom from '@/components/global-components/data-table/paging-custom'
-import { FormInputControl } from '@/components/global-components/form/form-input-control'
-import { FormValues } from '@/components/global-components/form/form-values'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatVND } from '@/lib/format-currency'
 import { PageResult, ApiResponse } from '@/types/types'
-import { AlertTriangle, CirclePlus, Eye, Filter, Search, Trash2 } from 'lucide-react'
+import { AlertTriangle, CirclePlus, Eye, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import React, { useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 
 interface ProductVariant {
@@ -39,24 +34,9 @@ interface Product {
 }
 
 function ProductPage() {
-    const [pageIndex, setPageIndex] = useState(1);
-    const [filter, setFilter] = useState<boolean>(false);
-    const [pageSize, setPageSize] = useState(10);
     const [product, setProduct] = useState<Product | undefined>(undefined);
-    const { data: products, refetch } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/mange?pageIndex=${pageIndex}&pageSize=${pageSize}`, ["products", "manage"])
+    const { data: products, refetch } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/mange?pageIndex=1&pageSize=1000`, ["products", "manage"])
     const [productVariants, setProductVariants] = useState<ProductVariant[] | undefined>(undefined)
-    const form = useForm({
-        defaultValues: {
-            name: ""
-        },
-    });
-    const onSubmit = (data: any) => {
-        console.log({ data })
-    };
-
-    useEffect(() => {
-        refetch();
-    }, [pageIndex, pageSize, refetch])
 
     const StockIndicator = ({ stockQuantity, reOrderPoint }: { stockQuantity: number; reOrderPoint: number }) => {
         const percentage = Math.round((stockQuantity / reOrderPoint) * 100);

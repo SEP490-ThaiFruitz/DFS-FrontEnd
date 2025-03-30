@@ -206,6 +206,11 @@ export const ProductVariantSafeTypes = z.object({
   }).nonempty({
     message: "Vui lòng nhập hạn sử dụng"
   }),
+  preservationMethod: z.string({
+    message: "Vui lòng nhập cách bảo quản"
+  }).nonempty({
+    message: "Vui lòng nhập cách bảo quản"
+  }),
   price: z.string().refine((val) => parseFloat(val) > 0, "Giá phải lớn hơn 0"),
   stockQuantity: z.string().refine((val) => parseFloat(val) >= 0, "Số lượng tồn kho phải lớn hơn hoặc bằng 0"),
   reOrderPoint: z.string().refine((val) => parseFloat(val) >= 0, "Điểm đặt hàng lại phải lớn hơn hoặc bằng 0"),

@@ -55,6 +55,7 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
             packagingWidth: "",
             packagingHeight: "",
             shelfLife: "",
+            preservationMethod: "",
             price: "",
             stockQuantity: "",
             reOrderPoint: "",
@@ -71,7 +72,8 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
                 packagingLength: selectedVariant.packagingLength.toString(),
                 packagingWidth: selectedVariant.packagingWidth.toString(),
                 packagingHeight: selectedVariant.packagingHeight.toString(),
-                shelfLife: selectExpiredDates.find((expiryDate) => expiryDate.name.toString() === selectedVariant.shelfLife)?.id.toString(),
+                shelfLife: selectedVariant.shelfLife.toString(),
+                preservationMethod: selectedVariant.preservationMethod,
                 price: selectedVariant.price.toString(),
                 stockQuantity: selectedVariant.stockQuantity.toString(),
                 reOrderPoint: selectedVariant.reOrderPoint.toString(),
@@ -212,6 +214,13 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
                                         disabled={form.formState.isSubmitting}
                                     />
                                 </div>
+                                <FormInputControl
+                                    form={form}
+                                    name="preservationMethod"
+                                    label="Cách bảo quản"
+                                    require
+                                    disabled={form.formState.isSubmitting}
+                                />
                             </div>
                         </div>
                         <DialogFooter>

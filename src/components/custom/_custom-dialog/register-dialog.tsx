@@ -106,7 +106,7 @@ export const RegisterDialog = () => {
               label="Số điện thoại"
               placeholder="+84..."
             />
-            <button onMouseDown={() => {
+            <button type="button" onMouseDown={() => {
               setLoginType("email")
               form.resetField("phone")
               form.setValue("type", "email")
@@ -121,7 +121,7 @@ export const RegisterDialog = () => {
               label="Email"
               placeholder="example@mail.com"
             />
-            <button onMouseDown={() => {
+            <button type="button" onMouseDown={() => {
               setLoginType("phone")
               form.resetField("email")
               form.setValue("type", "phone")

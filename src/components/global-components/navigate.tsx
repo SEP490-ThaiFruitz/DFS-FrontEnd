@@ -54,10 +54,8 @@ export const Navigate = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const loginDialog = useLoginDialog();
-
-  const { data: user } = useQuery<Profile>({
-    queryKey: ["authUser"]
-  });
+  
+  const user = queryClient.getQueryData<Profile>(["authUser"]);
 
   // const token = Cookies.get("accessToken");
 
@@ -162,7 +160,7 @@ export const Navigate = () => {
           {user ? (
             <>
               {/* Notification Popover */}
-              <Notification/>
+              <Notification />
               <Link
                 href="/favorites"
                 className="h-11 w-10 flex items-center justify-center hover:bg-neutral-500/20 rounded-[14px]"

@@ -57,7 +57,7 @@ interface OrderItem {
 
 interface Delivery {
     fee: number;
-    estimateDate: string;
+    estimateDate: string | null;
 }
 
 interface OrderDetailPageProps {

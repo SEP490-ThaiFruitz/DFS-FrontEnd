@@ -70,6 +70,10 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                     values.categoryIds.forEach((value) => {
                         formData.append("categoryIds", value);
                     })
+                } else if (key === "tagNames") {
+                    values.tagNames.split(",").forEach((value) => {
+                        formData.append("tags", value);
+                    })
                 } else {
                     const value = values[key as keyof typeof values];
                     if (value !== undefined) {

@@ -30,7 +30,8 @@ export interface ProductVariantDetail {
   packagingWidth: number
   packagingHeight: number
   packagingVolume: number
-  shelfLife: string
+  shelfLife: number
+  productVariantDetail: string,
   price: number
   stockQuantity: number
   reOrderPoint: number

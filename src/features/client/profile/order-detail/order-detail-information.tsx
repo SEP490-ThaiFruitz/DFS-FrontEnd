@@ -28,7 +28,7 @@ interface OrderDetailsProps {
 
 interface Delivery {
   fee: number;
-  estimateDate: string;
+  estimateDate: string | null;
 }
 
 interface Cancel {
@@ -66,7 +66,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   const orderStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
     Packaging: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
-    Shipping: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
+    Delivering: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
     Delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
     Received: { color: "bg-green-100 text-green-800", text: "Đã nhận hàng" },
     Cancelled: { color: "bg-gray-100 text-gray-800", text: "Đã hủy" },
@@ -74,9 +74,9 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   };
 
   const paymentStatusColors: Record<string, { color: string; text: string }> = {
-    Pending: { color: "bg-green-100 text-green-800", text: "Đã thanh toán" },
+    Pending: { color: "bg-purple-100 text-purple-800", text: "Chờ thanh toán" },
     Fail: { color: "bg-red-100 text-red-700", text: "Thanh toán thất bại" },
-    Paid: { color: "bg-purple-100 text-purple-800", text: "Đã thanh toán" },
+    Paid: { color: "bg-green-100 text-green-800", text: "Đã thanh toán" },
   };
 
   const steps: TimelineEvent[] = timeline.map((item) => ({
@@ -199,10 +199,13 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             <span className="text-gray-900">{orderAddressDelivery?.receiverAddress}</span>
           </div>
 
-          <div className="flex justify-between items-start space-x-6">
-            <span className="text-gray-700 font-semibold min-w-fit">Thời gian dự tính:</span>
-            <span className="text-gray-900">{formatTimeVietNam(new Date(delivery?.estimateDate ?? ""))}</span>
-          </div>
+          {delivery?.estimateDate && (
+            <div className="flex justify-between items-start space-x-6">
+              <span className="text-gray-700 font-semibold min-w-fit">Thời gian dự tính:</span>
+              <span className="text-gray-900">{formatTimeVietNam(new Date(delivery?.estimateDate))}</span>
+            </div>
+          )
+          }
         </CardContent>
         <Separator />
         <div className="w-full mx-auto py-5">

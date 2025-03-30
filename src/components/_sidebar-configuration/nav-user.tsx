@@ -27,7 +27,7 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: user } = useQuery<Profile>({ queryKey: ["authUser, mange"] });
+  const { data: user } = useQuery<Profile>({ queryKey: ["authUser"] });
 
   const getRoleLabel = (role: string | undefined) => {
     switch (role) {

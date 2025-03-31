@@ -41,6 +41,7 @@ import { logOut } from "@/actions/auth";
 
 import Notification from "@/features/notification/notification";
 import { Skeleton } from "../ui/skeleton";
+import { USER_KEY } from "@/app/key/user-key";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
@@ -237,7 +238,12 @@ export const Navigate = () => {
                     onClick={async () => {
                       await logOut();
                       queryClient.removeQueries({ queryKey: ["authUser"] });
+
+                      queryClient.removeQueries({
+                        queryKey: [USER_KEY.ADDRESS],
+                      });
                       router.push("/");
+                      router.refresh();
                       loginDialog.onOpen();
                     }}
                     className="hover:cursor-pointer"

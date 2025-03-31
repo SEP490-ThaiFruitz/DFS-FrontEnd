@@ -68,24 +68,38 @@ export const ViewCardProductActions = ({
   return (
     <div
       className={cn(
-        "group relative flex flex-col sm:flex-row products-start sm:products-center gap-4 p-4 bg-card rounded-lg border shadow-sm transition-all hover:shadow-md",
+        "group relative flex flex-col sm:flex-row products-start sm:products-center gap-4 p-4 bg-card  border shadow-sm transition-all hover:shadow-md rounded-3xl",
         className
       )}
     >
       {/* Product Image */}
       <div className="relative overflow-hidden rounded-lg border bg-background flex-shrink-0">
+        {/* <Image
+          src={product.mainImageUrl || "/placeholder.svg"}
+          alt={product.name}
+          width={96}
+          height={0}
+          sizes=""
+          className="w-24 h-full object-cover transition-transform group-hover:scale-105"
+        /> */}
+
         <Image
           src={product.mainImageUrl || "/placeholder.svg"}
           alt={product.name}
           width={96}
           height={0}
+          sizes="(max-width: 640px) 96px, 128px"
           className="w-24 h-full object-cover transition-transform group-hover:scale-105"
+          priority={true}
+          loading="eager"
+          quality={85}
         />
         {discount > 0 && (
           <AdvancedColorfulBadges
-            color="rose"
+            // color="rose"
+            color="violet"
             size="sm"
-            className="absolute top-2 right-2"
+            className="absolute top-0 right-0 text-xs font-normal"
           >
             -{discount}%
           </AdvancedColorfulBadges>

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { ChevronRight, House, Library, PackageSearch } from "lucide-react";
+import { memo } from "react";
 
 interface BreadcrumbProps {
   productName: string;
 }
 
-export default function Breadcrumb({ productName }: BreadcrumbProps) {
+export const Breadcrumb = memo(({ productName }: BreadcrumbProps) => {
   return (
     <nav className="flex items-center text-sm text-slate-800 mb-6 pt-14">
       <Link
@@ -30,4 +31,6 @@ export default function Breadcrumb({ productName }: BreadcrumbProps) {
       </span>
     </nav>
   );
-}
+});
+
+Breadcrumb.displayName = "Breadcrumb";

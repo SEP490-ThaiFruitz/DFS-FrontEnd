@@ -211,8 +211,6 @@ function PaymentClientPage() {
 
   const [calculating, setCalculating] = useState(false);
 
-  console.log({ addressId });
-
   const getCalculateShippingFee = useCallback(async () => {
     if ((cart && cart.length === 0) || !token) {
       return;

@@ -39,7 +39,7 @@ interface ProductGalleryProps {
   productCertification: Certificate[];
 }
 
-export default function ProductGallery({
+export const ProductGallery = ({
   images,
   productName,
   currentImageIndex,
@@ -50,7 +50,7 @@ export default function ProductGallery({
   handleShare,
   isInWishlist,
   productCertification,
-}: ProductGalleryProps) {
+}: ProductGalleryProps) => {
   const handlePrevImage = () => {
     setCurrentImageIndex((prev: number) =>
       prev === 0 ? images.length - 1 : prev - 1
@@ -208,4 +208,4 @@ export default function ProductGallery({
       </div>
     </div>
   );
-}
+};

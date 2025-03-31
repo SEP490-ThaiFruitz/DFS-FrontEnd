@@ -1,5 +1,11 @@
 import { memo } from "react";
-import { AlertCircle, Check, Info } from "lucide-react"; // Ensure this import exists
+import {
+  AlertCircle,
+  Check,
+  Info,
+  PackageCheck,
+  ShieldEllipsis,
+} from "lucide-react"; // Ensure this import exists
 import { ProductDetailTypes } from "../product-detail.types";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +29,7 @@ export const DetailTab = memo(({ product }: DetailProps) => {
       <Separator className="my-6" />
 
       <div>
-        <h3 className="text-xl font-semibold flex items-center gap-2 text-primary">
+        <h3 className="text-xl font-semibold flex items-center gap-2 text-slate-700">
           <Info className="h-5 w-5" />
           Đặc điểm sản phẩm
         </h3>
@@ -61,7 +67,8 @@ export const DetailTab = memo(({ product }: DetailProps) => {
       <Separator className="my-6" />
 
       <div>
-        <h3 className="text-xl font-semibold mb-6 text-primary">
+        <h3 className="text-xl font-semibold mb-6 text-slate-700 flex items-center gap-2">
+          <PackageCheck />
           Cách sử dụng
         </h3>
 
@@ -111,7 +118,10 @@ export const DetailTab = memo(({ product }: DetailProps) => {
       <Separator className="my-6" />
 
       <div>
-        <h3 className="text-xl font-semibold mb-4 text-primary">Bảo quản</h3>
+        <h3 className="text-xl font-semibold mb-4 text-slate-700 flex items-center gap-2">
+          <ShieldEllipsis className="size-5" />
+          Bảo quản
+        </h3>
 
         <div className="bg-amber-50 p-5 rounded-xl border border-amber-100 cardStyle">
           <div className="flex items-start gap-3">

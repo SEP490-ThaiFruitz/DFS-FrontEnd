@@ -28,8 +28,6 @@ export const ProductFilterSidebarContainer = () => {
     return <ProductSkeletonWithSidebar />;
   }
 
-  console.log({ combos });
-
   if (products?.value?.items.length === 0) {
     return (
       <EmptyState

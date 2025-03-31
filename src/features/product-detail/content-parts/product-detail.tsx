@@ -8,9 +8,7 @@ import {
   calculateStockStatus,
   formatPrice,
 } from "../product-lib";
-import ProductGallery from "./product-gallery";
-import ProductInfo from "./product-info";
-import VariantSelector from "./variant-selector";
+import { ProductGallery } from "./product-gallery";
 import {
   ProductDetailTypes,
   ProductVariantTypes,
@@ -31,8 +29,11 @@ import {
   ShieldCheck,
   ShoppingCart,
 } from "lucide-react";
-import Breadcrumb from "./breadcrumb";
+import { Breadcrumb } from "./breadcrumb";
 import { RelatedProduct } from "./related-product";
+import { VariantSelector } from "./variant-selector";
+import { ProductInfo } from "./product-info";
+import { useCartStore } from "@/hooks/use-cart-store";
 
 // Dummy data for testing purposes. Replace with actual data fetching.
 
@@ -97,6 +98,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   ]);
   const [tab, setTab] = useState(TABS[0].id);
 
+  const cartActions = useCartStore((state) => state);
+
   const allImages = [
     product.mainImageUrl,
     ...product.productImages.map((img) => img.imageUrl),
@@ -127,6 +130,27 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   };
 
   const handleAddToCart = () => {
+    cartActions.addOrder({
+      id: product.id,
+      quantityOrder: quantity,
+      variant: {
+        productVariantId: selectedVariant.productVariantId,
+        netWeight: selectedVariant.netWeight,
+        price: selectedVariant.price,
+        packageType: selectedVariant.packageType,
+        discountPrice: selectedVariant.promotion?.price,
+        stockQuantity: selectedVariant.stockQuantity as number,
+        promotion: selectedVariant?.promotion,
+      },
+      categories: product.categories,
+      description: product.description,
+      quantitySold: 0, // API return lack of quantitySold
+      rating: product?.overallRatingResponse?.overallRating ?? 0,
+      type: "single",
+      mainImageUrl: selectedVariant.image,
+      name: product.name,
+    });
+
     toast.success(
       `Đã thêm vào giỏ hàng ${quantity} ${product.name} - ${selectedVariant.packageType}`
     );

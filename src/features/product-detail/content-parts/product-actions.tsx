@@ -6,9 +6,13 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { CountdownTimer } from "../countdown-timer";
 import { memo } from "react";
+import { vietnameseDate } from "@/utils/date";
+import { useCartStore } from "@/hooks/use-cart-store";
+import { ProductVariantTypes } from "../product-detail.types";
+import { formatVND } from "@/lib/format-currency";
 
 interface ProductActionsProps {
-  selectedVariant: any;
+  selectedVariant: ProductVariantTypes;
   quantity: number;
   handleQuantityChange: (change: number) => void;
   handleAddToCart: () => void;
@@ -29,16 +33,6 @@ export const ProductActions = memo(
     formatPrice,
     calculateDiscountedPrice,
   }: ProductActionsProps) => {
-    const formatDate = (dateString: Date | string) => {
-      return new Date(dateString).toLocaleDateString("vi-VN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    };
-
-    console.log(selectedVariant);
-
     return (
       <div className="space-y-4">
         <div className="bg-gray-50 p-5 rounded-lg space-y-4 cardStyle">
@@ -53,7 +47,7 @@ export const ProductActions = memo(
                     </span>
                     <span className="text-rose-600 text-xs">
                       Kết thúc vào ngày{" "}
-                      {formatDate(selectedVariant?.promotion.endDate)}
+                      {vietnameseDate(selectedVariant?.promotion.endDate)}
                     </span>
 
                     <div className="pt-1">
@@ -97,7 +91,7 @@ export const ProductActions = memo(
           </div>
 
           <div className="flex justify-between items-center text-sm">
-            <span className="text-muted-foreground">Còn lại:</span>
+            <span className="text-slate-600">Còn lại:</span>
             <div className="flex items-center gap-2">
               <span>{selectedVariant?.stockQuantity ?? 0} sản phẩm</span>
               <Progress
@@ -111,35 +105,31 @@ export const ProductActions = memo(
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-600">Hạn sử dụng:</span>
-            <span>{selectedVariant?.shelfLife} tháng</span>
+            <span className="text-slate-700">Hạn sử dụng:</span>
+            <span className="font-semibold">
+              {selectedVariant?.shelfLife} tháng
+            </span>
           </div>
 
           <Separator />
 
           <div className="flex justify-between items-center">
-            <span className="font-medium text-sm">Tổng tiền:</span>
+            <span className="font-semibold text-sm">Tổng tiền:</span>
             <div className="text-right">
-              {selectedVariant?.promotion && (
+              {selectedVariant?.promotion?.price ? (
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs line-through text-muted-foreground">
-                    {formatPrice(selectedVariant.price * quantity)}
+                  <span className="text-xs line-through text-slate-700">
+                    {formatVND(selectedVariant.price * quantity)}
                   </span>
-                  <span className="text-xs bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded">
-                    -{selectedVariant.promotion.percentage}%
+                  <span className="text-lg font-bold text-sky-500/70 px-1.5 py-0.5 rounded">
+                    {formatVND(selectedVariant.promotion.price * quantity)}
                   </span>
                 </div>
+              ) : (
+                <span className="text-lg font-bold text-sky-500/70">
+                  {formatVND(selectedVariant.price * quantity)}
+                </span>
               )}
-              <span className="text-lg font-bold text-primary">
-                {selectedVariant?.promotion
-                  ? formatPrice(
-                      calculateDiscountedPrice(
-                        selectedVariant.price,
-                        selectedVariant?.promotion.percentage
-                      ) * quantity
-                    )
-                  : formatPrice(selectedVariant.price * quantity)}
-              </span>
             </div>
           </div>
         </div>
@@ -149,7 +139,7 @@ export const ProductActions = memo(
             className="w-full h-12 text-lg gap-2 bg-sky-600 hover:bg-sky-700 shadow-md hover:shadow-lg transition-all"
             onClick={handleAddToCart}
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="size-8" />
             Thêm vào giỏ hàng
           </Button>
           <Button

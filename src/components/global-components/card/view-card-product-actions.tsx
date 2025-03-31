@@ -246,7 +246,7 @@ export const ViewCardProductActions = ({
       <div className="hidden sm:flex flex-col items-end gap-0.5 ml-auto">
         {discountPrice ? (
           <>
-            <span className="font-medium text-primary">
+            <span className=" font-bold text-sky-500/70">
               {formatPrice(product.variant.price * product.quantityOrder!)}
             </span>
             <del className="text-xs text-muted-foreground">
@@ -256,7 +256,7 @@ export const ViewCardProductActions = ({
             </del>
           </>
         ) : (
-          <span className="font-medium text-primary">
+          <span className="font-bold text-sky-500/70">
             {formatPrice(product.variant.price * product.quantityOrder!)}
           </span>
         )}

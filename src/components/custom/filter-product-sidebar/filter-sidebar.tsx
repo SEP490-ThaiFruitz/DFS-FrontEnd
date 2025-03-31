@@ -511,17 +511,6 @@ const FilterSidebar = ({
                           {filters?.nutritionRange?.calories?.[1] || 0} kcal
                         </span>
                       </div>
-                      {/* <Slider
-                        defaultValue={[0, 200]}
-                        min={0}
-                        max={200}
-                        step={10}
-                        value={filters.nutritionRange.calories}
-                        onValueChange={(value) =>
-                          handleNutritionRangeChange("calories", value)
-                        }
-                        className="[&>span]:bg-primary"
-                      /> */}
 
                       <DualRangeSlider
                         value={filters.nutritionRange.calories}
@@ -548,17 +537,7 @@ const FilterSidebar = ({
                           {filters?.nutritionRange?.protein?.[1] || 0} g
                         </span>
                       </div>
-                      {/* <Slider
-                        defaultValue={[0, 5]}
-                        min={0}
-                        max={5}
-                        step={0.5}
-                        value={filters.nutritionRange?.protein}
-                        onValueChange={(value) =>
-                          handleNutritionRangeChange("protein", value)
-                        }
-                        className="[&>span]:bg-primary"
-                      /> */}
+
                       <DualRangeSlider
                         value={filters.nutritionRange?.protein}
                         min={0}
@@ -582,29 +561,18 @@ const FilterSidebar = ({
                           {filters.nutritionRange?.carbs?.[1] || 0} g
                         </span>
                       </div>
-                      {/* <Slider
-                        defaultValue={[0, 40]}
-                        min={0}
-                        max={40}
-                        step={2}
-                        value={filters.nutritionRange?.carbs}
-                        onValueChange={(value) =>
-                          handleNutritionRangeChange("carbs", value)
-                        }
-                        className="[&>span]:bg-primary"
-                      /> */}
 
                       <DualRangeSlider
                         value={filters.nutritionRange?.carbs}
                         min={0}
                         max={40}
-                        step={2}
+                        step={1}
                         defaultValue={[0, 40]}
                         className="pt-4 font-semibold text-xs"
                         onValueChange={(value) =>
-                          handleNutritionRangeChange("protein", value)
+                          handleNutritionRangeChange("carbs", value)
                         }
-                        id="protein"
+                        id="carbs"
                         label={() => <>g</>}
                       />
                     </div>

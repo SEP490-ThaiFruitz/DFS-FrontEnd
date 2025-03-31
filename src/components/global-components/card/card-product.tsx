@@ -171,7 +171,11 @@ export const CardProduct = ({
                   </CardItem>
                 </>
               ) : (
-                <CardItem translateY={10} translateZ={10}>
+                <CardItem
+                  translateY={10}
+                  translateZ={10}
+                  className="font-bold text-sky-500/70 group-hover/card:text-xl 2xl:group-hover/card:text-2xl transition-all duration-150"
+                >
                   {formatVND(variant?.price ?? 0)}
                 </CardItem>
               )}

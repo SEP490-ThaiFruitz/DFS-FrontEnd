@@ -20,10 +20,10 @@ export interface Product {
     mainImageUrl: string;
     moistureContent: number;
     dryingMethod: string;
-    tagNames: string;
+    tags: string[];
     categories: Category[] | null;
     productImages: ProductImage[];
-    productCertifications: Certificate[];
+    certifications: Certificate[];
     productVariantDetailManges: ProductVariantDetail[];
     productNutrition: ProductNutrition;
     createdOnUtc: string;
@@ -77,7 +77,7 @@ const ProductDetail = () => {
                         productId={product?.value?.id ?? ""}
                     />
                     <NutritionTab productId={product?.value?.id ?? ""} productNutrion={product?.value?.productNutrition} />
-                    <CertificationTab productId={product?.value?.id ?? ""} certificates={product?.value?.productCertifications ?? []} />
+                    <CertificationTab productId={product?.value?.id ?? ""} certificates={product?.value?.certifications ?? []} />
                     <VariantTab productId={product?.value?.id ?? ""} productVariants={product?.value?.productVariantDetailManges ?? []} />
                 </Tabs>
             </div>

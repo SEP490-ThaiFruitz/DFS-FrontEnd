@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 const token = Cookies.get("accessToken");
 
@@ -30,6 +31,7 @@ const post = async <TValues>(endpoint: string, body: TValues) => {
     return response.data;
   } catch (error) {
     console.log({ error });
+    handeErrorResponse(error)
   }
 };
 
@@ -44,6 +46,7 @@ const update = async <TValues>(endpoint: string, body: TValues) => {
     return response.data;
   } catch (error) {
     console.log({ error });
+    handeErrorResponse(error)
   }
 };
 
@@ -55,8 +58,9 @@ const remove = async (endpoint: string) => {
     );
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.log({ error });
+    handeErrorResponse(error)
   }
 };
 
@@ -73,6 +77,11 @@ const patch = async <TValues>(endpoint: string, body: TValues) => {
     console.log({ error });
   }
 };
+
+const handeErrorResponse = (error: any) => {
+  const detail = error.response?.data?.detail
+  toast.error(detail)
+}
 
 export const API = {
   get,

@@ -14,14 +14,14 @@ import { useState } from "react"
 import ViewDetail from "./view-detail"
 
 interface Transaction {
-    transactionNo?: string | null
+    transactionNo: string
     orderId: string
     content: string
     amount: number
     type: string
     status: string
     createdOnUtc: Date,
-
+    updateOnUtc: Date | null
 }
 
 const PaymentPage = () => {
@@ -87,10 +87,15 @@ const PaymentPage = () => {
             cell: ({ row }) => formatTimeVietNam(row.original.createdOnUtc, true),
         },
         {
+            accessorKey: "updateOnUtc",
+            header: "Ngày cập nhật",
+            cell: ({ row }) => row.original.updateOnUtc && formatTimeVietNam(row.original.updateOnUtc, true),
+        },
+        {
             accessorKey: "action",
             header: "",
             cell: ({ row }) =>
-                row.original.transactionNo !== "" && row.original.type !== "ShipCode" &&
+                row.original.updateOnUtc && row.original.type !== "ShipCode" &&
                 <Button
                     variant="outline"
                     onClick={() => setTransaction(row.original)}
@@ -126,7 +131,7 @@ const PaymentPage = () => {
                 <ViewDetail
                     isOpen={transaction !== undefined}
                     onClose={() => setTransaction(undefined)}
-                    orderId={transaction.orderId}
+                    transactionNo={transaction.transactionNo}
                     paymentMethod={transaction.type}
                 />
             )}

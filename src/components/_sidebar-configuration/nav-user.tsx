@@ -21,13 +21,30 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { logOut } from "@/actions/auth";
 import { useRouter } from "next/navigation";
-import { Profile } from "@/types/types";
+import { ApiResponse, Profile } from "@/types/types";
+import { getProfile } from "@/actions/user";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: user } = useQuery<Profile>({ queryKey: ["authUser"] });
+  const {data: user} = useQuery({
+    queryKey: ["authUser"],
+    queryFn: async () => {
+      try {
+        const res = await getProfile();
+        if (res?.isSuccess) {
+          const data: ApiResponse<Profile> = res?.data;
+          return data.value;
+        }
+        return null;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    retry: false,
+    initialData: null,
+  });
 
   const getRoleLabel = (role: string | undefined) => {
     switch (role) {

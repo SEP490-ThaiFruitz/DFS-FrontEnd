@@ -1,24 +1,20 @@
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized'
-import { FormDateControl } from '@/components/global-components/form/form-date-control'
-import { FormInputControl } from '@/components/global-components/form/form-input-control'
-import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
-import { FormValues } from '@/components/global-components/form/form-values'
-import { WaitingSpinner } from '@/components/global-components/waiting-spinner'
+import ImagePreview from '@/components/custom/_custom-image/image-preview'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatTimeVietNam } from '@/lib/format-time-vietnam'
-import { FormCertificateSafeTypes } from '@/zod-safe-types/product-safe-types'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, CirclePlusIcon, Clock, Edit, Info, Trash2 } from 'lucide-react'
+import { Calendar, CirclePlusIcon, Clock, Info, Trash2 } from 'lucide-react'
 import React, { useState } from 'react'
-import { useForm, UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { z } from 'zod'
+import { UseFormReturn } from 'react-hook-form'
 
 export interface Certificate {
-    id: string,
+    id: number,
     name: string
+    image: any,
     agency: string
     issueDate: Date
     expiryDate: Date
@@ -31,71 +27,37 @@ interface CertificationProps {
 
 const Certification = ({ formProduct }: Readonly<CertificationProps>) => {
     const [isCerticicateForm, setIsCerticicateForm] = useState<boolean>(false);
+    const [selectedCertifications, setSelectedCertifications] = useState<Certificate[]>([]);
+    const { data: certifications } = useFetch<Certificate[]>("/Certifications", ["certifications"])
 
-    const form = useForm<z.infer<typeof FormCertificateSafeTypes>>({
-        resolver: zodResolver(FormCertificateSafeTypes),
-        defaultValues: {
-            expiryDate: undefined,
-        }
-    });
-
-    const onSubmit = async (values: z.infer<typeof FormCertificateSafeTypes>) => {
+    const onSubmit = () => {
         const certificates = formProduct.getValues("certificates");
-        const certificateIndex = certificates.findIndex((certificate: Certificate) => certificate.id === values.id);
-        const certificateNameIndex = certificates.findIndex((certificate: Certificate) => certificate.name === values.name);
+        formProduct.setValue("certificates", [...selectedCertifications, ...certificates])
 
-        if (certificateIndex >= 0) {
-            if (certificateNameIndex >= 0 && certificateIndex !== certificateNameIndex) {
-                toast.error("Tên chứng chỉ đã tồn tại");
-                return;
-            }
-            const updatedCertificates = [...certificates];
-            updatedCertificates[certificateIndex] = { ...values };
-            formProduct.setValue("certificates", updatedCertificates);
-        } else {
-            if (certificateNameIndex >= 0) {
-                toast.error("Tên chứng chỉ đã tồn tại");
-                return;
-            }
-            formProduct.setValue("certificates", [...certificates, { id: `${certificates.length + 1}`, ...values }])
-        }
         handlerCloseForm();
     };
 
 
-    const isCertificateValid = (expiryDate: Date | undefined) => {
-        if (expiryDate === undefined)
+    const isCertificateValid = (expiryDate: Date | undefined | null) => {
+        if (expiryDate === undefined || expiryDate === null)
             return true;
-
         const today = new Date()
-        return today < expiryDate
-    }
-
-    const handlerSetUpdateForm = (cert: Certificate) => {
-        setIsCerticicateForm(true)
-        form.reset({
-            id: cert.id,
-            agency: cert.agency,
-            name: cert.name,
-            issueDate: cert.issueDate,
-            expiryDate: cert.expiryDate,
-            details: cert.details
-        })
+        return today < new Date(expiryDate)
     }
 
     const handlerCloseForm = () => {
-        form.reset({
-            id: "",
-            agency: "",
-            name: "",
-            issueDate: new Date(),
-            expiryDate: undefined,
-            details: ""
-        });
+        setSelectedCertifications([]);
         setIsCerticicateForm(false)
     }
-    const buttonLable = form.getValues("id") ? "Cập nhật" : "Tạo mới"
-    const buttonLoading = form.getValues("id") ? "Đang cập nhật..." : "Đang tạo mới..."
+
+    const handleSelectCertfication = (certificate: Certificate) => {
+        const selectedCertification = selectedCertifications.filter((cert) => cert.id === certificate.id)
+        if (selectedCertification.length > 0) {
+            setSelectedCertifications((prev) => prev.filter((cert) => cert.id !== certificate.id));
+        } else {
+            setSelectedCertifications((prev) => [certificate, ...prev])
+        }
+    }
 
     return (
         <>
@@ -103,12 +65,6 @@ const Certification = ({ formProduct }: Readonly<CertificationProps>) => {
                 {formProduct?.getValues("certificates")?.map((cert: Certificate) => (
                     <Card key={cert.id} className="border shadow-sm hover:shadow transition-shadow relative group hover:cursor-pointer">
                         <div className="absolute z-10 hidden group-hover:flex -top-3 -right-3 space-x-2 bg-white">
-                            <button
-                                className="p-1 w-fit rounded-md bg-blue-600 text-white cursor-pointer"
-                                onClick={() => handlerSetUpdateForm(cert)}
-                            >
-                                <Edit className="h-4 w-4" />
-                            </button>
                             <button
                                 onClick={() => formProduct.setValue("certificates", formProduct.getValues("certificates").filter((c: Certificate) => c.id !== cert.id))}
                                 className="p-1 w-fit rounded-md bg-red-600 text-white cursor-pointer"
@@ -124,7 +80,9 @@ const Certification = ({ formProduct }: Readonly<CertificationProps>) => {
                                     {isCertificateValid(cert.expiryDate) ? "Còn hiệu lực" : "Hết hạn"}
                                 </Badge>
                             </div>
-
+                            <div className="mb-4">
+                                <ImagePreview initialHeight={30} images={[cert.image]} className="object-contain" />
+                            </div>
                             <div className="space-y-3 text-sm">
                                 <div className="flex items-center">
                                     <Info className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -156,68 +114,73 @@ const Certification = ({ formProduct }: Readonly<CertificationProps>) => {
                 >
                     <div className="flex items-center sm:p-5 space-x-5 font-bold">
                         <CirclePlusIcon />
-                        <span>Thêm mới</span>
+                        <span>Chọn chứng chỉ</span>
                     </div>
                 </button>
                 {isCerticicateForm && (
                     <Dialog open={isCerticicateForm} onOpenChange={handlerCloseForm}>
-                        <DialogContent className="w-full">
+                        <DialogContent className="min-w-[460px] md:min-w-[800px]">
                             <DialogHeader>
-                                <DialogTitle>{`${buttonLable} chứng chỉ`}</DialogTitle>
+                                <DialogTitle>Chọn chứng chỉ</DialogTitle>
                             </DialogHeader>
-                            <FormValues form={form} onSubmit={onSubmit} >
-                                <FormInputControl
-                                    form={form}
-                                    disabled={form.formState.isSubmitting}
-                                    name='name'
-                                    label='Tên'
-                                    require
-                                />
-                                <FormInputControl
-                                    form={form}
-                                    disabled={form.formState.isSubmitting}
-                                    name='agency'
-                                    label='Cấp bởi'
-                                    require
-                                />
-                                <FormDateControl
-                                    form={form}
-                                    disabled={form.formState.isSubmitting}
-                                    name='issueDate'
-                                    label='Ngày cấp'
-                                    require
-                                />
-                                <FormDateControl
-                                    form={form}
-                                    disabled={form.formState.isSubmitting}
-                                    name='expiryDate'
-                                    label='Ngày hết hạn'
-                                />
-                                <FormTextareaControl
-                                    form={form}
-                                    disabled={form.formState.isSubmitting}
-                                    name='details'
-                                    label='Nội dung'
-                                />
-                                <ButtonCustomized
-                                    type="submit"
-                                    className="max-w-fit bg-green-700 hover:bg-green-800"
-                                    variant="secondary"
-                                    disabled={form.formState.isSubmitting}
-                                    label={
-                                        form.formState.isSubmitting ? (
-                                            <WaitingSpinner
-                                                variant="pinwheel"
-                                                label={buttonLoading}
-                                                className="font-semibold"
-                                                classNameLabel="font-semibold text-sm"
-                                            />
-                                        ) : (
-                                            buttonLable
-                                        )
+                            <ScrollArea className="w-full max-h-[600px] pr-4">
+                                {certifications?.map((certificate) => {
+                                    const certSelected = formProduct?.getValues("certificates").find((cert:any) => cert.id === certificate.id)
+
+                                    if (!certSelected) {
+                                        return (
+                                            <div key={certificate.id} className="pb-4 border-b">
+                                                <div className="flex flex-col md:flex-row gap-4 items-start">
+                                                    <div className="w-full md:w-1/3 aspect-square max-w-[200px] rounded-md overflow-hidden border">
+                                                        {certificate.image && (
+                                                            <ImagePreview
+                                                                images={[certificate.image]}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        )}
+
+                                                    </div>
+                                                    <div className="flex-1 space-y-3">
+                                                        <h3 className="text-lg font-medium">{certificate.name}</h3>
+                                                        <div className="grid grid-cols-[80px_1fr] items-center gap-1 text-sm">
+                                                            <span className="font-medium">Cơ quan:</span>
+                                                            <span>{certificate.agency}</span>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-[80px_1fr] items-center gap-1 text-sm">
+                                                            <span className="font-medium">Ngày cấp:</span>
+                                                            <span>{formatTimeVietNam(certificate.issueDate)}</span>
+
+                                                        </div>
+
+                                                        {certificate.expiryDate && (
+                                                            <div className="grid grid-cols-[80px_1fr] items-center gap-1 text-sm">
+                                                                <span className="font-medium">Hết hạn:</span>
+                                                                <span>{formatTimeVietNam(certificate.expiryDate)}</span>
+                                                            </div>
+                                                        )}
+
+                                                        <div className="grid grid-cols-[80px_1fr] items-start gap-1 text-sm pt-1">
+                                                            <span className="font-medium">Mô tả:</span>
+                                                            <div>{certificate.details}</div>
+                                                        </div>
+                                                    </div>
+                                                    <Checkbox onClick={() => handleSelectCertfication(certificate)} className='h-5 w-5' />
+                                                </div>
+                                            </div>)
                                     }
-                                />
-                            </FormValues>
+                                })}
+                            </ScrollArea>
+                            <ButtonCustomized
+                                type="button"
+                                onClick={onSubmit}
+                                className="max-w-fit bg-green-700 hover:bg-green-800"
+                                variant="secondary"
+                                label={(
+                                    "Chọn chứng chỉ"
+                                )
+                                }
+                            />
                         </DialogContent>
                     </Dialog>
                 )}

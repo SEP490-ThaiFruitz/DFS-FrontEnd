@@ -9,6 +9,7 @@ import { formatTimeVietNam } from '@/lib/format-time-vietnam'
 import { Button } from '@/components/ui/button'
 import { Pencil } from 'lucide-react'
 import FormInformation from './form-information'
+import { Badge } from '@/components/ui/badge'
 
 interface InformationProps {
   product: Product | null
@@ -62,6 +63,12 @@ const Information = ({ product }: Readonly<InformationProps>) => {
               <div className="flex items-start space-x-2">
                 <div className="font-bold min-w-32">Loại sản phẩm:</div>
                 <div className="text-base">{product?.categories?.map((category: Category) => category.name).join(", ")}</div>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="font-bold">Tags:</div>
+                <div className="text-base space-x-2">{product?.tags?.map((tag: any) => <Badge className='mb-3' variant={"outline"} key={tag}>
+                  {tag}
+                </Badge>)}</div>
               </div>
               {product?.createdOnUtc && (
                 <div className="flex items-center space-x-2">

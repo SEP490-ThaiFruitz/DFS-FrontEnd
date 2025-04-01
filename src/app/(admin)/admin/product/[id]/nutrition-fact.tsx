@@ -2,19 +2,21 @@
 
 import { createNutritionFact, deleteNutritionFact, updateNutritionFact } from '@/actions/product';
 import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog';
-import { FormNumberInputControl } from '@/components/global-components/form/form-number-control';
+import { FancySelect } from '@/components/custom/_custom_select/select';
 import { FormSelectControl } from '@/components/global-components/form/form-select-control'
 import { FormValues } from '@/components/global-components/form/form-values'
 import { Spinner } from '@/components/global-components/spinner';
 import { Button } from '@/components/ui/button'
 import { CardContent } from '@/components/ui/card'
+import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { formatNumberWithUnit } from '@/lib/format-currency';
 import { FromNutrionFact } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Check, CirclePlusIcon, Pencil, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner';
 import { z } from 'zod'
 
@@ -83,7 +85,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                         amount,
                         nutrientId
                     },
-                    productId
+                    nutritionFactId
                 );
                 if (!res?.isSuccess) {
                     throw new Error(nutritionFactId == 0 ? "Thêm dinh dưỡng thất bại" : "Cập nhật dinh dưỡng thất bại")
@@ -121,6 +123,11 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
         { Id: 10, Name: "Chất đạm", Unit: "g" },
     ];
 
+    const selectDataList: { label: string, value: string }[] = Array.from({ length: 10 }, (_, index) => ({
+        label: `${index * 10}`,
+        value: `${index * 10}`
+    }));
+
     const handleCancel = () => {
         setEditingId(null)
         setNutritionFacts(nutritionFacts.filter((f: NutritionFact) => f.id !== 0))
@@ -157,7 +164,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                         <TableRow>
                             <TableHead className="w-[50%]">Dinh dưỡng</TableHead>
                             <TableHead>Hàm lượng</TableHead>
-                            <TableHead>% Giá trị hàng ngày</TableHead>
+                            <TableHead>Giá trị hàng ngày</TableHead>
                             <TableHead className="w-[100px]"></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -182,10 +189,27 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                         />
                                     </TableCell>
                                     <TableCell>
-                                        <FormNumberInputControl
-                                            form={form}
+                                        <Controller
                                             name="amount"
-                                            unit={handleUnit()}
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className='mt-4'>
+                                                    <FancySelect
+                                                        placeholder='Chọn hoặc nhập số lượng mới'
+                                                        classNameSelect='!max-h-32'
+                                                        options={selectDataList}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues?.value)
+                                                        }}
+                                                        unit={handleUnit()}
+                                                        defaultValue={{
+                                                            label: String(form.getValues("amount") ?? ""),
+                                                            value: String(form.getValues("amount") ?? "")
+                                                        }}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -205,7 +229,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                 <TableRow key={fact.id}>
                                     <TableCell className="font-medium">{fact?.nutrient?.name}</TableCell>
                                     <TableCell>{`${fact.amount} ${fact?.nutrient?.unit}`}</TableCell>
-                                    <TableCell>{fact.dailyValue}</TableCell>
+                                    <TableCell>{formatNumberWithUnit(fact.dailyValue, "%")}</TableCell>
                                     <TableCell className='flex space-x-3'>
                                         <Button type='button' size="sm" variant="ghost" onClick={(e) => {
                                             e.preventDefault();

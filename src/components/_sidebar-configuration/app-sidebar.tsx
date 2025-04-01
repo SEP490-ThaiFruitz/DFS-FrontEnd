@@ -18,6 +18,7 @@ import {
   Warehouse,
   NotebookPen,
   Banknote,
+  ShieldCheck,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -126,6 +127,11 @@ const data = {
       name: "Kế hoạch",
       url: "/admin/plan",
       icon: NotebookPen,
+    },
+    {
+      name: "Chứng chỉ",
+      url: "/admin/certification",
+      icon: ShieldCheck,
     },
     {
       name: "Lịch sử thanh toán",

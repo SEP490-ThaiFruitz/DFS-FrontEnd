@@ -106,7 +106,7 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
                 <DialogHeader>
                     <DialogTitle>{titleText}</DialogTitle>
                 </DialogHeader>
-                <ScrollArea className="w-full max-h-[600px]">
+                <ScrollArea className="w-full max-h-[600px] px-2 pr-2">
                     <FormValues form={form} onSubmit={onSubmit} classNameForm="min-w-fit p-1">
                         <div className="grid lg:grid-cols-3 gap-4 py-4">
                             <FormFileControl

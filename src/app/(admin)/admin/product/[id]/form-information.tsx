@@ -7,7 +7,7 @@ import { FormSelectControl, SelectData } from '@/components/global-components/fo
 import { Label } from '@/components/ui/label'
 import { ApiResponse } from '@/types/types'
 import React from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
 import { Product } from './page'
 import { z } from 'zod'
@@ -22,6 +22,8 @@ import { API } from '@/actions/client/api-config'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
+import { FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { FancyMultiSelect } from '@/components/custom/_custom_select/multi-select'
 
 export interface CategorySelect extends SelectData {
     isChose: boolean;
@@ -44,7 +46,40 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
         { id: "InfraredDrying", name: "Sấy bằng bức xạ hồng ngoại" },
         { id: "DrumDrying", name: "Sấy trong máy trống" }
     ];
-
+    const Options = [
+        {
+            value: "Sung sấy",
+            label: "Sung sấy",
+        },
+        {
+            value: "Chuối sấy",
+            label: "Chuối sấy",
+        },
+        {
+            value: "Táo sấy",
+            label: "Táo sấy",
+        },
+        {
+            value: "Dứa sấy",
+            label: "Dứa sấy",
+        },
+        {
+            value: "Dưa hấu sấy",
+            label: "Dưa hấu sấy",
+        },
+        {
+            value: "Dâu tây sấy",
+            label: "Dâu tây sấy",
+        },
+        {
+            value: "Cà chua sấy",
+            label: "Cà chua sấy",
+        },
+        {
+            value: "Cà rốt sấy",
+            label: "Cà rốt sấy",
+        },
+    ]
     const form = useForm<z.infer<typeof UpdateProductSafeTypes>>({
         resolver: zodResolver(UpdateProductSafeTypes),
         defaultValues: {
@@ -53,7 +88,13 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
             dryingMethod: product?.dryingMethod ?? "",
             moistureContent: product?.moistureContent.toString() ?? "",
             origin: product?.origin ?? "",
-            tagNames: product?.tagNames ?? "",
+            tagNames: product?.tags.reduce((tags: { label: string, value: string }[], tag) => {
+                tags.push({
+                    label: tag,
+                    value: tag
+                });
+                return tags;
+            }, []) ?? [],
             description: product?.description ?? "",
             categoryIds: product?.categories?.map((category) => category.id) ?? []
         }
@@ -71,8 +112,8 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                         formData.append("categoryIds", value);
                     })
                 } else if (key === "tagNames") {
-                    values.tagNames.split(",").forEach((value) => {
-                        formData.append("tags", value);
+                    values.tagNames.forEach((value) => {
+                        formData.append("tags", value.value);
                     })
                 } else {
                     const value = values[key as keyof typeof values];
@@ -133,13 +174,23 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                         label="Phương pháp xấy"
                         require
                     />
-                    <FormTextareaControl
-                        form={form}
+                    <Controller
                         name="tagNames"
-                        label="Tag"
-                        rows={8}
-                        placeholder='Nhập mô tả sản phẩm...'
-                        require
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <FormItem className="pt-8">
+                                <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                    Thẻ tag
+                                </FormLabel>
+                                <FancyMultiSelect
+                                    placeholder='Chọn tag sản phẩm hoặc nhập mới'
+                                    options={Options}
+                                    onChangeValue={(selectedValues) => field.onChange(selectedValues)}
+                                    defaultValues={field.value}
+                                />
+                                <FormMessage>{fieldState.error?.message}</FormMessage>
+                            </FormItem>
+                        )}
                     />
                 </div>
                 <div className="space-y-6">

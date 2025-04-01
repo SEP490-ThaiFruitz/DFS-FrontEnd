@@ -53,15 +53,19 @@ interface FancyMultiSelectProps {
   options: Options[];
 
   onChangeValue: React.Dispatch<React.SetStateAction<Options[]>>;
+  placeholder?: string,
+  defaultValues?: Options[]
 }
 
 export function FancyMultiSelect({
   options,
   onChangeValue,
+  placeholder,
+  defaultValues
 }: FancyMultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Options[]>([options[0]]);
+  const [selected, setSelected] = React.useState<Options[]>(defaultValues ?? []);
   const [inputValue, setInputValue] = React.useState("");
 
   const handleUnselect = React.useCallback((option: Options) => {
@@ -90,13 +94,32 @@ export function FancyMultiSelect({
     []
   );
 
-  const selectables = options.filter((option) => !selected.includes(option));
+  // const selectables = options.filter((option) => !selected.includes(option));
+  const selectables = options.filter(
+    (option) => !selected.some((selectedOption) => selectedOption.value === option.value)
+  );
 
   console.log(selectables, selected, inputValue);
+
 
   React.useEffect(() => {
     onChangeValue(selected);
   }, [selected]);
+
+  const handlerEnterNewSelect = () => {
+    const value = inputRef.current?.value;
+    if (value) {
+      const newOption = {
+        value: value,
+        label: value,
+      };
+      if(selected.some((selectedOption) => selectedOption.value === newOption.value)){
+        return;
+      }
+      setSelected((prevSelected) => [...prevSelected, newOption]);
+      setInputValue("");
+    }
+  };
 
   return (
     <Command
@@ -134,7 +157,12 @@ export function FancyMultiSelect({
             onValueChange={setInputValue}
             onBlur={() => setOpen(false)}
             onFocus={() => setOpen(true)}
-            placeholder="Select options..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handlerEnterNewSelect();
+              }
+            }}
+            placeholder={placeholder ?? "Select options..."}
             className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           />
         </div>
@@ -143,7 +171,7 @@ export function FancyMultiSelect({
         <CommandList>
           {open && selectables.length > 0 ? (
             <div className="absolute top-0 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-              <CommandGroup className="h-full overflow-auto">
+              <CommandGroup className="max-h-96 overflow-y-auto">
                 {selectables.map((option) => {
                   return (
                     <CommandItem

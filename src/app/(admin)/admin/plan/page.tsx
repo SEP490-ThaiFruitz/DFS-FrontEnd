@@ -10,7 +10,7 @@ import Link from "next/link"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import type { ApiResponse, PageResult, Profile } from "@/types/types"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { API } from "@/actions/client/api-config"
 import DialogProductDetail from "./dialog-product-detail"
@@ -63,7 +63,8 @@ const PlanPage = () => {
 
         return statusMap[status] || { color: "bg-gray-100 text-gray-800", label: status }
     }
-    const { data: user } = useQuery<Profile>({ queryKey: ["authUser"] })
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<Profile>(["authUser"]);
     const [request, setRequest] = useState<Request | undefined>(undefined)
     const [requestRemove, setRequestRemove] = useState<Request | undefined>(undefined)
 

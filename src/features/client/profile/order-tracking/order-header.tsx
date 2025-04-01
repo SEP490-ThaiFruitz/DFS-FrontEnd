@@ -9,7 +9,7 @@ interface OrderHeaderProps {
   status: string;
   orderId: string;
   buyDate: string;
-  timeEstimateDelivery?: string;
+  timeEstimateDelivery?: string | null;
   onClickDetail: () => void;
 }
 

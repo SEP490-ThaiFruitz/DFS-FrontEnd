@@ -30,7 +30,9 @@ export interface ProductVariantDetail {
   packagingWidth: number
   packagingHeight: number
   packagingVolume: number
-  shelfLife: string
+  shelfLife: string,
+  preservationMethod: string,
+  productVariantDetail: string,
   price: number
   stockQuantity: number
   reOrderPoint: number
@@ -120,6 +122,12 @@ const VariantTab = ({ productVariants, productId }: Readonly<VariantTabProps>) =
                             </div>
                           </div>
                           <div className="space-y-1.5">
+                            <div className="text-muted-foreground font-medium">Thể tích</div>
+                            <div className="flex items-center">
+                              {variant.packagingVolume} cm<sup>3</sup>
+                            </div>
+                          </div>
+                          <div className="space-y-1.5">
                             <div className="text-muted-foreground font-medium">Trọng lượng</div>
                             <div className="flex items-center space-x-2">
                               <div>Tịnh: {variant.netWeight}g</div>
@@ -138,12 +146,16 @@ const VariantTab = ({ productVariants, productId }: Readonly<VariantTabProps>) =
                             <div>{variant.reOrderPoint}</div>
                           </div>
                           <div className="space-y-1.5">
-                            <div className="text-muted-foreground font-medium">Giá</div>
-                            <div className="font-semibold text-xl text-primary">{formatVND(variant.price)}</div>
-                          </div>
-                          <div className="space-y-1.5">
                             <div className="text-muted-foreground font-medium">Hạn sử dụng</div>
                             <div>{variant.shelfLife}</div>
+                          </div>
+                          <div className="space-y-1.5">
+                            <div className="text-muted-foreground font-medium">Cách bảo quản</div>
+                            <div>{variant.preservationMethod}</div>
+                          </div>
+                          <div className="space-y-1.5">
+                            <div className="text-muted-foreground font-medium">Giá</div>
+                            <div className="font-semibold text-xl text-primary">{formatVND(variant.price)}</div>
                           </div>
                         </div>
                       </div>

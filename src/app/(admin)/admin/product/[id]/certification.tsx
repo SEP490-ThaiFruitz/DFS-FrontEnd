@@ -1,30 +1,27 @@
 "use client"
 
-import { Calendar, CirclePlusIcon, Clock, Edit, Info, Trash2 } from "lucide-react"
+import { Calendar, CirclePlusIcon, Clock, Info, Trash2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TabsContent } from "@/components/ui/tabs"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
 import { useEffect, useState } from "react"
-import { createCertificate, deleteProductCertification, updateCertificate } from "@/actions/product"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { FormValues } from "@/components/global-components/form/form-values"
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized"
-import { WaitingSpinner } from "@/components/global-components/waiting-spinner"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { FormCertificateSafeTypes } from "@/zod-safe-types/product-safe-types"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { FormInputControl } from "@/components/global-components/form/form-input-control"
-import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import { toast } from "sonner"
-import { FormDateControl } from "@/components/global-components/form/form-date-control"
+import ImagePreview from "@/components/custom/_custom-image/image-preview"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
+import { useQueryClient } from "@tanstack/react-query"
+import { API } from "@/actions/client/api-config"
+import { Checkbox } from "@/components/ui/checkbox"
+import { error } from "console"
 
 export interface Certificate {
     id: string
     name: string
+    image: string
     agency: string
     issueDate: Date
     expiryDate: Date | undefined
@@ -40,95 +37,46 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
     const [certificates, setCertificates] = useState<Certificate[]>(intial)
     const [certificateDelete, setCertificateDelete] = useState<Certificate | undefined>(undefined)
     const [isCerticicateForm, setIsCerticicateForm] = useState<boolean>(false);
+    const { data: certifications } = useFetch<Certificate[]>("/Certifications", ["certifications"])
+    const [selectedCertifications, setSelectedCertifications] = useState<Certificate[]>([])
+
     const queryClient = useQueryClient();
     const isCertificateValid = (expiryDate: Date | undefined | null) => {
-        console.log(expiryDate)
         if (expiryDate === undefined || expiryDate === null)
             return true;
-
         const today = new Date()
-        return today < expiryDate
+        return today < new Date(expiryDate)
     }
 
     useEffect(() => {
         setCertificates(intial)
     }, [intial])
 
-    const { mutate: certifictionMutation, isPending } = useMutation({
-        mutationFn: async (values: any) => {
-            try {
-                const { id,
-                    agency,
-                    name,
-                    issueDate,
-                    expiryDate,
-                    details } = values;
-
-                const createCertificateData = () => {
-                    const baseData = {
-                        productId,
-                        agency,
-                        name,
-                        issueDate,
-                        details
-                    };
-                    return expiryDate !== "" ? { ...baseData, expiryDate } : baseData;
-                };
-
-                const res = id === undefined
-                    ? await createCertificate(createCertificateData(), productId)
-                    : await updateCertificate(values, id)
-                if (!res?.isSuccess) {
-
-                    throw new Error(id === undefined ? "Lỗi tạo thêm chứng chỉ" : "Lỗi cập nhật chứng chỉ")
-                }
-            } catch (error: unknown) {
-                throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống")
+    const onSubmit = async () => {
+        try {
+            const certs = { certificationIds: selectedCertifications.map((cert) => cert.id) };
+            const res = await API.post(`/Certifications/${productId}/add-certification`, selectedCertifications.map(cert => cert.id))
+            if (res) {
+                toast.success("Tạo chứng chỉ thành công")
+                handlerCloseForm();
+                queryClient.invalidateQueries({ queryKey: ["detail-mange", productId] })
             }
-        },
-        onSuccess: () => {
-            toast.success("Tạo chứng chỉ thành công")
-            handlerCloseForm();
-            queryClient.invalidateQueries({ queryKey: ["detail-mange", productId] })
-        },
-        onError: (error) => {
-            toast.error(error?.message)
+        } catch (error) {
+            console.log(error)
         }
-    })
-    const form = useForm<z.infer<typeof FormCertificateSafeTypes>>({
-        resolver: zodResolver(FormCertificateSafeTypes),
-    });
-    const onSubmit = async (values: z.infer<typeof FormCertificateSafeTypes>) => {
-        certifictionMutation(values)
     }
-
-    const handlerSetUpdateForm = (cert: Certificate) => {
-        setIsCerticicateForm(true)
-        form.reset({
-            id: cert.id,
-            agency: cert.agency,
-            name: cert.name,
-            issueDate: cert.issueDate,
-            expiryDate: cert.expiryDate ?? undefined,
-            details: cert.details
-        })
-    }
-
 
     const handlerCloseForm = () => {
-        form.reset({
-            id: undefined,
-            agency: "",
-            name: "",
-            issueDate: new Date(),
-            expiryDate: undefined,
-            details: ""
-        });
+        setSelectedCertifications([])
         setIsCerticicateForm(false)
     }
+    const handleSelectCertfication = (certificate: Certificate) => {
+        setSelectedCertifications((prev) => [...prev, certificate])
+    }
 
-    const buttonLable = form.getValues("id") ? "Cập nhật" : "Tạo mới"
-    const buttonLoading = form.getValues("id") ? "Đang cập nhật..." : "Đang tạo mới..."
+    const handleRemoveProductCertification = async (id: string) => {
+        return await API.remove(`/Certifications/${productId}/${id}`)
+    }
 
     return (
         <TabsContent value="certification">
@@ -144,12 +92,6 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
                             <Card key={cert.id} className="border shadow-sm hover:shadow transition-shadow relative group hover:cursor-pointer">
                                 <div className="absolute z-10 hidden group-hover:flex -top-3 -right-3 space-x-2 bg-white">
                                     <button
-                                        className="p-1 w-fit rounded-md bg-blue-600 text-white cursor-pointer"
-                                        onClick={() => handlerSetUpdateForm(cert)}
-                                    >
-                                        <Edit className="h-4 w-4" />
-                                    </button>
-                                    <button
                                         onClick={() => setCertificateDelete(cert)}
                                         className="p-1 w-fit rounded-md bg-red-600 text-white cursor-pointer"
                                     >
@@ -164,7 +106,9 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
                                             {isCertificateValid(cert.expiryDate) ? "Còn hiệu lực" : "Hết hạn"}
                                         </Badge>
                                     </div>
-
+                                    <div className="mb-4">
+                                        <ImagePreview initialHeight={30} images={[cert.image]} className="object-contain" />
+                                    </div>
                                     <div className="space-y-3 text-sm">
                                         <div className="flex items-center">
                                             <Info className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -203,63 +147,68 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
             </Card>
             {isCerticicateForm && (
                 <Dialog open={isCerticicateForm} onOpenChange={handlerCloseForm}>
-                    <DialogContent className="w-full">
+                    <DialogContent className="min-w-[460px] md:min-w-[800px]">
                         <DialogHeader>
-                            <DialogTitle>{`${buttonLable} chứng chỉ`}</DialogTitle>
+                            <DialogTitle>Chọn chứng chỉ</DialogTitle>
                         </DialogHeader>
-                        <FormValues form={form} onSubmit={onSubmit} >
-                            <FormInputControl
-                                form={form}
-                                disabled={isPending}
-                                name='name'
-                                label='Tên'
-                                require
-                            />
-                            <FormInputControl
-                                form={form}
-                                disabled={isPending}
-                                name='agency'
-                                label='Cấp bởi'
-                                require
-                            />
-                            <FormDateControl
-                                form={form}
-                                disabled={form.formState.isSubmitting}
-                                name='issueDate'
-                                label='Ngày cấp'
-                                require
-                            />
-                            <FormDateControl
-                                form={form}
-                                disabled={form.formState.isSubmitting}
-                                name='expiryDate'
-                                label='Ngày hết hạn'
-                            />
-                            <FormTextareaControl
-                                form={form}
-                                disabled={isPending}
-                                name='details'
-                                label='Nội dung'
-                            />
-                            <ButtonCustomized
-                                type="submit"
-                                className="max-w-fit bg-green-700 hover:bg-green-800"
-                                variant="secondary"
-                                disabled={isPending}
-                                label={
-                                    isPending ? (
-                                        <WaitingSpinner
-                                            variant="pinwheel"
-                                            label={buttonLoading}
-                                            className="font-semibold"
-                                            classNameLabel="font-semibold text-sm"
-                                        />
-                                    ) : (
-                                        buttonLable
-                                    )
+                        <ScrollArea className="w-full max-h-[600px] pr-4">
+                            {certifications?.map((certificate) => {
+                                const certSelected = certificates.find((cert: any) => cert.id === certificate.id)
+
+                                if (!certSelected) {
+                                    return (
+                                        <div key={certificate.id} className="pb-4 border-b">
+                                            <div className="flex flex-col md:flex-row gap-4 items-start">
+                                                <div className="w-full md:w-1/3 aspect-square max-w-[200px] rounded-md overflow-hidden border">
+                                                    {certificate.image && (
+                                                        <ImagePreview
+                                                            images={[certificate.image]}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    )}
+
+                                                </div>
+                                                <div className="flex-1 space-y-3">
+                                                    <h3 className="text-lg font-medium">{certificate.name}</h3>
+                                                    <div className="grid grid-cols-[80px_1fr] items-center gap-1 text-sm">
+                                                        <span className="font-medium">Cơ quan:</span>
+                                                        <span>{certificate.agency}</span>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-[80px_1fr] items-center gap-1 text-sm">
+                                                        <span className="font-medium">Ngày cấp:</span>
+                                                        <span>{formatTimeVietNam(certificate.issueDate)}</span>
+
+                                                    </div>
+
+                                                    {certificate.expiryDate && (
+                                                        <div className="grid grid-cols-[80px_1fr] items-center gap-1 text-sm">
+                                                            <span className="font-medium">Hết hạn:</span>
+                                                            <span>{formatTimeVietNam(certificate.expiryDate)}</span>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="grid grid-cols-[80px_1fr] items-start gap-1 text-sm pt-1">
+                                                        <span className="font-medium">Mô tả:</span>
+                                                        <div>{certificate.details}</div>
+                                                    </div>
+                                                </div>
+                                                <Checkbox onClick={() => handleSelectCertfication(certificate)} className='h-5 w-5' />
+                                            </div>
+                                        </div>)
                                 }
-                            />
-                        </FormValues>
+                            })}
+                        </ScrollArea>
+                        <ButtonCustomized
+                            type="submit"
+                            onClick={onSubmit}
+                            className="max-w-fit bg-green-700 hover:bg-green-800"
+                            variant="secondary"
+                            label={(
+                                "Chọn chứng chỉ"
+                            )
+                            }
+                        />
                     </DialogContent>
                 </Dialog>
             )}
@@ -269,8 +218,8 @@ const CertificationTab = ({ certificates: intial, productId }: Readonly<Certific
                     isOpen={certificateDelete !== undefined}
                     onClose={() => setCertificateDelete(undefined)}
                     name={certificateDelete?.name}
-                    deleteFunction={deleteProductCertification}
-                    refreshKey={[["detail-mange", productId]]}
+                    deleteFunction={handleRemoveProductCertification}
+                    refreshKey={[["detail-mange", productId], ["certifications"]]}
                 />)}
         </TabsContent>
     )

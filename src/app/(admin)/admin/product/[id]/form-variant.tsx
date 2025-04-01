@@ -36,16 +36,16 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
     const buttonText = productVariantDetail ? "Cập nhật" : "Thêm mới"
     const queryClient = useQueryClient();
     const selectExpiredDates: SelectData[] = [
-        { id: 1, name: "3 ngày" },
-        { id: 2, name: "7 ngày" },
-        { id: 3, name: "10 ngày" },
-        { id: 4, name: "15 ngày" },
-        { id: 5, name: "1 tháng" },
-        { id: 6, name: "20 ngày" },
-        { id: 7, name: "2 tháng" },
-        { id: 8, name: "3 tháng" },
-        { id: 9, name: "1 năm" },
-        { id: 10, name: "2 năm" },
+        { id: 3, name: "3 ngày" },
+        { id: 7, name: "7 ngày" },
+        { id: 10, name: "10 ngày" },
+        { id: 15, name: "15 ngày" },
+        { id: 30, name: "1 tháng" },
+        { id: 20, name: "20 ngày" },
+        { id: 60, name: "2 tháng" },
+        { id: 90, name: "3 tháng" },
+        { id: 360, name: "1 năm" },
+        { id: 720, name: "2 năm" },
     ];
 
     const form = useForm<z.infer<typeof ProductVariantSafeTypes>>({
@@ -58,6 +58,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
             packagingWidth: "",
             packagingHeight: "",
             shelfLife: "",
+            preservationMethod: "",
             price: "",
             stockQuantity: "",
             reOrderPoint: "",
@@ -74,7 +75,8 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                 packagingLength: productVariantDetail.packagingLength.toString(),
                 packagingWidth: productVariantDetail.packagingWidth.toString(),
                 packagingHeight: productVariantDetail.packagingHeight.toString(),
-                shelfLife: selectExpiredDates.find((expiryDate) => expiryDate.name.toString() === productVariantDetail.shelfLife)?.id.toString(),
+                shelfLife: productVariantDetail.shelfLife.toString(),
+                preservationMethod: productVariantDetail.productVariantDetail,
                 price: productVariantDetail.price.toString(),
                 stockQuantity: productVariantDetail.stockQuantity.toString(),
                 reOrderPoint: productVariantDetail.reOrderPoint.toString(),
@@ -247,6 +249,13 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                         disabled={form.formState.isSubmitting}
                                     />
                                 </div>
+                                <FormInputControl
+                                    form={form}
+                                    name="preservationMethod"
+                                    label="Cách bảo quản"
+                                    require
+                                    disabled={form.formState.isSubmitting}
+                                />
                             </div>
                         </div>
                         <DialogFooter>

@@ -62,6 +62,8 @@ export const Navigate = () => {
     queryKey: ["authUser"],
   });
 
+  // const user = queryClient.getQueryData<Profile>(["authUser"]);
+
   // const token = Cookies.get("accessToken");
 
   const navItemClassName =
@@ -166,6 +168,7 @@ export const Navigate = () => {
             <Skeleton className="h-10 w-10 rounded-full" />
           ) : user ? (
             <>
+              {/* Notification Popover */}
               <Notification />
               <Link
                 href="/favorites"

@@ -11,11 +11,20 @@ export const CreateProductSafeTypes = z.object({
   }).nonempty({
     message: "Vui lòng nhập nguồn gốc xuất sứ"
   }),
-  tagNames: z.string({
-    required_error: "Vui lòng nhập tag name"
-  }).nonempty({
-    message: "Vui lòng nhập tag name"
-  }),
+  tagNames: z.array(z.object({
+    label:
+      z.string({
+        required_error: "Vui lòng nhập tag"
+      }).nonempty({
+        message: "Vui lòng nhập tag"
+      }),
+    value:
+      z.string({
+        required_error: "Vui lòng nhập tag"
+      }).nonempty({
+        message: "Vui lòng nhập tag"
+      })
+  })).min(1, "Vui lòng chọn ít nhất một thẻ tag"),
   dryingMethod: z.string({
     required_error: "Vui lòng chọn phương pháp xấy"
   }).nonempty({
@@ -57,6 +66,11 @@ export const CreateProductSafeTypes = z.object({
       }).nonempty({
         message: "Vui lòng nhập hạn sử dụng"
       }),
+      preservationMethod: z.string({
+        message: "Vui lòng nhập cách bảo quản"
+      }).nonempty({
+        message: "Vui lòng nhập cách bảo quản"
+      }),
       price: z.string().refine((val) => parseFloat(val) > 0, "Giá phải lớn hơn 0"),
       stockQuantity: z.string().refine((val) => parseFloat(val) >= 0, "Số lượng tồn kho phải lớn hơn hoặc bằng 0"),
       reOrderPoint: z.string().refine((val) => parseFloat(val) >= 0, "Điểm đặt hàng lại phải lớn hơn hoặc bằng 0"),
@@ -67,11 +81,21 @@ export const CreateProductSafeTypes = z.object({
   )
     .min(1, { message: "Vui lòng thêm ít nhất 1 biến thể sản phẩm" }),
 
-  ingredients: z.string({
-    required_error: "Vui lòng nhập thành phần"
-  }).nonempty({
-    message: "Vui lòng nhập thành phần"
-  }),
+  ingredients: z.array(z.object({
+    value:
+      z.string({
+        required_error: "Vui lòng nhập thành phần"
+      }).nonempty({
+        message: "Vui lòng nhập thành phần"
+      }),
+    label:
+      z.string({
+        required_error: "Vui lòng nhập thành phần"
+      }).nonempty({
+        message: "Vui lòng nhập thành phần"
+      })
+  }), { required_error: "Vui lòng nhập thành phần" }).min(1, "Vui lòng chọn ít nhất một thẻ thành phần"),
+
   servingSize: z.string(
     { required_error: "Vui lòng nhập khối lượng khẩu phần" }
   )
@@ -94,17 +118,18 @@ export const CreateProductSafeTypes = z.object({
   ).min(1, { message: "Vui lòng thêm ít nhất 1 chất dinh dưỡng" }),
   certificates: z.array(
     z.object({
-      id: z.string().optional(),
+      id: z.number().optional(),
+      image: z.string(),
       name: z.string().nonempty({
         message: "Vui lòng nhập tên chứng chỉ"
       }),
       agency: z.string().nonempty({
         message: "Vui lòng nhập tên tổ chức"
       }),
-      issueDate: z.date({
+      issueDate: z.string({
         required_error: "Vui lòng chọn ngày cấp"
       }),
-      expiryDate: z.date().optional(),
+      expiryDate: z.string().optional(),
       details: z.string().optional(),
     }),
     {
@@ -120,11 +145,20 @@ export const UpdateProductSafeTypes = z.object({
   }).nonempty({
     message: "Vui lòng nhập tên sản phẩm"
   }),
-  tagNames: z.string({
-    required_error: "Vui lòng nhập tag name"
-  }).nonempty({
-    message: "Vui lòng nhập tag name"
-  }),
+  tagNames: z.array(z.object({
+    label:
+      z.string({
+        required_error: "Vui lòng nhập tag"
+      }).nonempty({
+        message: "Vui lòng nhập tag"
+      }),
+    value:
+      z.string({
+        required_error: "Vui lòng nhập tag"
+      }).nonempty({
+        message: "Vui lòng nhập tag"
+      })
+  })).min(1, "Vui lòng chọn ít nhất một thẻ tag"),
   origin: z.string({
     required_error: "Vui lòng nhập nguồn gốc xuất sứ"
   }).nonempty({
@@ -164,6 +198,7 @@ export const FormImageSafeTypes = z.object({
 
 export const FormCertificateSafeTypes = z.object({
   id: z.string().optional(),
+  image: z.any().refine((file) => file != null, "Vui lòng chọn ảnh"),
   name: z.string().nonempty({
     message: "Vui lòng nhập tên chứng chỉ"
   }),
@@ -206,13 +241,18 @@ export const ProductVariantSafeTypes = z.object({
   }).nonempty({
     message: "Vui lòng nhập hạn sử dụng"
   }),
+  preservationMethod: z.string({
+    message: "Vui lòng nhập cách bảo quản"
+  }).nonempty({
+    message: "Vui lòng nhập cách bảo quản"
+  }),
   price: z.string().refine((val) => parseFloat(val) > 0, "Giá phải lớn hơn 0"),
   stockQuantity: z.string().refine((val) => parseFloat(val) >= 0, "Số lượng tồn kho phải lớn hơn hoặc bằng 0"),
   reOrderPoint: z.string().refine((val) => parseFloat(val) >= 0, "Điểm đặt hàng lại phải lớn hơn hoặc bằng 0"),
   packagingTypeId: z.string({
     required_error: "Vui lòng chọn loại bao bì"
   }).nonempty({ message: "Vui lòng chọn loại bao bì" }),
-}).refine((data) => data.netWeight <= data.grossWeight, {
+}).refine((data) => data.netWeight < data.grossWeight, {
   message: "Khối lượng tịnh không thể lớn hơn khối lượng tổng",
   path: ["netWeight"],
 });;

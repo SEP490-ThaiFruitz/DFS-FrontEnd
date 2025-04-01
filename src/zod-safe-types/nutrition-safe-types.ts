@@ -11,11 +11,20 @@ export const FromNutritionSafeTypes = z.object({
         }, {
             message: "Khối lượng khẩu phần lớn hơn 0"
         }),
-    ingredients: z.string({
-        required_error: "Vui lòng nhập thành phần"
-    }).nonempty({
-        message: "Vui lòng nhập thành phần"
-    })
+    ingredients: z.array(z.object({
+        value:
+            z.string({
+                required_error: "Vui lòng nhập thành phần"
+            }).nonempty({
+                message: "Vui lòng nhập thành phần"
+            }),
+        label:
+            z.string({
+                required_error: "Vui lòng nhập thành phần"
+            }).nonempty({
+                message: "Vui lòng nhập thành phần"
+            })
+    }), { required_error: "Vui lòng nhập thành phần" }).min(1, "Vui lòng chọn ít nhất một thẻ thành phần"),
 });
 
 export const FromNutrionFact = z.object({
@@ -41,9 +50,18 @@ export const CreateProductNutritionSafeTypes = z.object({
         }, {
             message: "Khối lượng khẩu phần lớn hơn 0"
         }),
-    ingredients: z.string({
-        required_error: "Vui lòng nhập thành phần"
-    }).nonempty({
-        message: "Vui lòng nhập thành phần"
-    })
+    ingredients: z.array(z.object({
+        value:
+            z.string({
+                required_error: "Vui lòng nhập thành phần"
+            }).nonempty({
+                message: "Vui lòng nhập thành phần"
+            }),
+        label:
+            z.string({
+                required_error: "Vui lòng nhập thành phần"
+            }).nonempty({
+                message: "Vui lòng nhập thành phần"
+            })
+    }), { required_error: "Vui lòng nhập thành phần" }).min(1, "Vui lòng chọn ít nhất một thẻ thành phần"),
 });

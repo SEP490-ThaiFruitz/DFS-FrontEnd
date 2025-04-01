@@ -1,16 +1,18 @@
 "use client";
 
+import { FancySelect } from '@/components/custom/_custom_select/select';
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control';
 import { FormSelectControl } from '@/components/global-components/form/form-select-control'
 import { Button } from '@/components/ui/button'
 import { CardContent } from '@/components/ui/card'
+import { FormItem, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { formatNumberWithUnit } from '@/lib/format-currency';
 import { FromNutrionFact } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, CirclePlusIcon, Pencil, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { useForm, UseFormReturn } from 'react-hook-form'
+import { Controller, useForm, UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 export interface NutritionFact {
@@ -35,6 +37,11 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
     const form = useForm<z.infer<typeof FromNutrionFact>>({
         resolver: zodResolver(FromNutrionFact),
     });
+
+    const selectDataList: { label: string, value: string }[] = Array.from({ length: 10 }, (_, index) => ({
+        label: `${index * 10}`,
+        value: `${index * 10}`
+    }));
 
     useEffect(() => {
         const nutritionFacts = formProduct.getValues("nutritionFacts");
@@ -133,10 +140,27 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <FormNumberInputControl
-                                        form={form}
+                                    <Controller
                                         name="amount"
-                                        unit={form.watch("nutrientId") && handleUnit()}
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <FormItem className='mt-4'>
+                                                <FancySelect
+                                                    placeholder='Chọn hoặc nhập số lượng mới'
+                                                    classNameSelect='!max-h-32'
+                                                    options={selectDataList}
+                                                    onChangeValue={(selectedValues: any) => {
+                                                        field.onChange(selectedValues?.value)
+                                                    }}
+                                                    unit={handleUnit()}
+                                                    defaultValue={{
+                                                        label: String(form.getValues("amount") ?? ""),
+                                                        value: String(form.getValues("amount") ?? "")
+                                                    }}
+                                                />
+                                                <FormMessage>{fieldState.error?.message}</FormMessage>
+                                            </FormItem>
+                                        )}
                                     />
                                 </TableCell>
                                 <TableCell className='flex space-x-3'>

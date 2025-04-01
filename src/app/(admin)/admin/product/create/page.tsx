@@ -42,6 +42,8 @@ const CreateProductPage = () => {
       servingSize: "0",
       nutritionFacts: [],
       certificates: [],
+      tagNames: [],
+      ingredients:[]
     }
   })
 
@@ -53,7 +55,10 @@ const CreateProductPage = () => {
       formData.append("origin", values.origin);
       formData.append("dryingMethod", values.dryingMethod);
       formData.append("moistureContent", values.moistureContent);
-      formData.append("tagNames", values.tagNames);
+      
+      values.tagNames.forEach((value) => {
+        formData.append("tags", value.value);
+      })
       values.categoryIds.forEach((value) => {
         formData.append("categoryIds", value);
       })
@@ -66,15 +71,12 @@ const CreateProductPage = () => {
 
       let index = 0
       values.certificates.forEach((certificate) => {
-        formData.append(`certificates[${index}][name]`, certificate.name);
-        formData.append(`certificates[${index}][agency]`, certificate.agency);
-        formData.append(`certificates[${index}][issueDate]`, certificate.issueDate.toLocaleDateString());
-        formData.append(`certificates[${index}][expiryDate]`, certificate.expiryDate ? certificate.expiryDate.toLocaleDateString() : '');
-        formData.append(`certificates[${index}][details]`, certificate.details ?? '');
+        formData.append(`certificates[${index}]`, certificate.id?.toString() ?? "");
         index += 1;
       });
-
-      formData.append("nutrition.ingredients", values.ingredients);
+      values.ingredients.forEach((value) => {
+        formData.append("nutrition.ingredients", value.value);
+      })
       formData.append("nutrition.servingSize", values.servingSize);
 
       index = 0
@@ -94,6 +96,7 @@ const CreateProductPage = () => {
         formData.append(`variants[${index}][price]`, productVariant.price);
         formData.append(`variants[${index}][packagingHeight]`, productVariant.packagingHeight);
         formData.append(`variants[${index}][reOrderPoint]`, productVariant.reOrderPoint);
+        formData.append(`variants[${index}][preservationMethod]`, productVariant.preservationMethod);
         formData.append(`variants[${index}][netWeight]`, productVariant.netWeight);
         formData.append(`variants[${index}][packagingTypeId]`, productVariant.packagingTypeId);
         formData.append(`variants[${index}][grossWeight]`, productVariant.grossWeight);
@@ -111,11 +114,11 @@ const CreateProductPage = () => {
           servingSize: "0",
           nutritionFacts: [],
           certificates: [],
+          tagNames: [],
+          ingredients: []
         });
         setCurrentStep(1)
-      } else {
-        toast.error("Tạo sản phẩm thất bại")
-      }
+      } 
     } catch (error) {
       console.log({ error });
     }
@@ -124,7 +127,7 @@ const CreateProductPage = () => {
   const nextStep = () => {
     let currentFields: string[] = [];
     if (currentStep === 1) {
-      currentFields = ["name", "percentage", "description", "origin", "dryingMethod", "image", "other", "moistureContent", "categoryIds"];
+      currentFields = ["name", "percentage", "description", "origin", "dryingMethod", "image", "other", "moistureContent", "categoryIds", "tagNames"];
     } else if (currentStep === 2) {
       currentFields = ["productVariants"];
     } else if (currentStep === 3) {
@@ -134,6 +137,7 @@ const CreateProductPage = () => {
     }
 
     form.trigger(currentFields as any).then((isValid) => {
+      console.log(form.getFieldState("certificates"))
       if (isValid) {
         setCurrentStep((prev) => Math.min(prev + 1, totalSteps))
       }

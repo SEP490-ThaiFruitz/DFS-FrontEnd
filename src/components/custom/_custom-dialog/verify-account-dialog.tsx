@@ -31,7 +31,7 @@ export const VerifyDialog = () => {
         }
     }, [time]);
 
-    const { data: user } = useQuery<Profile>({ queryKey: ["authUser"] })
+    const user = queryClient.getQueryData<Profile>(["authUser"]);
 
     const [type, setType] = useState<string>("email")
 

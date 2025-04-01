@@ -55,6 +55,7 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
             packagingWidth: "",
             packagingHeight: "",
             shelfLife: "",
+            preservationMethod: "",
             price: "",
             stockQuantity: "",
             reOrderPoint: "",
@@ -71,7 +72,8 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
                 packagingLength: selectedVariant.packagingLength.toString(),
                 packagingWidth: selectedVariant.packagingWidth.toString(),
                 packagingHeight: selectedVariant.packagingHeight.toString(),
-                shelfLife: selectExpiredDates.find((expiryDate) => expiryDate.name.toString() === selectedVariant.shelfLife)?.id.toString(),
+                shelfLife: selectedVariant.shelfLife.toString(),
+                preservationMethod: selectedVariant.preservationMethod,
                 price: selectedVariant.price.toString(),
                 stockQuantity: selectedVariant.stockQuantity.toString(),
                 reOrderPoint: selectedVariant.reOrderPoint.toString(),
@@ -104,7 +106,7 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
                 <DialogHeader>
                     <DialogTitle>{titleText}</DialogTitle>
                 </DialogHeader>
-                <ScrollArea className="w-full max-h-[600px]">
+                <ScrollArea className="w-full max-h-[600px] px-2 pr-2">
                     <FormValues form={form} onSubmit={onSubmit} classNameForm="min-w-fit p-1">
                         <div className="grid lg:grid-cols-3 gap-4 py-4">
                             <FormFileControl
@@ -212,6 +214,13 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
                                         disabled={form.formState.isSubmitting}
                                     />
                                 </div>
+                                <FormInputControl
+                                    form={form}
+                                    name="preservationMethod"
+                                    label="Cách bảo quản"
+                                    require
+                                    disabled={form.formState.isSubmitting}
+                                />
                             </div>
                         </div>
                         <DialogFooter>

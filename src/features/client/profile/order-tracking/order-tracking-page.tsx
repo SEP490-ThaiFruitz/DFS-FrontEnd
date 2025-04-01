@@ -43,7 +43,7 @@ interface Order {
 
 interface Delivery {
   fee: number,
-  estimateDate: string
+  estimateDate: string | null
 }
 
 interface StatusCounts {
@@ -67,7 +67,7 @@ export const OrderTrackingPage = () => {
     { value: "Pending", label: "Chờ xác nhận", icon: FileBox, quantity: orders?.value?.statusCounts["Pending"] },
     { value: "Packaging", label: "Đang đóng gói", icon: PackagePlus, quantity: orders?.value?.statusCounts["Packaging"] },
     { value: "Delivering", label: "Đang vận chuyển", icon: Truck, quantity: orders?.value?.statusCounts["Delivering"] },
-    { value: "Delivered", label: "Đã giao hàng", icon: PackageCheck },
+    { value: "Delivered, Received", label: "Đã giao hàng", icon: PackageCheck },
     { value: "Canceled", label: "Đã hủy", icon: PackageX },
   ];
 
@@ -75,7 +75,7 @@ export const OrderTrackingPage = () => {
     : orders?.value?.orders
 
   const orderFilter = activeStatus === "All" ? orderSearch :
-    orderSearch?.filter((order: Order) => order.status === activeStatus);
+    orderSearch?.filter((order: Order) => activeStatus.includes(order.status));
 
   const handleReceivedOrder = async (orderId: string) => {
     try {
@@ -146,19 +146,18 @@ export const OrderTrackingPage = () => {
               <div className="flex items-center justify-between h-14">
                 <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-3">
                   <span className="font-medium">Trạng thái thanh toán:</span>
-                  {order.paymentStatus === "Paid" ?
-                    <Badge variant="outline" className="w-fit bg-green-100 text-green-700 border-green-200 font-medium">
-                      Đã thanh toán
-                    </Badge> : <Badge variant="outline" className="w-fit bg-amber-100 text-amber-700 border-amber-200 font-medium">
-                      Chưa thanh toán
-                    </Badge>
-                  }
-                </div>
-                {order.paymentStatus === "Fail" && (
-                  <Badge variant="outline" className="w-fit bg-red-100 text-red-700 border-red-200 font-medium">
-                    Thanh toán thất bại
+                  <Badge
+                    variant="outline"
+                    className={`w-fit font-medium 
+                    ${order.paymentStatus === "Paid" ? "bg-green-100 text-green-700 border-green-200" : ""}
+                    ${order.paymentStatus === "Fail" ? "bg-red-100 text-red-700 border-red-200" : ""}
+                    ${order.paymentStatus !== "Paid" && order.paymentStatus !== "Fail" ? "bg-amber-100 text-amber-700 border-amber-200" : ""}`}
+                  >
+                    {order.paymentStatus === "Paid" ? "Đã thanh toán" :
+                      order.paymentStatus === "Fail" ? "Thanh toán thất bại" :
+                        "Chưa thanh toán"}
                   </Badge>
-                )}
+                </div>
                 {order.paymentStatus !== "Paid" && order.paymentMethod !== "ShipCode" && (
                   <Button onClick={() => setOrderIdPayment(order.orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
                     Thanh toán ngay

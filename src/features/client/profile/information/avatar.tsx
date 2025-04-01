@@ -14,10 +14,8 @@ function ProfileAvatar() {
     const imageRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<(File & { preview: string }) | null>(null);
 
-    const { data: user } = useQuery<Profile>({
-        queryKey: ["authUser"]
-    });
     const queryClient = useQueryClient();
+    const user = queryClient.getQueryData<Profile>(["authUser"]);
 
     const { mutate: updateImage, isPending } = useMutation({
         mutationFn: async () => {

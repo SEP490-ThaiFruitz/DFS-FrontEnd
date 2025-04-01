@@ -3,11 +3,12 @@
 import type { UseFormReturn } from "react-hook-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import type { ApiResponse } from "@/types/types"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import { Calendar, Droplet, Info, Package, Scale, ShieldCheck } from "lucide-react"
 import { formatVND } from "@/lib/format-currency"
+import ImagePreview from "@/components/custom/_custom-image/image-preview"
 
 interface ConfirmInformationProps {
     formProduct: UseFormReturn<any>
@@ -28,7 +29,9 @@ interface PackagingType {
 }
 
 const ConfirmInformation = ({ formProduct }: Readonly<ConfirmInformationProps>) => {
-    const { data: packageTypes } = useQuery<ApiResponse<PackagingType[]>>({ queryKey: ["packaging-types"] })
+    const queryClient = useQueryClient()
+    const packageTypes = queryClient.getQueryData<ApiResponse<PackagingType[]>>(["packaging-types"])
+    // const { data: packageTypes } = useQuery<ApiResponse<PackagingType[]>>({ queryKey: ["packaging-types"] })
     const { getValues } = formProduct
     const values = getValues()
     const nutritionSelect: NutritionSelect[] = [
@@ -136,7 +139,10 @@ const ConfirmInformation = ({ formProduct }: Readonly<ConfirmInformationProps>) 
                         <div className="space-y-2">
                             <h3 className="text-base font-medium text-muted-foreground">Thành phần</h3>
                             <div className="whitespace-pre-line text-base leading-relaxed p-3 rounded-md">
-                                {values.ingredients}
+                                {`${formProduct.getValues("ingredients")?.reduce((acc: string, option: any, index: number) => {
+                                    const separator = index === 0 ? '' : ', ';
+                                    return acc + separator + (Array.isArray(option.value) ? option.value.join(', ') : option.value);
+                                }, '') ?? ""}`}
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -187,7 +193,7 @@ const ConfirmInformation = ({ formProduct }: Readonly<ConfirmInformationProps>) 
                             <Card key={`${index + 1}`} className="overflow-hidden border shadow-sm">
                                 <div className="bg-muted/30 px-4 py-3 border-b">
                                     <h3 className="font-medium flex items-center gap-2">
-                                        Chứng chỉ {index + 1}
+                                        Biến thể {index + 1}
                                     </h3>
                                 </div>
 
@@ -208,11 +214,18 @@ const ConfirmInformation = ({ formProduct }: Readonly<ConfirmInformationProps>) 
                                             <h4 className="text-base font-medium text-muted-foreground">Loại bao bì</h4>
                                             <div className="font-medium"> {packageTypes?.value?.find((x) => x.id == variant.packagingTypeId)?.name}</div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <h4 className="text-base font-medium text-muted-foreground">Hạn sử dụng</h4>
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                <span>{variant.shelfLife}</span>
+                                        <div className="space-y-2 flex flex-col">
+                                            <div>
+                                                <h4 className="text-base font-medium text-muted-foreground">Hạn sử dụng</h4>
+                                                <div className="flex items-center gap-2">
+                                                    <span>{variant.shelfLife}</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-medium text-muted-foreground">Cách bảo quản</h4>
+                                                <div className="flex items-center gap-2">
+                                                    <span>{variant.preservationMethod}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -251,6 +264,10 @@ const ConfirmInformation = ({ formProduct }: Readonly<ConfirmInformationProps>) 
                                             <h4 className="text-xs font-medium text-muted-foreground">Chiều cao</h4>
                                             <div>{variant.packagingHeight}cm</div>
                                         </div>
+                                        <div className="space-y-1">
+                                            <h4 className="text-xs font-medium text-muted-foreground">Điểm cảnh báo</h4>
+                                            <div className="font-medium">{variant.reOrderPoint}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </Card>
@@ -276,37 +293,42 @@ const ConfirmInformation = ({ formProduct }: Readonly<ConfirmInformationProps>) 
                                     </h3>
                                 </div>
                                 <div className="p-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <h4 className="text-base font-medium text-muted-foreground">Tên</h4>
-                                            <div className="font-medium">{cert.name}</div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                                        <div className="mb-4">
+                                            <ImagePreview initialHeight={48} images={[cert.image]} className="object-contain" />
                                         </div>
-                                        <div className="space-y-1">
-                                            <h4 className="text-base font-medium text-muted-foreground">Tổ chức cấp</h4>
-                                            <div className="font-medium">{cert.agency}</div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <h4 className="text-base font-medium text-muted-foreground">Ngày cấp</h4>
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                <div>{formatTimeVietNam(cert.issueDate)}</div>
-                                            </div>
-                                        </div>
-                                        {cert.expiryDate && (
+                                        <div className="space-y-3">
                                             <div className="space-y-1">
-                                                <h4 className="text-base font-medium text-muted-foreground">Ngày hết hạn</h4>
+                                                <h4 className="text-base font-medium text-muted-foreground">Tên</h4>
+                                                <div className="font-medium">{cert.name}</div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h4 className="text-base font-medium text-muted-foreground">Tổ chức cấp</h4>
+                                                <div className="font-medium">{cert.agency}</div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h4 className="text-base font-medium text-muted-foreground">Ngày cấp</h4>
                                                 <div className="flex items-center gap-2">
                                                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                    <div>{formatTimeVietNam(cert.expiryDate)}</div>
+                                                    <div>{formatTimeVietNam(cert.issueDate)}</div>
                                                 </div>
                                             </div>
-                                        )}
-                                        {cert.details && (
-                                            <div className="space-y-1 md:col-span-2">
-                                                <h4 className="text-base font-medium text-muted-foreground">Chi tiết</h4>
-                                                <div className="whitespace-pre-line text-base bg-muted/20 p-3 rounded-md">{cert.details}</div>
-                                            </div>
-                                        )}
+                                            {cert.expiryDate && (
+                                                <div className="space-y-1">
+                                                    <h4 className="text-base font-medium text-muted-foreground">Ngày hết hạn</h4>
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                                                        <div>{formatTimeVietNam(cert.expiryDate)}</div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {cert.details && (
+                                                <div className="space-y-1 md:col-span-2">
+                                                    <h4 className="text-base font-medium text-muted-foreground">Chi tiết</h4>
+                                                    <div className="whitespace-pre-line text-base bg-muted/20 p-3 rounded-md">{cert.details}</div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </Card>

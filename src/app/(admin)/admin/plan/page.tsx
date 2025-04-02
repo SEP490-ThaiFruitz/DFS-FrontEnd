@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/global-components/data-table/data-table"
 import { Button } from "@/components/ui/button"
-import { Check, CirclePlus, Edit, Eye, Trash2 } from "lucide-react"
+import { Check, CirclePlus, Eye, Pencil, Trash2 } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -10,7 +10,7 @@ import Link from "next/link"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import type { ApiResponse, PageResult, Profile } from "@/types/types"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { API } from "@/actions/client/api-config"
 import DialogProductDetail from "./dialog-product-detail"
@@ -178,7 +178,7 @@ const PlanPage = () => {
                                 variant="outline"
                                 className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
                             >
-                                <Edit />
+                                <Pencil />
                             </Button>
                         </Link>
                         {statusValue === "Pending" || (user?.role === "Manager" || user?.role === "Administrator") && (

@@ -20,7 +20,10 @@ interface FancySelectProps {
   placeholder?: string,
   defaultValue?: Options,
   unit?: string,
-  classNameSelect?: string
+  classNameSelect?: string,
+  disabled?: boolean,
+  isNumber?: boolean,
+  isDecimal?: boolean,
 }
 
 export function FancySelect({
@@ -29,7 +32,10 @@ export function FancySelect({
   placeholder,
   defaultValue,
   unit,
-  classNameSelect
+  classNameSelect,
+  disabled,
+  isNumber = false,
+  isDecimal = false
 }: FancySelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -41,6 +47,9 @@ export function FancySelect({
       const input = inputRef.current;
       if (input) {
         if (e.key === "Delete" || e.key === "Backspace") {
+          if (inputValue === '') {
+            setOpen(true)
+          }
           setSelected(undefined)
           setInputValue("")
         }
@@ -66,7 +75,16 @@ export function FancySelect({
   }, [selected]);
 
   const handlerEnterNewSelect = () => {
-    const value = inputRef.current?.value;
+    const value = inputRef.current?.value.trim();
+    if (isNumber) {
+      const numericValue = Number(value);
+      if (isNaN(numericValue)) {
+        return;
+      }
+      if (isDecimal === false && !Number.isInteger(numericValue)) {
+        return
+      }
+    }
     if (value) {
       const newOption = {
         value: value,
@@ -75,8 +93,9 @@ export function FancySelect({
       if (options.some((selectedOption) => selectedOption.value === newOption.value)) {
         return;
       }
-      setSelected(newOption)
       options.push(newOption)
+      setSelected(newOption)
+      setOpen(false)
       setInputValue("");
     }
   };
@@ -88,9 +107,10 @@ export function FancySelect({
     >
       <div className="group rounded-md border border-input px-3 py-2.5 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex flex-wrap gap-1">
-          {selected?.value ? `${selected?.label} ${unit}` : ""}
+          {selected?.value ? `${selected?.label} ${unit ?? ""}` : ""}
           {/* Avoid having the "Search" Icon */}
           <CommandPrimitive.Input
+            disabled={disabled}
             ref={inputRef}
             value={inputValue}
             onValueChange={setInputValue}
@@ -101,7 +121,7 @@ export function FancySelect({
                 handlerEnterNewSelect();
               }
             }}
-            placeholder={placeholder ?? "Select options..."}
+            placeholder={selected?.value ? '' : placeholder ?? "Select options..."}
             className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           />
         </div>
@@ -114,7 +134,7 @@ export function FancySelect({
                 {filteredItems.map((item) => {
                   return (
                     <CommandItem
-                      key={item.label}
+                      key={item.value}
                       onMouseDown={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -126,7 +146,7 @@ export function FancySelect({
                       }}
                       className={"cursor-pointer"}
                     >
-                      {item.label} {unit}
+                      {item.label} {unit ?? ""}
                     </CommandItem>
                   );
                 })}

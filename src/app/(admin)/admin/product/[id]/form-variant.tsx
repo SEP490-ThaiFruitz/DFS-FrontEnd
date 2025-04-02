@@ -5,7 +5,7 @@ import type { PackagingType, ProductVariantDetail } from "./variant"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ProductVariantSafeTypes } from "@/zod-safe-types/product-safe-types"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import type { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized"
@@ -21,6 +21,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { API } from "@/actions/client/api-config"
 import { toast } from "sonner"
 import { useQueryClient } from "@tanstack/react-query"
+import { FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { FancySelect } from "@/components/custom/_custom_select/select"
+import { EXPIREDDATES_SELECT, PRESERVATION_SELECT, QUANTITY_SELECT } from "@/features/admin/admin-lib/admin-lib"
 
 interface FormVariantProps {
     isOpen: boolean
@@ -35,18 +38,6 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
     const titleText = productVariantDetail ? "Cập nhật biến thể" : "Thêm biến thể mới"
     const buttonText = productVariantDetail ? "Cập nhật" : "Thêm mới"
     const queryClient = useQueryClient();
-    const selectExpiredDates: SelectData[] = [
-        { id: 3, name: "3 ngày" },
-        { id: 7, name: "7 ngày" },
-        { id: 10, name: "10 ngày" },
-        { id: 15, name: "15 ngày" },
-        { id: 30, name: "1 tháng" },
-        { id: 20, name: "20 ngày" },
-        { id: 60, name: "2 tháng" },
-        { id: 90, name: "3 tháng" },
-        { id: 360, name: "1 năm" },
-        { id: 720, name: "2 năm" },
-    ];
 
     const form = useForm<z.infer<typeof ProductVariantSafeTypes>>({
         resolver: zodResolver(ProductVariantSafeTypes),
@@ -75,8 +66,8 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                 packagingLength: productVariantDetail.packagingLength.toString(),
                 packagingWidth: productVariantDetail.packagingWidth.toString(),
                 packagingHeight: productVariantDetail.packagingHeight.toString(),
-                shelfLife: productVariantDetail.shelfLife.toString(),
-                preservationMethod: productVariantDetail.productVariantDetail,
+                shelfLife: productVariantDetail.shelfLife,
+                preservationMethod: productVariantDetail.preservationMethod,
                 price: productVariantDetail.price.toString(),
                 stockQuantity: productVariantDetail.stockQuantity.toString(),
                 reOrderPoint: productVariantDetail.reOrderPoint.toString(),
@@ -92,10 +83,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
             Object.entries(values).forEach(([key, value]) => {
                 if (key === "image") {
                     formData.append("image", value[0])
-                } else if (key === "shelfLife") {
-                    const shelfLife = selectExpiredDates.find((expiryDate) => expiryDate.id.toString() === values.shelfLife)?.name
-                    formData.append("shelfLife", shelfLife ?? "")
-                }
+                } 
                 else if (key !== "image") {
                     formData.append(key, String(value))
                 }
@@ -111,9 +99,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                     toast.success("Cập nhật thành công")
                     queryClient.invalidateQueries({ queryKey: ["detail-mange", productId] })
                     handlerClose()
-                } else {
-                    toast.error("Cập nhật thất bại")
-                }
+                } 
             }
             else {
                 formData.append("productId", productId)
@@ -122,8 +108,6 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                     toast.success("Tạo thành công")
                     queryClient.invalidateQueries({ queryKey: ["detail-mange", productId] })
                     handlerClose()
-                } else {
-                    toast.error("Tạo thất bại")
                 }
             }
 
@@ -143,7 +127,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                 <DialogHeader>
                     <DialogTitle>{titleText}</DialogTitle>
                 </DialogHeader>
-                <ScrollArea className="w-full max-h-[600px]">
+                <ScrollArea className="w-full max-h-[600px] pr-2">
                     <FormValues form={form} onSubmit={onSubmit} classNameForm="min-w-fit p-1">
                         <div className="grid lg:grid-cols-3 gap-4 py-4">
                             <FormFileControl
@@ -157,76 +141,231 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                             />
                             <div className="lg:col-span-2 grid gap-4">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <FormNumberInputControl
-                                        form={form}
-                                        name="netWeight"
-                                        label="Khối lượng tịnh"
-                                        unit="g"
-                                        require
-                                        disabled={form.formState.isSubmitting}
-                                    />
-                                    <FormNumberInputControl
-                                        form={form}
-                                        name="grossWeight"
-                                        label="Khối lượng tổng"
-                                        unit="g"
-                                        require
-                                        disabled={form.formState.isSubmitting}
-                                    />
+                                    <div>
+                                        <Controller
+                                            name="netWeight"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Khối lượng tịnh
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn khối lượng tịnh hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("netWeight"),
+                                                            value: form.getValues("netWeight")
+                                                        }}
+                                                        unit="g"
+                                                        isNumber
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Controller
+                                            name="grossWeight"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Khối lượng tổng
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn khối lượng tổng hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("grossWeight"),
+                                                            value: form.getValues("grossWeight")
+                                                        }}
+                                                        unit="g"
+                                                        isNumber
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-4">
-                                    <FormNumberInputControl
-                                        form={form}
-                                        name="packagingLength"
-                                        label="Chiều dài"
-                                        unit="cm"
-                                        require
-                                        disabled={form.formState.isSubmitting}
-                                    />
-                                    <FormNumberInputControl
-                                        form={form}
-                                        name="packagingWidth"
-                                        label="Chiều rộng"
-                                        unit="cm"
-                                        require
-                                        disabled={form.formState.isSubmitting}
-                                    />
-                                    <FormNumberInputControl
-                                        form={form}
-                                        name="packagingHeight"
-                                        label="Chiều cao"
-                                        unit="cm"
-                                        require
-                                        disabled={form.formState.isSubmitting}
+                                    <div>
+                                        <Controller
+                                            name="packagingLength"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Chiều dài
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn chiều dài hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("packagingLength"),
+                                                            value: form.getValues("packagingLength")
+                                                        }}
+                                                        unit="cm"
+                                                        isNumber
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Controller
+                                            name="packagingWidth"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Chiều rộng
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn chiều rộng hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("packagingWidth"),
+                                                            value: form.getValues("packagingWidth")
+                                                        }}
+                                                        unit="cm"
+                                                        isNumber
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Controller
+                                            name="packagingHeight"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Chiều cao
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn chiều cao hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("packagingHeight"),
+                                                            value: form.getValues("packagingHeight")
+                                                        }}
+                                                        unit="cm"
+                                                        isNumber
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <Controller
+                                        name="shelfLife"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <FormItem className="pt-1">
+                                                <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                    Hạn sử dụng
+                                                </FormLabel>
+                                                <FancySelect
+                                                    placeholder='Chọn hạn sử dụng hoặc nhập mới'
+                                                    options={EXPIREDDATES_SELECT}
+                                                    onChangeValue={(selectedValues: any) => {
+                                                        field.onChange(selectedValues.value)
+                                                    }}
+                                                    defaultValue={{
+                                                        label: form.getValues("shelfLife"),
+                                                        value: form.getValues("shelfLife")
+                                                    }}
+                                                    disabled={form.formState.isSubmitting}
+                                                />
+                                                <FormMessage>{fieldState.error?.message}</FormMessage>
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
 
-                                <FormSelectControl
-                                    form={form}
-                                    name="shelfLife"
-                                    label="Hạn sử dụng"
-                                    require
-                                    disabled={form.formState.isSubmitting}
-                                    items={selectExpiredDates}
-                                />
-
                                 <div className="grid grid-cols-2 gap-4">
-                                    <FormNumberInputControl
-                                        form={form}
-                                        name="stockQuantity"
-                                        label="Số lượng"
-                                        require
-                                        disabled={form.formState.isSubmitting}
-
-                                    />
-                                    <FormNumberInputControl
-                                        form={form}
-                                        name="reOrderPoint"
-                                        label="Số lượng tối thiểu cảnh báo"
-                                        require
-                                        disabled={form.formState.isSubmitting}
-                                    />
+                                    <div>
+                                        <Controller
+                                            name="stockQuantity"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Số lượng
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn số lượng hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("stockQuantity"),
+                                                            value: form.getValues("stockQuantity")
+                                                        }}
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Controller
+                                            name="reOrderPoint"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Số lượng tối thiểu cảnh báo
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn số lượng hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("stockQuantity"),
+                                                            value: form.getValues("stockQuantity")
+                                                        }}
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <FormSelectControl
@@ -249,13 +388,32 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                         disabled={form.formState.isSubmitting}
                                     />
                                 </div>
-                                <FormInputControl
-                                    form={form}
-                                    name="preservationMethod"
-                                    label="Cách bảo quản"
-                                    require
-                                    disabled={form.formState.isSubmitting}
-                                />
+                                <div>
+                                    <Controller
+                                        name="preservationMethod"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <FormItem className="pt-1">
+                                                <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                    Cách bảo quản
+                                                </FormLabel>
+                                                <FancySelect
+                                                    placeholder='Chọn cách bảo quản hoặc nhập mới'
+                                                    options={PRESERVATION_SELECT}
+                                                    onChangeValue={(selectedValues: any) => {
+                                                        field.onChange(selectedValues.value)
+                                                    }}
+                                                    defaultValue={{
+                                                        label: form.getValues("preservationMethod"),
+                                                        value: form.getValues("preservationMethod")
+                                                    }}
+                                                    disabled={form.formState.isSubmitting}
+                                                />
+                                                <FormMessage>{fieldState.error?.message}</FormMessage>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
                         </div>
                         <DialogFooter>

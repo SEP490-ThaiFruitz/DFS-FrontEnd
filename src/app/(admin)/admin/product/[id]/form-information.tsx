@@ -24,6 +24,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 import { FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { FancyMultiSelect } from '@/components/custom/_custom_select/multi-select'
+import { FancySelect } from '@/components/custom/_custom_select/select'
+import { ORIGINS_SELECT, QUANTITY_SELECT, TAGS_SELECT } from '@/features/admin/admin-lib/admin-lib'
 
 export interface CategorySelect extends SelectData {
     isChose: boolean;
@@ -149,21 +151,61 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                         label="Tên sản phẩm"
                         require
                     />
-                    <FormInputControl
-                        form={form}
-                        name="origin"
-                        disabled={form.formState.isSubmitting}
-                        label="Nguồn gốc"
-                        require
-                    />
-                    <FormNumberInputControl
-                        form={form}
-                        name="moistureContent"
-                        disabled={form.formState.isSubmitting}
-                        label="Độ ẩm"
-                        unit='%'
-                        require
-                    />
+                    <div>
+                        <Controller
+                            name="origin"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <FormItem className="pt-1">
+                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                        Nguồn gốc
+                                    </FormLabel>
+                                    <FancySelect
+                                        placeholder='Chọn nguồn gốc hoặc nhập mới'
+                                        options={ORIGINS_SELECT}
+                                        onChangeValue={(selectedValues: any) => {
+                                            field.onChange(selectedValues.value)
+                                        }}
+                                        defaultValue={{
+                                            label: form.getValues("origin"),
+                                            value: form.getValues("origin")
+                                        }}
+                                        disabled={form.formState.isSubmitting}
+                                    />
+                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div>
+                        <Controller
+                            name="moistureContent"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <FormItem className="pt-1">
+                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                        Độ ẩm
+                                    </FormLabel>
+                                    <FancySelect
+                                        placeholder='Chọn độ ẩm hoặc nhập mới'
+                                        options={QUANTITY_SELECT}
+                                        onChangeValue={(selectedValues: any) => {
+                                            field.onChange(selectedValues.value)
+                                        }}
+                                        defaultValue={{
+                                            label: form.getValues("moistureContent"),
+                                            value: form.getValues("moistureContent")
+                                        }}
+                                        unit='%'
+                                        disabled={form.formState.isSubmitting}
+                                        isNumber
+                                        isDecimal
+                                    />
+                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                     <FormSelectControl
                         form={form}
                         name="dryingMethod"
@@ -184,7 +226,7 @@ const FormInformation = ({ product, onClose }: Readonly<FormInformationProps>) =
                                 </FormLabel>
                                 <FancyMultiSelect
                                     placeholder='Chọn tag sản phẩm hoặc nhập mới'
-                                    options={Options}
+                                    options={TAGS_SELECT}
                                     onChangeValue={(selectedValues) => field.onChange(selectedValues)}
                                     defaultValues={field.value}
                                 />

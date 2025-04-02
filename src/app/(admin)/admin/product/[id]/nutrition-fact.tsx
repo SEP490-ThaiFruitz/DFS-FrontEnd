@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { CardContent } from '@/components/ui/card'
 import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { NUTRITIONS_SELECT, QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
 import { formatNumberWithUnit } from '@/lib/format-currency';
 import { FromNutrionFact } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -110,23 +111,6 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
         nutritionMutation(values);
     }
 
-    const nutritionSelect: NutritionSelect[] = [
-        { Id: 1, Name: "Tổng chất béo", Unit: "g" },
-        { Id: 2, Name: "Chất béo bão hòa", Unit: "g" },
-        { Id: 3, Name: "Chất béo chuyển hóa", Unit: "g" },
-        { Id: 4, Name: "Cholesterol", Unit: "mg" },
-        { Id: 5, Name: "Natri", Unit: "mg" },
-        { Id: 6, Name: "Tổng carbohydrate", Unit: "g" },
-        { Id: 7, Name: "Chất xơ", Unit: "g" },
-        { Id: 8, Name: "Tổng đường", Unit: "g" },
-        { Id: 9, Name: "Đường bổ sung", Unit: "g" },
-        { Id: 10, Name: "Chất đạm", Unit: "g" },
-    ];
-
-    const selectDataList: { label: string, value: string }[] = Array.from({ length: 10 }, (_, index) => ({
-        label: `${index * 10}`,
-        value: `${index * 10}`
-    }));
 
     const handleCancel = () => {
         setEditingId(null)
@@ -135,7 +119,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
 
     const handleUnit = () => {
         const nutritionId: string = form.getValues("nutrientId");
-        return nutritionSelect.find((nutrition: NutritionSelect) => nutrition.Id.toString() === nutritionId)?.Unit
+        return NUTRITIONS_SELECT.find((nutrition: NutritionSelect) => nutrition.Id.toString() === nutritionId)?.Unit
     }
 
     const handleAddNew = () => {
@@ -177,7 +161,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                             form={form}
                                             name="nutrientId"
                                             defaultValue={fact?.nutrient?.id?.toString()}
-                                            items={nutritionSelect
+                                            items={NUTRITIONS_SELECT
                                                 .filter(item =>
                                                     item.Id === fact?.nutrient?.id ||
                                                     !nutritionFacts.some(fact => fact.nutrient?.id === item.Id)
@@ -197,7 +181,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                                     <FancySelect
                                                         placeholder='Chọn hoặc nhập số lượng mới'
                                                         classNameSelect='!max-h-32'
-                                                        options={selectDataList}
+                                                        options={QUANTITY_SELECT}
                                                         onChangeValue={(selectedValues: any) => {
                                                             field.onChange(selectedValues?.value)
                                                         }}
@@ -206,6 +190,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                                             label: String(form.getValues("amount") ?? ""),
                                                             value: String(form.getValues("amount") ?? "")
                                                         }}
+                                                        isNumber
                                                     />
                                                     <FormMessage>{fieldState.error?.message}</FormMessage>
                                                 </FormItem>

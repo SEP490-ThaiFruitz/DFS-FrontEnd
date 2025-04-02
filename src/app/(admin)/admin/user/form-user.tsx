@@ -51,7 +51,7 @@ const FormUser = ({
         mutationFn: async (values: any) => {
             try {
                 const { id, confirmPassword, role, ...resetValue } = values
-                const response = user ? await updateUser({ userId: id, ...resetValue }) : await createUser({role, ...resetValue})
+                const response = user ? await updateUser({ userId: id, role, ...resetValue }) : await createUser({ role, ...resetValue })
                 if (!response?.isSuccess) {
                     if (response?.status === 404) {
                         throw new Error("Ko tìm thấy tài khoản")

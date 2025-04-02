@@ -1,6 +1,6 @@
 "use client"
 
-import { CirclePlus, Edit, Trash2, } from 'lucide-react'
+import { CirclePlus, Edit, Pencil, Trash2, } from 'lucide-react'
 import React, { useState } from 'react'
 import { DataTable } from '@/components/global-components/data-table/data-table';
 import { Button } from '@/components/ui/button';
@@ -89,7 +89,7 @@ const EventPage = () => {
                         }}
                         className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
                     >
-                        <Edit />
+                        <Pencil />
                     </Button>
                     <Button
                         variant="outline"

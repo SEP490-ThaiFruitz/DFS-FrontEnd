@@ -3,15 +3,13 @@
 import { updateProductNutrition } from '@/actions/product'
 import { FancyMultiSelect } from '@/components/custom/_custom_select/multi-select'
 import { FancySelect } from '@/components/custom/_custom_select/select'
-import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
-import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
 import { FormValues } from '@/components/global-components/form/form-values'
 import { Spinner } from '@/components/global-components/spinner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CardHeader, CardTitle } from '@/components/ui/card'
 import { FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { formatNumberWithUnit } from '@/lib/format-currency'
+import { INGREDIENTS_SELECT, QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib'
 import { FromNutritionSafeTypes } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -30,88 +28,6 @@ interface NutriontionHeaderProps {
 
 const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly<NutriontionHeaderProps>) => {
     const [isHeaderEditing, setIsHeaderEditing] = useState(false)
-    const ingredientsSelect = [
-        {
-            value: "Đường",
-            label: "Đường",
-        },
-        {
-            value: "Muối",
-            label: "Muối",
-        },
-        {
-            value: "Chất bảo quản (E220 - SO2)",
-            label: "Chất bảo quản (E220 - SO2)",
-        },
-        {
-            value: "Hương tự nhiên",
-            label: "Hương tự nhiên",
-        },
-        {
-            value: "Màu thực phẩm",
-            label: "Màu thực phẩm",
-        },
-        {
-            value: "Chất làm dẻo",
-            label: "Chất làm dẻo",
-        },
-        {
-            value: "Chất tạo ngọt",
-            label: "Chất tạo ngọt",
-        },
-        {
-            value: "Chất chống oxy hóa",
-            label: "Chất chống oxy hóa",
-        },
-        {
-            value: "Chất chống mốc",
-            label: "Chất chống mốc",
-        },
-        {
-            value: "Hương liệu tổng hợp",
-            label: "Hương liệu tổng hợp",
-        },
-        {
-            value: "Tinh bột",
-            label: "Tinh bột",
-        },
-        {
-            value: "Chất tạo xốp",
-            label: "Chất tạo xốp",
-        },
-        {
-            value: "Nước",
-            label: "Nước",
-        },
-        {
-            value: "Chất làm mượt",
-            label: "Chất làm mượt",
-        },
-        {
-            value: "Chất nhũ hóa",
-            label: "Chất nhũ hóa",
-        },
-        {
-            value: "Chất tạo kết dính",
-            label: "Chất tạo kết dính",
-        },
-        {
-            value: "Chất bảo vệ",
-            label: "Chất bảo vệ",
-        },
-        {
-            value: "Giấm",
-            label: "Giấm",
-        },
-        {
-            value: "Gia vị",
-            label: "Gia vị",
-        },
-        {
-            value: "Hạt giống",
-            label: "Hạt giống",
-        }
-    ];
     const queryClient = useQueryClient();
 
     const handleHeaderEdit = () => {
@@ -159,10 +75,6 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
             toast.error(error?.message)
         }
     })
-    const selectDataList: { label: string, value: string }[] = Array.from({ length: 10 }, (_, index) => ({
-        label: `${index * 10}`,
-        value: `${index * 10}`
-    }));
 
     return (
         <CardHeader className='border-b-2'>
@@ -180,50 +92,55 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
             </div>
             {isHeaderEditing ? (
                 <FormValues form={form} onSubmit={onSubmit}>
-                    <Controller
-                        name="servingSize"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                            <FormItem className="pt-8">
-                                <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
-                                    Khối lượng khẩu phần
-                                </FormLabel>
-                                <FancySelect
-                                    placeholder='Chọn khối lượng khẩu phần hoặc nhập mới'
-                                    options={selectDataList}
-                                    onChangeValue={(selectedValues: any) => {
-                                        field.onChange(selectedValues.value)
-                                    }}
-                                    defaultValue={{
-                                        label: form.getValues("servingSize"),
-                                        value: form.getValues("servingSize")
-                                    }}
-                                    unit='g'
-                                />
-                                <FormMessage>{fieldState.error?.message}</FormMessage>
-                            </FormItem>
-                        )}
-                    />
-                    <Controller
-                        name="ingredients"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                            <FormItem className="pt-8">
-                                <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
-                                    Thành phần
-                                </FormLabel>
-                                <FancyMultiSelect
-                                    placeholder='Chọn thành phần sản phẩm hoặc nhập mới'
-                                    options={ingredientsSelect}
-                                    onChangeValue={(selectedValues) => {
-                                        field.onChange(selectedValues)
-                                    }}
-                                    defaultValues={form.getValues("ingredients")}
-                                />
-                                <FormMessage>{fieldState.error?.message}</FormMessage>
-                            </FormItem>
-                        )}
-                    />
+                    <div>
+                        <Controller
+                            name="servingSize"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <FormItem className="pt-8">
+                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                        Khối lượng khẩu phần
+                                    </FormLabel>
+                                    <FancySelect
+                                        placeholder='Chọn khối lượng khẩu phần hoặc nhập mới'
+                                        options={QUANTITY_SELECT}
+                                        onChangeValue={(selectedValues: any) => {
+                                            field.onChange(selectedValues.value)
+                                        }}
+                                        defaultValue={{
+                                            label: form.getValues("servingSize"),
+                                            value: form.getValues("servingSize")
+                                        }}
+                                        unit='g'
+                                        isNumber
+                                    />
+                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div>
+                        <Controller
+                            name="ingredients"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <FormItem>
+                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                        Thành phần
+                                    </FormLabel>
+                                    <FancyMultiSelect
+                                        placeholder='Chọn thành phần sản phẩm hoặc nhập mới'
+                                        options={INGREDIENTS_SELECT}
+                                        onChangeValue={(selectedValues) => {
+                                            field.onChange(selectedValues)
+                                        }}
+                                        defaultValues={form.getValues("ingredients")}
+                                    />
+                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
 
                     <div className="flex gap-2">
                         <Button

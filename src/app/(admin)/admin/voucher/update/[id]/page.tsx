@@ -12,7 +12,7 @@ import { UpdateVoucherSafeTypes } from '@/zod-safe-types/voucher-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Voucher } from '../../page';
@@ -20,6 +20,10 @@ import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 import { updateVoucher } from '@/actions/voucher';
 import { useEffect } from 'react';
 import { FormDateControl } from '@/components/global-components/form/form-date-control';
+import { QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
+import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FancySelect } from '@/components/custom/_custom_select/select';
+import { format } from 'date-fns';
 
 function UpdateVoucherPage() {
   const { id } = useParams();
@@ -72,9 +76,9 @@ function UpdateVoucherPage() {
         code: voucher.value.code?.toString() ?? '',
         discountType: voucher.value.discountType === 'Amount' ? 'Amount' : 'Percentage',
         moneyDiscount:
-          voucher.value.discountType === 'Amount' ? voucher.value.value?.toString() ?? '' : undefined,
+          voucher.value.discountType === 'Amount' ? voucher.value.value?.toString() ?? '' : '',
         percentDiscount:
-          voucher.value.discountType === 'Percentage' ? voucher.value.value?.toString() ?? '' : undefined,
+          voucher.value.discountType === 'Percentage' ? voucher.value.value?.toString() ?? '' : '',
         startDate: voucher.value.startDate
           ? new Date(voucher.value.startDate)
           : undefined,
@@ -100,8 +104,8 @@ function UpdateVoucherPage() {
       formData.append("value", values.percentDiscount)
     }
     formData.append("discountType", values.discountType)
-    formData.append("startDate", values.startDate.toLocaleDateString())
-    formData.append("endDate", values.endDate.toLocaleDateString())
+    formData.append("startDate", format(values.startDate, 'yyyy-MM-dd'));
+    formData.append("endDate", format(values.endDate, 'yyyy-MM-dd'));
     if (values.image) {
       formData.append("image", values.image[0])
     }
@@ -111,6 +115,14 @@ function UpdateVoucherPage() {
 
     updateVoucherMutation(formData)
   };
+
+    useEffect(() => {
+      if (form.watch("discountType") === 'Amount') {
+        form.setValue("percentDiscount", undefined); 
+      } else {
+        form.setValue("moneyDiscount", undefined); 
+      }
+    }, [form.watch("discountType")]);
 
   return (
     <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
@@ -147,21 +159,41 @@ function UpdateVoucherPage() {
                 label="Chọn loại giảm giá"
                 require
               />
-              {form.watch("discountType") && form.getValues("discountType") !== undefined ? form.getValues("discountType") === 'Amount' ? <FormNumberInputControl
+              {form.watch("discountType") === 'Amount' ? <FormNumberInputControl
                 form={form}
                 name="moneyDiscount"
                 isMoney
                 disabled={isPending}
                 label="Số tiền giảm"
                 require
-              /> : <FormNumberInputControl
-                form={form}
-                unit='%'
-                name="percentDiscount"
-                disabled={isPending}
-                label="Số phần trăm giảm"
-                require
-              /> : null}
+              /> :
+                <div>
+                  <Controller
+                    name="percentDiscount"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <FormItem className="pt-3">
+                        <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                          Số phần trăm giảm
+                        </FormLabel>
+                        <FancySelect
+                          placeholder='Số phần trăm giảm hoặc nhập mới'
+                          options={QUANTITY_SELECT}
+                          onChangeValue={(selectedValues: any) => {
+                            field.onChange(selectedValues.value)
+                          }}
+                          defaultValue={{
+                            label: form.getValues("percentDiscount") ?? '',
+                            value: form.getValues("percentDiscount") ?? ''
+                          }}
+                          isNumber
+                          unit='%'
+                        />
+                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                </div>}
               <div className='grid sm:grid-cols-2 gap-5'>
                 <FormDateControl
                   minDate={new Date(new Date().setHours(0, 0, 0, 0))}
@@ -195,13 +227,34 @@ function UpdateVoucherPage() {
                   label="Giảm tối đa"
                   require
                 />
-                <FormNumberInputControl
-                  form={form}
-                  name="quantity"
-                  disabled={isPending}
-                  label="Số lượng"
-                  require
-                />
+                {form.watch("quantity") && (
+                  <div>
+                    <Controller
+                      name="quantity"
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <FormItem className="pt-3">
+                          <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                            Số lượng
+                          </FormLabel>
+                          <FancySelect
+                            placeholder='Số lượng hoặc nhập mới'
+                            options={QUANTITY_SELECT}
+                            onChangeValue={(selectedValues: any) => {
+                              field.onChange(selectedValues.value)
+                            }}
+                            defaultValue={{
+                              label: form.getValues("quantity"),
+                              value: form.getValues("quantity")
+                            }}
+                            isNumber
+                          />
+                          <FormMessage>{fieldState.error?.message}</FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
               </div>
             </div>
             <div className="space-y-6">

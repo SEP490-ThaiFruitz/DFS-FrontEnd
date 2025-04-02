@@ -203,11 +203,11 @@ const Information = ({ promotion }: Readonly<InformationProps>) => {
                                 <div className="flex items-center space-x-2">
                                     <span className="font-bold">Trạng thái:</span>
                                     {promotion?.isDeleted ? (
-                                        <span className="py-2 p-1 w-fit bg-red-300 text-red-600 rounded-md">
+                                        <span className="bg-red-50 text-red-600 w-fit py-1 px-2 rounded-lg">
                                             Đã ẩn
                                         </span>
                                     ) : (
-                                        <span className="py-2 p-1 w-fit bg-green-300 text-green-600 rounded-md">
+                                        <span className="bg-green-50 text-green-600 w-fit py-1 px-2 rounded-lg">
                                             Hoạt động
                                         </span>
                                     )}

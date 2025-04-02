@@ -17,6 +17,7 @@ import FormInformation from "./form-information"
 import ConfirmInformation from "./confirm-information"
 import { toast } from "sonner"
 import { API } from "@/actions/client/api-config"
+import { format } from "date-fns"
 
 
 const CreatePromotion = () => {
@@ -41,8 +42,8 @@ const CreatePromotion = () => {
         const formData = new FormData();
         formData.append("name", values.name);
         formData.append("percentage", values.percentage);
-        formData.append("startDate", values.startDate.toISOString());
-        formData.append("endDate", values.endDate.toISOString());
+        formData.append("startDate", format(values.startDate, 'yyyy-MM-dd'));
+        formData.append("endDate", format(values.endDate, 'yyyy-MM-dd'));
         formData.append("description", values.description);
         formData.append("image", values.image[0]);
 

@@ -117,6 +117,7 @@ const CreateProductPage = () => {
           tagNames: [],
           ingredients: []
         });
+        form.clearErrors()
         setCurrentStep(1)
       } 
     } catch (error) {

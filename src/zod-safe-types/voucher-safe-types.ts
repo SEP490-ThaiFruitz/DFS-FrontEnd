@@ -35,7 +35,7 @@ export const CreateVoucherSafeTypes = z.object({
   maximumDiscount: z.string().refine((value) => !isNaN(parseFloat(value)) && parseFloat(value) >= 0, {
     message: 'Giảm giá tối đa phải là một số hợp lệ và lớn hơn 0',
   }),
-  quantity: z.string().refine((value) => !isNaN(parseFloat(value)) && parseFloat(value) >= 0, {
+  quantity: z.string().refine((value) => !isNaN(parseFloat(value)) && parseFloat(value) > 0, {
     message: 'Số lượng phải là một số hợp lệ và lớn hơn 0',
   })
 }).superRefine((data, ctx) => {
@@ -101,7 +101,7 @@ export const UpdateVoucherSafeTypes = z.object({
   maximumDiscount: z.string().refine((value) => !isNaN(parseFloat(value)) && parseFloat(value) >= 0, {
     message: 'Giảm giá tối đa phải là một số hợp lệ và lớn hơn 0',
   }),
-  quantity: z.string().refine((value) => !isNaN(parseFloat(value)) && parseFloat(value) >= 0, {
+  quantity: z.string().refine((value) => !isNaN(parseFloat(value)) && parseFloat(value) > 0, {
     message: 'Số lượng phải là một số hợp lệ và lớn hơn 0',
   })
 }).superRefine((data, ctx) => {

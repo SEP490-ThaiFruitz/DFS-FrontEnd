@@ -33,9 +33,15 @@ const ConfirmInformation = ({ formCombo }: Readonly<ConfirmInformationProps>) =>
                             <div className="text-base font-medium">{formValues.name || "—"}</div>
                         </div>
                         <div>
-                            <div className="text-sm font-medium text-gray-500">Số lượng</div>
+                            <div className="text-sm font-medium text-gray-500">Sức chứa</div>
                             <div className="text-base font-medium">
                                 {formValues.capacity}
+                            </div>
+                        </div>
+                        <div>
+                            <div className="text-sm font-medium text-gray-500">Số lượng</div>
+                            <div className="text-base font-medium">
+                                {formValues.quantity}
                             </div>
                         </div>
                         <div>

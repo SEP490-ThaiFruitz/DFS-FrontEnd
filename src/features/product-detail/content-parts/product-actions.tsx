@@ -10,6 +10,7 @@ import { vietnameseDate } from "@/utils/date";
 import { useCartStore } from "@/hooks/use-cart-store";
 import { ProductVariantTypes } from "../product-detail.types";
 import { formatVND } from "@/lib/format-currency";
+import { useFromStore } from "@/hooks/use-from-store";
 
 interface ProductActionsProps {
   selectedVariant: ProductVariantTypes;
@@ -33,6 +34,13 @@ export const ProductActions = memo(
     formatPrice,
     calculateDiscountedPrice,
   }: ProductActionsProps) => {
+    const cart = useFromStore(useCartStore, (state) => state.orders);
+
+    const findCart = cart?.find(
+      (item) =>
+        item.variant.productVariantId === selectedVariant.productVariantId
+    );
+
     return (
       <div className="space-y-4">
         <div className="bg-gray-50 p-5 rounded-lg space-y-4 cardStyle">
@@ -76,12 +84,15 @@ export const ProductActions = memo(
                 <span className="sr-only">Giảm</span>
                 <Minus className="h-4 w-4" />
               </Button>
-              <span className="w-12 text-center">{quantity}</span>
+              <span className="w-12 text-center">{findCart?.quantitySold}</span>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => handleQuantityChange(1)}
-                disabled={quantity >= (selectedVariant?.stockQuantity ?? 0)}
+                disabled={
+                  (findCart?.quantitySold as number) >=
+                  (selectedVariant?.stockQuantity ?? 0)
+                }
                 className="h-9 w-9 rounded-none"
               >
                 <span className="sr-only">Tăng</span>
@@ -119,15 +130,17 @@ export const ProductActions = memo(
               {selectedVariant?.promotion?.price ? (
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs line-through text-slate-700">
-                    {formatVND(selectedVariant.price * quantity)}
+                    {formatVND(selectedVariant?.price * quantity)}
                   </span>
                   <span className="text-lg font-bold text-sky-500/70 px-1.5 py-0.5 rounded">
-                    {formatVND(selectedVariant.promotion.price * quantity)}
+                    {formatVND(
+                      (selectedVariant.promotion?.price ?? 0) * quantity
+                    )}
                   </span>
                 </div>
               ) : (
                 <span className="text-lg font-bold text-sky-500/70">
-                  {formatVND(selectedVariant.price * quantity)}
+                  {formatVND(selectedVariant?.price * quantity)}
                 </span>
               )}
             </div>

@@ -1,4 +1,4 @@
-import { Annoyed } from "lucide-react";
+import { Annoyed, LucideIcon } from "lucide-react";
 import { EmptyState } from "./empty-state";
 
 interface NotDataProps {
@@ -10,7 +10,7 @@ interface NotDataProps {
   };
 
   className?: string;
-  icons?: React.ReactNode[];
+  icons?: LucideIcon[];
 }
 
 export const NotData = ({
@@ -22,7 +22,7 @@ export const NotData = ({
 }: NotDataProps) => {
   return (
     <EmptyState
-      icons={icons ? icons : [Annoyed]}
+      icons={icons.length > 0 ? icons : [Annoyed]}
       title={title}
       description={description}
       action={action}

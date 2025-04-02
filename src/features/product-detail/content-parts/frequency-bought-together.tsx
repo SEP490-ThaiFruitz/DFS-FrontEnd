@@ -44,7 +44,7 @@ FrequentlyBoughtTogetherProps) {
         <div className="flex flex-col items-center">
           <div className="relative w-40 h-40 mb-3">
             <Image
-              src={selectedVariant.image || "/placeholder.svg"}
+              src={selectedVariant?.image || "/placeholder.svg"}
               alt={product.name}
               fill
               className="object-contain"
@@ -70,7 +70,7 @@ FrequentlyBoughtTogetherProps) {
           <div key={item.id} className="flex flex-col items-center">
             <div className="relative w-40 h-40 mb-3">
               <Image
-                src={item.image || "/placeholder.svg"}
+                src={item?.image || "/images/second-background.png"}
                 alt={item.name}
                 fill
                 className="object-contain"

@@ -312,7 +312,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => {
+                onClick={(e) => {
                   cartActions.addOrder(omit(ordersData, "quantityOrder"));
                   toast.success("Thêm số lượng Combo trong giỏ hàng");
                 }}
@@ -324,7 +324,9 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
             </div>
 
             <StatusButton
-              handleAddToCart={() =>
+              handleAddToCart={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 cartActions.addOrder({
                   id: product.id,
                   categories: product.categories,
@@ -351,8 +353,8 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
 
                   type: product.type,
                   quantityOrder: quantity,
-                })
-              }
+                });
+              }}
               className="h-8 flex-1 min-w-0 text-xs w-full sm:w-auto"
             />
           </div>

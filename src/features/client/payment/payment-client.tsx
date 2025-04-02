@@ -52,7 +52,11 @@ import { useCartStore } from "@/hooks/use-cart-store";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { omit } from "lodash";
 import { API } from "@/app/key/url";
-import { ApiResponse } from "@/types/types";
+import { ApiResponse, PageResult } from "@/types/types";
+import { AddressTypes } from "@/types/address.types";
+import { USER_KEY } from "@/app/key/user-key";
+import { interactApiClient } from "@/actions/client/interact-api-client";
+import { useQuery } from "@tanstack/react-query";
 
 interface Product {
   id: number;
@@ -73,8 +77,6 @@ interface DeliveryMethodType {
 
 function PaymentClientPage() {
   const [promoCode, setPromoCode] = useState("");
-  const [selectedDelivery, setSelectedDelivery] = useState<string>("standard");
-  const [selectedPayment, setSelectedPayment] = useState<string>("card");
 
   const deliveryMethods: DeliveryMethodType[] = [
     {
@@ -86,17 +88,6 @@ function PaymentClientPage() {
         "Lưu ý giá có thể thay đổi phụ thuộc vào khu vực và khối lượng đơn hàng",
     },
   ];
-
-  // const subtotal = cartItems.reduce(
-  //   (sum, item) => sum + item.price * item.quantity,
-  //   0
-  // );
-
-  const deliveryPrice =
-    deliveryMethods.find((m) => m.id === selectedDelivery)?.price || 0;
-  // const total = subtotal + deliveryPrice - discount;
-
-  const { user } = useAuth();
 
   const router = useRouter();
 
@@ -111,19 +102,17 @@ function PaymentClientPage() {
     },
   });
 
-  const {
-    isLoading,
-    data: productCart,
-    error,
-  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", [
-    CART_KEY.CARTS,
-  ]);
+  const addresses = useFetch<ApiResponse<PageResult<AddressTypes>>>(
+    "/Addresses",
+    [USER_KEY.ADDRESS]
+  );
 
-  // const cart = useCart
-
-  const { addresses } = useData();
-
-  const { value } = useAuth();
+  // this work
+  // const test2 = useQuery({
+  //   queryKey: ["products"],
+  //   queryFn: () =>
+  //     interactApiClient.get<ApiResponse<PageResult<AddressTypes>>>("/products"),
+  // });
 
   const paymentMethods: { value: string; label: string }[] = [
     {
@@ -256,9 +245,6 @@ function PaymentClientPage() {
       setCalculating(false);
     }
   }, [cart, token, addressId]);
-
-  console.log(calculating);
-  console.log(shippingFee);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -401,7 +387,7 @@ function PaymentClientPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShoppingCart className="w-5 h-5" />
-                  Order Summary
+                  Tổng quan đơn hàng của bạn
                 </CardTitle>
               </CardHeader>
               <CardContent>

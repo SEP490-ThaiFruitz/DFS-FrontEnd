@@ -15,16 +15,23 @@ export const formatDateFns = (date: Date) => {
   return format(new Date(date), "MMM d, yyyy");
 };
 
-export const vietnameseDate = (date: Date) => {
+export const vietnameseDate = (date: Date | string, isTime?: boolean) => {
+  const dateTrans = new Date(date);
+
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   };
-  const day = new Date(date).toLocaleDateString("vi-VN", options);
-  const time = new Date(date).toLocaleTimeString("vi-VN");
-  return `${day} `;
+  const day = new Date(dateTrans).toLocaleDateString("vi-VN", options);
+  const time = new Date(dateTrans).toLocaleTimeString("vi-VN");
+
+  if (isTime) {
+    return `${day} ${time}`;
+  }
+
+  return `${day}`;
 };
 export const fillMissingDatesDynamics = <T>(
   data: T[],

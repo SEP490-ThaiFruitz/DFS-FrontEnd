@@ -51,8 +51,6 @@ export const ShoppingBagSheet = () => {
 
   const cartCondition = (cart?.length || 0) > 0;
 
-  console.log(cart);
-
   let total = 0;
 
   if (cart) {
@@ -122,55 +120,59 @@ export const ShoppingBagSheet = () => {
         <SheetHeader>
           <SheetTitle>
             <div className="text-center">
-              <Logo />
+              <Logo height={100} width={100} />
             </div>
           </SheetTitle>
-          <SheetDescription>
-            <div className="w-full overflow-hidden">
-              {cart?.length ? (
-                <div className="container mx-auto p-4 md:p-6 w-full">
-                  <>
-                    <h1 className="text-2xl font-semibold">
-                      Giỏ hàng ({cart?.length})
-                    </h1>
-                    <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px] ">
-                      {cart?.map((product) => (
-                        <ViewCardProductActions
-                          key={product.variant.productVariantId}
-                          // cartItemId=
-                          decreaseQuantity={(): void =>
-                            handleDecreaseQuantity(product)
-                          }
-                          increaseQuantity={(): void =>
-                            increaseQuantity(product)
-                          }
-                          removeFromCart={(): void => removeFromCart(product)}
-                          product={product}
-                          className="m-4"
-                        />
-                      ))}
-                    </ScrollArea>
-
-                    <div className=" mt-14 w-full">
-                      <CartSummary cart={cart as CartData[]} close={close} />
-                    </div>
-                  </>
-                </div>
-              ) : (
-                <EmptyState
-                  icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
-                  title="Giỏ hàng của bạn"
-                  description="Có vẻ như giỏ hàng của bạn đang trống"
-                  action={{
-                    label: "Mua ngay nào",
-                    onClick: () => setIsOpen(false),
-                  }}
-                  className="min-w-full flex flex-col"
-                />
-              )}
-            </div>
+          <SheetDescription className="text-center text-sm text-slate-500">
+            Cảm ơn bạn đã ghé thăm cửa hàng của chúng tôi. Hãy cùng khám phá
+            những sản phẩm tuyệt vời mà chúng tôi đã chuẩn bị cho bạn!
           </SheetDescription>
         </SheetHeader>
+
+        <div>
+          <div className="w-full overflow-hidden">
+            {cart?.length ? (
+              <div className="container mx-auto p-4 md:p-6 w-full">
+                <>
+                  <h1 className="text-2xl font-semibold">
+                    Giỏ hàng ({cart?.length})
+                  </h1>
+                  <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px]">
+                    {cart?.map((product) => (
+                      <ViewCardProductActions
+                        key={product.variant.productVariantId}
+                        // cartItemId=
+                        decreaseQuantity={(): void =>
+                          handleDecreaseQuantity(product)
+                        }
+                        increaseQuantity={(): void => increaseQuantity(product)}
+                        removeFromCart={(): void => removeFromCart(product)}
+                        product={product}
+                        className="m-4"
+                      />
+                    ))}
+                  </ScrollArea>
+
+                  <div className=" mt-14 w-full">
+                    <CartSummary cart={cart as CartData[]} close={close} />
+                  </div>
+                </>
+              </div>
+            ) : (
+              <EmptyState
+                icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
+                title="Giỏ hàng của bạn"
+                description="Có vẻ như giỏ hàng của bạn đang trống"
+                action={{
+                  label: "Mua ngay nào",
+                  onClick: () => setIsOpen(false),
+                }}
+                className="min-w-full flex flex-col"
+              />
+            )}
+          </div>
+        </div>
+        {/* </SheetHeader> */}
 
         {/* <div className="flex items-center justify-center">
           <div className="flex justify-center">

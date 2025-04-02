@@ -9,9 +9,9 @@ import { useMutation } from "@tanstack/react-query";
 import { interactApiClient } from "../client/interact-api-client";
 
 import Cookies from "js-cookie";
+import { useEffect } from "react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL_API;
-const token = Cookies.get("accessToken");
 
 const handleParams = (params: Record<string, any>, endpoint: string) => {
   const url = new URL(`${BASE_URL}${endpoint}`);
@@ -24,6 +24,8 @@ const handleParams = (params: Record<string, any>, endpoint: string) => {
 };
 
 const fetching = async (endpoint: string, params?: Record<string, any>) => {
+  const token = Cookies.get("accessToken");
+
   const headers: Record<string, string> = token
     ? { Authorization: `Bearer ${token}` }
     : {};
@@ -69,22 +71,35 @@ export const useFetch = <T>(
 
 export const useMutate = <T, D = any>(
   endpoint: string,
-  method: "create" | "update" | "remove" = "create",
+  method: "create" | "update" | "remove",
   options?: Omit<UseMutationOptions<T, Error, D>, "mutationFn">
 ) => {
   return useMutation<T, Error, D>({
-    mutationFn: async (data: D): Promise<any> => {
+    mutationFn: async (data: D): Promise<T> => {
       try {
+        let response: T | undefined;
+
         switch (method) {
           case "create":
-            return await interactApiClient.post(endpoint, data);
-          // case "update":
-          //   return await interactApiClient.put(endpoint, data);
-          // case "remove":
-          //   return await interactApiClient.remove(endpoint);
+            response = await interactApiClient.post<T, D>(endpoint, data);
+            break;
+          case "update":
+            response = await interactApiClient.put<T, D>(endpoint, data);
+            break;
+          case "remove":
+            response = await interactApiClient.delete<T>(endpoint);
+            break;
           default:
             throw new Error(`Unsupported method: ${method}`);
         }
+
+        if (response === undefined) {
+          throw new Error(
+            `API request returned undefined for ${method.toUpperCase()} ${endpoint}`
+          );
+        }
+
+        return response;
       } catch (error) {
         console.error(
           `Error performing ${method.toUpperCase()} on ${endpoint}:`,
@@ -93,7 +108,6 @@ export const useMutate = <T, D = any>(
         throw error;
       }
     },
-
     ...options,
   });
 };

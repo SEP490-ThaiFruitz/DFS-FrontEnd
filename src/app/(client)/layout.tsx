@@ -17,6 +17,7 @@ const ClientLayout = ({ children, common }: ClientLayoutProps) => {
   return (
     <>
       <Navigate />
+      {/* <div className="bg-zinc-50"> */}
       <div className="bg-white">
         {/* <div> */}
         {children}

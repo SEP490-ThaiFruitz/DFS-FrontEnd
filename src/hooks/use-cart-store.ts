@@ -50,27 +50,6 @@ export interface Product {
   [key: string]: any;
 }
 
-// type Product = {
-//   id: string;
-//   name: string;
-//   mainImageUrl: string;
-//   description: string;
-//   categories: {
-//     id: string;
-//     name: string;
-//     thumbnail: string;
-//   }[];
-//   variant: {
-//     productVariantId: string;
-//     packageType: string;
-//     netWeight: number;
-//     price: number;
-//     stockQuantity: number;
-//     promotion: string | null;
-//   };
-//   rating: number;
-//   quantitySold: number;
-// };
 interface State {
   orders: CartData[];
   totalPrice: number;
@@ -149,7 +128,10 @@ export const useCartStore = create(
         } else {
           const updatedCartOrders = [
             ...cartOrders,
-            { ...product, quantityOrder: 1 },
+            {
+              ...product,
+              quantityOrder: product.quantityOrder ? product.quantityOrder : 1,
+            },
           ];
 
           set((state) => ({

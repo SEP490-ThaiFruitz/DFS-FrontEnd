@@ -3,20 +3,40 @@
 import * as React from "react";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface Tab {
   id: string;
   label: string;
+
+  icon?: LucideIcon;
+
+  content?: React.ReactNode;
 }
 
-interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+interface VercelTabProps extends React.HTMLAttributes<HTMLDivElement> {
   tabs: Tab[];
   activeTab?: string;
   onTabChange?: (tabId: string) => void;
+
+  classNameIcon?: string;
+
+  classNameContent?: string;
 }
 
-const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ className, tabs, activeTab, onTabChange, ...props }, ref) => {
+const VercelTab = React.forwardRef<HTMLDivElement, VercelTabProps>(
+  (
+    {
+      className,
+      tabs,
+      activeTab,
+      onTabChange,
+      classNameContent,
+      classNameIcon,
+      ...props
+    },
+    ref
+  ) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const [hoverStyle, setHoverStyle] = useState({});
@@ -88,9 +108,9 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
                 key={tab.id}
                 ref={(el: any) => (tabRefs.current[index] = el)}
                 className={cn(
-                  "px-3 py-2 cursor-pointer transition-colors duration-300 h-[30px]",
+                  "px-6 py-4 cursor-pointer transition-colors duration-300 h-[30px]",
                   index === activeIndex
-                    ? "text-[#0e0e10] dark:text-white"
+                    ? "text-[#0e0e10] dark:text-white bg-[#0e0f1114] rounded-[6px]"
                     : "text-[#0e0f1199] dark:text-[#ffffff99]"
                 )}
                 onMouseEnter={() => setHoveredIndex(index)}
@@ -100,7 +120,20 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
                   onTabChange?.(tab.id);
                 }}
               >
-                <div className="text-sm font-medium leading-5 whitespace-nowrap flex items-center justify-center h-full">
+                <div
+                  className={cn(
+                    "text-sm font-semibold leading-5 whitespace-nowrap flex items-center justify-center h-full",
+                    classNameContent
+                  )}
+                >
+                  {tab?.icon && (
+                    <tab.icon
+                      className={cn(
+                        "size-6 text-slate-800 mr-1",
+                        classNameIcon
+                      )}
+                    />
+                  )}
                   {tab.label}
                 </div>
               </div>
@@ -111,6 +144,6 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
     );
   }
 );
-Tabs.displayName = "Tabs";
+VercelTab.displayName = "VercelTab";
 
-export { Tabs };
+export { VercelTab };

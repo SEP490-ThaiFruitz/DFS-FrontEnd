@@ -161,7 +161,7 @@ export default function PaymentSuccess() {
             <CardHeader className="bg-green-50 dark:bg-green-900/20 pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg text-green-800 dark:text-green-300">
-                  Order Summary
+                  Tổng quan đơn hàng của bạn
                 </CardTitle>
                 <Button
                   variant="ghost"

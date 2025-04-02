@@ -132,6 +132,8 @@ export default function AddressChoices<T extends FieldValues>({
 
   // console.log({ value });
 
+  console.log({ addressApi });
+
   const InfoRow = ({
     label,
     value,

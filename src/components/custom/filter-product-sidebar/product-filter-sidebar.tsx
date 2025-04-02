@@ -990,7 +990,9 @@ export const ProductFilterSidebar = memo(
                           description={product.description}
                           productId={product.id}
                           name={product.name}
-                          mainImageUrl={variantItem.imageVariant}
+                          mainImageUrl={
+                            variantItem?.imageVariant || product.mainImageUrl
+                          }
                           quantitySold={product.quantitySold}
                           rating={product.rating}
                           variant={variantItem}

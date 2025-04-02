@@ -7,7 +7,7 @@ export interface ProductVariant {
   price: number;
   packageType: string;
 
-  imageVariant: string;
+  imageVariant?: string;
 
   discountPrice?: number;
   stockQuantity: number;

@@ -118,6 +118,8 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
       stockQuantity: product.quantity,
       packageType: product.event,
 
+      // imageVariant: product.variant
+
       promotion: {
         price: product.price,
         endDate: "",

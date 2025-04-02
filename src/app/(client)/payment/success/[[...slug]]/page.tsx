@@ -25,54 +25,132 @@ import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { API } from "@/app/key/url";
+import { interactApiClient } from "@/actions/client/interact-api-client";
+import { ApiResponse } from "@/types/types";
+import { PaymentOrderValue } from "@/features/client/payment/successful/payment-successful.types";
 
+const paymentData = {
+  orderId: "ORD-7829-3426",
+  date: "March 7, 2025",
+  time: "07:18 AM",
+  amount: "$149.99",
+  paymentMethod: "Visa •••• 4242",
+  email: "customer@example.com",
+  items: [
+    {
+      name: "Premium Subscription (Annual)",
+      price: "$129.99",
+      image:
+        "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=80&h=80&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    },
+    {
+      name: "Setup Fee",
+      price: "$20.00",
+      image:
+        "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=80&h=80&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    },
+  ],
+  subtotal: "$149.99",
+  tax: "$0.00",
+  total: "$149.99",
+};
 export default function PaymentSuccess() {
   const searchParams = useSearchParams();
-
-  console.log("payment", searchParams);
+  const [orderData, setOrderData] = useState<any>(null);
   const [copied, setCopied] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Mock payment data - this would come from your API in a real application
-  const paymentData = {
-    orderId: "ORD-7829-3426",
-    date: "March 7, 2025",
-    time: "07:18 AM",
-    amount: "$149.99",
-    paymentMethod: "Visa •••• 4242",
-    email: "customer@example.com",
-    items: [
-      {
-        name: "Premium Subscription (Annual)",
-        price: "$129.99",
-        image:
-          "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=80&h=80&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      },
-      {
-        name: "Setup Fee",
-        price: "$20.00",
-        image:
-          "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=80&h=80&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-      },
-    ],
-    subtotal: "$149.99",
-    tax: "$0.00",
-    total: "$149.99",
-  };
+  //localhost:3000/payment/success?vnp_Amount=7133200&vnp_BankCode=NCB&vnp_BankTranNo=VNP14887066&vnp_CardType=ATM&vnp_OrderInfo=Thanh+to%C3%A1n+%C4%91%C6%A1n+h%C3%A0ng%3A+DRYFRUIT-20250402-00009&vnp_PayDate=20250402174837&vnp_ResponseCode=00&vnp_TmnCode=81ZN6ING&vnp_TransactionNo=14887066&vnp_TransactionStatus=00&vnp_TxnRef=1743590817872&vnp_SecureHash=235703d4984b89b52f385a92819b3edd041d872c087358118277754d61a095198fabeaf174f0eb4b02409329b5f8a11d3d3de68aadf212b90583ada9ddc580dc
+
+  // useEffect(() => {
+  //   const fetchPaymentData = async () => {
+  //     let apiUrl = "";
+  //     const isVnPay = searchParams.has("vnp_TxnRef");
+
+  //     if (isVnPay) {
+  //       // VNPay API call
+  //       apiUrl = `${API}/vnpay-return?${searchParams.toString()}`;
+  //     } else if (searchParams.has("orderCode")) {
+  //       // PayOS API call
+  //       const orderCode = searchParams.get("orderCode");
+  //       apiUrl = `${API}/Payments/order-information/${orderCode}`;
+  //     }
+
+  //     if (apiUrl) {
+  //       try {
+  //         const response = await fetch(apiUrl, {
+  //           method: isVnPay ? "POST" : "GET",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         });
+  //         const result = await response.json();
+  //         if (result.isSuccess) {
+  //           setOrderData(result.value);
+  //         } else {
+  //           toast.error("Lỗi khi lấy dữ liệu đơn hàng");
+  //         }
+  //       } catch (error) {
+  //         toast.error("Có lỗi xảy ra khi kết nối API");
+  //       }
+  //     }
+  //   };
+
+  //   fetchPaymentData();
+  //   const timer = setTimeout(() => setProgress(100), 500);
+  //   return () => clearTimeout(timer);
+  // }, [searchParams]);
 
   useEffect(() => {
-    // Animate progress bar on load
+    const fetchPaymentData = async () => {
+      // let apiUrl = "";
+      const isVnPay = searchParams.has("vnp_TxnRef");
+
+      try {
+        if (isVnPay) {
+          // VNPay API call
+          const result = await interactApiClient.post<
+            ApiResponse<PaymentOrderValue>,
+            { test: string }
+          >(`/v1/vnpay-return?${searchParams.toString()}`);
+          if (result?.isSuccess) {
+            setOrderData(result.value);
+          } else {
+            toast.error("Lỗi khi lấy dữ liệu đơn hàng");
+          }
+        } else if (searchParams.has("orderCode")) {
+          // PayOS API call
+          const orderCode = searchParams.get("orderCode");
+          const result = await interactApiClient.get<
+            ApiResponse<PaymentOrderValue>
+          >(`/v1/Payments/order-information/${orderCode}`);
+          if (result?.isSuccess) {
+            setOrderData(result.value);
+          } else {
+            toast.error("Lỗi khi lấy dữ liệu đơn hàng");
+          }
+        }
+      } catch (error) {
+        toast.error("Có lỗi xảy ra khi kết nối API");
+      }
+    };
+
+    fetchPaymentData();
     const timer = setTimeout(() => setProgress(100), 500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [searchParams]);
+
+  if (!orderData) {
+    return <p>Đang tải thông tin đơn hàng...</p>;
+  }
 
   const copyOrderId = () => {
-    navigator.clipboard.writeText(paymentData.orderId);
+    navigator.clipboard.writeText(orderData.orderId);
     setCopied(true);
     toast.success("Copied to clipboard");
     setTimeout(() => setCopied(false), 2000);
   };
-
   // Animation variants for staggered animations
   const container = {
     hidden: { opacity: 0 },

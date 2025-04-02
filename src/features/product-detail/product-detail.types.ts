@@ -57,4 +57,5 @@ export type ProductDetailTypes = {
   productVariantDetail: ProductVariantTypes[];
   overallRatingResponse: OverallRate;
   productCertification: Certificate[];
+  quantitySold?: number;
 };

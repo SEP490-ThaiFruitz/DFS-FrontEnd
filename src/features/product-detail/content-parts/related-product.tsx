@@ -46,7 +46,7 @@ export const RelatedProduct = memo(() => {
           >
             <div className="aspect-square relative">
               <Image
-                src={product.image || "/placeholder.svg"}
+                src={product?.image || "/images/second-background.png"}
                 alt={product.name}
                 fill
                 className="object-cover transition-transform hover:scale-105 duration-300 rounded-3xl"
@@ -58,7 +58,7 @@ export const RelatedProduct = memo(() => {
               </h3>
               <div className="flex justify-between items-center mt-1">
                 <span className="font-bold text-sky-600">
-                  {formatVND(product.price)}
+                  {formatVND(product?.price)}
                 </span>
                 <div className="flex items-center text-amber-500">
                   <Star className="h-3 w-3 fill-amber-500" />

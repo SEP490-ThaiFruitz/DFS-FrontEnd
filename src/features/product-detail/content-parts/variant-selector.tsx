@@ -75,7 +75,7 @@ export const VariantSelector = memo(
               <CardContent className="p-4">
                 <div className="aspect-square relative mb-3 bg-gray-50 rounded-md overflow-hidden">
                   <Image
-                    src={variant.image || "/placeholder.svg"}
+                    src={variant?.image || "/images/second-background.png"}
                     alt={`${variant.productVariantId} - ${variant.packageType}`}
                     fill
                     className="object-cover"
@@ -122,7 +122,7 @@ export const VariantSelector = memo(
                         <span className="text-lg font-bold text-sky-500/70">
                           {formatPrice(
                             calculateDiscountedPrice(
-                              variant.price,
+                              variant?.price,
                               variant.promotion.percentage
                             )
                           )}

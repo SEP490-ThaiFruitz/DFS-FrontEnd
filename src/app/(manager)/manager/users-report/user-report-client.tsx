@@ -29,6 +29,10 @@ import Image from "next/image";
 import { memo } from "react";
 import { ReportUserValue } from "./page";
 
+interface UserReportClientProps {
+  userReportData: ReportUserValue[] | [];
+}
+
 type User = {
   id: number;
   name: string;
@@ -360,11 +364,7 @@ const HeaderTitle = () => {
   );
 };
 
-interface UserReportClientProps {
-  reportUserData: ReportUserValue[];
-}
-
-const UserReportClient = () => {
+const UserReportClient = ({ userReportData }: UserReportClientProps) => {
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/20">
       <HeaderTitle />

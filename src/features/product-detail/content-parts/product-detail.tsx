@@ -103,7 +103,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const allImages = [
     product.mainImageUrl,
     ...product.productImages.map((img) => img.imageUrl),
-    ...product.productVariantDetail.map((variant) => variant.image),
+    ...product.productVariantDetail.map(
+      (variant) => variant?.image ?? "/images/second-background.png"
+    ),
   ];
 
   useEffect(() => {
@@ -147,7 +149,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       quantitySold: 0, // API return lack of quantitySold
       rating: product?.overallRatingResponse?.overallRating ?? 0,
       type: "single",
-      mainImageUrl: selectedVariant.image,
+      mainImageUrl: selectedVariant?.image ?? "/images/second-background.png",
       name: product.name,
     });
 

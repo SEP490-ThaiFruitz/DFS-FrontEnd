@@ -202,7 +202,7 @@ export const CardProduct = ({
                     id: productId,
                     description,
                     name,
-                    mainImageUrl,
+                    mainImageUrl: variant.imageVariant,
                     quantitySold,
                     rating,
                     categories,

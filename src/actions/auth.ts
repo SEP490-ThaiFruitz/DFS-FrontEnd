@@ -27,27 +27,12 @@ export const loginAction = async <TValues>(values: TValues) => {
     const cookieStore = await cookies();
 
     cookieStore.set("accessToken", loginResponse.accessToken, {
-      // httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
-
-      // sameSite: "strict",
-      // path: "/",
     });
 
     cookieStore.set("refreshToken", loginResponse.refreshToken, {
-      // httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
-
-    // console.log("set cookie: ", response.value.accessToken);
-    // setCookie("accessToken", response.value.accessToken, {
-    //   // expires: 7,
-    //   // httpOnly: true,
-    //   // secure: process.env.NODE_ENV === "production",
-    //   // sameSite: "strict",
-    // });
 
     return {
       isSuccess: true,
@@ -76,14 +61,14 @@ export const registerAction = async <TValues>(values: TValues) => {
     const cookieStore = await cookies();
 
     cookieStore.set("accessToken", loginResponse.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // httpOnly: true,
+      // secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
 
     cookieStore.set("refreshToken", loginResponse.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // httpOnly: true,
+      // secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7,
     });
 

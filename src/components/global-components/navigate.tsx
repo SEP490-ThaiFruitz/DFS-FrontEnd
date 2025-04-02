@@ -42,6 +42,7 @@ import { logOut } from "@/actions/auth";
 import Notification from "@/features/notification/notification";
 import { Skeleton } from "../ui/skeleton";
 import { USER_KEY } from "@/app/key/user-key";
+import { getProfile } from "@/actions/user";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
@@ -60,11 +61,17 @@ export const Navigate = () => {
 
   const { data: user, isLoading: isUserLoading } = useQuery<Profile>({
     queryKey: ["authUser"],
+    queryFn: async () => {
+      const response = await getProfile();
+      if (!response || !response.isSuccess || !response.data) {
+        throw new Error("Failed to fetch profile");
+      }
+      return response.data; // Ensure this matches `Profile`
+    },
   });
 
-  // const user = queryClient.getQueryData<Profile>(["authUser"]);
-
-  // const token = Cookies.get("accessToken");
+  console.log({ user });
+  console.log({ isUserLoading });
 
   const navItemClassName =
     "relative inline-flex text-sm h-11 w-full md:w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0 before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";

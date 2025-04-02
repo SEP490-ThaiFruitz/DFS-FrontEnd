@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { JSX } from "react";
+import { JSX, MouseEvent } from "react";
 
 interface ButtonCustomizedProps {
   label: string | JSX.Element;
   onClick?: () => void;
+
+  onSubmit?: (e: MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   type?: "button" | "submit" | "reset";
 
@@ -16,13 +18,7 @@ interface ButtonCustomizedProps {
     | "ghost"
     | "secondary"
     | "link";
-  size?: 
-    | "default"
-    | "sm"
-    | "lg"
-    | "icon"
-    | null
-    | undefined
+  size?: "default" | "sm" | "lg" | "icon" | null | undefined;
 }
 export const ButtonCustomized = ({
   label,
@@ -31,10 +27,14 @@ export const ButtonCustomized = ({
   className,
   type = "button",
   disabled,
+  onSubmit,
 }: ButtonCustomizedProps) => {
   return (
     <Button
-      onClick={onClick}
+      onClick={(e) => {
+        onClick?.();
+        onSubmit?.(e);
+      }}
       variant={variant}
       disabled={disabled}
       className={cn(

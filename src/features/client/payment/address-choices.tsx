@@ -51,30 +51,6 @@ import { useLoginDialog } from "@/hooks/use-login-dialog";
 
 import Cookies from "js-cookie";
 
-// Mock data for existing addresses
-const mockAddresses = [
-  {
-    id: "1",
-    name: "Nhà riêng",
-    street: "123 Đường Nguyễn Huệ",
-    district: "Quận 1",
-    city: "TP. Hồ Chí Minh",
-    postalCode: "70000",
-    phone: "0901234567",
-    isDefault: true,
-  },
-  {
-    id: "2",
-    name: "Văn phòng",
-    street: "456 Đường Lê Lợi",
-    district: "Quận 3",
-    city: "TP. Hồ Chí Minh",
-    postalCode: "70000",
-    phone: "0909876543",
-    isDefault: false,
-  },
-];
-
 type Address = {
   id?: string;
   name: string;
@@ -98,15 +74,10 @@ export default function AddressChoices<T extends FieldValues>({
   form,
 }: AddressChoicesProps<T>) {
   const [activeTab, setActiveTab] = useState("base-info");
-  const [addressMode, setAddressMode] = useState("select"); // "select", "create", or "edit"
-  const [addresses, setAddresses] = useState<Address[]>(mockAddresses);
-  const [selectedAddress, setSelectedAddress] = useState(
-    addresses.find((a) => a.isDefault)?.id || addresses[0]?.id || ""
-  );
-  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const token = Cookies.get("accessToken");
+
+  console.log({ token });
 
   const { isAddressPending, addresses: addressApi } = addressData;
 
@@ -129,10 +100,6 @@ export default function AddressChoices<T extends FieldValues>({
     districtID: 0,
     wardID: 0,
   });
-
-  // console.log({ value });
-
-  console.log({ addressApi });
 
   const InfoRow = ({
     label,
@@ -160,10 +127,6 @@ export default function AddressChoices<T extends FieldValues>({
 
   const addressIdWatch = form.watch("addressId" as Path<T>);
 
-  console.log({ addressReceive });
-
-  const token = Cookies.get("accessToken");
-
   const isAuth = Boolean(token);
 
   // console.log(isAuth);
@@ -188,32 +151,6 @@ export default function AddressChoices<T extends FieldValues>({
   return (
     <>
       <div className="w-full max-w-3xl mx-auto">
-        {/* <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold">Thanh toán</h1>
-          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-            <span
-              className={
-                activeTab === "personal" ? "text-primary font-medium" : ""
-              }
-            >
-              Thông tin cá nhân
-            </span>
-            <ChevronRight className="h-4 w-4" />
-            <span
-              className={
-                activeTab === "address" ? "text-primary font-medium" : ""
-              }
-            >
-              Địa chỉ giao hàng
-            </span>
-            <ChevronRight className="h-4 w-4" />
-            <span>Thanh toán</span>
-          </div>
-        </div>
-        <Separator />
-      </div> */}
-
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
@@ -228,10 +165,6 @@ export default function AddressChoices<T extends FieldValues>({
               <MapPin className="h-4 w-4" />
               Địa chỉ giao hàng
             </TabsTrigger>
-            {/* <TabsTrigger value="personal" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Thông tin cá nhân
-            </TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="base-info">
@@ -280,14 +213,9 @@ export default function AddressChoices<T extends FieldValues>({
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          // setAddressMode("create");
-                          // setErrors({});
-
                           isAuth
                             ? setOpenDialogAddress(true)
                             : loginDialog.onOpen();
-
-                          // setOpenDialogAddress(true);
                         }}
                         type="button"
                         className="flex items-center gap-1"
@@ -336,7 +264,7 @@ export default function AddressChoices<T extends FieldValues>({
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
-                                {addresses.length > 1 && (
+                                {addressApi.length > 1 && (
                                   <Button
                                     variant="ghost"
                                     size="icon"

@@ -143,6 +143,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         discountPrice: selectedVariant.promotion?.price,
         stockQuantity: selectedVariant.stockQuantity as number,
         promotion: selectedVariant?.promotion,
+        imageVariant: selectedVariant.image,
       },
       categories: product.categories,
       description: product.description,

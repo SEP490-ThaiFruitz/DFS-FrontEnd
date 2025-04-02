@@ -19,6 +19,8 @@ import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { registerAction } from "@/actions/auth";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { USER_KEY } from "@/app/key/user-key";
 
 interface RegisterUser {
   name: string;
@@ -31,7 +33,7 @@ export const RegisterDialog = () => {
   const form = useForm<z.infer<typeof RegisterSafeTypes>>({
     resolver: zodResolver(RegisterSafeTypes),
     defaultValues: {
-      type: "phone"
+      type: "phone",
     },
   });
 
@@ -40,6 +42,8 @@ export const RegisterDialog = () => {
   const [loginType, setLoginType] = useState<"phone" | "email">("phone");
   const queryClient = useQueryClient();
 
+  const router = useRouter();
+
   const { isPending, mutate: registerAccountMutation } = useMutation({
     mutationFn: async (value: RegisterUser) => {
       try {
@@ -47,30 +51,34 @@ export const RegisterDialog = () => {
 
         if (!response?.isSuccess) {
           if (response?.detail.includes("Email")) {
-            throw new Error("Email đã tồn tại. Vui lòng đăng nhập")
+            throw new Error("Email đã tồn tại. Vui lòng đăng nhập");
           }
           if (response?.detail.includes("Phone")) {
-            throw new Error("Số điện thoại đã tồn tại. Vui lòng đăng nhập")
+            throw new Error("Số điện thoại đã tồn tại. Vui lòng đăng nhập");
           }
-          throw new Error("Lỗi hệ thống")
+          throw new Error("Lỗi hệ thống");
         }
       } catch (error: unknown) {
-        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống");
+        throw new Error(
+          error instanceof Error ? error?.message : "Lỗi hệ thống"
+        );
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] })
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.ADDRESS] });
+      router.refresh();
       registerDialog.onClose();
       loginDialog.onClose();
       form.reset();
     },
     onError: (error) => {
-      toast.error(error.message)
-    }
+      toast.error(error.message);
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof RegisterSafeTypes>) => {
-    registerAccountMutation(values)
+    registerAccountMutation(values);
   };
 
   const toggle = () => {
@@ -106,11 +114,17 @@ export const RegisterDialog = () => {
               label="Số điện thoại"
               placeholder="+84..."
             />
-            <button type="button" onMouseDown={() => {
-              setLoginType("email")
-              form.resetField("phone")
-              form.setValue("type", "email")
-            }} className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer">Email</button>
+            <button
+              type="button"
+              onMouseDown={() => {
+                setLoginType("email");
+                form.resetField("phone");
+                form.setValue("type", "email");
+              }}
+              className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer"
+            >
+              Email
+            </button>
           </div>
         ) : (
           <div className="relative">
@@ -121,11 +135,17 @@ export const RegisterDialog = () => {
               label="Email"
               placeholder="example@mail.com"
             />
-            <button type="button" onMouseDown={() => {
-              setLoginType("phone")
-              form.resetField("email")
-              form.setValue("type", "phone")
-            }} className="absolute right-2.5 top-1 font-bold hover:underline hover:cursor-pointer">Số điện thoại</button>
+            <button
+              type="button"
+              onMouseDown={() => {
+                setLoginType("phone");
+                form.resetField("email");
+                form.setValue("type", "phone");
+              }}
+              className="absolute right-2.5 top-1 font-bold hover:underline hover:cursor-pointer"
+            >
+              Số điện thoại
+            </button>
           </div>
         )}
         <FormInputControl

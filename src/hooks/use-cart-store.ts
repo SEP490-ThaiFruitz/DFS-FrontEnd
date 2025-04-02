@@ -7,6 +7,8 @@ export interface ProductVariant {
   price: number;
   packageType: string;
 
+  imageVariant: string;
+
   discountPrice?: number;
   stockQuantity: number;
   promotion?: Promotion | null;

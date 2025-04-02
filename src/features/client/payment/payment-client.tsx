@@ -75,6 +75,17 @@ interface DeliveryMethodType {
   notice: string;
 }
 
+const paymentMethods: { value: string; label: string }[] = [
+  {
+    value: PaymentMethod.VNPAY,
+    label: "VNPAY",
+  },
+  {
+    value: PaymentMethod.PAYOS,
+    label: "PayOS",
+  },
+];
+
 function PaymentClientPage() {
   const [promoCode, setPromoCode] = useState("");
 
@@ -97,7 +108,6 @@ function PaymentClientPage() {
       paymentMethod: PaymentMethod.VNPAY,
       shipType: DeliveryMethod.STANDARD,
 
-      // shippingUnitId: "fce93c8a-6dab-4ad0-a754-0ced6793d4e1",
       voucherId: null,
     },
   });
@@ -114,27 +124,19 @@ function PaymentClientPage() {
   //     interactApiClient.get<ApiResponse<PageResult<AddressTypes>>>("/products"),
   // });
 
-  const paymentMethods: { value: string; label: string }[] = [
-    {
-      value: PaymentMethod.VNPAY,
-      label: "VNPAY",
-    },
-    {
-      value: PaymentMethod.PAYOS,
-      label: "PayOS",
-    },
-  ];
-
   const paymentMethodWatch = form.watch("paymentMethod");
+
+  console.log(paymentMethodWatch);
 
   const token = Cookies.get("accessToken");
 
   const onPaymentSubmit = async (values: z.infer<typeof PaymentSafeTypes>) => {
     console.log({ values });
 
-    console.log("values omit: ", omit(values, ["shipType"]));
-
-    const omitValue = omit(values, ["shipType"]);
+    const omitValue = {
+      ...omit(values, ["shipType"]),
+      paymentMethod: paymentMethodWatch,
+    };
 
     try {
       const response = await axios.post(
@@ -356,6 +358,7 @@ function PaymentClientPage() {
                       <RadioItem
                         key={method.value}
                         className="flex justify-between"
+                        disabled={form.formState.isSubmitting}
                       >
                         <div className="flex items-center space-x-3 space-y-0">
                           <FormControl>
@@ -392,16 +395,6 @@ function PaymentClientPage() {
               </CardHeader>
               <CardContent>
                 <ScrollArea className="space-y-4 max-h-[300px] overflow-auto">
-                  {/* {cartItems.map((item) => (
-                    <ViewCardProduct
-                      key={item.id}
-                      productImage={item.image}
-                      productName={item.name}
-                      productPrice={item.price}
-                      productQuantity={item.quantity}
-                    />
-                  ))} */}
-
                   {cart?.map((product) => {
                     return (
                       <ViewCardProductActions

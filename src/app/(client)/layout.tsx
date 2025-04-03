@@ -17,7 +17,7 @@ const ClientLayout = ({ children, common }: ClientLayoutProps) => {
   return (
     <>
       <Navigate />
-      <div className=" bg-gradient-to-b from-amber-50 to-white">
+      <div className=" bg-gradient-to-b from-amber-50 to-amber-50/60">
         {/* <div className="bg-[#fefcfb]"> */}
         {/* <div className="bg-white"> */}
         {/* <div> */}

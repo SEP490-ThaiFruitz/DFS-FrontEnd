@@ -172,7 +172,7 @@ export const Navigate = () => {
 
           {isUserLoading ? (
             <Skeleton className="h-10 w-10 rounded-full" />
-          ) : user ? (
+          ) : user && Object.keys(user).length > 0 ? (
             <>
               {/* Notification Popover */}
               <Notification />

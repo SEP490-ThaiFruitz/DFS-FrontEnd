@@ -34,7 +34,7 @@ export default function FrequentlyBoughtTogether({
 }: // frequentlyBoughtTogether,
 FrequentlyBoughtTogetherProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8 p-6 lg:p-8">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8 p-6 lg:p-8 cardStyle">
       <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
         <Users className="h-5 w-5 text-indigo-500" />
         Thường được mua cùng nhau

@@ -133,7 +133,7 @@ export default function ComboProductCard({ product }: ComboProductCardProps) {
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto overflow-hidden shadow-md  cardStyle motion-preset-pop">
+    <Card className="w-full max-w-3xl mx-auto overflow-hidden shadow-md cardStyle motion-preset-pop">
       <div className="grid md:grid-cols-5 gap-0">
         {/* Product Image */}
         <div className="relative h-[280px] md:h-full md:col-span-2 overflow-hidden">

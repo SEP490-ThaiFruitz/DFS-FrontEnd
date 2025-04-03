@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/accordion";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
+import { CuisineSelector } from "../_custom_select/cuisine-selector";
 
 // This component assumes all the variables from the original code are passed as props
 // or defined within the component's parent
@@ -146,7 +147,7 @@ const FilterSidebar = ({
 
   return (
     <ScrollArea className="h-full overflow-hidden rounded-3xl">
-      <SidebarHeader className="  bg-white">
+      <SidebarHeader className="  bg-white rounded-t-3xl">
         <div className="sticky top-0 z-10 pb-2 pt-3 px-4">
           <Logo height={70} width={70} />
 
@@ -263,7 +264,7 @@ const FilterSidebar = ({
             value="categories"
             className="border-b border-border/40"
           >
-            <SidebarGroup className="py-0 bg-white">
+            <SidebarGroup className="py-0  bg-white">
               <AccordionTrigger className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-muted/50 group transition-colors duration-200 ease-in-out">
                 <SidebarGroupLabel className="flex-1 text-left font-medium flex items-center gap-2">
                   <div className="h-6 w-6 rounded-md bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center shadow-sm">
@@ -319,25 +320,23 @@ const FilterSidebar = ({
               <AccordionContent className="animate-accordion-down">
                 <SidebarGroupContent className="px-4 py-2">
                   <div className="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
+                    <CuisineSelector
+                      options={tags}
+                      activeOptions={filters.tags.length ? filters.tags : []}
+                      toggleCuisine={handleTagChange}
+                      className="px-3 py-1 text-xs"
+                    />
+
+                    {/* {tags.map((tag) => (
                       <AdvancedColorfulBadges
                         key={tag}
                         color={filters.tags.includes(tag) ? "violet" : "silver"}
-                        // variant={
-                        //   filters.tags.includes(tag) ? "default" : "outline"
-                        // }
-
                         className="cursor-pointer transition-all duration-200 rounded-3xl"
-                        // className={`cursor-pointer transition-all duration-200 ${
-                        //   filters.tags.includes(tag)
-                        //     ? "bg-primary text-primary-foreground scale-105"
-                        //     : "hover:bg-primary/10"
-                        // }`}
                         onClick={() => handleTagChange(tag)}
                       >
                         {tag}
                       </AdvancedColorfulBadges>
-                    ))}
+                    ))} */}
                   </div>
                 </SidebarGroupContent>
               </AccordionContent>

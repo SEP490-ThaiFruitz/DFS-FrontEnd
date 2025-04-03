@@ -10,6 +10,8 @@ import {
   X,
   Box,
   StickyNote,
+  PackagePlus,
+  LucideIcon,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +46,30 @@ import ComboProductCard, {
   ComboProduct,
 } from "@/components/global-components/card/card-combo";
 import { EmptyState } from "@/components/global-components/empty-state";
+import { CustomComboBuilder } from "@/features/client/home/custom-combo/custom-combo-builder";
+import { VercelTab } from "../_custom_tabs/vercel-tabs";
+
+const TABS: {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+}[] = [
+  {
+    id: "tab-1",
+    label: "Tất cả sản phẩm",
+    icon: Grid3X3,
+  },
+  {
+    id: "tab-2",
+    label: "Combo sản phẩm",
+    icon: Box,
+  },
+  {
+    id: "tab-3",
+    label: "Bạn có muốn tạo Combo?",
+    icon: PackagePlus,
+  },
+];
 
 // Extract unique categories, package types, etc. from the data
 const extractUniqueValues = (products: Product[] | []) => {
@@ -620,7 +646,8 @@ export const ProductFilterSidebar = memo(
 
     return (
       // <div className="bg-white min-h-screen p-4">
-      <SidebarProvider className="p-4 has-[[data-variant=inset]]:bg-white">
+      // <SidebarProvider className="p-4 has-[[data-variant=inset]]:bg-white">
+      <SidebarProvider className="p-4 has-[[data-variant=inset]]:bg-gradient-to-b from-amber-50 to-amber-50/60 rounded-3xl">
         <Sidebar
           className="hidden md:flex h-[calc(100vh-2rem)] sticky top-4 overflow-hidden  "
           variant="inset"
@@ -691,7 +718,27 @@ export const ProductFilterSidebar = memo(
                 )}
               </div>
 
-              <Tabs
+              <VercelTab
+                tabs={TABS}
+                activeTab={tab}
+                onTabChange={setTab}
+                classNameContent="text-slate-800  gap-1"
+              />
+
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sắp xếp theo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* <Tabs
                 defaultValue="tab-1"
                 value={tab}
                 onValueChange={setTab}
@@ -716,7 +763,6 @@ export const ProductFilterSidebar = memo(
                   <TabsTrigger
                     value="tab-2"
                     className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:rounded-3xl data-[state=active]:border data-[state=active]:border-slate-500 data-[state=active]:shadow-none  transition-all"
-                    // className="relative flex-col rounded-none px-4 py-2 text-xs after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary"
                   >
                     <Box
                       className="mb-1.5 opacity-60"
@@ -725,6 +771,19 @@ export const ProductFilterSidebar = memo(
                       aria-hidden="true"
                     />
                     Combo sản phẩm
+                  </TabsTrigger>
+
+                  <TabsTrigger
+                    value="tab-3"
+                    className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:rounded-3xl data-[state=active]:border data-[state=active]:border-slate-500 data-[state=active]:shadow-none  transition-all"
+                  >
+                    <PackagePlus
+                      className="mb-1.5 opacity-60"
+                      size={16}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    />
+                    Bạn có muốn tạo Combo?
                   </TabsTrigger>
                 </TabsList>
 
@@ -740,7 +799,7 @@ export const ProductFilterSidebar = memo(
                     ))}
                   </SelectContent>
                 </Select>
-              </Tabs>
+              </Tabs> */}
             </div>
 
             {/* Active Filters */}
@@ -1003,30 +1062,34 @@ export const ProductFilterSidebar = memo(
                   })}
                 </AnimatePresence>
               </div>
-            ) : combos.length ? (
-              <div
-                className={`w-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 p-4 `}
-              >
-                {combos.map((combo) => {
-                  return (
-                    <ComboProductCard
-                      key={combo.id}
-                      product={{ ...combo, type: "combo" }}
-                    />
-                  );
-                })}
-              </div>
+            ) : tab === "tab-2" ? (
+              combos.length ? (
+                <div
+                  className={`w-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 p-4 `}
+                >
+                  {combos.map((combo) => {
+                    return (
+                      <ComboProductCard
+                        key={combo.id}
+                        product={{ ...combo, type: "combo" }}
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <EmptyState
+                  icons={[StickyNote]}
+                  title="Chưa có Combo sản phẩm nào!"
+                  description="Có vẻ như chưa có  Combo sản phẩm nào hãy tải lại trang"
+                  className="min-w-full flex flex-col"
+                  action={{
+                    label: "Tải lại",
+                    onClick: () => comboRefetch(),
+                  }}
+                />
+              )
             ) : (
-              <EmptyState
-                icons={[StickyNote]}
-                title="Chưa có Combo sản phẩm nào!"
-                description="Có vẻ như chưa có  Combo sản phẩm nào hãy tải lại trang"
-                className="min-w-full flex flex-col"
-                action={{
-                  label: "Tải lại",
-                  onClick: () => comboRefetch(),
-                }}
-              />
+              tab === "tab-3" && <CustomComboBuilder />
             )}
           </div>
         </SidebarInset>

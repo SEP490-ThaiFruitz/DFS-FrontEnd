@@ -158,7 +158,12 @@ export const CardProduct = ({
             >
               {discountPrice ? (
                 <>
-                  <CardItem translateY={10} translateZ={10} as="del">
+                  <CardItem
+                    translateY={10}
+                    translateZ={10}
+                    as="del"
+                    className="text-sm text-[#fdba74] line-through"
+                  >
                     {formatVND(variant?.price ?? 0)}
                   </CardItem>
                   <CardItem

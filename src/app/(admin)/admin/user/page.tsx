@@ -11,6 +11,7 @@ import FormUser from "./form-user"
 import { DataTable } from '@/components/global-components/data-table/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number"
+import { API } from "@/actions/client/api-config"
 
 interface User {
     id: string
@@ -154,6 +155,10 @@ function UserPage() {
             },
         },
     ]
+
+    const banUser = async (id: string) => {
+        return await API.update(`/Users/${id}/status`, {});
+    }
 
     return (
         <div className="m-10">

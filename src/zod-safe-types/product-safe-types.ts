@@ -256,3 +256,21 @@ export const ProductVariantSafeTypes = z.object({
   message: "Khối lượng tịnh không thể lớn hơn khối lượng tổng",
   path: ["netWeight"],
 });;
+
+export const FormDiscountSafeTypes = z.object({
+  percentage: z.string().refine((value) => !isNaN(parseFloat(value)) && (parseFloat(value) > 0 && parseFloat(value) <= 100), {
+    message: 'Số phần trăm phải lớn hơn 0 và bé hơn hoặc bằng 100',
+  }),
+  quantity: z.string().refine((value) => !isNaN(parseFloat(value)) && parseFloat(value) > 0, {
+    message: 'Số lượng phải là một số hợp lệ và lớn hơn 0',
+  }),
+  startDate: z.date({
+    message: "Vui lòng chọn ngày bắt đầu",
+    required_error: "Vui lòng chọn ngày bắt đầu"
+  }),
+  endDate: z.date({
+    message: "Vui lòng chọn ngày kết thúc",
+    required_error: "Vui lòng chọn ngày kết thúc"
+  }),
+  description: z.string().min(1, "Vui lòng nhập mô tả"),
+})

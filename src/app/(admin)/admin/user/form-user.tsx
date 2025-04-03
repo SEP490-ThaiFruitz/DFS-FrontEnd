@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { FormUserSafeTypes } from '@/zod-safe-types/user-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -47,39 +47,20 @@ const FormUser = ({
         }
     });
     const queryClient = useQueryClient();
-    const { mutate: formUserMutation, isPending } = useMutation({
-        mutationFn: async (values: any) => {
-            try {
-                const { id, confirmPassword, role, ...resetValue } = values
-                const response = user ? await updateUser({ userId: id, role, ...resetValue }) : await createUser({ role, ...resetValue })
-                if (!response?.isSuccess) {
-                    if (response?.status === 404) {
-                        throw new Error("Ko tìm thấy tài khoản")
-                    }
-                    if (response?.detail.includes("Email")) {
-                        throw new Error("Email đã tồn tại. Vui lòng đăng nhập")
-                    }
-                    if (response?.detail.includes("Phone")) {
-                        throw new Error("Số điện thoại đã tồn tại. Vui lòng đăng nhập")
-                    }
-                    throw new Error("Lỗi hệ thống")
-                }
-            } catch (error: unknown) {
-                throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống")
-            }
-        },
-        onSuccess: () => {
-            toast.success(user ? "Cập nhật tài khoản thành công" : "Thêm tài khoản thành công")
-            onClose()
-            queryClient.invalidateQueries({ queryKey: ["Users"] })
-        },
-        onError: (error) => {
-            toast.error(error.message)
-        }
-    })
+
 
     const onSubmit = async (values: z.infer<typeof FormUserSafeTypes>) => {
-        formUserMutation(values)
+        try {
+            const { id, confirmPassword, role, ...resetValue } = values
+            const response = user ? await updateUser({ userId: id, role, ...resetValue }) : await createUser({ role, ...resetValue })
+            if (response) {
+                toast.success(user ? "Cập nhật tài khoản thành công" : "Thêm tài khoản thành công")
+                onClose()
+                queryClient.invalidateQueries({ queryKey: ["Users"] })
+            }
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     const title = (
@@ -100,14 +81,14 @@ const FormUser = ({
                         <FormInputControl
                             form={form}
                             name="name"
-                            disabled={isPending}
+                            disabled={form.formState.isSubmitting}
                             label="Họ và tên"
                             placeholder="Nguyễn Anh Minh"
                         />
                         <FormInputControl
                             form={form}
                             name="phone"
-                            disabled={isPending}
+                            disabled={form.formState.isSubmitting}
                             label="Số điện thoại"
                             placeholder="+84..."
                         />
@@ -115,18 +96,18 @@ const FormUser = ({
                     <FormInputControl
                         form={form}
                         name="email"
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label="Email"
                         placeholder="example@mail.com"
                     />
                     <FormSelectControl
                         form={form}
                         name="role"
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label="Vai trò"
                         items={[
                             { id: "Administrator", name: "Quản trị viên" },
-                            { id: "Mangager", name: "Quản lí" },
+                            { id: "Manager", name: "Quản lí" },
                             { id: "Staff", name: "Nhân viên" },
                             { id: "Customer", name: "Khách hàng" },
                         ]}
@@ -134,7 +115,7 @@ const FormUser = ({
                     <Controller
                         name="isActive"
                         control={form.control}
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         defaultValue={user?.isActive ?? false}
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between">
@@ -152,14 +133,14 @@ const FormUser = ({
                     <FormPassword
                         form={form}
                         name="password"
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label="Mật Khẩu"
                         placeholder="Nhập mật khẩu"
                     />
                     <FormPassword
                         form={form}
                         name="confirmPassword"
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label="Xác Nhận Mật Khẩu"
                         placeholder="Nhập lại mật khẩu"
                     />
@@ -168,9 +149,9 @@ const FormUser = ({
                             type="submit"
                             className="w-fit h-10 bg-green-700 hover:bg-green-800 text-white hover:font-semibold duration-300 transition mr-auto"
                             variant="secondary"
-                            disabled={isPending}
+                            disabled={form.formState.isSubmitting}
                             label={
-                                isPending ? (
+                                form.formState.isSubmitting ? (
                                     <WaitingSpinner
                                         variant="pinwheel"
                                         label={`Đang ${buttonLabel.toLocaleLowerCase()} ...`}

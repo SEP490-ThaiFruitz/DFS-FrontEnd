@@ -79,6 +79,11 @@ const data = {
           url: "/admin/settings/sliders",
           icon: GalleryHorizontal,
         },
+        {
+          title: "Thanh toán",
+          url: "/admin/settings/payments",
+          icon: Banknote,
+        },
       ],
     },
   ],

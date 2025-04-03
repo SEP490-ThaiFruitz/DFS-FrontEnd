@@ -1,0 +1,125 @@
+"use client"
+import { API } from '@/actions/client/api-config'
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
+import { PAYMENT_KEY } from '@/app/key/admin-key'
+import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized'
+import { FormInputControl } from '@/components/global-components/form/form-input-control'
+import { FormValues } from '@/components/global-components/form/form-values'
+import { WaitingSpinner } from '@/components/global-components/waiting-spinner'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { PayOsSettingSafeTypes } from '@/zod-safe-types/setting-safe-types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+
+interface PayOs {
+    clientId: string
+    apiKey: string
+    checksumKey: string
+    returnSuccessUrl: string
+    returnCancelUrl: string
+}
+
+const PayOsCard = () => {
+    const { data: payos } = useFetch<PayOs>(`/Settings/${PAYMENT_KEY.PAYOS}`, [PAYMENT_KEY.PAYOS])
+    const form = useForm<z.infer<typeof PayOsSettingSafeTypes>>({
+        resolver: zodResolver(PayOsSettingSafeTypes)
+    })
+
+    useEffect(() => {
+        if (payos) {
+            form.reset({
+                clientId: payos.clientId,
+                apiKey: payos.apiKey,
+                checksumKey: payos.checksumKey,
+                returnSuccessUrl: payos.returnSuccessUrl,
+                returnCancelUrl: payos.returnCancelUrl,
+            })
+        }
+    }, [payos])
+
+    const onSubmit = async (values: z.infer<typeof PayOsSettingSafeTypes>) => {
+        try {
+            const response = await API.update("/Settings", {
+                name: PAYMENT_KEY.PAYOS,
+                value: JSON.stringify(values)
+            })
+            if (response) {
+                toast.success("Cập nhật cài đặt payos thành công")
+            }
+        } catch (error: any) {
+            console.log(error)
+        }
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Cài đặt PayOs</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <FormValues form={form} onSubmit={onSubmit}>
+                    <div className='grid sm:grid-cols-2 gap-10'>
+                        <FormInputControl
+                            form={form}
+                            name="clientId"
+                            disabled={form.formState.isSubmitting}
+                            label="Client ID"
+                            require
+                        />
+                        <FormInputControl
+                            form={form}
+                            name="apiKey"
+                            disabled={form.formState.isSubmitting}
+                            label="API Key"
+                            require
+                        />
+                        <FormInputControl
+                            form={form}
+                            name="checksumKey"
+                            disabled={form.formState.isSubmitting}
+                            label="Checksum Key"
+                            require
+                        />
+                        <FormInputControl
+                            form={form}
+                            name="returnSuccessUrl"
+                            disabled={form.formState.isSubmitting}
+                            label="Link trả thanh toán thành công"
+                            require
+                        />
+                        <FormInputControl
+                            form={form}
+                            name="returnCancelUrl"
+                            disabled={form.formState.isSubmitting}
+                            label="Link trả thanh toán thất bại"
+                            require
+                        />
+                    </div>
+                    <ButtonCustomized
+                        type="submit"
+                        className="max-w-32 bg-green-500 hover:bg-green-700 ml-auto"
+                        variant="secondary"
+                        disabled={form.formState.isSubmitting}
+                        label={
+                            form.formState.isSubmitting ? (
+                                <WaitingSpinner
+                                    variant="pinwheel"
+                                    label="Đang cập nhật..."
+                                    className="font-semibold"
+                                    classNameLabel="font-semibold text-sm"
+                                />
+                            ) : (
+                                "Cập nhật"
+                            )
+                        }
+                    />
+                </FormValues>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default PayOsCard

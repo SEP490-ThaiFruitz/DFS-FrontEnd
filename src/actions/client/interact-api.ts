@@ -33,7 +33,7 @@ export const getHeaders = async (isFormData?: boolean) => {
     if (tokenData) {
       headers.Authorization = "Bearer " + tokenData?.accessToken;
     }
-    console.log(headers.Authorization)
+    // console.log(headers.Authorization)
 
     return headers;
   } catch (error) {
@@ -164,5 +164,5 @@ export const interactApi = {
   post,
   put,
   remove,
-  patch
+  patch,
 };

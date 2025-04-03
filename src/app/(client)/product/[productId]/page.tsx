@@ -9,6 +9,10 @@ interface ProductDetailPageProps {
   params: Promise<{ productId: string }>;
 }
 
+export const revalidate = 30;
+
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const products = await fetch(
     `${process.env.NEXT_PUBLIC_URL_API}/Products`

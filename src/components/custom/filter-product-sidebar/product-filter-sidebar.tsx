@@ -41,7 +41,6 @@ import {
 import FilterSidebar from "./filter-sidebar";
 import { toLowerCaseNonAccentVietnamese } from "@/utils/non-accent";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ComboProductCard, {
   ComboProduct,
 } from "@/components/global-components/card/card-combo";
@@ -737,69 +736,6 @@ export const ProductFilterSidebar = memo(
                   ))}
                 </SelectContent>
               </Select>
-
-              {/* <Tabs
-                defaultValue="tab-1"
-                value={tab}
-                onValueChange={setTab}
-                className="flex items-center gap-4"
-              >
-                <TabsList
-                  className="mx-auto flex max-w-xs bg-transparent transition-all"
-                  // onChange={setTab}
-                >
-                  <TabsTrigger
-                    value="tab-1"
-                    className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:rounded-3xl data-[state=active]:border data-[state=active]:border-slate-500 data-[state=active]:shadow-none transition-all"
-                  >
-                    <Grid3X3
-                      className="mb-1.5 opacity-60"
-                      size={16}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-                    Tất cả sản phẩm
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="tab-2"
-                    className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:rounded-3xl data-[state=active]:border data-[state=active]:border-slate-500 data-[state=active]:shadow-none  transition-all"
-                  >
-                    <Box
-                      className="mb-1.5 opacity-60"
-                      size={16}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-                    Combo sản phẩm
-                  </TabsTrigger>
-
-                  <TabsTrigger
-                    value="tab-3"
-                    className="group flex-1 flex-col p-3 text-xs data-[state=active]:bg-muted data-[state=active]:rounded-3xl data-[state=active]:border data-[state=active]:border-slate-500 data-[state=active]:shadow-none  transition-all"
-                  >
-                    <PackagePlus
-                      className="mb-1.5 opacity-60"
-                      size={16}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-                    Bạn có muốn tạo Combo?
-                  </TabsTrigger>
-                </TabsList>
-
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sắp xếp theo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sortOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Tabs> */}
             </div>
 
             {/* Active Filters */}
@@ -1089,7 +1025,9 @@ export const ProductFilterSidebar = memo(
                 />
               )
             ) : (
-              tab === "tab-3" && <CustomComboBuilder />
+              tab === "tab-3" && (
+                <CustomComboBuilder productsData={filteredProducts} />
+              )
             )}
           </div>
         </SidebarInset>

@@ -197,8 +197,8 @@ export const CardProduct = ({
               {/* <StatusButton handleAddToCart={() => {}} /> */}
               <StatusButton
                 handleAddToCart={(e) => {
-                  e.preventDefault();
                   e.stopPropagation();
+                  e.preventDefault();
                   addOrder({
                     // ...product,
                     id: productId,

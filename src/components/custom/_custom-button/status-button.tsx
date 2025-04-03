@@ -27,6 +27,8 @@ export default function StatusButton({
   const isEnabled = !status || status === "Add to cart";
 
   const changeStatus = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
     if (!isEnabled) {
       return;
     }
@@ -49,7 +51,10 @@ export default function StatusButton({
 
   return (
     <button
-      onClick={(e) => changeStatus(e)}
+      onClick={(e) => {
+        e.stopPropagation();
+        changeStatus(e);
+      }}
       disabled={!isEnabled}
       className={cn(
         `group relative overflow-hidden rounded-md text-sm bg-[#0284c7] hover:bg-[#0369a1] size-10

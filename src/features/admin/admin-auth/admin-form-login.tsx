@@ -83,7 +83,7 @@ export const AdminFormLogin = () => {
         duration: 1000,
       });
 
-      console.log(decode);
+      // console.log(decode);
 
       const userRole = decode?.Role.toUpperCase() as string;
 
@@ -91,6 +91,8 @@ export const AdminFormLogin = () => {
 
       const admin = userRole === ROLES.Administrator.toUpperCase();
       const manager = userRole === ROLES.Manager.toUpperCase();
+
+      // console.log({ admin, manager });
 
       queryClient.invalidateQueries({ queryKey: ["authUser, mange"] });
 

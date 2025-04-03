@@ -134,7 +134,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const handleAddToCart = () => {
     cartActions.addOrder({
       id: product.id,
-      quantityOrder: quantity,
+      // quantityOrder: quantity,
       variant: {
         productVariantId: selectedVariant.productVariantId,
         netWeight: selectedVariant.netWeight,
@@ -157,6 +157,32 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     toast.success(
       `Đã thêm vào giỏ hàng ${quantity} ${product.name} - ${selectedVariant.packageType}`
     );
+  };
+
+  const handleDecreaseQuantity = () => {
+    cartActions.decreaseQuantity({
+      id: product.id,
+
+      variant: {
+        productVariantId: selectedVariant.productVariantId,
+        netWeight: selectedVariant.netWeight,
+        price: selectedVariant.price,
+        packageType: selectedVariant.packageType,
+        discountPrice: selectedVariant.promotion?.price,
+        stockQuantity: selectedVariant.stockQuantity as number,
+        promotion: selectedVariant?.promotion,
+        imageVariant: selectedVariant.image,
+      },
+
+      categories: product.categories,
+
+      description: product.description,
+      quantitySold: 0, // API return lack of quantitySold
+      rating: product?.overallRatingResponse?.overallRating ?? 0,
+      type: "single",
+      mainImageUrl: selectedVariant?.image ?? "/images/second-background.png",
+      name: product.name,
+    });
   };
 
   const handleToggleWishlist = () => {
@@ -244,6 +270,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 quantity={quantity}
                 handleQuantityChange={handleQuantityChange}
                 handleAddToCart={handleAddToCart}
+                handleDecreaseQuantity={handleDecreaseQuantity}
                 handleToggleWishlist={handleToggleWishlist}
                 isInWishlist={isInWishlist}
                 formatPrice={formatPrice}

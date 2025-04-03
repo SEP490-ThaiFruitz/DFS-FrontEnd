@@ -28,6 +28,7 @@ export default function StatusButton({
 
   const changeStatus = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
 
     if (!isEnabled) {
       return;
@@ -53,6 +54,7 @@ export default function StatusButton({
     <button
       onClick={(e) => {
         e.stopPropagation();
+        e.preventDefault();
         changeStatus(e);
       }}
       disabled={!isEnabled}

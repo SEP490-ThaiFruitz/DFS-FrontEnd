@@ -17,7 +17,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Profile } from "@/types/types";
+import { ApiResponse, Profile } from "@/types/types";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
@@ -187,10 +187,10 @@ export const VerifyDialog = () => {
             <SelectContent>
               <SelectGroup>
                 {user?.email && (
-                  <SelectItem value={"email"}>{user.email}</SelectItem>
+                  <SelectItem value={"email"}>{user?.email}</SelectItem>
                 )}
                 {user?.phone && (
-                  <SelectItem value={"phone"}>{user.phone}</SelectItem>
+                  <SelectItem value={"phone"}>{user?.phone}</SelectItem>
                 )}
               </SelectGroup>
             </SelectContent>

@@ -72,6 +72,9 @@ export const Navigate = () => {
     },
   });
 
+  console.log(user);
+  console.log({ isUserLoading });
+
   const navItemClassName =
     "relative inline-flex text-sm h-11 w-full md:w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0 before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
 
@@ -262,7 +265,7 @@ export const Navigate = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              {!user?.isVerification && <VerifyDialog />}
+              {user?.isVerification === false && <VerifyDialog />}
             </>
           ) : (
             <div className="flex space-x-2">

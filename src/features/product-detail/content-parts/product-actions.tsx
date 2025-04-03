@@ -17,6 +17,7 @@ interface ProductActionsProps {
   quantity: number;
   handleQuantityChange: (change: number) => void;
   handleAddToCart: () => void;
+  handleDecreaseQuantity: () => void;
   handleToggleWishlist: () => void;
   isInWishlist: boolean;
   formatPrice: (price: number) => string;
@@ -31,6 +32,7 @@ export const ProductActions = memo(
     handleAddToCart,
     handleToggleWishlist,
     isInWishlist,
+    handleDecreaseQuantity,
     formatPrice,
     calculateDiscountedPrice,
   }: ProductActionsProps) => {
@@ -77,18 +79,22 @@ export const ProductActions = memo(
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => handleQuantityChange(-1)}
-                disabled={quantity <= 1}
+                // onClick={() => handleQuantityChange(-1)}
+                onClick={handleDecreaseQuantity}
+                disabled={(findCart?.quantitySold ?? 0) <= 1}
                 className="h-9 w-9 rounded-none"
               >
                 <span className="sr-only">Giảm</span>
                 <Minus className="h-4 w-4" />
               </Button>
-              <span className="w-12 text-center">{findCart?.quantitySold}</span>
+              <span className="w-12 text-center">
+                {findCart?.quantitySold ?? 1}
+              </span>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => handleQuantityChange(1)}
+                // onClick={() => handleQuantityChange(1)}
+                onClick={handleAddToCart}
                 disabled={
                   (findCart?.quantitySold as number) >=
                   (selectedVariant?.stockQuantity ?? 0)
@@ -117,9 +123,7 @@ export const ProductActions = memo(
 
           <div className="flex justify-between items-center">
             <span className="text-slate-700">Hạn sử dụng:</span>
-            <span className="font-semibold">
-              {selectedVariant?.shelfLife} tháng
-            </span>
+            <span className="font-semibold">{selectedVariant?.shelfLife}</span>
           </div>
 
           <Separator />

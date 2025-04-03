@@ -17,7 +17,7 @@ export function ComboDropZone({ children }: ComboDropZoneProps) {
       ref={setNodeRef}
       className={`${
         isOver ? "ring-2 ring-green-500 bg-green-50" : ""
-      } rounded-lg transition-all`}
+      } rounded-3xl transition-all`}
     >
       {children}
     </div>

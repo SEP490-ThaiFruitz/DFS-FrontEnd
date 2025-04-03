@@ -28,6 +28,15 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { ComboDropZone } from "./combo-drop-zone";
 import Image from "next/image";
 import { CuisineSelector } from "@/components/custom/_custom_select/cuisine-selector";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { SelectValue } from "@radix-ui/react-select";
 
 // Define types based on the provided data structure
 export type Promotion = {
@@ -158,27 +167,6 @@ export function CustomComboBuilder() {
   };
 
   const addToCombo = (product: Product, variant: ProductVariant) => {
-    // const existingItemIndex = selectedItems.findIndex(
-    //   (item) => item.productVariantId === variant.productVariantId
-    // );
-
-    // if (existingItemIndex >= 0) {
-    //   // Item already exists, increment quantity
-    //   const updatedItems = [...selectedItems];
-    //   updatedItems[existingItemIndex].quantity += 1;
-    //   setSelectedItems(updatedItems);
-    // } else {
-    //   // Add new item
-    //   setSelectedItems([
-    //     ...selectedItems,
-    //     {
-    //       productVariantId: variant.productVariantId,
-    //       quantity: 1,
-    //       product,
-    //       variant,
-    //     },
-    //   ]);
-    // }
     const existingItemIndex = selectedItems.findIndex(
       (item) => item.productVariantId === variant.productVariantId
     );
@@ -350,7 +338,7 @@ export function CustomComboBuilder() {
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-700" />
                   <Input
                     placeholder="Tìm kiếm sản phẩm..."
                     value={searchTerm}
@@ -360,10 +348,10 @@ export function CustomComboBuilder() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-500 whitespace-nowrap">
+                {/* <span className="text-sm text-slate-500 whitespace-nowrap">
                   Danh mục:
-                </span>
-                <select
+                </span> */}
+                {/* <select
                   className="border border-slate-200 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
                   value={activeCategory}
                   onChange={(e) => setActiveCategory(e.target.value)}
@@ -373,7 +361,28 @@ export function CustomComboBuilder() {
                       {category.name}
                     </option>
                   ))}
-                </select>
+                </select> */}
+
+                <Select
+                  onValueChange={(setValue) => setActiveCategory(setValue)}
+                  value={activeCategory}
+                  defaultValue="all"
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Lọc theo loại" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Loại của sản phẩm</SelectLabel>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -382,10 +391,10 @@ export function CustomComboBuilder() {
               <div className="flex items-center gap-2 mb-2">
                 {activeTags.length > 0 && (
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={clearFilters}
-                    className="ml-auto text-xs text-slate-500 hover:text-slate-700"
+                    className="ml-auto text-xs text-slate-700 hover:text-slate-700"
                   >
                     Xóa bộ lọc
                   </Button>

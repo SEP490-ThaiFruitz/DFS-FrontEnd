@@ -216,11 +216,9 @@ export function ProductCard({ product, onAddToCombo }: ProductCardProps) {
               <h2 className="text-lg font-bold text-sky-500/70  hover:text-xl 2xl:hover:text-2xl transition-all duration-150">
                 {formatVND(discountPrice)}
               </h2>
-              {hasDiscount && (
-                <span className="text-sm text-[#fdba74] line-through">
-                  {formatVND(originalPrice)}
-                </span>
-              )}
+              <span className="text-sm text-[#fdba74] line-through">
+                {formatVND(originalPrice)}
+              </span>
             </div>
           ) : (
             <h2 className="text-lg font-bold text-sky-500/70  hover:text-xl 2xl:hover:text-2xl transition-all duration-150">
@@ -228,7 +226,7 @@ export function ProductCard({ product, onAddToCombo }: ProductCardProps) {
             </h2>
           )}
 
-          <div className="flex items-baseline gap-2">
+          {/* <div className="flex items-baseline gap-2">
             <span className="font-bold text-slate-900">
               {formatVND(discountPrice ?? 0)}
             </span>
@@ -237,7 +235,7 @@ export function ProductCard({ product, onAddToCombo }: ProductCardProps) {
                 {formatVND(originalPrice)}
               </span>
             )}
-          </div>
+          </div> */}
         </CardContent>
 
         <CardFooter className="p-5 pt-0">

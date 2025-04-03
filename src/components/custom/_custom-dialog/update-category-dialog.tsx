@@ -49,9 +49,9 @@ export const UpdateCategoryDialog = ({
         form.reset();
         onClose();
         queryClient.invalidateQueries({ queryKey: ["categories"] })
-        toast.success("Cập nhập loại bài viết thành công")
+        toast.success("Cập nhập loại sản phẩm thành công")
       } else {
-        toast.error(response?.status == 409 ? "Tên loại bài viết đã tồn tại" : "Lỗi hệ thống")
+        toast.error(response?.status == 409 ? "Tên loại sản phẩm đã tồn tại" : "Lỗi hệ thống")
       }
 
       console.log({ response });

@@ -11,6 +11,7 @@ import { useState } from "react"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
 import { API } from "@/actions/client/api-config"
 import FormVariant from "./form-variant"
+import InformationDiscount from "./information-discount"
 
 export interface PackagingType {
   id: string
@@ -37,7 +38,20 @@ export interface ProductVariantDetail {
   stockQuantity: number
   reOrderPoint: number
   packagingType: PackagingType
-  discounts: any[]
+  discounts: Discount[]
+}
+
+
+export interface Discount {
+  id: string
+  startDate: string
+  endDate: string
+  percentage: number
+  quantity: number
+  quantitySold: number
+  description: string
+  createdOnUtc: Date
+  modifiedOnUtc: Date | null
 }
 
 interface VariantTabProps {
@@ -161,6 +175,7 @@ const VariantTab = ({ productVariants, productId }: Readonly<VariantTabProps>) =
                       </div>
                     </CardContent>
                   </div>
+                  <InformationDiscount productId={productId} discounts={variant.discounts} productVariantId={variant.id} />
                 </Card>
               ))}
             </div>

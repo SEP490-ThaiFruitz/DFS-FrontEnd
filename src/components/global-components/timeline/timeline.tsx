@@ -55,6 +55,15 @@ const Timeline = ({
           <div className="relative flex flex-col gap-10">
             {events.slice().reverse().map((event: TimelineEvent, index) => (
               <React.Fragment key={index + 1}>
+                {event?.subEvents?.slice().reverse().map((subEvent: SubEvent, indexSubEvent: number) => (
+                  <div key={`${index},${indexSubEvent}`} className="flex items-center flex-row space-x-5 ml-10">
+                    <div className="bg-slate-400 z-10 rounded-full w-4 h-4 flex-shrink-0" />
+                    <div className="text-left mt-2">
+                      <div className="font-medium text-sm sm:text-base">{subEvent.title}</div>
+                      <div className="text-xs text-gray-500 mt-1">{formatTimeVietNam(new Date(subEvent.date), true)}</div>
+                    </div>
+                  </div>
+                ))}
                 <div className="flex flex-row items-center space-x-5">
                   <div
                     className={cn(
@@ -72,15 +81,6 @@ const Timeline = ({
                     )}
                   </div>
                 </div>
-                {event?.subEvents?.slice().reverse().map((subEvent: SubEvent, indexSubEvent: number) => (
-                  <div key={`${index},${indexSubEvent}`} className="flex items-center flex-row space-x-5 ml-10">
-                    <div className="bg-slate-400 z-10 rounded-full w-4 h-4 flex-shrink-0" />
-                    <div className="text-left mt-2">
-                      <div className="font-medium text-sm sm:text-base">{subEvent.title}</div>
-                      <div className="text-xs text-gray-500 mt-1">{formatTimeVietNam(new Date(subEvent.date), true)}</div>
-                    </div>
-                  </div>
-                ))}
               </React.Fragment>
             ))}
             <div className="absolute top-0 bottom-0 left-3 w-0.5 bg-gray-200 mb-5">

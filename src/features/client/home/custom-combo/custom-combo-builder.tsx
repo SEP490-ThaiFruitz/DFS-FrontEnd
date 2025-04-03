@@ -383,21 +383,6 @@ export const CustomComboBuilder = memo(
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {/* <span className="text-sm text-slate-500 whitespace-nowrap">
-                  Danh mục:
-                </span> */}
-                  {/* <select
-                  className="border border-slate-200 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
-                  value={activeCategory}
-                  onChange={(e) => setActiveCategory(e.target.value)}
-                >
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select> */}
-
                   <Select
                     onValueChange={(setValue) => setActiveCategory(setValue)}
                     value={activeCategory}
@@ -411,7 +396,11 @@ export const CustomComboBuilder = memo(
                       <SelectGroup>
                         <SelectLabel>Loại của sản phẩm</SelectLabel>
                         {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
+                          <SelectItem
+                            key={category.id}
+                            value={category.id}
+                            className="cursor-pointer"
+                          >
                             {category.name}
                           </SelectItem>
                         ))}

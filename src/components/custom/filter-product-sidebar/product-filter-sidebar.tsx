@@ -574,7 +574,7 @@ export const ProductFilterSidebar = memo(
         },
       };
       setSavedFilters((prev: any) => [...prev, newFilter]);
-    }, [setSavedFilters]);
+    }, [setSavedFilters, filters, savedFilters]);
 
     const renderStarRating = (rating: number) => {
       return (

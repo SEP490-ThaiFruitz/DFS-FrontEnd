@@ -22,11 +22,11 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Star, Plus, Info, Grab } from "lucide-react";
-import type { Product, ProductVariant } from "./custom-combo-builder";
 
 import { motion } from "framer-motion";
 import { useDraggable } from "@dnd-kit/core";
 import { formatVND } from "@/lib/format-currency";
+import { Product, ProductVariant } from "@/hooks/use-cart-store";
 
 interface ProductCardProps {
   product: Product;
@@ -153,7 +153,7 @@ export function ProductCard({ product, onAddToCombo }: ProductCardProps) {
                   </p>
 
                   <div className="flex flex-wrap gap-1.5">
-                    {product.tags.map((tag, index) => (
+                    {product?.tags?.map((tag, index) => (
                       <Badge
                         key={index}
                         variant="secondary"

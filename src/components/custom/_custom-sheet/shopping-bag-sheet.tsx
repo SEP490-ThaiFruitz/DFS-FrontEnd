@@ -34,24 +34,13 @@ import { AnimatePresence, motion } from "framer-motion";
 export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const token = Cookies.get("accessToken");
-
-  // console.log({ token });
-
-  // const {
-  //   isLoading,
-  //   isFetching,
-  //   data: productCart,
-  //   error,
-  // } = useFetch<{ value: { items: CartProductTypes[] } }>("/Carts/", [
-  //   CART_KEY.CARTS,
-  // ]);
-
   const cart = useFromStore(useCartStore, (state) => state.orders);
 
   const cartCondition = (cart?.length || 0) > 0;
 
   let total = 0;
+
+  let quantityOrders = 0;
 
   if (cart) {
     total = cart.reduce(
@@ -62,6 +51,10 @@ export const ShoppingBagSheet = () => {
             (product.quantityOrder as number)
           : Number(product.variant.discountPrice) *
             (product.quantityOrder as number)),
+      0
+    );
+    quantityOrders = cart.reduce(
+      (acc, product) => acc + (product.quantityOrder as number),
       0
     );
   }
@@ -108,7 +101,8 @@ export const ShoppingBagSheet = () => {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="font-semibold"
                 >
-                  {cart?.length}
+                  {/* {cart?.length} */}
+                  {quantityOrders}
                 </motion.span>
               </AnimatePresence>
             </span>

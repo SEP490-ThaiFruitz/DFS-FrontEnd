@@ -72,8 +72,8 @@ export function ProductCard({ product, onAddToCombo }: ProductCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      <Card className="overflow-hidden h-full flex flex-col transition-all hover:shadow-md border-gray-100 group cardStyle">
-        <div className="relative aspect-square overflow-hidden bg-gray-50">
+      <Card className="overflow-hidden h-full flex flex-col transition-all hover:shadow-md border-slate-100 group cardStyle">
+        <div className="relative aspect-square overflow-hidden bg-slate-50">
           <Image
             src={selectedVariant?.imageVariant || product.mainImageUrl}
             alt={product.name}
@@ -100,7 +100,7 @@ export function ProductCard({ product, onAddToCombo }: ProductCardProps) {
 
         <CardContent className="p-5 flex-grow">
           <div className="flex justify-between items-start mb-3">
-            <h3 className="font-medium text-gray-900 line-clamp-1">
+            <h3 className="font-bold text-slate-900 line-clamp-1 italic">
               {product.name}
             </h3>
             <Dialog>
@@ -137,7 +137,8 @@ export function ProductCard({ product, onAddToCombo }: ProductCardProps) {
                         key={i}
                         size={16}
                         className={
-                          i < product.rating
+                          // i < product.rating
+                          i < 5
                             ? "fill-yellow-400 text-yellow-400"
                             : "text-gray-200"
                         }

@@ -7,6 +7,7 @@ import type { ComboItem } from "./custom-combo-builder";
 import { motion, AnimatePresence } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
+import { formatVND } from "@/lib/format-currency";
 
 interface SelectedItemsProps {
   items: ComboItem[];
@@ -102,12 +103,14 @@ function SortableItem({
       </div>
 
       <div className="flex-grow">
-        <h4 className="font-medium text-sm line-clamp-1">
+        <h4 className="font-bold text-base line-clamp-1 italics text-gray-900 mb-1">
           {item.product.name}
         </h4>
-        <p className="text-xs text-gray-500 mb-1">
+        <p className="text-xs text-slate-500 mb-1">
           {item.variant.packageType} - {item.variant.netWeight}g
         </p>
+
+        <span className="text-xs text-slate-500 font-bold mb-1">📦 Single</span>
 
         <div className="flex justify-between items-center">
           <div className="flex items-center border rounded-md">
@@ -147,23 +150,42 @@ function SortableItem({
           </div>
 
           <div className="text-right">
-            <motion.div
-              key={price * item.quantity}
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              className="font-semibold text-sm"
-            >
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(price * item.quantity)}
-            </motion.div>
-            <div className="text-xs text-gray-500">
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(price)}{" "}
-              x {item.quantity}
+            {/* <div className="flex items-center gap-1">  */}
+
+            {item.variant?.promotion?.price ? (
+              <div className="flex items-center gap-2">
+                <motion.div
+                  key={item.variant.promotion.price * item.quantity}
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  className="font-bold text-base text-sky-500"
+                >
+                  {formatVND(item.variant.promotion.price * item.quantity)}
+                </motion.div>
+
+                <motion.div
+                  key={price * item.quantity}
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  className="font-bold text-xs text-rose-500 line-through"
+                >
+                  {formatVND(price * item.quantity)}
+                </motion.div>
+              </div>
+            ) : (
+              <motion.div
+                key={price * item.quantity}
+                initial={{ scale: 1.1 }}
+                animate={{ scale: 1 }}
+                className="font-bold text-base text-sky-500"
+              >
+                {formatVND(price * item.quantity)}
+              </motion.div>
+            )}
+            {/* </div> */}
+            <div className="text-xs text-slate-700 mt-1">
+              <span className="text-gray-500  mr-1">{formatVND(price)}</span> x{" "}
+              {item.quantity}
             </div>
           </div>
         </div>

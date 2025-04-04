@@ -27,10 +27,10 @@ const CategorySlide = () => {
               key={category.id}
               className="md:basis-1/2 lg:basis-1/3 pl-4 p-4 "
             >
-              <Link
+              {/* <Link
                 href={`/find?category=${category.name}`}
                 key={category.id}
-                className="flex flex-col items-center justify-center border text-center p-1 shadow-sm hover:cursor-pointer animate-out hoverAnimate rounded-lg cardStyle"
+                className="flex flex-col items-center justify-center border text-center p-1 shadow-sm hover:cursor-pointer animate-out hoverAnimate rounded-lg cardStyle bg-white"
               >
                 <div>
                   <Image
@@ -42,6 +42,27 @@ const CategorySlide = () => {
                   />
                 </div>
                 <h1 className="font-bold text-slate-700 font-7xl">
+                  {category.name}
+                </h1>
+              </Link> */}
+              <Link
+                href={`/find?category=${category.name}`}
+                key={category.id}
+                className="group flex flex-col items-center justify-center border rounded-2xl bg-white p-3 shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+              >
+                <div className="w-[150px] h-[120px] overflow-hidden rounded-lg aspect-[4/3]">
+                  <Image
+                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    src={category.thumbnail ?? "/images/third-background.png"}
+                    alt={category.name}
+                    width={150}
+                    height={120}
+                    quality={80}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority
+                  />
+                </div>
+                <h1 className="mt-2 text-base font-bold text-slate-700 text-center">
                   {category.name}
                 </h1>
               </Link>

@@ -124,7 +124,7 @@ export const ShoppingBagSheet = () => {
         </div>
       </SheetTrigger>
 
-      <SheetContent className="min-w-full md:min-w-[600px] lg:min-w-[50%] rounded-2xl mr-2">
+      <SheetContent className="min-w-full md:min-w-[600px] lg:min-w-[50%] rounded-3xl mr-2">
         <SheetHeader>
           <SheetTitle>
             <div className="text-center">
@@ -173,17 +173,6 @@ export const ShoppingBagSheet = () => {
                         );
                       })
                     ) : null}
-
-                    {/* {customCombo.data?.value
-                      ? customCombo.data.value.map((custom) => {
-                          return (
-                            <CustomComboProductCard
-                              combo={custom}
-                              key={custom.id}
-                            />
-                          );
-                        })
-                      : null} */}
                   </ScrollArea>
 
                   <div className=" mt-14 w-full">

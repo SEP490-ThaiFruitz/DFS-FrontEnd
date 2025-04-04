@@ -38,6 +38,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Product, ProductVariant } from "@/hooks/use-cart-store";
 import { useQueryClient } from "@tanstack/react-query";
 import { USER_KEY } from "@/app/key/user-key";
+import {
+  ComboDiscountBadge,
+  ComboDiscountInfo,
+} from "@/components/global-components/card/custom-combo/combo-discount-info";
+import { formatVND } from "@/lib/format-currency";
 
 export type ComboItem = {
   id: string; // Using productVariantId as id
@@ -105,6 +110,7 @@ export const CustomComboBuilder = memo(
 
     const filteredProducts = products?.filter((product) => {
       // Filter by search term
+
       const matchesSearch =
         searchTerm === "" ||
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -199,13 +205,44 @@ export const CustomComboBuilder = memo(
       );
     };
 
+    // const calculateTotalPrice = () => {
+    //   return selectedItems.reduce((total, item) => {
+    //     const price = item.variant.promotion
+    //       ? item.variant.promotion.price
+    //       : item.variant.price;
+    //     return total + price * item.quantity;
+    //   }, 0);
+    // };
+
+    const calculateComboDiscount = (totalItems: number): number => {
+      if (totalItems >= 10) return 15;
+      if (totalItems >= 7) return 10;
+      if (totalItems >= 5) return 6;
+      return 0;
+    };
+
+    // Modify the calculateTotalPrice function to include the discount calculation
     const calculateTotalPrice = () => {
-      return selectedItems.reduce((total, item) => {
+      const subtotal = selectedItems.reduce((total, item) => {
         const price = item.variant.promotion
           ? item.variant.promotion.price
           : item.variant.price;
         return total + price * item.quantity;
       }, 0);
+
+      const totalItems = selectedItems.reduce(
+        (count, item) => count + item.quantity,
+        0
+      );
+      const discountPercentage = calculateComboDiscount(totalItems);
+      const discountAmount = (subtotal * discountPercentage) / 100;
+
+      return {
+        subtotal,
+        discountPercentage,
+        discountAmount,
+        total: subtotal - discountAmount,
+      };
     };
 
     const accessToken = Cookie.get("accessToken") || null;
@@ -260,10 +297,6 @@ export const CustomComboBuilder = memo(
       } catch (error) {
         toast.error("Có lỗi xảy ra khi tạo combo. Vui lòng thử lại sau.");
       }
-
-      // Here you would normally send the data to your API
-
-      // Reset form after successful submission
     };
 
     // Handle drag start event
@@ -331,6 +364,12 @@ export const CustomComboBuilder = memo(
       setActiveItem(null);
     };
 
+    // const conditionQuantity = selectedItems.reduce((acc, curr) => {
+    //   return acc + curr.quantity;
+    // }, 0);
+
+    console.log({ selectedItems });
+
     return (
       <DndContext
         onDragStart={handleDragStart}
@@ -381,7 +420,6 @@ export const CustomComboBuilder = memo(
                 </div>
               </div>
 
-              {/* Tags filter */}
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
                   {activeTags.length > 0 && (
@@ -414,20 +452,24 @@ export const CustomComboBuilder = memo(
                     exit={{ opacity: 0 }}
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 "
                   >
-                    {filteredProducts.map((product) => (
-                      <motion.div
-                        key={product.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <ProductCard
-                          product={product}
-                          onAddToCombo={addToCombo}
-                        />
-                      </motion.div>
-                    ))}
+                    {filteredProducts.map((product) => {
+                      // console.log({ product });
+
+                      return (
+                        <motion.div
+                          key={product.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <ProductCard
+                            product={product}
+                            onAddToCombo={addToCombo}
+                          />
+                        </motion.div>
+                      );
+                    })}
                   </motion.div>
                 ) : (
                   <motion.div
@@ -461,13 +503,22 @@ export const CustomComboBuilder = memo(
           <div className="lg:col-span-4 h-full">
             <ComboDropZone>
               <div className="rounded-xl shadow-sm p-6 sticky top-4 cardStyle">
-                <div className="flex items-center gap-2 mb-6">
+                <div className="flex items-center gap-2 mb-2">
                   <ShoppingBag className="text-slate-900" size={20} />
                   <h2 className="text-xl font-semibold text-slate-900">
                     Combo của bạn
                   </h2>
+
+                  {selectedItems.length > 0 && (
+                    <ComboDiscountBadge
+                      totalItems={selectedItems.reduce(
+                        (count, item) => count + item.quantity,
+                        0
+                      )}
+                    />
+                  )}
                 </div>
-                <h3 className="text-sm text-slate-700 font-semibold ">
+                <h3 className="text-sm text-slate-700 font-semibold mb-2">
                   Tạo Combo cần tối thiểu 4 sản phẩm
                 </h3>
 
@@ -486,6 +537,8 @@ export const CustomComboBuilder = memo(
                     className="border-slate-200 focus-visible:ring-slate-400"
                   />
                 </div>
+
+                <ComboDiscountInfo className="mb-4" />
 
                 <Separator className="my-6 bg-slate-100" />
 
@@ -526,26 +579,63 @@ export const CustomComboBuilder = memo(
 
                 {selectedItems.length > 0 && (
                   <>
-                    <Separator className="my-6 bg-slate-100" />
-                    <div className="flex justify-between items-center mb-6">
-                      <span className="font-medium text-slate-700">
-                        Tổng tiền:
-                      </span>
-                      <span className="text-xl font-bold text-slate-900">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(calculateTotalPrice())}
-                      </span>
+                    <Separator className="my-4 bg-slate-100" />
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-600 font-bold">
+                          Tạm tính:
+                        </span>
+                        <span className="text-sky-500 text-lg font-bold">
+                          {formatVND(calculateTotalPrice().subtotal)}
+                        </span>
+                      </div>
+
+                      {calculateTotalPrice().discountPercentage > 0 && (
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-sky-500 flex items-center gap-1">
+                            <span>
+                              Giảm giá combo (
+                              {calculateTotalPrice().discountPercentage}%):
+                            </span>
+                            <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs text-green-700">
+                              {selectedItems.reduce(
+                                (count, item) => count + item.quantity,
+                                0
+                              )}{" "}
+                              sản phẩm
+                            </span>
+                          </span>
+                          <span className="text-sky-500 font-medium">
+                            -{formatVND(calculateTotalPrice().discountAmount)}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                        <span className="font-semibold text-slate-700">
+                          Tổng tiền:
+                        </span>
+                        <span className="text-2xl font-bold text-sky-500">
+                          {formatVND(calculateTotalPrice().total)}
+                        </span>
+                      </div>
                     </div>
                   </>
                 )}
 
                 <Button
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+                  className={`w-full bg-sky-500/70 hover:bg-sky-700 text-white hoverAnimate ${
+                    selectedItems.length === 0 ||
+                    selectedItems.length < 4 ||
+                    comboName.trim() === ""
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
                   onClick={handleSubmit}
                   disabled={
-                    selectedItems.length === 0 || comboName.trim() === ""
+                    selectedItems.length === 0 ||
+                    selectedItems.length < 4 ||
+                    comboName.trim() === ""
                   }
                 >
                   Tạo combo
@@ -578,10 +668,7 @@ export const CustomComboBuilder = memo(
                     {activeItem.variant.packageType}
                   </p>
                   <p className="text-xs font-semibold text-green-600">
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(
+                    {formatVND(
                       activeItem.variant.promotion
                         ? activeItem.variant.promotion.price
                         : activeItem.variant.price

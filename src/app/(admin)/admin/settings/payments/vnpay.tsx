@@ -102,7 +102,7 @@ const VnPayCard = () => {
                     </div>
                     <ButtonCustomized
                         type="submit"
-                        className="max-w-32 bg-green-500 hover:bg-green-700 ml-auto"
+                        className="max-w-fit px-2 bg-green-500 hover:bg-green-700 ml-auto"
                         variant="secondary"
                         disabled={form.formState.isSubmitting}
                         label={

@@ -56,3 +56,27 @@ export const PayOsSettingSafeTypes = z.object({
         message: "URL hủy bỏ không được để trống"
     })
 });
+
+
+export const ComboSettingSafeTypes = z.object({
+    quantity: z.string({
+        required_error: "Vui lòng nhập số lượng tối thiểu"
+    }).nonempty({
+        message: "Vui lòng nhập số lượng tối thiểu"
+    }).refine((val) => {
+        if (parseFloat(val) < 2) return false;
+        return true;
+    }, {
+        message: "Số lượng tối thiểu lớn hơn 1"
+    }),
+    percentage: z.string({
+        required_error: "Vui lòng phần trăm giảm"
+    }).nonempty({
+        message: "Vui lòng phần trăm giảm"
+    }).refine((val) => {
+        if (parseFloat(val) < 0 || parseFloat(val) > 100) return false;
+        return true;
+    }, {
+        message: "Phần trăm giảm lớn hơn 0 và bé hơn 100"
+    }),
+})

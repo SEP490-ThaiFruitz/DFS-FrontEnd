@@ -19,6 +19,7 @@ import {
   NotebookPen,
   Banknote,
   ShieldCheck,
+  PackagePlus,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -83,6 +84,11 @@ const data = {
           title: "Thanh toán",
           url: "/admin/settings/payments",
           icon: Banknote,
+        },
+        {
+          title: "Gói quà",
+          url: "/admin/settings/combo",
+          icon: PackagePlus,
         },
       ],
     },

@@ -21,6 +21,7 @@ import Image from "next/image";
 import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 import { token } from "@/lib/token";
 import { Separator } from "@/components/ui/separator";
+import { formatVND } from "@/lib/format-currency";
 
 interface ViewCardProductActionsProps {
   product: CartData;
@@ -43,14 +44,6 @@ export const ViewCardProductActions = ({
   className,
 }: ViewCardProductActionsProps) => {
   const queryClient = useQueryClient();
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
   // const discount = product.variant.promotion?.percentage
   //   ? Math.round(
@@ -124,12 +117,15 @@ export const ViewCardProductActions = ({
               <>
                 {product.variant.netWeight && <span>•</span>}
                 <span className="font-normal text-slate-700">
-                  Khối lượng: {product.variant.netWeight}g
+                  Khối lượng:{" "}
+                  <span className="text-[#f59e0b] font-semibold">
+                    {product.variant.netWeight}g
+                  </span>
                 </span>
 
                 <Separator className="h-7 w-[1px] text-slate-700" />
 
-                <span className="font-normal text-slate-700">
+                <span className="font-semibold text-slate-700">
                   {product.type.toLowerCase() === "single"
                     ? "📦 Single"
                     : "🎁 Combo"}
@@ -224,18 +220,18 @@ export const ViewCardProductActions = ({
           <div className="flex flex-col items-end sm:hidden gap-0.5">
             {discountPrice ? (
               <>
-                <span className="font-medium text-primary">
-                  {formatPrice(product.variant.price * product.quantityOrder!)}
+                <span className="font-bold text-sky-500">
+                  {formatVND(product.variant.price * product.quantityOrder!)}
                 </span>
-                <del className="text-xs text-muted-foreground">
-                  {formatPrice(
+                <span className="text-rose-500 text-sm font-semibold line-through">
+                  {formatVND(
                     product.variant.price * (product?.quantityOrder ?? 0)
                   )}
-                </del>
+                </span>
               </>
             ) : (
-              <span className="font-medium text-primary">
-                {formatPrice(product.variant.price * product.quantityOrder!)}
+              <span className="font-bold text-sky-500">
+                {formatVND(product.variant.price * product.quantityOrder!)}
               </span>
             )}
           </div>
@@ -247,17 +243,15 @@ export const ViewCardProductActions = ({
         {discountPrice ? (
           <>
             <span className=" font-bold text-sky-500/70">
-              {formatPrice(product.variant.price * product.quantityOrder!)}
+              {formatVND(product.variant.price * product.quantityOrder!)}
             </span>
-            <del className="text-xs text-muted-foreground">
-              {formatPrice(
-                product.variant.price * (product?.quantityOrder ?? 0)
-              )}
-            </del>
+            <span className="text-rose-500 text-sm font-semibold line-through">
+              {formatVND(product.variant.price * (product?.quantityOrder ?? 0))}
+            </span>
           </>
         ) : (
           <span className="font-bold text-sky-500/70">
-            {formatPrice(product.variant.price * product.quantityOrder!)}
+            {formatVND(product.variant.price * product.quantityOrder!)}
           </span>
         )}
       </div>

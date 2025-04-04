@@ -36,42 +36,8 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Product, ProductVariant } from "@/hooks/use-cart-store";
-
-// Define types based on the provided data structure
-// export type Promotion = {
-//   startDate: string;
-//   endDate: string;
-//   percentage: number;
-//   price: number;
-// };
-
-// export type ProductVariant = {
-//   productVariantId: string;
-//   imageVariant: string;
-//   packageType: string;
-//   netWeight: number;
-//   price: number;
-//   stockQuantity: number;
-//   promotion: Promotion | null;
-// };
-
-// export type Category = {
-//   id: string;
-//   name: string;
-//   thumbnail: string;
-// };
-
-// export type Product = {
-//   id: string;
-//   name: string;
-//   mainImageUrl: string;
-//   description: string;
-//   tags: string[];
-//   categories: Category[];
-//   variant: ProductVariant[];
-//   rating: number;
-//   quantitySold: number;
-// };
+import { useQueryClient } from "@tanstack/react-query";
+import { USER_KEY } from "@/app/key/user-key";
 
 export type ComboItem = {
   id: string; // Using productVariantId as id
@@ -106,6 +72,8 @@ export const CustomComboBuilder = memo(
     const [activeTags, setActiveTags] = useState<string[]>([]);
 
     const [activeItem, setActiveItem] = useState<ComboItem | null>(null);
+
+    const queryClient = useQueryClient();
 
     // Get unique categories from all products
     const categories = [
@@ -279,6 +247,9 @@ export const CustomComboBuilder = memo(
         console.log(response);
 
         if (response.status === 200) {
+          queryClient.invalidateQueries({
+            queryKey: [USER_KEY.CUSTOM_COMBO],
+          });
           toast.success("Tạo combo thành công!");
 
           console.log(response.data);

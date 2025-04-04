@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { CreditCard, Truck, Tag, ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +19,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { Logo } from "@/components/global-components/logo";
 import { Separator } from "@/components/ui/separator";
-import Maps from "@/components/global-components/maps";
-import { useAuth } from "@/providers/auth-provider";
 import AddressChoices from "./address-choices";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { CartProductTypes } from "@/types/cart.types";
-import { ViewCardProductActions } from "@/components/global-components/card/view-card-product-actions";
+import {
+  ViewCardProductActions,
+  ViewCardProductActionsSkeleton,
+} from "@/components/global-components/card/view-card-product-actions";
 import { CART_KEY } from "@/app/key/comm-key";
 import { useData } from "@/providers/data-provider";
 import { useForm } from "react-hook-form";
@@ -57,6 +58,7 @@ import { AddressTypes } from "@/types/address.types";
 import { USER_KEY } from "@/app/key/user-key";
 import { interactApiClient } from "@/actions/client/interact-api-client";
 import { useQuery } from "@tanstack/react-query";
+import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 
 interface Product {
   id: number;
@@ -88,6 +90,7 @@ const paymentMethods: { value: string; label: string }[] = [
 
 function PaymentClientPage() {
   const [promoCode, setPromoCode] = useState("");
+  const { customCombo } = useData();
 
   const deliveryMethods: DeliveryMethodType[] = [
     {
@@ -126,15 +129,35 @@ function PaymentClientPage() {
 
   const paymentMethodWatch = form.watch("paymentMethod");
 
-  console.log(paymentMethodWatch);
-
   const token = Cookies.get("accessToken");
 
+  let customComboPrice = 0;
+
+  if (customCombo.data?.value && customCombo.data.value.length > 0) {
+    customComboPrice = customCombo.data.value.reduce(
+      (acc, combo) => acc + combo.price,
+      0
+    );
+  }
+
+  const customComboItem = useMemo(() => {
+    return customCombo.data?.value
+      ? customCombo.data.value.map((custom) => ({
+          id: custom.id,
+          quantity: 1,
+          type: "combo",
+        }))
+      : [];
+  }, [customCombo.data?.value]);
+
   const onPaymentSubmit = async (values: z.infer<typeof PaymentSafeTypes>) => {
-    console.log({ values });
+    // console.log({ values });
+
+    const mergeValue = [...values.items, ...customComboItem];
 
     const omitValue = {
       ...omit(values, ["shipType"]),
+      items: mergeValue,
       paymentMethod: paymentMethodWatch,
     };
 
@@ -188,7 +211,7 @@ function PaymentClientPage() {
 
   const loginModal = useLoginDialog();
 
-  console.log(cart);
+  // console.log(cart);
 
   useEffect(() => {
     if (cart && cart.length > 0) {
@@ -218,19 +241,38 @@ function PaymentClientPage() {
       return;
     }
 
-    const items = cart?.map((product) => ({
-      id: product.variant.productVariantId,
-      quantity: Number(product.quantityOrder),
-      type: product.type,
-    }));
+    // const items = cart?.map((product) => ({
+    //   id: product.variant.productVariantId,
+    //   quantity: Number(product.quantityOrder),
+    //   type: product.type,
+    // }));
 
-    console.log({ items });
+    // const customComboValue = customCombo.data?.value
+    //   ? customCombo.data.value.map((custom) => ({
+    //       id: custom.id,
+    //       quantity: 1,
+    //       type: "combo",
+    //     }))
+    //   : [];
+
+    const items =
+      cart?.map((product) => ({
+        id: product.variant.productVariantId,
+        quantity: Number(product.quantityOrder),
+        type: product.type,
+      })) || [];
+
+    // console.log({ items });
+    // console.log({ customComboValue });
+
+    const values = [...items, ...customComboItem];
 
     setCalculating(true);
     try {
       const response = await axios.post(
         `${API}/Orders/calculate-ship-fee/${addressId}`,
-        items,
+        // items,
+        values,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -246,7 +288,7 @@ function PaymentClientPage() {
     } finally {
       setCalculating(false);
     }
-  }, [cart, token, addressId]);
+  }, [cart, token, addressId, customComboItem]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -406,6 +448,19 @@ function PaymentClientPage() {
                       />
                     );
                   })}
+
+                  {customCombo.isLoading ? (
+                    <ViewCardProductActionsSkeleton />
+                  ) : customCombo.data?.value ? (
+                    customCombo.data.value.map((custom) => {
+                      return (
+                        <CustomComboProductCard
+                          combo={custom}
+                          key={custom.id}
+                        />
+                      );
+                    })
+                  ) : null}
                 </ScrollArea>
 
                 <div className="mt-6 space-y-4">
@@ -435,12 +490,14 @@ function PaymentClientPage() {
 
                 <div className="mt-6 space-y-2 border-t pt-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tạm tính</span>
-                    <span className="font-medium">{formatVND(subtotal)}</span>
+                    <span className="text-slate-700">Tạm tính</span>
+                    <span className="font-semibold text-sky-400">
+                      {formatVND(subtotal + customComboPrice)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Vận chuyển</span>
-                    <span className="font-medium">
+                    <span className="text-slate-700">Vận chuyển</span>
+                    <span className="font-semibold text-sky-400">
                       {calculating
                         ? "Đang tính..."
                         : formatVND(shippingFee?.totalFee ?? 0)}
@@ -453,10 +510,14 @@ function PaymentClientPage() {
                       <span>-${discount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-lg font-semibold pt-2">
+                  <div className="flex justify-between text-lg font-bold pt-2">
                     <span>Tổng</span>
-                    <span>
-                      {formatVND(total + Number(shippingFee?.totalFee ?? 0))}
+                    <span className="text-sky-500 text-lg">
+                      {formatVND(
+                        total +
+                          customComboPrice +
+                          Number(shippingFee?.totalFee ?? 0)
+                      )}
                     </span>
                   </div>
                 </div>

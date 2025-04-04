@@ -53,19 +53,19 @@ interface FancyMultiSelectProps {
   options: Options[];
 
   onChangeValue: React.Dispatch<React.SetStateAction<Options[]>>;
-  placeholder?: string,
-  defaultValues?: Options[]
+  placeholder?: string;
+  defaultValues?: Options[];
 }
 
 export function FancyMultiSelect({
   options,
   onChangeValue,
   placeholder,
-  defaultValues
+  defaultValues,
 }: FancyMultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Options[]>(defaultValues ?? []);
+  const [selected, setSelected] = React.useState<Options[]>([options[1]]);
   const [inputValue, setInputValue] = React.useState("");
 
   const handleUnselect = React.useCallback((option: Options) => {
@@ -96,11 +96,9 @@ export function FancyMultiSelect({
 
   // const selectables = options.filter((option) => !selected.includes(option));
   const selectables = options.filter(
-    (option) => !selected.some((selectedOption) => selectedOption.value === option.value)
+    (option) =>
+      !selected.some((selectedOption) => selectedOption.value === option.value)
   );
-
-  console.log(selectables, selected, inputValue);
-
 
   React.useEffect(() => {
     onChangeValue(selected);
@@ -113,7 +111,11 @@ export function FancyMultiSelect({
         value: value,
         label: value,
       };
-      if(selected.some((selectedOption) => selectedOption.value === newOption.value)){
+      if (
+        selected.some(
+          (selectedOption) => selectedOption.value === newOption.value
+        )
+      ) {
         return;
       }
       setSelected((prevSelected) => [...prevSelected, newOption]);

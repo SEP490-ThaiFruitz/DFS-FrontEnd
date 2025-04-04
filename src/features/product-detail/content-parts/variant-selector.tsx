@@ -90,7 +90,7 @@ export const VariantSelector = memo(
                 </div>
                 <div className="space-y-2">
                   <p
-                    className="font-medium text-sm truncate"
+                    className="font-semibold text-xl italic truncate"
                     title={variant.packageType}
                   >
                     {variant.packageType}
@@ -127,7 +127,7 @@ export const VariantSelector = memo(
                             )
                           )}
                         </span>
-                        <span className="text-sm line-through text-gray-400">
+                        <span className="text-sm line-through text-rose-500 font-bold">
                           {formatPrice(variant?.price ?? 0)}
                         </span>
                       </>

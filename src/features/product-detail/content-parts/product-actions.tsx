@@ -43,6 +43,8 @@ export const ProductActions = memo(
         item.variant.productVariantId === selectedVariant.productVariantId
     );
 
+    console.log({ findCart });
+
     return (
       <div className="space-y-4">
         <div className="bg-gray-50 p-5 rounded-lg space-y-4 cardStyle">
@@ -53,11 +55,16 @@ export const ProductActions = memo(
                   <Clock className="h-4 w-4 text-rose-500 mt-0.5 flex-shrink-0" />
                   <div className="space-y-1">
                     <span className="font-medium text-rose-700">
-                      Khuyến mãi {selectedVariant?.promotion?.percentage}%
+                      Khuyến mãi{" "}
+                      <span className="font-bold text-sky-500">
+                        {selectedVariant?.promotion?.percentage}%
+                      </span>
                     </span>
-                    <span className="text-rose-600 text-xs">
-                      Kết thúc vào ngày{" "}
-                      {vietnameseDate(selectedVariant?.promotion.endDate)}
+                    <span className="text-rose-600 text-xs ml-1">
+                      kết thúc vào ngày{" "}
+                      <span className="text-sky-500 font-bold">
+                        {vietnameseDate(selectedVariant?.promotion.endDate)}
+                      </span>
                     </span>
 
                     <div className="pt-1">
@@ -74,21 +81,21 @@ export const ProductActions = memo(
           )}
 
           <div className="flex justify-between items-center">
-            <h3 className="font-medium">Số lượng</h3>
+            <h3 className="font-semibold">Số lượng</h3>
             <div className="flex items-center border rounded-md bg-white shadow-sm">
               <Button
                 variant="ghost"
                 size="icon"
                 // onClick={() => handleQuantityChange(-1)}
                 onClick={handleDecreaseQuantity}
-                disabled={(findCart?.quantitySold ?? 0) <= 1}
+                disabled={(findCart?.quantityOrder ?? 0) <= 1}
                 className="h-9 w-9 rounded-none"
               >
                 <span className="sr-only">Giảm</span>
                 <Minus className="h-4 w-4" />
               </Button>
               <span className="w-12 text-center">
-                {findCart?.quantitySold ?? 1}
+                {findCart?.quantityOrder ?? 1}
               </span>
               <Button
                 variant="ghost"
@@ -96,7 +103,7 @@ export const ProductActions = memo(
                 // onClick={() => handleQuantityChange(1)}
                 onClick={handleAddToCart}
                 disabled={
-                  (findCart?.quantitySold as number) >=
+                  (findCart?.quantityOrder as number) >=
                   (selectedVariant?.stockQuantity ?? 0)
                 }
                 className="h-9 w-9 rounded-none"
@@ -108,7 +115,7 @@ export const ProductActions = memo(
           </div>
 
           <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-600">Còn lại:</span>
+            <span className="text-slate-600 font-semibold">Còn lại:</span>
             <div className="flex items-center gap-2">
               <span>{selectedVariant?.stockQuantity ?? 0} sản phẩm</span>
               <Progress

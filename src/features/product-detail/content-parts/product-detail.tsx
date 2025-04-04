@@ -183,6 +183,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       mainImageUrl: selectedVariant?.image ?? "/images/second-background.png",
       name: product.name,
     });
+
+    toast.success(
+      `Đã giảm số lượng sản phẩm ${product.name} - ${selectedVariant.packageType}`
+    );
   };
 
   const handleToggleWishlist = () => {

@@ -28,6 +28,9 @@ import { useFromStore } from "@/hooks/use-from-store";
 import { CartData, Product, useCartStore } from "@/hooks/use-cart-store";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useData } from "@/providers/data-provider";
+import { CustomComboBuilder } from "@/features/client/home/custom-combo/custom-combo-builder";
+import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 
 //
 
@@ -35,6 +38,8 @@ export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const cart = useFromStore(useCartStore, (state) => state.orders);
+
+  const { customCombo } = useData();
 
   const cartCondition = (cart?.length || 0) > 0;
 
@@ -55,6 +60,15 @@ export const ShoppingBagSheet = () => {
     );
     quantityOrders = cart.reduce(
       (acc, product) => acc + (product.quantityOrder as number),
+      0
+    );
+  }
+
+  let customComboPrice = 0;
+
+  if (customCombo.data?.value && customCombo.data.value.length > 0) {
+    customComboPrice = customCombo.data.value.reduce(
+      (acc, combo) => acc + combo.price,
       0
     );
   }
@@ -145,10 +159,39 @@ export const ShoppingBagSheet = () => {
                         className="m-4"
                       />
                     ))}
+
+                    {customCombo.isLoading ? (
+                      <ViewCardProductActionsSkeleton />
+                    ) : customCombo.data?.value ? (
+                      customCombo.data.value.map((custom) => {
+                        return (
+                          <CustomComboProductCard
+                            combo={custom}
+                            key={custom.id}
+                            className="mx-4"
+                          />
+                        );
+                      })
+                    ) : null}
+
+                    {/* {customCombo.data?.value
+                      ? customCombo.data.value.map((custom) => {
+                          return (
+                            <CustomComboProductCard
+                              combo={custom}
+                              key={custom.id}
+                            />
+                          );
+                        })
+                      : null} */}
                   </ScrollArea>
 
                   <div className=" mt-14 w-full">
-                    <CartSummary cart={cart as CartData[]} close={close} />
+                    <CartSummary
+                      cart={cart as CartData[]}
+                      customComboPrice={customComboPrice}
+                      close={close}
+                    />
                   </div>
                 </>
               </div>

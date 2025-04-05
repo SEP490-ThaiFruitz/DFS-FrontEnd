@@ -1,3 +1,4 @@
+import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 import { Truck, MapPin, User, Phone } from "lucide-react";
 
 export interface OrderAddressDelivery {
@@ -33,7 +34,7 @@ export const ShippingInfo = ({ orderAddressDelivery }: Readonly<ShippingInfoProp
           <Phone className="w-4 h-4 mt-0.5 text-muted-foreground shrink-0" />
           <div>
             <h3 className="text-sm font-medium">Số điện thoại:</h3>
-            <p className="text-sm text-muted-foreground">{orderAddressDelivery.receiverPhone}</p>
+            <p className="text-sm text-muted-foreground">{formatVietnamesePhoneNumber(orderAddressDelivery.receiverPhone)}</p>
           </div>
         </div>
 

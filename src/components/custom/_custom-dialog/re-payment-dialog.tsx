@@ -33,7 +33,7 @@ export const RePaymentDialog = ({ isOpen, onClose, orderId }: RePaymentDialogPro
 
     const onSubmit = async (values: z.infer<typeof RePaymentOrderSafeTypes>) => {
         try {
-            const response:ApiResponse<string> = await API.get(`/Payments/${orderId}?paymentMethod=${values.paymentType}`)
+            const response: ApiResponse<string> = await API.get(`/Payments/${orderId}?paymentMethod=${values.paymentType}`)
             if (response) {
                 window.open(response.value, "_blank");
                 onClose()
@@ -75,14 +75,14 @@ export const RePaymentDialog = ({ isOpen, onClose, orderId }: RePaymentDialogPro
                 <FormMessage className="text-sm text-destructive" />
 
                 <DialogFooter>
-                    <DialogClose asChild>
-                        <ButtonCustomized
-                            disabled={form.formState.isSubmitting}
-                            className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-                            variant="outline"
-                            label="Hủy"
-                        />
-                    </DialogClose>
+                    <ButtonCustomized
+                        disabled={form.formState.isSubmitting}
+                        onClick={onClose}
+                        type="button"
+                        className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
+                        variant="outline"
+                        label="Hủy"
+                    />
                     <ButtonCustomized
                         type="submit"
                         className="max-w-fit bg-green-700 hover:bg-green-800"

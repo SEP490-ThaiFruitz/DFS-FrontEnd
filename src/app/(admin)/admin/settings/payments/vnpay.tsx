@@ -46,7 +46,13 @@ const VnPayCard = () => {
         try {
             const response = await API.update("/Settings", {
                 name: PAYMENT_KEY.VNPAY,
-                value: JSON.stringify(values)
+                value: JSON.stringify({
+                    returnUrl: values.returnUrl.trim(),
+                    url: values.url.trim(),
+                    tmnCode: values.tmnCode.trim(),
+                    hashSecret: values.hashSecret.trim(),
+                    api: values.api.trim(),
+                })
             })
             if (response) {
                 toast.success("Cập nhật cài đặt vnpay thành công")

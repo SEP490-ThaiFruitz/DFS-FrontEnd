@@ -1,26 +1,22 @@
 import { DollarSign } from "lucide-react";
-import { OrderItem } from "./product-list";
 import { formatVND } from "@/lib/format-currency";
 
 interface OrderSummaryProps {
-  orderItems: OrderItem[],
   discountPrice: number | null,
   pointUsed: number,
   feeShip: number | undefined,
   totalPrice: number,
+  price: number,
 }
 
 
 export const OrderSummary = ({
-  orderItems,
   discountPrice,
   pointUsed,
   feeShip,
   totalPrice,
+  price,
 }: Readonly<OrderSummaryProps>) => {
-  const price = orderItems.reduce((total: number, item: OrderItem) =>
-    total + ((item.discountPrice ?? item.unitPrice) * item.quantity),
-    0);
   return (
     <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
       <h2 className="font-semibold text-lg flex items-center gap-2 text-indigo-600 dark:text-indigo-400">

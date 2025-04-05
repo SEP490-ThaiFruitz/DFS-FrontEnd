@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from '@/components/ui/separator';
 import { formatVND } from '@/lib/format-currency';
-import { ShoppingCart } from 'lucide-react'
+import { Banknote, ShoppingCart } from 'lucide-react'
 import React from 'react'
 import { OrderItem } from '../order-tracking/product-list';
 
@@ -12,6 +12,7 @@ import { OrderItem } from '../order-tracking/product-list';
 
 interface OrderDetaiSummaryProps {
     totalPrice: number,
+    price: number,
     feePrice: number,
     voucherPrice: number | null,
     usedPoint: number,
@@ -19,15 +20,14 @@ interface OrderDetaiSummaryProps {
     shipCode: boolean,
     orderStatus: string,
 }
-const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, voucherPrice, shipCode, orderStatus }: Readonly<OrderDetaiSummaryProps>) => {
-    const price = orderItems.reduce((total: number, item: OrderItem) =>
-        total + ((item.discountPrice ?? item.unitPrice) * item.quantity),
-        0);
+const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, voucherPrice, shipCode, orderStatus, price }: Readonly<OrderDetaiSummaryProps>) => {
+
     return (
-        <div className='flex flex-col-reverse lg:flex-col gap-10'>
-            <Card className="top-8">
+        <div className='flex flex-col-reverse lg:flex-col gap-4'>
+            <Card className="top-8 cardStyle">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex justify-center items-center gap-2">
+                        <Banknote className="w-8 h-8" />
                         Thông tin thanh toán
                     </CardTitle>
                 </CardHeader>
@@ -65,10 +65,10 @@ const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, vouche
                     )}
                 </CardContent>
             </Card>
-            <Card className="top-8">
+            <Card className="top-8 cardStyle">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <ShoppingCart className="w-6 h-6" />
+                    <CardTitle className="flex justify-center items-center gap-2">
+                        <ShoppingCart className="w-8 h-8" />
                         Chi tiết đơn hàng
                     </CardTitle>
                 </CardHeader>

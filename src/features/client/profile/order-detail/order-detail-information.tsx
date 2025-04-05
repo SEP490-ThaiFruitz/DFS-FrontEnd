@@ -13,6 +13,7 @@ import { API } from "@/actions/client/api-config";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { RePaymentDialog } from "@/components/custom/_custom-dialog/re-payment-dialog";
+import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 
 interface OrderDetailsProps {
   orderId?: string;
@@ -45,7 +46,6 @@ interface Timeline {
 
 interface SubTimeline {
   statusTime: string,
-  detailStatus: string,
   content: string
 }
 
@@ -66,17 +66,24 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   const orderStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
     Packaging: { color: "bg-blue-100 text-blue-800", text: "Đang đóng gói" },
-    Delivering: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
+    Shipping: { color: "bg-blue-100 text-blue-800", text: "Đang vận chuyển" },
+    Delivering: { color: "bg-blue-100 text-blue-800", text: "Đang giao hàng" },
     Delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
     Received: { color: "bg-green-100 text-green-800", text: "Đã nhận hàng" },
-    Cancelled: { color: "bg-gray-100 text-gray-800", text: "Đã hủy" },
-    Returned: { color: "bg-gray-100 text-gray-800", text: "Đã trả hàng" },
+    Cancelled: { color: "bg-red-100 text-red-800", text: "Đã hủy" },
+    Returned: { color: "bg-gray-100 text-gray-800", text: "Đã trả hàng" }, 
   };
 
   const paymentStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-purple-100 text-purple-800", text: "Chờ thanh toán" },
     Fail: { color: "bg-red-100 text-red-700", text: "Thanh toán thất bại" },
     Paid: { color: "bg-green-100 text-green-800", text: "Đã thanh toán" },
+  };
+
+  const paymentMethodColors: Record<string, { color: string; text: string }> = {
+    PayOs: { color: "bg-purple-100 text-purple-800", text: "Chờ thanh toán" },
+    VnPay: { color: "bg-blue-100 text-blue-700", text: "Thanh toán thất bại" },
+    ShipCode: { color: "bg-yellow-100 text-yellow-800", text: "Đã thanh toán" },
   };
 
   const steps: TimelineEvent[] = timeline.map((item) => ({
@@ -103,9 +110,10 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
       toast.error("Lỗi hệ thống")
     }
   }
+
   return (
-    <>
-      <Card className="pt-5">
+    <div className="space-y-4">
+      <Card className="pt-5 cardStyle">
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Mã đơn:</span>
@@ -139,13 +147,29 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
 
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Phương thức thanh toán:</span>
-            <span className="text-gray-900">{paymentMethod}</span>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${paymentMethodColors[paymentMethod]?.color || "bg-gray-100 text-gray-800"
+                }`}
+            >
+              {paymentMethod || "Không xác định"}
+            </span>
           </div>
           {cancel && (
             <>
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 font-semibold">Người hủy đơn:</span>
-                <span className="text-gray-900">{cancel.cancelBy === "Customer" ? "Khách hàng" : "Cửa hàng"}</span>
+                <span className="text-gray-900">{cancel.cancelBy === "Customer" ?
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800
+                      }`}
+                  >
+                    Khách hàng
+                  </span> : <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800
+                      }`}
+                  >
+                    Cửa hàng
+                  </span>}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 font-semibold">Thời gian hủy đơn:</span>
@@ -161,7 +185,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           )}
         </CardContent>
         <CardFooter className="space-x-5">
-          {paymentStatus !== "Paid" && paymentMethod !== "ShipCode" && (
+          {orderStatus === "Pending" && paymentStatus !== "Paid" && paymentMethod !== "ShipCode" && (
             <Button onClick={() => setOrderIdPayment(orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
               Thanh toán ngay
             </Button>
@@ -169,7 +193,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           {orderStatus === "Received" && (
             <Button className="ml-auto" variant={"destructive"}>Hoàn trả</Button>
           )}
-          {(orderStatus === "Pending" || orderStatus === "Packing") && (
+          {(orderStatus === "Pending" || orderStatus === "Packaging") && (
             <Button className="ml-auto" onClick={() => setIsCancel(true)} variant={"destructive"}>Huỷ đơn hàng</Button>
           )}
           {orderStatus === "Delivered" && (
@@ -179,7 +203,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           )}
         </CardFooter>
       </Card>
-      <Card className="pt-5">
+      <Card className="pt-5 cardStyle">
         <CardTitle className="text-center mb-8 text-2xl">
           Địa chỉ giao hàng
         </CardTitle>
@@ -191,7 +215,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
 
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Số điện thoại:</span>
-            <span className="text-gray-900">{orderAddressDelivery?.receiverPhone}</span>
+            <span className="text-gray-900">{formatVietnamesePhoneNumber(orderAddressDelivery?.receiverPhone ?? "")}</span>
           </div>
 
           <div className="flex justify-between items-start space-x-6">
@@ -231,7 +255,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
         onClose={() => setOrderIdPayment(undefined)}
         orderId={orderIdPayment}
       />}
-    </>
+    </div>
   );
 };
 

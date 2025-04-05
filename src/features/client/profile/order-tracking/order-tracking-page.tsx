@@ -8,7 +8,7 @@ import { OrderItem, ProductList } from "./product-list";
 import { OrderAddressDelivery, ShippingInfo } from "./shipping-info";
 import { OrderSummary } from "./order-summary";
 import { Policies } from "./policy";
-import { Columns4, CreditCard, FileBox, PackageCheck, PackagePlus, PackageX, Search, Truck } from "lucide-react";
+import { Columns4, Copy, CreditCard, FileBox, PackageCheck, PackagePlus, PackageX, Search, Send, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -37,6 +37,7 @@ interface Order {
   paymentStatus: string,
   paymentMethod: string,
   pointUsed: number;
+  price: number;
   totalPrice: number,
   orderAddressDelivery: OrderAddressDelivery;
 }
@@ -49,6 +50,7 @@ interface Delivery {
 interface StatusCounts {
   "Pending": number;
   "Packaging": number;
+  "Shipping": number;
   "Delivering": number;
 }
 
@@ -66,9 +68,11 @@ export const OrderTrackingPage = () => {
     { value: "All", label: "Tất cả", icon: Columns4 },
     { value: "Pending", label: "Chờ xác nhận", icon: FileBox, quantity: orders?.value?.statusCounts["Pending"] },
     { value: "Packaging", label: "Đang đóng gói", icon: PackagePlus, quantity: orders?.value?.statusCounts["Packaging"] },
-    { value: "Delivering", label: "Đang vận chuyển", icon: Truck, quantity: orders?.value?.statusCounts["Delivering"] },
+    { value: "Shipping", label: "Đang vận chuyển", icon: Truck, quantity: orders?.value?.statusCounts["Shipping"] },
+    { value: "Delivering", label: "Đang giao hàng", icon: Send, quantity: orders?.value?.statusCounts["Delivering"] },
     { value: "Delivered, Received", label: "Đã giao hàng", icon: PackageCheck },
-    { value: "Canceled", label: "Đã hủy", icon: PackageX },
+    { value: "Cancelled", label: "Đã hủy", icon: PackageX },
+    { value: "Returned", label: "Hoàn trả", icon: Copy },
   ];
 
   const orderSearch = searchText ? orders?.value?.orders.filter((order: Order) => order.orderId.includes(searchText))
@@ -94,9 +98,10 @@ export const OrderTrackingPage = () => {
 
   return (
     orderId !== undefined ? <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} /> : <>
-      <div className="grid w-full grid-cols-6 h-auto py-4 mb-4 bg-white rounded-md px-5">
+      <div className="grid w-full grid-cols-8 h-auto py-4 mb-4 bg-white cardStyle px-5 gap-4">
         {status.map((trigger) => (
-          <button
+          <Button
+            variant={"outline"}
             key={trigger.value}
             className={`relative flex items-center justify-center gap-2 py-3 transition-all duration-200 ease-in-out font-bold rounded-sm ${activeStatus === trigger.value
               ? "bg-slate-100 text-slate-700"
@@ -107,9 +112,9 @@ export const OrderTrackingPage = () => {
             <trigger.icon className="h-5 w-5" />
             <span className="hidden lg:inline">{trigger.label}</span>
 
-            <span className={`absolute right-0 top-0 bg-red-500 text-white leading-6 w-6 text-sm rounded-full ${trigger.quantity && trigger.quantity > 0 ? 'block' : 'hidden'}`}>{trigger.quantity}</span>
+            <span className={`absolute -right-3 -top-2 bg-red-500 text-white leading-6 w-6 text-sm rounded-full ${trigger.quantity && trigger.quantity > 0 ? 'block' : 'hidden'}`}>{trigger.quantity}</span>
 
-          </button>
+          </Button>
         ))}
       </div>
       <div className="py-2 flex items-center space-x-2 mb-4 w-full">
@@ -117,11 +122,11 @@ export const OrderTrackingPage = () => {
           <Input
             placeholder="Tìm kiếm mã đơn hàng"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value.toLocaleUpperCase())}
-            className="h-14 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            className="h-14 w-full cardStyle border border-gray-300 bg-white pl-10 pr-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
         </div>
-        <Button className="h-14 px-6 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200">
+        <Button className="h-14 px-6 cardStyle border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200">
           Tìm kiếm
         </Button>
       </div>
@@ -133,7 +138,7 @@ export const OrderTrackingPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="w-full max-w-2xl bg-white/60 dark:bg-gray-800/80 backdrop-blur-md text-gray-800 dark:text-gray-200 shadow-lg rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700"
+            className="w-full max-w-2xl bg-white/60 dark:bg-gray-800/80 backdrop-blur-md text-gray-800 dark:text-gray-200 shadow-lg rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 cardStyle"
           >
             <OrderHeader
               orderId={order.orderId}
@@ -158,7 +163,7 @@ export const OrderTrackingPage = () => {
                         "Chưa thanh toán"}
                   </Badge>
                 </div>
-                {order.paymentStatus !== "Paid" && order.paymentMethod !== "ShipCode" && (
+                {order.status === "Pending" && order.paymentStatus !== "Paid" && order.paymentMethod !== "ShipCode" && (
                   <Button onClick={() => setOrderIdPayment(order.orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
                     Thanh toán ngay
                   </Button>
@@ -181,7 +186,7 @@ export const OrderTrackingPage = () => {
                   discountPrice={order.discountPrice}
                   feeShip={order.delivery?.fee}
                   pointUsed={order.pointUsed}
-                  orderItems={order.orderItems}
+                  price={order.price}
                   totalPrice={order.totalPrice} />
               </div>
               <Policies />

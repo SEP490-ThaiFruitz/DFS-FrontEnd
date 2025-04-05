@@ -44,7 +44,13 @@ const PayOsCard = () => {
         try {
             const response = await API.update("/Settings", {
                 name: PAYMENT_KEY.PAYOS,
-                value: JSON.stringify(values)
+                value: JSON.stringify({
+                    clientId: values.clientId.trim(),
+                    apiKey: values.apiKey.trim(),
+                    checksumKey: values.checksumKey.trim(),
+                    returnSuccessUrl: values.returnSuccessUrl.trim(),
+                    returnCancelUrl: values.returnCancelUrl.trim(),
+                })
             })
             if (response) {
                 toast.success("Cập nhật cài đặt payos thành công")

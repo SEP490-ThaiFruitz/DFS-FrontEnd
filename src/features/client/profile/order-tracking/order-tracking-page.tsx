@@ -8,7 +8,7 @@ import { OrderItem, ProductList } from "./product-list";
 import { OrderAddressDelivery, ShippingInfo } from "./shipping-info";
 import { OrderSummary } from "./order-summary";
 import { Policies } from "./policy";
-import { Columns4, Copy, CreditCard, FileBox, PackageCheck, PackagePlus, PackageX, Search, Send, Truck } from "lucide-react";
+import { Columns4, Copy, FileBox, PackageCheck, PackagePlus, PackageX, Search, Send, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -60,7 +60,7 @@ export const OrderTrackingPage = () => {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState<string | undefined>(searchParams.get("order") ?? undefined);
   const [activeStatus, setActiveStatus] = useState("All");
-  const { data: orders, isPending, refetch } = useFetch<ApiResponse<OrderResponse>>('/Orders/user/orders', ["Customer", "Orders"])
+  const { data: orders, refetch } = useFetch<ApiResponse<OrderResponse>>('/Orders/user/orders', ["Customer", "Orders"])
   const [searchText, setSearchText] = useState<string | undefined>()
   const [orderIdPayment, setOrderIdPayment] = useState<string | undefined>(undefined)
 
@@ -103,7 +103,7 @@ export const OrderTrackingPage = () => {
           <Button
             variant={"outline"}
             key={trigger.value}
-            className={`relative flex items-center justify-center gap-2 py-3 transition-all duration-200 ease-in-out font-bold rounded-sm ${activeStatus === trigger.value
+            className={`relative cardStyle flex items-center justify-center gap-2 py-3 transition-all duration-200 ease-in-out font-bold rounded-sm ${activeStatus === trigger.value
               ? "bg-slate-100 text-slate-700"
               : "hover:bg-gray-100"
               }`}
@@ -112,7 +112,7 @@ export const OrderTrackingPage = () => {
             <trigger.icon className="h-5 w-5" />
             <span className="hidden lg:inline">{trigger.label}</span>
 
-            <span className={`absolute -right-3 -top-2 bg-red-500 text-white leading-6 w-6 text-sm rounded-full ${trigger.quantity && trigger.quantity > 0 ? 'block' : 'hidden'}`}>{trigger.quantity}</span>
+            <span className={`absolute -right-2.5 -top-2.5 bg-red-500 text-white leading-6 w-6 text-sm rounded-full ${trigger.quantity && trigger.quantity > 0 ? 'block' : 'hidden'}`}>{trigger.quantity}</span>
 
           </Button>
         ))}
@@ -177,18 +177,18 @@ export const OrderTrackingPage = () => {
             </div>
 
             <CardContent className="p-6 space-y-6">
-              <ScrollArea className="h-[220px] -mx-6 px-6">
-                <ProductList orderStatus={order.status} orderItems={order.orderItems} />
-              </ScrollArea>
               <div className="grid gap-6 sm:grid-cols-2">
                 <ShippingInfo orderAddressDelivery={order.orderAddressDelivery} />
                 <OrderSummary
-                  discountPrice={order.discountPrice}
+                  voucherPrice={order.discountPrice}
                   feeShip={order.delivery?.fee}
                   pointUsed={order.pointUsed}
-                  price={order.price}
+                  orderItems={order.orderItems} 
                   totalPrice={order.totalPrice} />
               </div>
+              <ScrollArea className="h-[220px] -mx-6 px-6">
+                <ProductList orderStatus={order.status} orderItems={order.orderItems} />
+              </ScrollArea>
               <Policies />
             </CardContent>
           </MotionCard>

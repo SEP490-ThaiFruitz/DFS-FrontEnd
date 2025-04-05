@@ -118,97 +118,6 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
             });
         }
     });
-    // const orderCreated = order?.value?.timeline.find((timeline: Timeline) =>
-    //     timeline.status === "Đơn hàng đã được tạo"
-    // );
-
-    // if (orderCreated) {
-    //     steps.push({
-    //         icon: FileText,
-    //         title: "Đơn Hàng Đã Đặt",
-    //         completed: true,
-    //         date: orderCreated.date
-    //     })
-    // }
-    // const orderPayment = order?.value?.timeline.find((timeline: Timeline) =>
-    //     timeline.details.find((detail: SubTimeline) => detail.content === "Đã xác nhận thông tin thanh toán.")
-    // );
-
-    // if (orderPayment) {
-    //     steps.push({
-    //         icon: Wallet,
-    //         title: "Đã Xác Nhận Thông Tin",
-    //         completed: true,
-    //         date: orderPayment.date
-    //     })
-    // }
-
-    // const orderCancel = order?.value?.timeline.find((timeline: Timeline) =>
-    //     timeline.status === "Đã hủy"
-    // );
-    // if (orderCancel) {
-    //     steps.push({
-    //         icon: PackageX,
-    //         title: "Đã hủy",
-    //         completed: true,
-    //         date: orderCancel.date
-    //     })
-    // }
-
-    // const orderDelivery = order?.value?.timeline.find((timeline: Timeline) =>
-    //     timeline.status === "Đang vận chuyển"
-    // );
-
-    // if (orderDelivery) {
-    //     steps.push({
-    //         icon: Truck,
-    //         title: "Đang Vận Chuyển",
-    //         completed: true,
-    //         date: orderDelivery.date
-    //     })
-    // }
-
-
-    // const orderDelivering = order?.value?.timeline.find((timeline: Timeline) =>
-    //     timeline.status === "Đang giao hàng"
-    // );
-
-    // if (orderDelivering) {
-    //     steps.push({
-    //         icon: Send,
-    //         title: "Đang Giao Hàng",
-    //         completed: true,
-    //         date: orderDelivering.date
-    //     })
-    // }
-
-
-    // const orderDelivered = order?.value?.timeline.find((timeline: Timeline) =>
-    //     timeline.details.find((detail: SubTimeline) => detail.content === "delivered")
-    // );
-
-    // if (orderDelivered) {
-    //     steps.push({
-    //         icon: Package,
-    //         title: "Đã Nhận Được Hàng",
-    //         completed: true,
-    //         date: orderDelivered.date
-    //     })
-    // }
-
-    // const orderReturned = order?.value?.timeline.find((timeline: Timeline) =>
-    //     timeline.status === "Đã trả hàng"
-    // );
-
-    // if (orderReturned) {
-    //     steps.push({
-    //         icon: Copy,
-    //         title: "Đã trả hàng",
-    //         completed: true,
-    //         date: orderReturned.date
-    //     })
-    // }
-
 
     return (
         <div>
@@ -227,7 +136,7 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
             <div className="my-4 border cardStyle shadow-sm overflow-hidden">
                 <Timeline events={steps} orientation="Horizontal" classNameIcon="h-5 w-5" showIcon={true} />
             </div>
-            <div className='grid xl:grid-cols-3 gap-5 sm:gap-8'>
+            <div className='grid xl:grid-cols-3 gap-5 sm:gap-4'>
                 <div className='col-span-1'>
                     <OrderDetailInformation
                         orderDate={order?.value?.buyDate}
@@ -249,7 +158,6 @@ const OrderDetailPage = ({ orderId, onBack }: Readonly<OrderDetailPageProps>) =>
                         totalPrice={order?.value?.totalPrice ?? 0}
                         usedPoint={order?.value?.pointUsed ?? 0}
                         voucherPrice={order?.value?.voucherPrice ?? null}
-                        price={order?.value?.price ?? 0}
                     />
                 </div>
             </div>

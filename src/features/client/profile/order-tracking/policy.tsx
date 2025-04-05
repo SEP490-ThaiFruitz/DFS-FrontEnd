@@ -3,7 +3,7 @@ import { BadgeAlertIcon, Box, Truck } from "lucide-react";
 
 export const Policies = () => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 cardStyle overflow-hidden p-4 bg-white">
       <h2 className="font-semibold text-lg text-indigo-600 dark:text-indigo-400">
         Chính sách quan tâm
       </h2>

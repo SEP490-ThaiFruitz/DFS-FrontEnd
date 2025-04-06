@@ -17,18 +17,14 @@ import {
 } from "@/components/ui/chart";
 import { truncate } from "lodash";
 
+type ChartData = {
+  productName: string;
+  sold: number;
+  revenue: number;
+};
 interface ProductPerformanceProps {
-  productPerformance: typeof chartData;
+  productPerformance: ChartData[];
 }
-
-const chartData = [
-  { productName: "Sấy Khô Mít", sold: 450, revenue: 300 },
-  { productName: "Sấy Khô Chuối", sold: 380, revenue: 420 },
-  { productName: "Sấy Khô Dứa", sold: 520, revenue: 120 },
-  { productName: "Sấy Khô Mango", sold: 140, revenue: 550 },
-  { productName: "Sấy Khô Nhãn", sold: 600, revenue: 350 },
-  { productName: "Sấy Khô Ổi", sold: 480, revenue: 400 },
-];
 
 const chartConfig = {
   sold: {
@@ -44,7 +40,7 @@ const chartConfig = {
 export function ProductPerformance({
   productPerformance,
 }: ProductPerformanceProps) {
-  console.log(productPerformance);
+  // console.log(productPerformance);
 
   return (
     <Card className="col-span-1 md:col-span-1 cardStyle">
@@ -54,9 +50,16 @@ export function ProductPerformance({
           Thống kê hiệu suất của sản phẩm với thời gian
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="w-full">
-          <BarChart accessibilityLayer data={productPerformance}>
+      <CardContent className="w-full h-full overflow-hidden">
+        <ChartContainer
+          config={chartConfig}
+          className="w-full h-[800px]  overflow-hidden"
+        >
+          <BarChart
+            accessibilityLayer
+            data={productPerformance}
+            // className="h-full"
+          >
             <XAxis
               dataKey="productName"
               tickLine={false}

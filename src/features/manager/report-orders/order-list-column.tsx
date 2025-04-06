@@ -97,7 +97,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     id: "id",
     accessorKey: "id",
     header: ({ column }) => {
-      return <span className="">Mã đơn hàng</span>;
+      return <span className="font-semibold">Mã đơn hàng</span>;
     },
     cell: ({ row }) => {
       const order = row.original;
@@ -133,7 +133,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     id: "status",
     accessorKey: "status",
     header: ({ column }) => {
-      return <span>Trạng thái đơn hàng</span>;
+      return <span className="font-semibold">Trạng thái đơn hàng</span>;
     },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
@@ -184,14 +184,13 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
 
     accessorKey: "totalPrice",
     header: ({ column }) => {
-      return <span className="">Tổng tiền</span>;
+      return <span className="font-semibold">Tổng tiền</span>;
     },
     cell: ({ row }) => {
       const totalPrice = row.getValue("totalPrice") as number;
       const shipFee = row.original.shipFee;
       const subtotal = totalPrice - shipFee;
 
-      // Determine price tier for visual indication
       let priceTier = "low";
       if (totalPrice > 1000000) priceTier = "high";
       else if (totalPrice > 500000) priceTier = "medium";
@@ -205,24 +204,24 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                   ? "bg-green-50 text-green-600 dark:bg-green-900/20"
                   : priceTier === "medium"
                   ? "bg-sky-50 text-sky-600 dark:bg-sky-900/20"
-                  : "bg-gray-50 text-gray-600 dark:bg-gray-800/20"
+                  : "bg-slate-50 text-slate-600 dark:bg-slate-800/20"
               }`}
             >
-              <CreditCard className="h-4 w-4 font-semibold" />
+              <CreditCard className="size-6 font-semibold" />
             </div>
             <span
-              className={`font-bold ${
+              className={`font-bold text-xl text-sky-600 ${
                 priceTier === "high"
                   ? "text-green-600"
                   : priceTier === "medium"
-                  ? "text-sky-600"
+                  ? "text-[#a16207]"
                   : ""
               }`}
             >
               {formatVND(totalPrice)}
             </span>
           </div>
-          <div className="flex flex-col mt-1 text-xs text-muted-foreground pl-9 gap-2">
+          <div className="flex flex-col mt-1 text-base text-slate-700 pl-9 gap-2">
             <div className="flex justify-between">
               <span className="font-semibold">Tiền hàng:</span>
               <span className="font-semibold text-sky-600">
@@ -248,7 +247,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     id: "voucher",
     accessorKey: "voucher",
     header: ({ column }) => {
-      return <span>Giảm giá</span>;
+      return <span className="font-semibold">Giảm giá</span>;
     },
     cell: ({ row }) => {
       const voucher = row.original.voucher;
@@ -272,10 +271,8 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
         <div className="flex flex-col gap-1">
           {voucher !== null && (
             <AdvancedColorfulBadges
-              // variant="secondary"
               className="w-fit font-thin"
               color={voucher !== null ? "indigo" : "blush"}
-              // className="w-fit bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-300"
             >
               {voucher.name}
             </AdvancedColorfulBadges>
@@ -284,8 +281,6 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             <AdvancedColorfulBadges
               className="w-fit font-thin"
               color={pointUsed > 0 ? "amber" : "sapphire"}
-              // variant="secondary"
-              // className="w-fit bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300"
             >
               Điểm: {pointUsed} pts
             </AdvancedColorfulBadges>
@@ -300,7 +295,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     id: "user",
     accessorKey: "user",
     header: ({ column }) => {
-      return <span>Khách hàng</span>;
+      return <span className="font-semibold">Khách hàng</span>;
     },
     cell: ({ row }) => {
       const user = row.original.user;
@@ -353,7 +348,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     id: "createdOnUtc",
     accessorKey: "createdOnUtc",
     header: ({ column }) => {
-      return <span className="">Ngày tạo</span>;
+      return <span className="font-semibold">Ngày tạo</span>;
     },
     cell: ({ row }) => {
       const createdOnUtc = row.getValue("createdOnUtc") as string;
@@ -399,7 +394,9 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
   // Update the actions dropdown menu to match the new status flow
   {
     id: "actions",
-    header: "Thao tác",
+    header: ({ column }) => {
+      return <span className="font-semibold">Thao tác</span>;
+    },
     cell: ({ row }) => {
       const order = row.original;
 
@@ -419,7 +416,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="h-4 w-4 text-slate-700" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -427,19 +424,6 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
-          {/* <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                  <Edit className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <span>Chỉnh sửa</span>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

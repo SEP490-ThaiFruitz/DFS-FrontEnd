@@ -136,10 +136,10 @@ export function EnhanceDataTable<TData, TValue>({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="default">
-                            Default Header
+                            Tiêu đề mặc định
                           </SelectItem>
                           <SelectItem value="dropdown">
-                            Dropdown Header
+                            Tiêu đề thả xuống
                           </SelectItem>
                         </SelectContent>
                       </Select>

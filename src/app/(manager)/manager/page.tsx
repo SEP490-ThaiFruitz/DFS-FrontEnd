@@ -124,7 +124,7 @@ export default function RevenueDashboard() {
   );
   // console.log(currentDate);
 
-  console.log(reportRevenue.data);
+  // console.log(reportRevenue.data);
 
   const chartConfig = {
     revenue: {

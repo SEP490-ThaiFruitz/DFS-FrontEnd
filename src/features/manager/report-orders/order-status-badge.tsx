@@ -156,7 +156,6 @@ export function OrderStatusBadge({
   const [isPending, setIsPending] = useState(false);
 
   const token = Cookies.get("accessToken");
-  console.log({ token });
 
   const nextStatus = getNextStatus(status);
 

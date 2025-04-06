@@ -1,3 +1,8 @@
+import {
+  OrderAddressDelivery,
+  OrderItem,
+} from "@/features/client/payment/successful/payment-successful.types";
+
 export type VoucherTypes = {
   id: string;
   name: string;
@@ -74,3 +79,22 @@ export const OrderStatus = {
 export type OrderStatusType = keyof typeof OrderStatus;
 
 export const OrderStatusKey = Object.keys(OrderStatus) as OrderStatusType[];
+
+export type OrderDetailTypes = {
+  orderId: string;
+  orderStatus: "Received" | "Processing" | "Completed" | "Cancelled" | string;
+  paymentStatus: "Pending" | "Paid" | "Failed" | string;
+  paymentMethod: "VnPay" | "Cash" | "Momo" | string;
+  buyDate: string; // ISO 8601 date string
+  orderItems: OrderItem[];
+  delivery: {
+    fee: number;
+    estimateDate: string | null;
+  };
+  voucherPrice: number | null;
+  pointUsed: number;
+  totalPrice: number;
+  cancel: any; // Unknown structure, can replace with appropriate type if known
+  orderAddressDelivery: OrderAddressDelivery;
+  timeline: any[]; // Can refine this type if structure is known
+};

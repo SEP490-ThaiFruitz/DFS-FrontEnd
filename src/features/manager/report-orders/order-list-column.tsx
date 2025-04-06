@@ -56,6 +56,7 @@ import { AdvancedColorfulBadges } from "@/components/global-components/badge/adv
 import axios from "axios";
 import { API } from "@/app/key/url";
 import { toast } from "sonner";
+import { CancelOrderDialog } from "./cancel-order-dialog";
 
 // Update the getStatusStep function to reflect the new order flow
 // Get status step
@@ -466,11 +467,12 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
               )}
               {conditionalUpdate && (
                 <>
-                  <UpdateStatusButtonDropdown
+                  {/* <UpdateStatusButtonDropdown
                     orderId={row.original.id}
                     status="cancelled"
                     isCancelled
-                  />
+                  /> */}
+                  <CancelOrderDialog orderId={row.original.id} />
                 </>
               )}
             </DropdownMenuContent>

@@ -44,6 +44,7 @@ import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { useCartStore } from "@/hooks/use-cart-store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -282,7 +283,7 @@ const OrderDetailsCard = memo(({ order }: { order: PaymentOrderValue }) => (
 ));
 OrderDetailsCard.displayName = "OrderDetailsCard";
 
-const OrderItem = memo(
+export const OrderItem = memo(
   ({ item }: { item: PaymentOrderValue["orderItems"][0] }) => (
     <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-slate-50 cardStyle ">
       <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden mr-4 mb-3 sm:mb-0 border border-slate-200">
@@ -337,6 +338,28 @@ const OrderItem = memo(
   )
 );
 OrderItem.displayName = "OrderItem";
+
+export const OrderItemSkeleton = () => {
+  return (
+    <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-slate-50 cardStyle animate-pulse">
+      <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden mr-4 mb-3 sm:mb-0 border border-slate-200">
+        <Skeleton className="w-full h-full" />
+      </div>
+      <div className="flex-1 space-y-2">
+        <Skeleton className="w-1/2 h-4" />
+        <div className="flex flex-wrap gap-2">
+          <Skeleton className="w-12 h-3" />
+          <Skeleton className="w-16 h-3" />
+        </div>
+        <Skeleton className="w-3/4 h-3" />
+      </div>
+      <div className="mt-3 sm:mt-0 text-right space-y-2">
+        <Skeleton className="w-20 h-4" />
+        <Skeleton className="w-24 h-5" />
+      </div>
+    </div>
+  );
+};
 
 const OrderItemsCard = memo(
   ({ items }: { items: PaymentOrderValue["orderItems"] }) => (

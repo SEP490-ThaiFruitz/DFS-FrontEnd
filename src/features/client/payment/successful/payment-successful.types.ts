@@ -3,7 +3,7 @@ export type OrderItem = {
   referenceId: string;
   name: string;
   image: string;
-  itemType: "Single" | "Combo"; // Assuming there are only these types
+  itemType: "Single" | "Combo" | "Custom"; // Assuming there are only these types
   quantity: number;
   unitPrice: number;
   percentage: number;

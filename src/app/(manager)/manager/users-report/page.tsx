@@ -2,6 +2,8 @@ import { API } from "@/app/key/url";
 import UserReportClient from "./user-report-client";
 import { NotData } from "@/components/global-components/no-data";
 import { ApiResponse } from "@/types/types";
+import { CustomerType } from "./user -report-column";
+import { getToken } from "@/actions/client/interact-api";
 
 export type ReportUserValue = {
   id: string;
@@ -21,13 +23,19 @@ export type ReportUserValue = {
 };
 
 const UserReportPage = async () => {
-  const response = await fetch(`${API}/Statistics/report/customers`);
+  const token = await getToken();
+
+  const response = await fetch(`${API}/Statistics/report/customers`, {
+    headers: {
+      Authorization: `Bearer ${token?.accessToken}`,
+    },
+  });
 
   if (!response.ok) {
-    return <NotData />;
+    return <NotData className="w-full h-full" />;
   }
 
-  const userReportData: ApiResponse<ReportUserValue[]> = await response.json();
+  const userReportData: ApiResponse<CustomerType[]> = await response.json();
 
   return <UserReportClient userReportData={userReportData.value || []} />;
 };

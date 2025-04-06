@@ -42,8 +42,13 @@ import { DataTable } from "@/components/global-components/data-table/data-table"
 import { productTopRevenueColumn } from "@/features/manager/report-revenue/product-top-revenue-column";
 import { REPORT_KEY } from "@/app/key/manager-key";
 import { TotalCard } from "./components/total-card";
-import { createDateRange, fillMissingDatesDynamics } from "@/utils/date";
+import {
+  createDateRange,
+  fillMissingDatesDynamics,
+  vietnameseDate,
+} from "@/utils/date";
 import { customerRevenueColumns } from "@/features/manager/report-revenue/user-top-revenue-column";
+import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 
 type TopProductRevenueStatistics = {
   type: "Single" | "Combo";
@@ -54,6 +59,7 @@ type TopProductRevenueStatistics = {
   quantity: number;
   revenue: number;
   revenueDiscount: number;
+  lastBuyDate: string;
 };
 
 type TopCustomerRevenueStatistics = {
@@ -131,6 +137,11 @@ export default function RevenueDashboard() {
       label: "Doanh thu",
       color: "hsl(var(--chart-5))",
     },
+
+    name: {
+      label: "Doanh thu",
+      color: "hsl(var(--chart-5))",
+    },
   } satisfies ChartConfig;
 
   const sumOrder = reportRevenue.data?.value
@@ -164,10 +175,21 @@ export default function RevenueDashboard() {
 
   const allDates = createDateRange(fromDate, currentDate);
 
+  const enrichRevenue = reportRevenue.data?.value?.topProductRevenueStatistics
+    ? reportRevenue.data?.value?.topProductRevenueStatistics.map((report) => {
+        return {
+          revenue: report.revenueDiscount
+            ? report.revenueDiscount
+            : report.revenue,
+          lastBuyDate: report.lastBuyDate,
+        };
+      })
+    : [];
+
   const filledRevenueData = fillMissingDatesDynamics(
-    revenueData,
+    enrichRevenue,
     allDates,
-    "date",
+    "lastBuyDate",
     ["revenue"]
   );
 
@@ -251,7 +273,14 @@ export default function RevenueDashboard() {
               <CardHeader>
                 <CardTitle>Tổng quan doanh thu</CardTitle>
                 <CardDescription>
-                  Doanh thu trong thời gian đã chọn
+                  Doanh thu trong thời gian{" "}
+                  <span className="font-semibold text-sky-600">
+                    {vietnameseDate(fromDate)}
+                  </span>
+                  -
+                  <span className="font-semibold text-sky-600">
+                    {vietnameseDate(currentDate)}
+                  </span>
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -296,7 +325,7 @@ export default function RevenueDashboard() {
                     </defs>
                     {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
                     <CartesianGrid vertical={false} />
-                    <XAxis dataKey="date" />
+                    <XAxis dataKey="lastBuyDate" />
                     <YAxis
                       tickFormatter={formatVND}
                       width={80}
@@ -350,49 +379,6 @@ export default function RevenueDashboard() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {/* <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Sản Phẩm</TableHead>
-                          <TableHead className="text-right">Giá</TableHead>
-                          <TableHead className="text-right">Đã bán</TableHead>
-                          <TableHead className="text-right">
-                            Doanh Thu
-                          </TableHead>
-                          <TableHead className="text-right">
-                            Tăng trưởng
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {topProducts.map((product) => (
-                          <TableRow key={product.id}>
-                            <TableCell className="font-medium">
-                              {product.name}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {product.price}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {product.sold}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {product.revenue}
-                            </TableCell>
-                            <TableCell
-                              className={`text-right ${
-                                product.growth.startsWith("+")
-                                  ? "text-green-500"
-                                  : "text-red-500"
-                              }`}
-                            >
-                              {product.growth}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table> */}
-
                     <DataTable
                       columns={productTopRevenueColumn}
                       data={
@@ -426,35 +412,6 @@ export default function RevenueDashboard() {
                     searchFiled="userName"
                     isLoading={reportRevenue.isLoading}
                   />
-
-                  {/* <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Khách hàng</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead className="text-right">Đơn hàng</TableHead>
-                        <TableHead className="text-right">Đã chi</TableHead>
-                        <TableHead>Lần mua cuối</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {topCustomers.map((customer) => (
-                        <TableRow key={customer.id}>
-                          <TableCell className="font-medium">
-                            {customer.name}
-                          </TableCell>
-                          <TableCell>{customer.email}</TableCell>
-                          <TableCell className="text-right">
-                            {customer.orders}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {customer.spent}
-                          </TableCell>
-                          <TableCell>{customer.lastPurchase}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table> */}
                 </CardContent>
               </Card>
             </TabsContent>

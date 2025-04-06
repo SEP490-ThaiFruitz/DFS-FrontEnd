@@ -30,7 +30,7 @@ interface EnhanceDataTableProps<TData, TValue> {
 
   queryKey?: string[];
 
-  queryClient: {
+  queryClient?: {
     refetch: () => void;
     isFetching: boolean;
     isLoading: boolean;
@@ -39,6 +39,9 @@ interface EnhanceDataTableProps<TData, TValue> {
   enableExpansion?: boolean;
   enableSelection?: boolean;
   enableEditing?: boolean;
+
+  title?: string;
+  description?: string;
 }
 
 export function EnhanceDataTable<TData, TValue>({
@@ -85,17 +88,17 @@ export function EnhanceDataTable<TData, TValue>({
 
         <Button
           onClick={() => {
-            queryClient.refetch();
+            queryClient?.refetch();
 
             // fetchData()
           }}
-          disabled={queryClient.isFetching}
+          disabled={queryClient?.isFetching}
         >
-          {queryClient.isFetching ? "Loading..." : "Refresh Data"}
+          {queryClient?.isFetching ? "Loading..." : "Refresh Data"}
         </Button>
       </div>
 
-      {!queryClient.isLoading || !queryClient.isFetching ? (
+      {!queryClient?.isLoading || !queryClient?.isFetching ? (
         <Tabs defaultValue="full-featured">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="full-featured">Tất cả tính năng</TabsTrigger>
@@ -120,6 +123,7 @@ export function EnhanceDataTable<TData, TValue>({
                   enableSelection={enableSelection}
                   enableEditing={enableEditing}
                   enableColumnReorder
+                  // enableRowReorder={true}
                 >
                   <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center mb-4">
                     <div className="flex flex-wrap gap-2">
@@ -228,6 +232,99 @@ export function EnhanceDataTable<TData, TValue>({
     </div>
   );
 }
+
+export const EnhanceDataTableWithAllFeatures = <TData, TValue>({
+  initialData,
+  columns,
+  queryClient,
+  enableSelection = true,
+  enableExpansion = true,
+  enableEditing = false,
+
+  title = "Tất cả tính năng",
+  description = "Bảng tính năng này cho phép bạn thực hiện các thao tác như sắp xếp cột, sắp xếp dòng, lọc dữ liệu, chỉnh sửa dữ liệu, xuất dữ liệu, và nhiều tính năng khác.",
+}: EnhanceDataTableProps<TData, TValue>) => {
+  const [dataCount, setDataCount] = useState<number>(1000);
+  const [headerVariant, setHeaderVariant] = useState<"default" | "dropdown">(
+    "default"
+  );
+
+  return (
+    <div className=" py-10 px-4 space-y-8">
+      <div className="flex items-center justify-end space-x-2">
+        <Input
+          type="number"
+          value={dataCount}
+          onChange={(e) => setDataCount(Number(e.target.value))}
+          className="w-32"
+        />
+
+        <Button
+          onClick={() => {
+            queryClient?.refetch();
+
+            // fetchData()
+          }}
+          disabled={queryClient?.isFetching}
+        >
+          {queryClient?.isFetching ? "Đang tải..." : "Làm mới"}
+        </Button>
+      </div>
+      <Card className="cardStyle">
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <EnhancedTable.Root
+            data={initialData}
+            columns={columns}
+            enableExpansion={enableExpansion}
+            enableSelection={enableSelection}
+            enableEditing={enableEditing}
+            enableColumnReorder={true}
+            // enableRowReorder={true}
+          >
+            <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center mb-4">
+              <div className="flex flex-wrap gap-2">
+                <EnhancedTable.Toolbar.ViewOptions />
+                <EnhancedTable.Toolbar.ExpandCollapse />
+                <Select
+                  value={headerVariant}
+                  onValueChange={(value: "default" | "dropdown") =>
+                    setHeaderVariant(value)
+                  }
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select header style" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">Tiêu đề mặc định</SelectItem>
+                    <SelectItem value="dropdown">Tiêu đề thả xuống</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex space-x-2">
+                <EnhancedTable.Toolbar.ExportTable />
+                <EnhancedTable.Filters.Dialog />
+                <EnhancedTable.Filters.Sheet />
+                <EnhancedTable.Filters.Clear />
+              </div>
+            </div>
+            <div className="rounded-md border">
+              <EnhancedTable.Table>
+                <EnhancedTable.Header variant={headerVariant} />
+                <EnhancedTable.Body customRowStyles={customRowStyles} />
+              </EnhancedTable.Table>
+            </div>
+            <EnhancedTable.Pagination />
+          </EnhancedTable.Root>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
 
 export const customRowStyles = <TData,>(row: Row<TData>) => {
   const baseStyles = "transition-colors hover:bg-opacity-20";

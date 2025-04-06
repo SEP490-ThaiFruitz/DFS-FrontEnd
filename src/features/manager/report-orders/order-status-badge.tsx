@@ -326,12 +326,6 @@ export const UpdateStatusButtonDropdown = ({
   const statusColor = getStatusColor(status);
   const statusText = getStatusText(status);
 
-  // const [ConfirmDialog, confirm] = useConfirm(
-  //   "Cập nhật trạng thái đơn hàng",
-  //   `Bạn có chắc chắn muốn chuyển trạng thái đơn hàng từ "${statusText} sang "${statusTextNext}" không?`,
-  //   isPending
-  // );
-
   const updateStatus = async () => {
     // const ok = await confirm();
 
@@ -379,8 +373,6 @@ export const UpdateStatusButtonDropdown = ({
 
   return (
     <>
-      {/* <ConfirmDialog /> */}
-
       <DropdownMenuItem
         className={`flex items-center gap-2 cursor-pointer ${statusColor} hover:${statusColor}`}
         onClick={updateStatus}

@@ -85,7 +85,7 @@ export function TableRoot<TData, TValue>({
         {
           id: "select-expand",
           header: ({ table }) => (
-            <div className="flex items-center w-12 bg-red-500">
+            <div className="flex items-center w-8">
               <Checkbox
                 checked={table.getIsAllPageRowsSelected()}
                 onCheckedChange={(value) =>
@@ -130,7 +130,7 @@ export function TableRoot<TData, TValue>({
           ),
           enableSorting: false,
           enableHiding: false,
-          width: 40,
+          width: 32,
         } as ColumnDef<TData, unknown>,
         ...newColumns,
       ];
@@ -139,13 +139,15 @@ export function TableRoot<TData, TValue>({
         {
           id: "select",
           header: ({ table }) => (
-            <Checkbox
-              checked={table.getIsAllPageRowsSelected()}
-              onCheckedChange={(value) =>
-                table.toggleAllPageRowsSelected(!!value)
-              }
-              aria-label="Select all"
-            />
+            <div className="flex items-center w-8">
+              <Checkbox
+                checked={table.getIsAllPageRowsSelected()}
+                onCheckedChange={(value) =>
+                  table.toggleAllPageRowsSelected(!!value)
+                }
+                aria-label="Select all"
+              />
+            </div>
           ),
           cell: ({ row }) => (
             <Checkbox
@@ -156,6 +158,7 @@ export function TableRoot<TData, TValue>({
           ),
           enableSorting: false,
           enableHiding: false,
+          width: 32,
         } as ColumnDef<TData, unknown>,
         ...newColumns,
       ];

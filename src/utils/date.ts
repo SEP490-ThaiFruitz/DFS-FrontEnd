@@ -33,6 +33,9 @@ export const vietnameseDate = (date: Date | string, isTime?: boolean) => {
 
   return `${day}`;
 };
+
+export const currentDate = format(new Date(), "yyyy-MM-dd");
+
 export const fillMissingDatesDynamics = <T>(
   data: T[],
   allDates: string[],
@@ -63,9 +66,12 @@ export const fillMissingDatesDynamics = <T>(
     const dayData = dataMap[date] || {};
     const result: Record<string, number | string> = { date };
 
+    console.log(dayData);
     fields.forEach((field) => {
       result[field as string] = dayData[field as string] || 0;
     });
+
+    console.log(result);
 
     return result;
   });

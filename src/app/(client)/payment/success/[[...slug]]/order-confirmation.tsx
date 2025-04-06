@@ -320,9 +320,12 @@ export const OrderItem = memo(
             </Badge>
           )}
         </div>
-        <p className="text-sm text-gray-500">
-          Đơn giá: {formatVND(item.unitPrice)}
-        </p>
+        <div className="text-sm text-gray-700">
+          Đơn giá:{" "}
+          <span className="text-sky-500 text-base font-semibold">
+            {formatVND(item.unitPrice)}
+          </span>
+        </div>
       </div>
       <div className="mt-3 sm:mt-0 text-right">
         <div className="bg-white px-3 py-1.5 rounded-xl border border-gray-200 mb-2">

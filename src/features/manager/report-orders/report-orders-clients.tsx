@@ -24,8 +24,6 @@ export const ReportOrdersListClient = () => {
     return <DataTableSkeleton />;
   }
 
-  console.log(orderList.data?.value?.items);
-
   const data = orderList.data?.value;
 
   // Tính toán tổng số đơn hàng
@@ -62,16 +60,7 @@ export const ReportOrdersListClient = () => {
     };
   });
 
-  console.log(chartData);
-
   return (
-    // <DataTable
-    //   columns={orderListColumns}
-    //   data={orderList.data?.value?.items || []}
-    //   isLoading={orderList.isLoading}
-    //   searchFiled="id"
-    // />
-
     <div className="flex-1 space-y-6 p-6">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <TotalCard

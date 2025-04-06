@@ -57,6 +57,7 @@ import axios from "axios";
 import { API } from "@/app/key/url";
 import { toast } from "sonner";
 import { CancelOrderDialog } from "./cancel-order-dialog";
+import { ReturnOrderDialog } from "./return-order-dialog";
 
 // Update the getStatusStep function to reflect the new order flow
 // Get status step
@@ -409,8 +410,6 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
         status !== "cancelled" &&
         status !== "returned";
 
-      console.log("status", status);
-
       return (
         <div className="flex items-center justify-end gap-2">
           <TooltipProvider delayDuration={100}>
@@ -458,11 +457,13 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
 
               {conditionalUpdate && (
                 <>
-                  <UpdateStatusButtonDropdown
+                  {/* <UpdateStatusButtonDropdown
                     orderId={row.original.id}
                     status="returned"
                     isReturned
-                  />
+                  /> */}
+
+                  <ReturnOrderDialog orderId={row.original.id} />
                 </>
               )}
               {conditionalUpdate && (

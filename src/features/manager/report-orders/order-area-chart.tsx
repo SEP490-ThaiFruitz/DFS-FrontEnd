@@ -54,7 +54,7 @@ export function OrderAreaChart({
     priceAfterShip: string;
   }[];
 }) {
-  console.log(chartData);
+  // console.log(chartData);
 
   function convertData(
     chartData: {

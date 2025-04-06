@@ -102,23 +102,6 @@ const cancelReasons = [
   },
 ];
 
-// const orderItems = [
-//   {
-//     id: 1,
-//     name: "Áo Thun Nam Cotton Cao Cấp",
-//     price: "350.000₫",
-//     quantity: 2,
-//     image: "/placeholder.svg?height=80&width=80",
-//   },
-//   {
-//     id: 2,
-//     name: "Quần Jeans Slim Fit",
-//     price: "550.000₫",
-//     quantity: 1,
-//     image: "/placeholder.svg?height=80&width=80",
-//   },
-// ];
-
 interface CancelOrderDialogProps {
   orderId: string;
 }
@@ -135,8 +118,6 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
   );
 
   const orderItems = orderDetail.data?.value?.orderItems || [];
-
-  console.log(orderDetail.data);
 
   const token = Cookies.get("accessToken");
 
@@ -164,7 +145,7 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
         }
       );
 
-      console.log("API response:", response);
+      // console.log("API response:", response);
 
       if (response.status === 200) {
         queryClient.invalidateQueries({
@@ -176,10 +157,6 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
         });
 
         toast.success("Cập nhật trạng thái thành công");
-
-        // ✅ Simulate log (sau khi chắc chắn API thành công)
-        console.log("Confirmed cancellation with reason:", selectedReason);
-        console.log("Additional comments:", additionalComments);
 
         setOpen(false);
         setTimeout(() => {
@@ -213,7 +190,6 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
       onOpenChange={(newOpen) => {
         setOpen(newOpen);
         if (!newOpen) {
-          // Reset when dialog closes
           setTimeout(() => {
             setStep(1);
             setSelectedReason("");
@@ -231,7 +207,7 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
           Hủy đơn hàng
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden rounded-xl border-0 shadow-xl">
+      <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden rounded-3xl border-0 shadow-xl">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100 overflow-hidden">
           <div
             className="h-full bg-rose-500 transition-all duration-500 ease-in-out"

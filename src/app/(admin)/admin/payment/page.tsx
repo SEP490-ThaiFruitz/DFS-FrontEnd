@@ -16,9 +16,11 @@ import ViewDetail from "./view-detail"
 interface Transaction {
     transactionNo: string
     orderId: string
+    walletId: string
     content: string
     amount: number
     type: string
+    paymentMethod: string
     status: string
     createdOnUtc: Date,
     updateOnUtc: Date | null
@@ -30,27 +32,24 @@ const PaymentPage = () => {
         isLoading,
     } = useFetch<ApiResponse<Transaction[]>>(`/Payments/history`, ["transactions"])
     const [transaction, setTransaction] = useState<Transaction | undefined>(undefined);
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case "pending":
-                return "bg-yellow-100 text-yellow-800"
-            case "fail":
-                return "bg-red-100 text-red-800"
-            default:
-                return "bg-gray-100 text-gray-800"
-        }
-    }
 
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case "Paid":
-                return "Đã thanh toán"
-            case "Pending":
-                return "Chờ thanh toán"
-            default:
-                return "Thất bại"
-        }
-    }
+    const typeColors: Record<string, { color: string; text: string }> = {
+        Order: { color: "bg-blue-100 text-blue-800", text: "Mua hàng" },
+        Wallet: { color: "bg-teal-100 text-teal-700", text: "Nạp tiền" },
+    };
+    
+    const paymentMethodColors: Record<string, { color: string; text: string }> = {
+        VnPay: { color: "bg-blue-100 text-blue-800", text: "VnPay" },
+        PayOs: { color: "bg-teal-100 text-teal-700", text: "PayOs" },
+        ShipCode: { color: "bg-yellow-100 text-yellow-800", text: "ShipCode" },
+        Wallet: { color: "bg-indigo-100 text-indigo-800", text: "Ví" },
+    };
+    
+    const paymentSatusColors: Record<string, { color: string; text: string }> = {
+        Pending: { color: "bg-blue-100 text-blue-800", text: "Chờ thanh toán" },
+        Paid: { color: "bg-teal-100 text-teal-700", text: "Đã thanh toán" },
+        Fail: { color: "bg-red-100 text-red-800", text: "Thất bại" },
+    };    
 
     const columns: ColumnDef<Transaction>[] = [
         {
@@ -58,8 +57,8 @@ const PaymentPage = () => {
             header: "Mã giao dịch",
         },
         {
-            accessorKey: "orderId",
-            header: "Mã đơn hàng",
+            accessorKey: "referenceId",
+            header: "Mã tham chiếu",
         },
         {
             accessorKey: "content",
@@ -71,15 +70,49 @@ const PaymentPage = () => {
             cell: ({ row }) => formatVND(row.original.amount),
         },
         {
+            accessorKey: "paymentMethod",
+            header: "Phuơng thức thanh toán",
+            cell: ({ row }) => {
+                const type = row.original.paymentMethod
+                return (
+                    <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${paymentMethodColors[type]?.color || "bg-gray-100 text-gray-800"
+                            }`}
+                    >
+                        {paymentMethodColors[type]?.text || "Không xác định"}
+                    </span>
+                )
+            },
+        },
+        {
             accessorKey: "type",
             header: "Loại",
+            cell: ({ row }) => {
+                const type = row.original.type
+                return (
+                    <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${typeColors[type]?.color || "bg-gray-100 text-gray-800"
+                            }`}
+                    >
+                        {typeColors[type]?.text || "Không xác định"}
+                    </span>
+                )
+            },
         },
         {
             accessorKey: "status",
             header: "Trạng thái",
-            cell: ({ row }) => <Badge className={getStatusColor(row.original.status)}>{
-                getStatusText(row.original.status)
-            }</Badge>,
+            cell: ({ row }) => {
+                const status = row.original.status
+                return (
+                    <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold ${paymentSatusColors[status]?.color || "bg-gray-100 text-gray-800"
+                            }`}
+                    >
+                        {paymentSatusColors[status]?.text || "Không xác định"}
+                    </span>
+                )
+            }
         },
         {
             accessorKey: "createdOnUtc",

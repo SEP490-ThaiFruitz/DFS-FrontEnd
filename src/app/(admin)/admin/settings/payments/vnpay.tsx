@@ -20,7 +20,8 @@ interface VnPay {
     url: string
     tmnCode: string
     hashSecret: string
-    api: string
+    api: string,
+    returnUrlForWalletTopUp: string
 }
 
 const VnPayCard = () => {
@@ -37,7 +38,8 @@ const VnPayCard = () => {
                 returnUrl: vnpay.returnUrl,
                 hashSecret: vnpay.hashSecret,
                 tmnCode: vnpay.tmnCode,
-                url: vnpay.url
+                url: vnpay.url,
+                returnUrlForWalletTopUp: vnpay.returnUrlForWalletTopUp
             })
         }
     }, [vnpay])
@@ -52,6 +54,7 @@ const VnPayCard = () => {
                     tmnCode: values.tmnCode.trim(),
                     hashSecret: values.hashSecret.trim(),
                     api: values.api.trim(),
+                    returnUrlForWalletTopUp: values.returnUrlForWalletTopUp.trim()
                 })
             })
             if (response) {
@@ -75,6 +78,13 @@ const VnPayCard = () => {
                             name="returnUrl"
                             disabled={form.formState.isSubmitting}
                             label="Link trả về"
+                            require
+                        />
+                         <FormInputControl
+                            form={form}
+                            name="returnUrlForWalletTopUp"
+                            disabled={form.formState.isSubmitting}
+                            label="Link nạp ví trả về"
                             require
                         />
                         <FormInputControl

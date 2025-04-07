@@ -8,6 +8,7 @@ export interface ProductNutrition {
     id: string;
     ingredients: string[];
     servingSize: number;
+    calories: number;
     nutritionFacts: NutritionFact[];
 }
 
@@ -21,7 +22,7 @@ const NutritionTab = ({ productNutrion, productId }: Readonly<NutritionTabProps>
     return (
         <TabsContent value="nutrition">
             <Card className="w-full mx-auto">
-                <NutriontionHeader id={productNutrion?.id} productId={productId} ingredients={productNutrion?.ingredients ?? []} servingSize={productNutrion?.servingSize ?? 0} />
+                <NutriontionHeader calories={productNutrion?.calories} id={productNutrion?.id} productId={productId} ingredients={productNutrion?.ingredients ?? []} servingSize={productNutrion?.servingSize ?? 0} />
                 <NutritionFactTab productNutritionId={productNutrion?.id} productId={productId} nutritionFacts={productNutrion?.nutritionFacts ?? []} />
             </Card>
         </TabsContent>

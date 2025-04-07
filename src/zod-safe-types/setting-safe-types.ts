@@ -25,7 +25,12 @@ export const VnPaySettingSafeTypes = z.object({
         required_error: "Vui lòng nhập API VnPay"
     }).nonempty({
         message: "API VnPay không được để trống"
-    })
+    }),
+    returnUrlForWalletTopUp: z.string({
+        required_error: "Vui lòng nhập URL trả về"
+    }).nonempty({
+        message: "URL trả về không được để trống"
+    }),
 });
 
 
@@ -54,7 +59,12 @@ export const PayOsSettingSafeTypes = z.object({
         required_error: "Vui lòng nhập URL hủy bỏ"
     }).nonempty({
         message: "URL hủy bỏ không được để trống"
-    })
+    }),
+    returnUrlForWalletTopUp: z.string({
+        required_error: "Vui lòng nhập URL trả về"
+    }).nonempty({
+        message: "URL trả về không được để trống"
+    }),
 });
 
 

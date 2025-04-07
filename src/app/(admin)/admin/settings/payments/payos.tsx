@@ -20,6 +20,7 @@ interface PayOs {
     checksumKey: string
     returnSuccessUrl: string
     returnCancelUrl: string
+    returnUrlForWalletTopUp: string
 }
 
 const PayOsCard = () => {
@@ -36,6 +37,7 @@ const PayOsCard = () => {
                 checksumKey: payos.checksumKey,
                 returnSuccessUrl: payos.returnSuccessUrl,
                 returnCancelUrl: payos.returnCancelUrl,
+                returnUrlForWalletTopUp: payos.returnUrlForWalletTopUp
             })
         }
     }, [payos])
@@ -50,6 +52,7 @@ const PayOsCard = () => {
                     checksumKey: values.checksumKey.trim(),
                     returnSuccessUrl: values.returnSuccessUrl.trim(),
                     returnCancelUrl: values.returnCancelUrl.trim(),
+                    returnUrlForWalletTopUp: values.returnUrlForWalletTopUp.trim()
                 })
             })
             if (response) {
@@ -101,6 +104,13 @@ const PayOsCard = () => {
                             name="returnCancelUrl"
                             disabled={form.formState.isSubmitting}
                             label="Link trả thanh toán thất bại"
+                            require
+                        />
+                        <FormInputControl
+                            form={form}
+                            name="returnUrlForWalletTopUp"
+                            disabled={form.formState.isSubmitting}
+                            label="Link nạp ví trả về"
                             require
                         />
                     </div>

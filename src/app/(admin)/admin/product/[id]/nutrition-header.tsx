@@ -23,10 +23,11 @@ interface NutriontionHeaderProps {
     productId: string,
     id: string | undefined;
     servingSize: number,
+    calories: number | undefined,
     ingredients: string[],
 }
 
-const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly<NutriontionHeaderProps>) => {
+const NutriontionHeader = ({ productId, servingSize, ingredients, id, calories }: Readonly<NutriontionHeaderProps>) => {
     const [isHeaderEditing, setIsHeaderEditing] = useState(false)
     const queryClient = useQueryClient();
 
@@ -83,7 +84,7 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
                 {!isHeaderEditing && (
                     <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                         onClick={handleHeaderEdit}
                     >
                         <Pencil className="h-4 w-4" />
@@ -161,12 +162,17 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
                     </div>
                 </FormValues>
             ) : (
-                <div className="text-sm text-muted-foreground">
-                    Khối lượng khẩu phần: {servingSize}g<br />
-                    Thành phần: <div className='space-x-2'>
-                        {ingredients?.map((ingredient: any) => <Badge className='mb-3' variant={"outline"} key={ingredient}>
-                            {ingredient}
-                        </Badge>)}
+                <div className='flex justify-between items-center'>
+                    <div className="text-sm text-muted-foreground">
+                        Khối lượng khẩu phần: {servingSize}g<br />
+                        Thành phần: <div className='space-x-2'>
+                            {ingredients?.map((ingredient: any) => <Badge className='mb-3' variant={"outline"} key={ingredient}>
+                                {ingredient}
+                            </Badge>)}
+                        </div>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        Calories: <div className='font-bold text-xl'>{0}</div> kcal
                     </div>
                 </div>
             )}

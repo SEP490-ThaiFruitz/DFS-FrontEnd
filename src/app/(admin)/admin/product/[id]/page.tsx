@@ -43,7 +43,7 @@ export interface ProductImage {
 
 const ProductDetail = () => {
     const { id } = useParams();
-    const { data: product } = useFetch<ApiResponse<Product>>(`/Products/mange/${id}`, ["detail-mange", `${id}`])
+    const { data: product } = useFetch<ApiResponse<Product>>(`/Products/manage/${id}`, ["detail-mange", `${id}`])
 
     return (
         <div className='p-10 w-full'>

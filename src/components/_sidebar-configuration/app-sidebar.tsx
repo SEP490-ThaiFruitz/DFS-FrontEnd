@@ -20,6 +20,9 @@ import {
   Banknote,
   ShieldCheck,
   PackagePlus,
+  Wallet,
+  History,
+  CircleArrowOutDownRight,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -68,6 +71,23 @@ const data = {
           url: "/admin/blog",
           icon: BookOpenText,
         },
+      ],
+    },
+    {
+      title: "Quản lí ví",
+      url: "/admin/wallet",
+      icon: Wallet,
+      items: [
+        {
+          title: "Lịch sử ví",
+          url: "/admin/wallet",
+          icon: History,
+        },
+        {
+          title: "Yêu cầu rút tiền",
+          url: "/admin/wallet/withdraw",
+          icon: CircleArrowOutDownRight
+        }
       ],
     },
     {
@@ -148,7 +168,7 @@ const data = {
       name: "Lịch sử thanh toán",
       url: "/admin/payment",
       icon: Banknote,
-    },
+    }
   ],
 };
 

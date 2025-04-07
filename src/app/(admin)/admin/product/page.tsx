@@ -35,7 +35,7 @@ interface Product {
 
 function ProductPage() {
     const [product, setProduct] = useState<Product | undefined>(undefined);
-    const { data: products, refetch } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/mange?pageIndex=1&pageSize=1000`, ["products", "manage"])
+    const { data: products, refetch } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/manage?pageIndex=1&pageSize=1000`, ["products", "manage"])
     const [productVariants, setProductVariants] = useState<ProductVariant[] | undefined>(undefined)
 
     const StockIndicator = ({ stockQuantity, reOrderPoint }: { stockQuantity: number; reOrderPoint: number }) => {

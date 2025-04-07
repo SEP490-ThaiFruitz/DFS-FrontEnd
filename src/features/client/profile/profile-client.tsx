@@ -128,7 +128,7 @@ export const ProfileClientPage = () => {
                   {content.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6 bg-slate-100/90">
+              <CardContent className="py-4 px-6 bg-slate-100/90">
                 {content.component}
               </CardContent>
             </MotionCard>

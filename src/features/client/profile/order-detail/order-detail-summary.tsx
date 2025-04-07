@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from '@/components/ui/separator';
 import { formatVND } from '@/lib/format-currency';
-import { ShoppingCart } from 'lucide-react'
+import { Banknote, ShoppingCart } from 'lucide-react'
 import React from 'react'
 import { OrderItem } from '../order-tracking/product-list';
 
@@ -20,42 +20,53 @@ interface OrderDetaiSummaryProps {
     orderStatus: string,
 }
 const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, voucherPrice, shipCode, orderStatus }: Readonly<OrderDetaiSummaryProps>) => {
-    const price = orderItems.reduce((total: number, item: OrderItem) =>
-        total + ((item.discountPrice ?? item.unitPrice) * item.quantity),
-        0);
+    const totalPriceProducts = orderItems.reduce((total, item) => {
+        return total + item.unitPrice * item.quantity;
+    }, 0);
+    const totalDiscountPriceProducts = orderItems.reduce((total, item) => {
+        return total + item.discountPrice * item.quantity;
+    }, 0);
     return (
-        <div className='flex flex-col-reverse lg:flex-col gap-10'>
-            <Card className="top-8">
+        <div className='flex flex-col-reverse lg:flex-col gap-4'>
+            <Card className="top-8 cardStyle">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex justify-center items-center gap-2">
+                        <Banknote className="w-8 h-8" />
                         Thông tin thanh toán
                     </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-4'>
-                    <div className="flex justify-between items-center">
-                        <span className="text-gray-700 font-semibold">Số tiền hàng:</span>
-                        <span className="text-gray-900 font-semibold">{formatVND(price)}</span>
+                    <div className="flex justify-between">
+                        <span className="text-gray-700 font-semibold">Tạm tính:</span>
+                        <span className='text-lg font-bold text-sky-500/70'>{formatVND(totalPriceProducts)}</span>
                     </div>
+                    {(totalPriceProducts - totalDiscountPriceProducts) > 0 && (
+                        <div className="flex justify-between">
+                            <span className="text-gray-700 font-semibold">Giá đã giảm:</span>
+                            <span className='text-sm text-gray-400'>- {formatVND(totalPriceProducts - totalDiscountPriceProducts)}</span>
+                        </div>
+                    )}
+
                     <div className="flex justify-between items-center">
                         <span className="text-gray-700 font-semibold">Phí vận chuyển:</span>
-                        <span className="text-gray-900">{`${formatVND(feePrice)}`}</span>
+                        <span className="text-lg font-bold text-sky-500/70">{`${formatVND(feePrice)}`}</span>
                     </div>
                     {voucherPrice && (
                         <div className="flex justify-between items-center">
-                            <span className="text-gray-700 font-semibold">Số mã giảm giá:</span>
-                            <span className="text-gray-900">{`- ${formatVND(voucherPrice)}`}</span>
+                            <span className="text-gray-700 font-semibold">Mã giảm giá:</span>
+                            <span className="text-sm text-gray-400">{`- ${formatVND(voucherPrice)}`}</span>
                         </div>
                     )}
                     {usedPoint > 0 && (
                         <div className="flex justify-between items-center">
                             <span className="text-gray-700 font-semibold">Số điểm:</span>
-                            <span className="text-gray-900">{`- ${formatVND(usedPoint)}`}</span>
+                            <span className="text-sm text-gray-400">{`- ${formatVND(usedPoint)}`}</span>
                         </div>
                     )}
                     <Separator />
                     <div className="flex justify-between items-center">
                         <span className='text-gray-900 font-semibold'>Tổng tiền:</span>
-                        <span className='text-gray-900 font-semibold'>{formatVND(totalPrice)}</span>
+                        <span className='text-base font-bold text-sky-500'>{formatVND(totalPrice)}</span>
                     </div>
                     {shipCode && (
                         <div className='flex items-center space-x-2'>
@@ -65,10 +76,10 @@ const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, vouche
                     )}
                 </CardContent>
             </Card>
-            <Card className="top-8">
+            <Card className="top-8 cardStyle">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <ShoppingCart className="w-6 h-6" />
+                    <CardTitle className="flex justify-center items-center gap-2">
+                        <ShoppingCart className="w-8 h-8" />
                         Chi tiết đơn hàng
                     </CardTitle>
                 </CardHeader>

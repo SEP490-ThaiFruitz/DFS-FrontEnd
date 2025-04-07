@@ -50,7 +50,7 @@ export const DialogReused = ({
       {trigger}
       <DialogContent hidden={hiddenClose} className={cn("", className)}>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="text-center">{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 

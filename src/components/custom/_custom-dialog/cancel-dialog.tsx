@@ -26,9 +26,8 @@ interface CancelDialogProps {
 export const CancelDialog = ({ isOpen, onClose, orderId, refreshKey }: CancelDialogProps) => {
     const CANCEL_REASONS = [
         { label: "Thay đổi ý định mua hàng" },
-        { label: "Phí vận chuyển quá cao" },
-        { label: "Thông tin giao hàng sai" },
-        { label: "Nhầm lẫn khi đặt hàng" },
+        { label: "Tôi không có nhà vào 4 hoặc vài ngày tới" },
+        { label: "Tôi bị nhầm thông tin giao hàng" },
         { label: "Lí do khác" },
     ];
 
@@ -53,6 +52,7 @@ export const CancelDialog = ({ isOpen, onClose, orderId, refreshKey }: CancelDia
             if (response) {
                 toast.success("Huỷ đơn hàng thành công")
                 queryClient.invalidateQueries({ queryKey: refreshKey })
+                onClose()
             } else {
                 toast.error("Huỷ đơn hàng thất bại")
             }
@@ -100,17 +100,18 @@ export const CancelDialog = ({ isOpen, onClose, orderId, refreshKey }: CancelDia
                 <FormMessage className="text-sm text-destructive" />
 
                 <DialogFooter>
-                    <DialogClose asChild>
-                        <ButtonCustomized
-                            disabled={form.formState.isSubmitting}
-                            className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-                            variant="outline"
-                            label="Hủy"
-                        />
-                    </DialogClose>
+                    <ButtonCustomized
+                        disabled={form.formState.isSubmitting}
+                        onClick={onClose}
+                        type="button"
+                        className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
+                        variant="outline"
+                        label="Hủy"
+                    />
+
                     <ButtonCustomized
                         type="submit"
-                        className="max-w-32 bg-green-700 hover:bg-green-800"
+                        className="max-w-32 bg-red-700 hover:bg-red-800"
                         variant="secondary"
                         disabled={form.formState.isSubmitting}
                         label={

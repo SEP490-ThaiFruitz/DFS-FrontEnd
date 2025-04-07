@@ -46,11 +46,11 @@ export const ViewCardProduct = ({
         </span>
       </div>
       {productPercentage > 0 && (
-        <span className="font-light text-slate-400 line-through">
+        <span className="text-sm text-[#fdba74] line-through">
           {formatVND((productPrice * productQuantity).toFixed(2))}
         </span>
       )}
-      <span className="font-medium">
+      <span className="text-lg font-bold text-sky-500/70">
         {productPercentage > 0
           ? formatVND((productDiscountPrice * productQuantity).toFixed(2))
           : formatVND((productPrice * productQuantity).toFixed(2))}

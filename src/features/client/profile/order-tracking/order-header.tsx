@@ -30,6 +30,7 @@ export const OrderHeader = ({
     Cancelled: "Đã hủy",
     Returned: "Đã trả hàng",
   };
+  
   return (
 
     <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 space-y-4">
@@ -39,7 +40,7 @@ export const OrderHeader = ({
             {orderStatusMap[status]}
           </AdvancedColorfulBadges>
           <h2 className="hidden xl:flex text-2xl font-bold items-center gap-2">
-            <Package className="w-6 h-6" />
+            <Package className="w-12 h-12 shrink-0" />
             Mã đơn hàng: {orderId}
           </h2>
         </div>
@@ -65,11 +66,11 @@ export const OrderHeader = ({
         <Package className="w-6 h-6" />
         Mã đơn hàng: {orderId}
       </h2>
-      <div className="flex flex-col sm:flex-row sm:items-center text-sm gap-2 sm:gap-4 text-indigo-100">
+      <div className="flex flex-row sm:flex-row sm:items-center text-sm gap-2 sm:gap-4 text-indigo-100 cardStyle p-4">
         <div>
           <div className="flex items-center gap-1">
             <svg
-              className="w-4 h-4"
+              className="w-4 h-4 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -93,7 +94,7 @@ export const OrderHeader = ({
             <span className="hidden sm:inline">•</span>
             <div>
               <div className="flex items-center gap-1">
-                <Plane className="w-4 h-4" /> Ước tính vận chuyển:
+                <Plane className="w-4 h-4 shrink-0" /> Ước tính vận chuyển:
               </div>
               <div>
                 {formatTimeVietNam(new Date(timeEstimateDelivery))}

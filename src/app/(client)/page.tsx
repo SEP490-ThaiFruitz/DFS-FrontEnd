@@ -4,7 +4,14 @@ import VoucherSlide from "@/features/client/home/voucher-slide";
 import Promotion from "@/features/client/home/promotion";
 import CategorySlide from "@/features/client/home/category-slide";
 import { MarqueeMarketing } from "@/features/client/home/marquee-marketing";
-import { ProductFilterSidebarContainer } from "@/components/custom/filter-product-sidebar/product-filter-sidebar-container";
+import dynamic from "next/dynamic";
+// import { ProductFilterSidebarContainer } from "@/components/custom/filter-product-sidebar/product-filter-sidebar-container";
+
+const ProductFilterSidebarContainer = dynamic(() =>
+  import(
+    "@/components/custom/filter-product-sidebar/product-filter-sidebar-container"
+  ).then((mod) => mod.ProductFilterSidebarContainer)
+);
 
 const ClientPage = () => {
   const images = [

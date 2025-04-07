@@ -15,6 +15,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { nodes } from "./nodes";
 import { Plugins } from "./plugins";
 
+interface EditorProps {
+  editorState?: EditorState;
+  editorSerializedState?: SerializedEditorState;
+  onChange?: (editorState: EditorState) => void;
+  onSerializedChange?: (editorSerializedState: SerializedEditorState) => void;
+
+  maxLength?: number;
+}
+
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
   theme: editorTheme,
@@ -25,20 +34,13 @@ const editorConfig: InitialConfigType = {
 };
 
 //* component nay co the tai su dung, nhung thuc te lai khong can nhieu options nhu vay, nen sau se duoc set dieu kien chi su dung nhung options can thiet
-export function Editor({
+const Editor = ({
   editorState,
   editorSerializedState,
   onChange,
   onSerializedChange,
   maxLength,
-}: {
-  editorState?: EditorState;
-  editorSerializedState?: SerializedEditorState;
-  onChange?: (editorState: EditorState) => void;
-  onSerializedChange?: (editorSerializedState: SerializedEditorState) => void;
-
-  maxLength?: number;
-}) {
+}: EditorProps) => {
   return (
     <div className="overflow-hidden rounded-lg border bg-background shadow">
       <LexicalComposer
@@ -68,4 +70,6 @@ export function Editor({
       </LexicalComposer>
     </div>
   );
-}
+};
+
+export default Editor;

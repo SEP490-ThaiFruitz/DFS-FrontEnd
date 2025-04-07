@@ -4,7 +4,18 @@ import { useState } from "react";
 import { SerializedEditorState } from "lexical";
 
 import { SidebarFilter } from "@/features/client/sidebar-filter/sidebar-filter";
-import { Editor } from "@/components/blocks/editor-x/editor";
+import { Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
+// import { Editor } from "@/components/blocks/editor-x/editor";
+
+const Editor = dynamic(() => import("@/components/blocks/editor-x/editor"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[300px] w-full items-center justify-center rounded-md border border-dashed">
+      <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+    </div>
+  ),
+});
 
 const initialValue = {
   root: {

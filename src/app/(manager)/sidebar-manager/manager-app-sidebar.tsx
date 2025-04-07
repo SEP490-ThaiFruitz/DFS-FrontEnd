@@ -12,6 +12,7 @@ import {
   UserRound,
   Settings,
   MessageSquareMore,
+  NewspaperIcon,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -90,6 +91,11 @@ const data = {
       name: "Báo cáo người dùng",
       url: "/manager/users-report",
       icon: UserRound,
+    },
+    {
+      name: "Bài viết",
+      url: "/manager/blog",
+      icon: NewspaperIcon,
     },
     {
       name: "Quản Lý Sự Kiện",

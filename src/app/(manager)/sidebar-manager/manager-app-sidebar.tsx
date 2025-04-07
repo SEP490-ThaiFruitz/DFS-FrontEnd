@@ -40,13 +40,13 @@ const data = {
       items: [
         {
           title: "Các đơn hàng",
-          url: "#",
+          url: "/manager/order-list",
         },
       ],
     },
     {
       title: "Quản lý sản phẩm",
-      url: "/admin/blog",
+      url: "/manager/blog",
       icon: BookOpen,
       items: [
         {
@@ -108,7 +108,6 @@ export function ManagerAppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const sidebar = useSidebar();
-
 
   return (
     <Sidebar

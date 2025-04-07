@@ -1,3 +1,7 @@
 export enum USER_KEY {
-  ADDRESS = "address",
+  ADDRESS = "addresses",
+
+  CUSTOM_COMBO = "customCombo",
+
+  PROFILE = "profile",
 }

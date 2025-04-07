@@ -14,8 +14,8 @@ export interface Voucher {
   discountType: "Amount" | "Percentage";
   minimumOrderAmount: number;
   maximumDiscountAmount: number;
-  startDate: string,
-  endDate: string,
+  startDate: string;
+  endDate: string;
 }
 
 export type VoucherResponse = {
@@ -44,7 +44,9 @@ const VoucherSlide = () => {
           })}
       </CarouselCustomized>
     </div>
-  ) : <></>;
+  ) : (
+    <></>
+  );
 };
 
 export default VoucherSlide;

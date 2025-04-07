@@ -46,30 +46,10 @@ import { set, truncate } from "lodash";
 import { cn } from "@/lib/utils";
 import AddressTab from "../profile/address/address-tab";
 import { DialogReused } from "@/components/global-components/dialog-reused";
+// import { token } from "@/lib/token";
+import { useLoginDialog } from "@/hooks/use-login-dialog";
 
-// Mock data for existing addresses
-const mockAddresses = [
-  {
-    id: "1",
-    name: "Nhà riêng",
-    street: "123 Đường Nguyễn Huệ",
-    district: "Quận 1",
-    city: "TP. Hồ Chí Minh",
-    postalCode: "70000",
-    phone: "0901234567",
-    isDefault: true,
-  },
-  {
-    id: "2",
-    name: "Văn phòng",
-    street: "456 Đường Lê Lợi",
-    district: "Quận 3",
-    city: "TP. Hồ Chí Minh",
-    postalCode: "70000",
-    phone: "0909876543",
-    isDefault: false,
-  },
-];
+import Cookies from "js-cookie";
 
 type Address = {
   id?: string;
@@ -94,15 +74,10 @@ export default function AddressChoices<T extends FieldValues>({
   form,
 }: AddressChoicesProps<T>) {
   const [activeTab, setActiveTab] = useState("base-info");
-  const [addressMode, setAddressMode] = useState("select"); // "select", "create", or "edit"
-  const [addresses, setAddresses] = useState<Address[]>(mockAddresses);
-  const [selectedAddress, setSelectedAddress] = useState(
-    addresses.find((a) => a.isDefault)?.id || addresses[0]?.id || ""
-  );
-  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const token = Cookies.get("accessToken");
+
+  console.log({ token });
 
   const { isAddressPending, addresses: addressApi } = addressData;
 
@@ -114,7 +89,6 @@ export default function AddressChoices<T extends FieldValues>({
     Omit<AddressTypes, "id">
   >({
     tagName: "",
-
     userId: "",
     receiverName: "",
     receiverPhone: "",
@@ -126,8 +100,6 @@ export default function AddressChoices<T extends FieldValues>({
     districtID: 0,
     wardID: 0,
   });
-
-  // console.log({ value });
 
   const InfoRow = ({
     label,
@@ -155,7 +127,11 @@ export default function AddressChoices<T extends FieldValues>({
 
   const addressIdWatch = form.watch("addressId" as Path<T>);
 
-  console.log({ addressReceive });
+  const isAuth = Boolean(token);
+
+  // console.log(isAuth);
+
+  const loginDialog = useLoginDialog();
 
   useEffect(() => {
     if (addressApi && addressApi?.length > 0) {
@@ -175,50 +151,24 @@ export default function AddressChoices<T extends FieldValues>({
   return (
     <>
       <div className="w-full max-w-3xl mx-auto">
-        {/* <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold">Thanh toán</h1>
-          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-            <span
-              className={
-                activeTab === "personal" ? "text-primary font-medium" : ""
-              }
-            >
-              Thông tin cá nhân
-            </span>
-            <ChevronRight className="h-4 w-4" />
-            <span
-              className={
-                activeTab === "address" ? "text-primary font-medium" : ""
-              }
-            >
-              Địa chỉ giao hàng
-            </span>
-            <ChevronRight className="h-4 w-4" />
-            <span>Thanh toán</span>
-          </div>
-        </div>
-        <Separator />
-      </div> */}
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="base-info" className="flex items-center gap-2">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full "
+        >
+          <TabsList className="grid grid-cols-2 mb-4 rounded-xl text-center">
+            <TabsTrigger value="base-info" className="flex items-center gap-2 ">
               <FileUser className="h-4 w-4" />
               Thông tin cơ bản
             </TabsTrigger>
-            <TabsTrigger value="address" className="flex items-center gap-2">
+            <TabsTrigger value="address" className="flex items-center gap-2 ">
               <MapPin className="h-4 w-4" />
               Địa chỉ giao hàng
-            </TabsTrigger>
-            <TabsTrigger value="personal" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Thông tin cá nhân
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="base-info">
-            <Card>
+            <Card className="cardStyle">
               <CardHeader>
                 <CardTitle>Thông tin cơ bản của bạn</CardTitle>
                 <CardDescription>
@@ -244,26 +194,8 @@ export default function AddressChoices<T extends FieldValues>({
             </Card>
           </TabsContent>
 
-          <TabsContent value="personal">
-            <Card>
-              <CardHeader>
-                <CardTitle>Thông tin cá nhân của bạn</CardTitle>
-                <CardDescription>
-                  Hãy đảm bảo thông tin cá nhân của bạn chính xác khi tiến hành
-                  thanh toán
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4"></CardContent>
-              <CardFooter>
-                <Button onClick={() => {}} className="w-full">
-                  Tiếp tục <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="address">
-            <Card className="">
+            <Card className="cardStyle">
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
@@ -281,10 +213,9 @@ export default function AddressChoices<T extends FieldValues>({
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          // setAddressMode("create");
-                          // setErrors({});
-
-                          setOpenDialogAddress(true);
+                          isAuth
+                            ? setOpenDialogAddress(true)
+                            : loginDialog.onOpen();
                         }}
                         type="button"
                         className="flex items-center gap-1"
@@ -293,34 +224,6 @@ export default function AddressChoices<T extends FieldValues>({
                       </Button>
                     }
                   />
-
-                  {/* {addressMode === "select" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setAddressMode("create");
-                      setErrors({});
-                    }}
-                    className="flex items-center gap-1"
-                  >
-                    <PlusCircle className="h-4 w-4" /> Thêm địa chỉ mới
-                  </Button>
-                )}
-                {(addressMode === "create" || addressMode === "edit") && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setAddressMode("select");
-                      setEditingAddress(null);
-                      setErrors({});
-                    }}
-                    className="flex items-center gap-1"
-                  >
-                    <ArrowLeft className="h-4 w-4" /> Quay lại
-                  </Button>
-                )} */}
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -339,7 +242,6 @@ export default function AddressChoices<T extends FieldValues>({
                         name={"addressId" as Path<T>}
                       >
                         {addressApi?.map((address: AddressTypes) => {
-                          console.log({ address });
                           return (
                             <div
                               className={`relative flex flex-col p-4 border  rounded-md transition-all ${
@@ -362,7 +264,7 @@ export default function AddressChoices<T extends FieldValues>({
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
-                                {addresses.length > 1 && (
+                                {addressApi.length > 1 && (
                                   <Button
                                     variant="ghost"
                                     size="icon"
@@ -380,7 +282,7 @@ export default function AddressChoices<T extends FieldValues>({
                               <RadioItem
                                 key={address.id}
                                 className="items-start -space-y-1"
-                                onClick={() => setAddressReceive(address)}
+                                // onClick={() => setAddressReceive(address)}
                               >
                                 <FormControl>
                                   <RadioGroupItem

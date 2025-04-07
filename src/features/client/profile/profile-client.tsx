@@ -95,8 +95,7 @@ export const MotionCard = motion(Card);
 
 export const ProfileClientPage = () => {
   const searchParams = useSearchParams();
-  const activeTab = useMemo(() => searchParams.get("tab"), [searchParams]);
-  const [tab, setTab] = React.useState(activeTab ?? "profile");
+  const [tab, setTab] = React.useState(searchParams.get("tab") ?? "profile");
 
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
@@ -129,7 +128,7 @@ export const ProfileClientPage = () => {
                   {content.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6 bg-slate-100/90">
+              <CardContent className="py-4 px-6 bg-slate-100/90">
                 {content.component}
               </CardContent>
             </MotionCard>

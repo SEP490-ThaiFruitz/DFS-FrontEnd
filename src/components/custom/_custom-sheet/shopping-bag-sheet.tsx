@@ -25,63 +25,50 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import { CART_KEY } from "@/app/key/comm-key";
 import { useFromStore } from "@/hooks/use-from-store";
-import { Product, useCartStore } from "@/hooks/use-cart-store";
+import { CartData, Product, useCartStore } from "@/hooks/use-cart-store";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useData } from "@/providers/data-provider";
+import { CustomComboBuilder } from "@/features/client/home/custom-combo/custom-combo-builder";
+import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 
 //
-
-interface Cart {
-  cartItemId: string;
-  productId: string;
-  name: string;
-  productVariant: {
-    productVariantId: string;
-    image: string;
-    weight: number;
-    type: string;
-    unitPrice: number;
-    stock: number;
-    discount: {
-      startDate: string;
-      endDate: string;
-      percentage: number;
-    };
-  };
-  quantity: string;
-}
 
 export const ShoppingBagSheet = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const token = Cookies.get("accessToken");
-
-  // console.log({ token });
-
-  const {
-    isLoading,
-    isFetching,
-    data: productCart,
-    error,
-  } = useFetch<{ value: { items: CartProductTypes[] } }>("/Carts/", [
-    CART_KEY.CARTS,
-  ]);
-
   const cart = useFromStore(useCartStore, (state) => state.orders);
 
-  const cartCondition = cart?.length! > 0;
+  const { customCombo } = useData();
+
+  const cartCondition = (cart?.length || 0) > 0;
 
   let total = 0;
+
+  let quantityOrders = 0;
 
   if (cart) {
     total = cart.reduce(
       (acc, product) =>
         acc +
-        (Number(product?.variant.discountPrice!) > 0
+        (Number(product?.variant.discountPrice) > 0
           ? Number(product?.variant.discountPrice) *
             (product.quantityOrder as number)
           : Number(product.variant.discountPrice) *
             (product.quantityOrder as number)),
+      0
+    );
+    quantityOrders = cart.reduce(
+      (acc, product) => acc + (product.quantityOrder as number),
+      0
+    );
+  }
+
+  let customComboPrice = 0;
+
+  if (customCombo.data?.value && customCombo.data.value.length > 0) {
+    customComboPrice = customCombo.data.value.reduce(
+      (acc, combo) => acc + combo.price,
       0
     );
   }
@@ -90,10 +77,14 @@ export const ShoppingBagSheet = () => {
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
 
-  const handleDecreaseQuantity = (product: Product) => {
+  const handleDecreaseQuantity = (product: CartData) => {
     if (product.quantityOrder! > 1) {
       decreaseQuantity(product);
     }
+  };
+
+  const close = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -124,7 +115,8 @@ export const ShoppingBagSheet = () => {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="font-semibold"
                 >
-                  {cart?.length}
+                  {/* {cart?.length} */}
+                  {quantityOrders}
                 </motion.span>
               </AnimatePresence>
             </span>
@@ -132,70 +124,81 @@ export const ShoppingBagSheet = () => {
         </div>
       </SheetTrigger>
 
-      <SheetContent className="min-w-full md:min-w-[600px] lg:min-w-[50%] rounded-2xl mr-2">
+      <SheetContent className="min-w-full md:min-w-[600px] lg:min-w-[50%] rounded-3xl mr-2">
         <SheetHeader>
           <SheetTitle>
             <div className="text-center">
-              <Logo />
+              <Logo height={100} width={100} />
             </div>
           </SheetTitle>
-          <SheetDescription>
-            <div className="w-full overflow-hidden">
-              {!isLoading || !isFetching ? (
-                cart?.length ? (
-                  <div className="container mx-auto p-4 md:p-6 w-full">
-                    <>
-                      <h1 className="text-2xl font-semibold">
-                        Giỏ hàng ({cart?.length})
-                      </h1>
-                      <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px] ">
-                        {cart.map((product) => (
-                          <ViewCardProductActions
-                            key={product.id}
-                            // cartItemId=
-                            decreaseQuantity={(): void =>
-                              handleDecreaseQuantity(product)
-                            }
-                            increaseQuantity={(): void =>
-                              increaseQuantity(product)
-                            }
-                            removeFromCart={(): void => removeFromCart(product)}
-                            product={product}
-                            className="m-4"
-                          />
-                        ))}
-                      </ScrollArea>
-
-                      <div className=" mt-14 w-full">
-                        <CartSummary cart={cart} />
-                      </div>
-                    </>
-                  </div>
-                ) : (
-                  <EmptyState
-                    icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
-                    title="Giỏ hàng của bạn"
-                    description="Có vẻ như giỏ hàng của bạn đang trống"
-                    action={{
-                      label: "Mua ngay nào",
-                      onClick: () => setIsOpen(false),
-                    }}
-                    className="min-w-full flex flex-col"
-                  />
-                )
-              ) : (
-                Array.from({ length: 3 }).map((_, index) => {
-                  return (
-                    <ViewCardProductActionsSkeleton
-                      key={index}
-                      className="m-4"
-                    />
-                  );
-                })
-              )}
-            </div>
+          <SheetDescription className="text-center text-sm text-slate-500">
+            Cảm ơn bạn đã ghé thăm cửa hàng của chúng tôi. Hãy cùng khám phá
+            những sản phẩm tuyệt vời mà chúng tôi đã chuẩn bị cho bạn!
           </SheetDescription>
         </SheetHeader>
+
+        <div>
+          <div className="w-full overflow-hidden">
+            {cart?.length ? (
+              <div className="container mx-auto p-4 md:p-6 w-full">
+                <>
+                  <h1 className="text-2xl font-semibold">
+                    Giỏ hàng ({cart?.length})
+                  </h1>
+                  <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px]">
+                    {cart?.map((product) => (
+                      <ViewCardProductActions
+                        key={product.variant.productVariantId}
+                        // cartItemId=
+                        decreaseQuantity={(): void =>
+                          handleDecreaseQuantity(product)
+                        }
+                        increaseQuantity={(): void => increaseQuantity(product)}
+                        removeFromCart={(): void => removeFromCart(product)}
+                        product={product}
+                        className="m-4"
+                      />
+                    ))}
+
+                    {customCombo.isLoading ? (
+                      <ViewCardProductActionsSkeleton />
+                    ) : customCombo.data?.value ? (
+                      customCombo.data.value.map((custom) => {
+                        return (
+                          <CustomComboProductCard
+                            combo={custom}
+                            key={custom.id}
+                            className="mx-4"
+                          />
+                        );
+                      })
+                    ) : null}
+                  </ScrollArea>
+
+                  <div className=" mt-14 w-full">
+                    <CartSummary
+                      cart={cart as CartData[]}
+                      customComboPrice={customComboPrice}
+                      close={close}
+                    />
+                  </div>
+                </>
+              </div>
+            ) : (
+              <EmptyState
+                icons={[ShoppingCart, ShoppingBagIcon, ShoppingBasket]}
+                title="Giỏ hàng của bạn"
+                description="Có vẻ như giỏ hàng của bạn đang trống"
+                action={{
+                  label: "Mua ngay nào",
+                  onClick: () => setIsOpen(false),
+                }}
+                className="min-w-full flex flex-col"
+              />
+            )}
+          </div>
+        </div>
+        {/* </SheetHeader> */}
 
         {/* <div className="flex items-center justify-center">
           <div className="flex justify-center">

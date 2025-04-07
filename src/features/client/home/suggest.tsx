@@ -19,9 +19,9 @@ const Suggest = ({ favorites }: Readonly<SuggestProps>) => {
     <div className="p-10 sm:p-20">
       <div className="font-bold text-2xl mb-5">Sản phẩm đề xuất</div>
       <div className="mt-10 grid sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 gap-10">
-        {products?.value?.items?.slice(0, 6).map((product: Product) => (
-          <CardProduct key={product.id} {...product} />
-        ))}
+        {/* {products?.value?.items?.slice(0, 6).map((product: Product) => (
+          <CardProduct />
+        ))} */}
       </div>
     </div>
   );

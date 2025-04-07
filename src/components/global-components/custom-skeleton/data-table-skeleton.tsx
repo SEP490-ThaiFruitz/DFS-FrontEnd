@@ -10,8 +10,8 @@ import {
 
 export function DataTableSkeleton() {
   return (
-    <div className="border rounded-lg">
-      <Table className="lg:max-w-lg mx-auto">
+    <div className="border rounded-lg w-full">
+      <Table className="lg:max-w-lg w-full">
         <TableHeader>
           <TableRow>
             <TableHead>

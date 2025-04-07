@@ -1,18 +1,21 @@
 "use client"
 
-import { createNutrition, updateNutrition } from '@/actions/product'
-import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
-import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
+import { updateProductNutrition } from '@/actions/product'
+import { FancyMultiSelect } from '@/components/custom/_custom_select/multi-select'
+import { FancySelect } from '@/components/custom/_custom_select/select'
 import { FormValues } from '@/components/global-components/form/form-values'
 import { Spinner } from '@/components/global-components/spinner'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CardHeader, CardTitle } from '@/components/ui/card'
+import { FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { INGREDIENTS_SELECT, QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib'
 import { FromNutritionSafeTypes } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, Pencil, X } from 'lucide-react'
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -20,12 +23,12 @@ interface NutriontionHeaderProps {
     productId: string,
     id: string | undefined;
     servingSize: number,
-    ingredients: string,
+    calories: number | undefined,
+    ingredients: string[],
 }
 
-const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly<NutriontionHeaderProps>) => {
+const NutriontionHeader = ({ productId, servingSize, ingredients, id, calories }: Readonly<NutriontionHeaderProps>) => {
     const [isHeaderEditing, setIsHeaderEditing] = useState(false)
-
     const queryClient = useQueryClient();
 
     const handleHeaderEdit = () => {
@@ -35,9 +38,14 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
     const form = useForm<z.infer<typeof FromNutritionSafeTypes>>({
         resolver: zodResolver(FromNutritionSafeTypes),
         defaultValues: {
-            id: id,
             productId: productId,
-            ingredients: ingredients ?? "",
+            ingredients: ingredients?.reduce((ingredients: { label: string, value: string }[], ingredient) => {
+                ingredients.push({
+                    label: ingredient,
+                    value: ingredient
+                });
+                return ingredients;
+            }, []) ?? [],
             servingSize: servingSize.toString() ?? "0"
         }
     });
@@ -48,8 +56,10 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
     const { mutate: updateNutritionMutation, isPending } = useMutation({
         mutationFn: async (values: any) => {
             try {
-                const { productId, id, ...restValues } = values
-                const response = id ? await updateNutrition({ id, ...restValues }, id) : await createNutrition({ productId, ...restValues }, productId)
+                const response = await updateProductNutrition({
+                    ...values,
+                    ingredients: values.ingredients.map((ingredient: any) => ingredient.value)
+                }, productId)
                 if (!response?.isSuccess) {
                     throw new Error(id ? "Cập nhật thất bại" : "Thêm mới thất bại")
                 }
@@ -66,6 +76,7 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
             toast.error(error?.message)
         }
     })
+
     return (
         <CardHeader className='border-b-2'>
             <div className="flex justify-between items-center">
@@ -73,7 +84,7 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
                 {!isHeaderEditing && (
                     <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                         onClick={handleHeaderEdit}
                     >
                         <Pencil className="h-4 w-4" />
@@ -82,23 +93,56 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
             </div>
             {isHeaderEditing ? (
                 <FormValues form={form} onSubmit={onSubmit}>
-                    <div className='grid sm:grid-cols-2 mt-2 items-start gap-5'>
-                        <FormNumberInputControl
-                            form={form}
-                            disabled={isPending}
+                    <div>
+                        <Controller
                             name="servingSize"
-                            label='Khối lượng khẩu phần'
-                            require
-                            unit='g'
-                        />
-                        <FormTextareaControl
-                            form={form}
-                            disabled={isPending}
-                            name="ingredients"
-                            label='Thành phần'
-                            require
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <FormItem className="pt-8">
+                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                        Khối lượng khẩu phần
+                                    </FormLabel>
+                                    <FancySelect
+                                        placeholder='Chọn khối lượng khẩu phần hoặc nhập mới'
+                                        options={QUANTITY_SELECT}
+                                        onChangeValue={(selectedValues: any) => {
+                                            field.onChange(selectedValues.value)
+                                        }}
+                                        defaultValue={{
+                                            label: form.getValues("servingSize"),
+                                            value: form.getValues("servingSize")
+                                        }}
+                                        unit='g'
+                                        isNumber
+                                    />
+                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                </FormItem>
+                            )}
                         />
                     </div>
+                    <div>
+                        <Controller
+                            name="ingredients"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <FormItem>
+                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                        Thành phần
+                                    </FormLabel>
+                                    <FancyMultiSelect
+                                        placeholder='Chọn thành phần sản phẩm hoặc nhập mới'
+                                        options={INGREDIENTS_SELECT}
+                                        onChangeValue={(selectedValues) => {
+                                            field.onChange(selectedValues)
+                                        }}
+                                        defaultValues={form.getValues("ingredients")}
+                                    />
+                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
                     <div className="flex gap-2">
                         <Button
                             size="sm"
@@ -118,10 +162,19 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id }: Readonly
                     </div>
                 </FormValues>
             ) : (
-                <p className="text-sm text-muted-foreground">
-                    Khối lượng khẩu phần: {servingSize}g<br />
-                    Thành phần: {ingredients}
-                </p>
+                <div className='flex justify-between items-center'>
+                    <div className="text-sm text-muted-foreground">
+                        Khối lượng khẩu phần: {servingSize}g<br />
+                        Thành phần: <div className='space-x-2'>
+                            {ingredients?.map((ingredient: any) => <Badge className='mb-3' variant={"outline"} key={ingredient}>
+                                {ingredient}
+                            </Badge>)}
+                        </div>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        Calories: <div className='font-bold text-xl'>{0}</div> kcal
+                    </div>
+                </div>
             )}
         </CardHeader>
     )

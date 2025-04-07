@@ -52,7 +52,7 @@ const SortButton = <T,>({
   column,
   label,
 }: Partial<HeaderContext<T, unknown>> & { label: string }) => {
-  console.log(column);
+  // console.log(column);
   return (
     <Button
       variant="ghost"
@@ -102,7 +102,7 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
     cell: ({ row }) => {
       const product = row.original;
 
-      console.log(product);
+      // console.log(product);
       return (
         <div className="flex items-center gap-3 min-w-[300px]">
           <div className="h-12 w-12 overflow-hidden rounded-md border bg-background shadow-sm">

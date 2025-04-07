@@ -6,19 +6,7 @@ import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteDialogProps {
-    deleteFunction: (id: string) => Promise<{
-        isSuccess: boolean;
-        data: any;
-        status?: undefined;
-        message?: undefined;
-        detail?: undefined;
-    } | {
-        isSuccess: boolean;
-        status: number;
-        message: string;
-        detail: string;
-        data?: undefined;
-    } | undefined>;
+    deleteFunction: (id: string) => Promise<any>;
     isOpen: boolean;
     onClose: () => void
     id: string,
@@ -38,27 +26,21 @@ export function DeleteDialog({ deleteFunction, id, onClose, isOpen, button, refr
         mutationFn: async () => {
             try {
                 const res = await deleteFunction(id)
-                if (!res?.isSuccess)
-                    throw new Error(res?.message);
-                return res.message;
+                if (res) {
+                    onClose();
+                    toast.success(`${message} ${name} thành công`)
+                    Promise.all(
+                        refreshKey?.map((key: [string, ...string[]]) => {
+                            return queryClient.invalidateQueries({ queryKey: key });
+                        }) || []
+                    )
+                }
+
             } catch (error: any) {
-                console.log(error);
-                throw new Error(error?.message);
+                console.error("Error Details:", error);
+                throw new Error(error?.message || "An unknown error occurred");
             }
         },
-        onSuccess: () => {
-            onClose();
-            toast.success(`${message} ${name} thành công`)
-            Promise.all(
-                refreshKey?.map((key: [string, ...string[]]) => {
-                    return queryClient.invalidateQueries({ queryKey: key });
-                }) || []
-            )
-        },
-        onError: (error) => {
-            console.log(error)
-            toast.error(`${message} ${name} thất bại`)
-        }
     });
 
     return (<Dialog open={isOpen} onOpenChange={onClose}>

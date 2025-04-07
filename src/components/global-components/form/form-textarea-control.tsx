@@ -56,7 +56,7 @@ export const FormTextareaControl = <T extends FieldValues, K>({
 
         return (
           <FormItem>
-            <FormLabel className={cn("text-text-foreground", require ? "after:content-['(*)'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
+            <FormLabel className={cn("text-text-foreground", require ? "after:content-['*'] after:text-red-500 after:ml-1" : "", classNameLabel)}>
               {icon}
               {label}
             </FormLabel>

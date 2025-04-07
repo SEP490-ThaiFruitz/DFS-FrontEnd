@@ -75,7 +75,7 @@ export const FormSendForgetPassword = ({ setUsername, returnButton }: FormSendFo
                         label="Số điện thoại"
                         placeholder="+84..."
                     />
-                    <button disabled={isPending} onMouseDown={() => {
+                    <button type="button" disabled={isPending} onMouseDown={() => {
                         setForgetType("email")
                         form.resetField("phone")
                         form.setValue("type", "email")
@@ -90,7 +90,7 @@ export const FormSendForgetPassword = ({ setUsername, returnButton }: FormSendFo
                         label="Email"
                         placeholder="example@mail.com"
                     />
-                    <button disabled={isPending} onMouseDown={() => {
+                    <button type="button" disabled={isPending} onMouseDown={() => {
                         setForgetType("phone")
                         form.resetField("email")
                         form.setValue("type", "phone")

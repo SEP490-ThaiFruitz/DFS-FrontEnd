@@ -6,6 +6,7 @@ import {
   ColumnDef,
   ColumnFiltersState,
   Header,
+  HeaderContext,
   SortingState,
   VisibilityState,
   flexRender,
@@ -20,6 +21,7 @@ import { useReactToPrint } from "react-to-print";
 import {
   ArrowLeftToLine,
   ArrowRightToLine,
+  ArrowUpDown,
   ChevronDown,
   ChevronFirst,
   ChevronLast,
@@ -94,6 +96,7 @@ import { exportTableToCSV } from "@/lib/export-excel";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { useQuery } from "@tanstack/react-query";
 import { DataTableSkeleton } from "../custom-skeleton/data-table-skeleton";
+import { filterRows } from "@/components/enhanced-table/composition-pattern/filters/utils";
 
 interface DataTableProps<T> {
   data: T[];
@@ -156,6 +159,10 @@ export function DataTable<T>({
       columnFilters,
       columnVisibility,
       rowSelection,
+    },
+
+    filterFns: {
+      filterRows: filterRows,
     },
   });
 
@@ -606,6 +613,27 @@ export function DataTable<T>({
     </div>
   );
 }
+
+interface SortButtonProps<T> {
+  column: ColumnDef<T>;
+  label: string;
+}
+
+const SortButton = <T,>({
+  column,
+  label,
+}: Partial<HeaderContext<T, unknown>> & { label: string }) => {
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => column?.toggleSorting(column?.getIsSorted() === "asc")}
+      className="whitespace-nowrap"
+    >
+      {label}
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </Button>
+  );
+};
 
 // const DraggableTableHeader = React.memo(
 //   <T,>({

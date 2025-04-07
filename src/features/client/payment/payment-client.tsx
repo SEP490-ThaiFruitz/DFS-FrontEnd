@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { CreditCard, Truck, Tag, ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +19,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { Logo } from "@/components/global-components/logo";
 import { Separator } from "@/components/ui/separator";
-import Maps from "@/components/global-components/maps";
-import { useAuth } from "@/providers/auth-provider";
 import AddressChoices from "./address-choices";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { CartProductTypes } from "@/types/cart.types";
-import { ViewCardProductActions } from "@/components/global-components/card/view-card-product-actions";
+import {
+  ViewCardProductActions,
+  ViewCardProductActionsSkeleton,
+} from "@/components/global-components/card/view-card-product-actions";
 import { CART_KEY } from "@/app/key/comm-key";
 import { useData } from "@/providers/data-provider";
 import { useForm } from "react-hook-form";
@@ -49,6 +50,15 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useFromStore } from "@/hooks/use-from-store";
 import { useCartStore } from "@/hooks/use-cart-store";
+import { useLoginDialog } from "@/hooks/use-login-dialog";
+import { omit } from "lodash";
+import { API } from "@/app/key/url";
+import { ApiResponse, PageResult } from "@/types/types";
+import { AddressTypes } from "@/types/address.types";
+import { USER_KEY } from "@/app/key/user-key";
+import { interactApiClient } from "@/actions/client/interact-api-client";
+import { useQuery } from "@tanstack/react-query";
+import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 
 interface Product {
   id: number;
@@ -63,90 +73,35 @@ interface DeliveryMethodType {
   name: string;
   price: number;
   duration: string;
+
+  notice: string;
 }
+
+const paymentMethods: { value: string; label: string }[] = [
+  {
+    value: PaymentMethod.VNPAY,
+    label: "VNPAY",
+  },
+  {
+    value: PaymentMethod.PAYOS,
+    label: "PayOS",
+  },
+];
 
 function PaymentClientPage() {
   const [promoCode, setPromoCode] = useState("");
-  const [selectedDelivery, setSelectedDelivery] = useState<string>("standard");
-  const [selectedPayment, setSelectedPayment] = useState<string>("card");
-
-  const cartItems: Product[] = [
-    {
-      id: 1,
-      name: "Dried Mango Slices",
-      price: 12.99,
-      quantity: 2,
-      image: "/images/third-background.png",
-    },
-    {
-      id: 2,
-      name: "Mixed Dried Berries",
-      price: 15.99,
-      quantity: 1,
-      image: "/images/third-background.png",
-    },
-    {
-      id: 3,
-      name: "Mixed Dried Berries",
-      price: 15.99,
-      quantity: 1,
-      image: "/images/third-background.png",
-    },
-    {
-      id: 4,
-      name: "Mixed Dried Berries",
-      price: 15.99,
-      quantity: 1,
-      image: "/images/third-background.png",
-    },
-    {
-      id: 5,
-      name: "Mixed Dried Berries",
-      price: 15.99,
-      quantity: 1,
-      image: "/images/third-background.png",
-    },
-    {
-      id: 6,
-      name: "Mixed Dried Berries",
-      price: 15.99,
-      quantity: 1,
-      image: "/images/third-background.png",
-    },
-    {
-      id: 7,
-      name: "Mixed Dried Berries",
-      price: 15.99,
-      quantity: 1,
-      image: "/images/third-background.png",
-    },
-  ];
+  const { customCombo } = useData();
 
   const deliveryMethods: DeliveryMethodType[] = [
     {
       id: "standard",
-      name: "Standard Delivery",
-      price: 30000,
+      name: "Chuẩn",
+      price: 20000,
       duration: "Khoảng 3-5 ngày",
-    },
-    {
-      id: "fast",
-      name: "Giao hàng nhanh",
-      price: 3000,
-      duration: "Khoảng 1-2 ngày",
+      notice:
+        "Lưu ý giá có thể thay đổi phụ thuộc vào khu vực và khối lượng đơn hàng",
     },
   ];
-
-  // const subtotal = cartItems.reduce(
-  //   (sum, item) => sum + item.price * item.quantity,
-  //   0
-  // );
-
-  const deliveryPrice =
-    deliveryMethods.find((m) => m.id === selectedDelivery)?.price || 0;
-  // const total = subtotal + deliveryPrice - discount;
-
-  const { user } = useAuth();
 
   const router = useRouter();
 
@@ -156,54 +111,60 @@ function PaymentClientPage() {
       paymentMethod: PaymentMethod.VNPAY,
       shipType: DeliveryMethod.STANDARD,
 
-      shippingUnitId: "fce93c8a-6dab-4ad0-a754-0ced6793d4e1",
       voucherId: null,
     },
   });
 
-  const {
-    isLoading,
-    data: productCart,
-    error,
-  } = useFetch<{ value: { items: CartProductTypes[] } }>("Carts/", [
-    CART_KEY.CARTS,
-  ]);
+  const addresses = useFetch<ApiResponse<PageResult<AddressTypes>>>(
+    "/Addresses",
+    [USER_KEY.ADDRESS]
+  );
 
-  const { addresses } = useData();
-
-  const { value } = useAuth();
-
-  const paymentMethods: { value: string; label: string }[] = [
-    {
-      value: PaymentMethod.VNPAY,
-      label: "VNPAY",
-    },
-    {
-      value: PaymentMethod.PAYOS,
-      label: "PayOS",
-    },
-  ];
+  // this work
+  // const test2 = useQuery({
+  //   queryKey: ["products"],
+  //   queryFn: () =>
+  //     interactApiClient.get<ApiResponse<PageResult<AddressTypes>>>("/products"),
+  // });
 
   const paymentMethodWatch = form.watch("paymentMethod");
 
-  useEffect(() => {
-    if (productCart && productCart?.value?.items?.length > 0) {
-      form.setValue(
-        "cartItemIds",
-        productCart.value.items.map((item) => item.cartItemId)
-      );
-    }
-  }, [productCart]);
-
   const token = Cookies.get("accessToken");
 
+  let customComboPrice = 0;
+
+  if (customCombo.data?.value && customCombo.data.value.length > 0) {
+    customComboPrice = customCombo.data.value.reduce(
+      (acc, combo) => acc + combo.price,
+      0
+    );
+  }
+
+  const customComboItem = useMemo(() => {
+    return customCombo.data?.value
+      ? customCombo.data.value.map((custom) => ({
+          id: custom.id,
+          quantity: 1,
+          type: "combo",
+        }))
+      : [];
+  }, [customCombo.data?.value]);
+
   const onPaymentSubmit = async (values: z.infer<typeof PaymentSafeTypes>) => {
-    console.log({ values });
+    // console.log({ values });
+
+    const mergeValue = [...values.items, ...customComboItem];
+
+    const omitValue = {
+      ...omit(values, ["shipType"]),
+      items: mergeValue,
+      paymentMethod: paymentMethodWatch,
+    };
 
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_URL_API}/Orders`,
-        values,
+        omitValue,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -211,7 +172,7 @@ function PaymentClientPage() {
         }
       );
 
-      console.log({ response });
+      // console.log({ response });
 
       if (response.status === 200) {
         toast.success("Đặt hàng thành công");
@@ -234,7 +195,7 @@ function PaymentClientPage() {
 
   const subtotal =
     cart?.reduce(
-      (acc, curr) => acc + curr.variant.price * curr?.quantityOrder!,
+      (acc, curr) => acc + curr.variant.price * Number(curr?.quantityOrder),
       0
     ) || 0;
 
@@ -242,9 +203,104 @@ function PaymentClientPage() {
 
   const total =
     cart?.reduce(
-      (acc, curr) => acc + curr.variant.price * curr?.quantityOrder!,
+      (acc, curr) => acc + curr.variant.price * Number(curr?.quantityOrder),
       0
     ) || 0;
+
+  const isAuth = Boolean(token);
+
+  const loginModal = useLoginDialog();
+
+  // console.log(cart);
+
+  useEffect(() => {
+    if (cart && cart.length > 0) {
+      form.setValue(
+        "items",
+
+        cart.map((product) => ({
+          id: product.variant.productVariantId,
+          quantity: Number(product.quantityOrder),
+          type: product.type,
+        }))
+      );
+    }
+  }, [cart]);
+
+  const [shippingFee, setShippingFee] = useState<{
+    totalFee: number;
+    expectedDeliveryTime: Date;
+  }>();
+
+  const addressId = form.watch("addressId");
+
+  const [calculating, setCalculating] = useState(false);
+
+  const getCalculateShippingFee = useCallback(async () => {
+    if ((cart && cart.length === 0) || !token) {
+      return;
+    }
+
+    // const items = cart?.map((product) => ({
+    //   id: product.variant.productVariantId,
+    //   quantity: Number(product.quantityOrder),
+    //   type: product.type,
+    // }));
+
+    // const customComboValue = customCombo.data?.value
+    //   ? customCombo.data.value.map((custom) => ({
+    //       id: custom.id,
+    //       quantity: 1,
+    //       type: "combo",
+    //     }))
+    //   : [];
+
+    const items =
+      cart?.map((product) => ({
+        id: product.variant.productVariantId,
+        quantity: Number(product.quantityOrder),
+        type: product.type,
+      })) || [];
+
+    // console.log({ items });
+    // console.log({ customComboValue });
+
+    const values = [...items, ...customComboItem];
+
+    setCalculating(true);
+    try {
+      const response = await axios.post(
+        `${API}/Orders/calculate-ship-fee/${addressId}`,
+        // items,
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setShippingFee(response.data.value);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setCalculating(false);
+    }
+  }, [cart, token, addressId, customComboItem]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const signal = controller.signal;
+
+    getCalculateShippingFee();
+
+    return () => {
+      controller.abort();
+    };
+  }, [getCalculateShippingFee]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 ">
@@ -273,7 +329,7 @@ function PaymentClientPage() {
             />
 
             {/* Delivery Method */}
-            <Card>
+            <Card className="cardStyle">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Truck className="w-5 h-5" />
@@ -290,35 +346,28 @@ function PaymentClientPage() {
                   className="space-y-4"
                 >
                   {deliveryMethods.map((method) => (
-                    // <div
-                    //   key={method.id}
-                    //   className="flex items-center justify-between p-4 border rounded-lg"
-                    // >
-                    //   <div className="flex items-center gap-2">
-                    //     <RadioGroupItem value={method.id} id={method.id} />
-                    //     <div>
-                    //       <Label htmlFor={method.id}>{method.name}</Label>
-                    //       <p className="text-sm text-muted-foreground">
-                    //         {method.duration}
-                    //       </p>
-                    //     </div>
-                    //   </div>
-                    //   <span className="font-medium">
-                    //     ${method.price.toFixed(2)}
-                    //   </span>
-                    // </div>
-
                     <RadioItem
                       key={method.id}
-                      className="flex items-center justify-between p-4 border rounded-xl"
+                      className="flex items-start justify-between p-4 border rounded-xl"
                     >
                       <div className="flex gap-2">
                         <FormControl>
                           <RadioGroupItem value={method.id} />
                         </FormControl>
-                        <div className="flex flex-col items-center gap-2">
+                        <div className="flex flex-col items-start gap-2">
                           <FormLabel>{method.name}</FormLabel>
-                          <CardDescription>{method.duration}</CardDescription>
+                          <div className="flex items-center gap-1 line-clamp-1">
+                            <span className="text-slate-700 text-xs">
+                              {method.duration}
+                            </span>{" "}
+                            <Separator
+                              className="h-8 text-slate-800 mx-1"
+                              orientation="vertical"
+                            />
+                            <span className="text-ellipsis text-slate-700 text-xs">
+                              {method.notice}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <span className="font-medium">
@@ -331,7 +380,7 @@ function PaymentClientPage() {
             </Card>
 
             {/* Payment Method */}
-            <Card>
+            <Card className="cardStyle">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="w-5 h-5" />
@@ -351,6 +400,7 @@ function PaymentClientPage() {
                       <RadioItem
                         key={method.value}
                         className="flex justify-between"
+                        disabled={form.formState.isSubmitting}
                       >
                         <div className="flex items-center space-x-3 space-y-0">
                           <FormControl>
@@ -378,29 +428,19 @@ function PaymentClientPage() {
 
           {/* Right Column - Order Summary */}
           <div className="pt-9">
-            <Card className="sticky top-8">
+            <Card className="sticky top-8 cardStyle">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShoppingCart className="w-5 h-5" />
-                  Order Summary
+                  Tổng quan đơn hàng của bạn
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ScrollArea className="space-y-4 max-h-[300px] overflow-auto">
-                  {/* {cartItems.map((item) => (
-                    <ViewCardProduct
-                      key={item.id}
-                      productImage={item.image}
-                      productName={item.name}
-                      productPrice={item.price}
-                      productQuantity={item.quantity}
-                    />
-                  ))} */}
-
                   {cart?.map((product) => {
                     return (
                       <ViewCardProductActions
-                        key={product.id}
+                        key={product.variant.productVariantId}
                         product={product}
                         decreaseQuantity={() => decreaseQuantity(product)}
                         increaseQuantity={() => increaseQuantity(product)}
@@ -408,6 +448,19 @@ function PaymentClientPage() {
                       />
                     );
                   })}
+
+                  {customCombo.isLoading ? (
+                    <ViewCardProductActionsSkeleton />
+                  ) : customCombo.data?.value ? (
+                    customCombo.data.value.map((custom) => {
+                      return (
+                        <CustomComboProductCard
+                          combo={custom}
+                          key={custom.id}
+                        />
+                      );
+                    })
+                  ) : null}
                 </ScrollArea>
 
                 <div className="mt-6 space-y-4">
@@ -429,21 +482,26 @@ function PaymentClientPage() {
                     <Button variant="outline">Apply</Button>
                   </div>
                   {promoCode === "FRUIT10" && (
-                    <p className="text-green-600 text-sm">
+                    <span className="text-green-600 text-sm">
                       10% áp dụng khi có mã giảm giá
-                    </p>
+                    </span>
                   )}
                 </div>
 
                 <div className="mt-6 space-y-2 border-t pt-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tạm tính</span>
-                    <span className="font-medium">{formatVND(subtotal)}</span>
+                    <span className="text-slate-700">Tạm tính</span>
+                    <span className="font-semibold text-sky-400">
+                      {formatVND(subtotal + customComboPrice)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Vận chuyển</span>
-                    <span className="font-medium">
-                      {formatVND(deliveryPrice)}
+                    <span className="text-slate-700">Vận chuyển</span>
+                    <span className="font-semibold text-sky-400">
+                      {calculating
+                        ? "Đang tính..."
+                        : formatVND(shippingFee?.totalFee ?? 0)}
+                      {/* {formatVND(shippingFee)} */}
                     </span>
                   </div>
                   {discount > 0 && (
@@ -452,15 +510,26 @@ function PaymentClientPage() {
                       <span>-${discount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-lg font-semibold pt-2">
+                  <div className="flex justify-between text-lg font-bold pt-2">
                     <span>Tổng</span>
-                    <span>{formatVND(total)}</span>
+                    <span className="text-sky-500 text-lg">
+                      {formatVND(
+                        total +
+                          customComboPrice +
+                          Number(shippingFee?.totalFee ?? 0)
+                      )}
+                    </span>
                   </div>
                 </div>
               </CardContent>
               <CardFooter>
                 <ButtonCustomized
                   type="submit"
+                  // onClick={() => {
+                  //   isAuth
+                  //     ? () => form.handleSubmit(onPaymentSubmit)()
+                  //     : loginModal.onOpen();
+                  // }}
                   className="w-full bg-sky-400/75 hover:bg-sky-600/80 font-semibold text-lg hover:motion-preset-confetti "
                   label="Tiến hành thanh toán"
                 />

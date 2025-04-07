@@ -1,21 +1,30 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface ProductVariant {
+export interface ProductVariant {
   productVariantId: string;
   netWeight: number;
   price: number;
   packageType: string;
 
+  imageVariant?: string;
+
   discountPrice?: number;
   stockQuantity: number;
-  promotion?: Promotion;
+  promotion?: Promotion | null;
 }
 
-interface Promotion {
+export interface Promotion {
   startDate: string;
   endDate: string;
   percentage: number;
+  price: number;
+}
+
+export interface CategoryTypes {
+  id: string;
+  name: string;
+  thumbnail: string;
 }
 
 export interface Product {
@@ -23,13 +32,13 @@ export interface Product {
   name: string;
   mainImageUrl: string;
 
-  categories: {
-    id: string;
-    name: string;
-    thumbnail: string;
-  }[];
+  categories: CategoryTypes[];
   description: string;
-  variant: ProductVariant;
+  variant: ProductVariant[];
+
+  tags?: string[];
+
+  nutritionFacts?: Record<string, string | number>;
   // categoryId?: string;
   quantitySold: number;
   rating: number;
@@ -37,39 +46,22 @@ export interface Product {
   quantity?: number;
 
   quantityOrder?: number;
+
+  type?: "single" | "combo" | "custom";
+
+  [key: string]: any;
 }
 
-// type Product = {
-//   id: string;
-//   name: string;
-//   mainImageUrl: string;
-//   description: string;
-//   categories: {
-//     id: string;
-//     name: string;
-//     thumbnail: string;
-//   }[];
-//   variant: {
-//     productVariantId: string;
-//     packageType: string;
-//     netWeight: number;
-//     price: number;
-//     stockQuantity: number;
-//     promotion: string | null;
-//   };
-//   rating: number;
-//   quantitySold: number;
-// };
 interface State {
-  orders: Product[];
+  orders: CartData[];
   totalPrice: number;
   totalItems: number;
 }
 
 interface Actions {
-  addOrder: (product: Product) => void;
-  removeFromCart: (product: Product) => void;
-  decreaseQuantity: (product: Product) => void;
+  addOrder: (product: CartData) => void;
+  removeFromCart: (product: CartData) => void;
+  decreaseQuantity: (product: CartData) => void;
   clearCart: () => void;
 }
 
@@ -79,6 +71,25 @@ const INITIAL_STATE: State = {
   totalItems: 0,
 };
 
+export type CartData = {
+  id: string;
+  name: string;
+  mainImageUrl: string;
+  description: string;
+  categories: {
+    id: string;
+    name: string;
+    thumbnail: string;
+  }[];
+  variant: ProductVariant;
+  quantitySold: number;
+  rating: number;
+
+  type: string; // combo | single | custom
+
+  quantityOrder?: number;
+};
+
 export const useCartStore = create(
   persist<State & Actions>(
     (set, get) => ({
@@ -86,18 +97,22 @@ export const useCartStore = create(
       totalPrice: INITIAL_STATE.totalPrice,
       totalItems: INITIAL_STATE.totalItems,
       clearCart: () => set({ orders: [], totalPrice: 0, totalItems: 0 }),
-      addOrder: (product: Product) => {
+      addOrder: (product: CartData) => {
         const cartOrders = get().orders;
 
         const cartOrdersItems = cartOrders.find(
-          (order) => order.id === product.id
+          (order) =>
+            order.variant.productVariantId === product.variant.productVariantId
         );
 
-        const discountPriceCondition = Number(product?.variant?.discountPrice!);
+        const discountPriceCondition = Number(
+          product.variant?.promotion?.price
+        );
 
         if (cartOrdersItems) {
           const updatedCartOrders = cartOrders.map((cart) => {
-            return cart.id === product.id
+            return cart.variant.productVariantId ===
+              product.variant.productVariantId
               ? { ...cart, quantityOrder: cart.quantityOrder! + 1 }
               : cart;
           });
@@ -115,7 +130,10 @@ export const useCartStore = create(
         } else {
           const updatedCartOrders = [
             ...cartOrders,
-            { ...product, quantityOrder: 1 },
+            {
+              ...product,
+              quantityOrder: product.quantityOrder ? product.quantityOrder : 1,
+            },
           ];
 
           set((state) => ({
@@ -131,12 +149,18 @@ export const useCartStore = create(
         }
       },
 
-      removeFromCart: (product: Product) => {
+      removeFromCart: (product: CartData) => {
         const cartOrders = get().orders;
-        const discountPriceCondition = Number(product?.variant.price!);
+        const discountPriceCondition = Number(
+          product?.variant?.promotion?.price
+        );
 
         set((state) => ({
-          orders: state.orders.filter((order) => order.id !== product.id),
+          orders: state.orders.filter(
+            (order) =>
+              order.variant.productVariantId !==
+              product.variant.productVariantId
+          ),
           totalItems: state.totalItems - 1,
           totalPrice:
             state.totalPrice -
@@ -144,19 +168,22 @@ export const useCartStore = create(
         }));
       },
 
-      decreaseQuantity: (product: Product) => {
+      decreaseQuantity: (product: CartData) => {
         const cartOrders = get().orders;
 
         const cartOrderItems = cartOrders.find(
-          (order) => order.id === product.id
+          (order) =>
+            order.variant.productVariantId === product.variant.productVariantId
         );
 
-        const discountPriceCondition = Number(product?.variant.discountPrice!);
+        const discountPriceCondition = Number(
+          product.variant?.promotion?.price
+        );
 
         if (cartOrderItems) {
           const updatedCartOrders = cartOrders.map((cart) =>
-            cart.id === product.id
-              ? { ...cart, quantityOrder: cart?.quantityOrder! - 1 }
+            cart.variant.productVariantId === product.variant.productVariantId
+              ? { ...cart, quantityOrder: (cart?.quantityOrder as number) - 1 }
               : cart
           );
 

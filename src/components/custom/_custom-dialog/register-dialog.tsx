@@ -19,6 +19,8 @@ import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { registerAction } from "@/actions/auth";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { USER_KEY } from "@/app/key/user-key";
 
 interface RegisterUser {
   name: string;
@@ -27,11 +29,30 @@ interface RegisterUser {
   phone?: string;
 }
 
+const inputOptions = {
+  phone: {
+    name: "phone",
+    label: "Số điện thoại",
+    placeholder: "+84...",
+    switchTo: "email",
+    switchLabel: "Email",
+  },
+  email: {
+    name: "email",
+    label: "Email",
+    placeholder: "example@mail.com",
+    switchTo: "phone",
+    switchLabel: "Số điện thoại",
+  },
+} as const;
+
+type LoginType = keyof typeof inputOptions;
+
 export const RegisterDialog = () => {
   const form = useForm<z.infer<typeof RegisterSafeTypes>>({
     resolver: zodResolver(RegisterSafeTypes),
     defaultValues: {
-      type: "phone"
+      type: "phone",
     },
   });
 
@@ -40,6 +61,8 @@ export const RegisterDialog = () => {
   const [loginType, setLoginType] = useState<"phone" | "email">("phone");
   const queryClient = useQueryClient();
 
+  const router = useRouter();
+
   const { isPending, mutate: registerAccountMutation } = useMutation({
     mutationFn: async (value: RegisterUser) => {
       try {
@@ -47,30 +70,37 @@ export const RegisterDialog = () => {
 
         if (!response?.isSuccess) {
           if (response?.detail.includes("Email")) {
-            throw new Error("Email đã tồn tại. Vui lòng đăng nhập")
+            throw new Error("Email đã tồn tại. Vui lòng đăng nhập");
           }
           if (response?.detail.includes("Phone")) {
-            throw new Error("Số điện thoại đã tồn tại. Vui lòng đăng nhập")
+            throw new Error("Số điện thoại đã tồn tại. Vui lòng đăng nhập");
           }
-          throw new Error("Lỗi hệ thống")
+          throw new Error("Lỗi hệ thống");
         }
       } catch (error: unknown) {
-        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống");
+        throw new Error(
+          error instanceof Error ? error?.message : "Lỗi hệ thống"
+        );
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] })
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.CUSTOM_COMBO] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.ADDRESS] });
+      router.refresh();
       registerDialog.onClose();
       loginDialog.onClose();
       form.reset();
     },
     onError: (error) => {
-      toast.error(error.message)
-    }
+      toast.error(error.message);
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof RegisterSafeTypes>) => {
-    registerAccountMutation(values)
+    // console.log(values);
+    registerAccountMutation(values);
   };
 
   const toggle = () => {
@@ -88,16 +118,35 @@ export const RegisterDialog = () => {
     <button
       disabled={isPending}
       onClick={registerDialog.onOpen}
-      className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
+      className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0 before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
     >
       <UserPlus className="size-4 mr-1" /> Đăng kí
     </button>
   );
 
+  const handleSwitch = (type: LoginType) => {
+    const current = inputOptions[type];
+    const opposite = inputOptions[current.switchTo];
+
+    form.resetField(opposite.name);
+    form.setValue("type", type);
+    form.trigger("type");
+    setLoginType(type);
+
+    setTimeout(() => {
+      const inputElement = document.querySelector(
+        `input[name="${current.name}"]`
+      ) as HTMLInputElement;
+      inputElement?.focus();
+    }, 0);
+  };
+
+  const current = inputOptions[loginType];
+
   const body = (
     <div>
       <FormValues form={form} onSubmit={onSubmit}>
-        {loginType === "phone" ? (
+        {/* {loginType === "phone" ? (
           <div className="relative">
             <FormInputControl
               form={form}
@@ -106,11 +155,17 @@ export const RegisterDialog = () => {
               label="Số điện thoại"
               placeholder="+84..."
             />
-            <button onMouseDown={() => {
-              setLoginType("email")
-              form.resetField("phone")
-              form.setValue("type", "email")
-            }} className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer">Email</button>
+            <button
+              type="button"
+              onMouseDown={() => {
+                setLoginType("email");
+                form.resetField("phone");
+                form.setValue("type", "email");
+              }}
+              className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer"
+            >
+              Email
+            </button>
           </div>
         ) : (
           <div className="relative">
@@ -121,13 +176,39 @@ export const RegisterDialog = () => {
               label="Email"
               placeholder="example@mail.com"
             />
-            <button onMouseDown={() => {
-              setLoginType("phone")
-              form.resetField("email")
-              form.setValue("type", "phone")
-            }} className="absolute right-2.5 top-1 font-bold hover:underline hover:cursor-pointer">Số điện thoại</button>
+            <button
+              type="button"
+              onMouseDown={() => {
+                setLoginType("phone");
+                form.resetField("email");
+                form.setValue("type", "phone");
+              }}
+              className="absolute right-2.5 top-1 font-bold hover:underline hover:cursor-pointer"
+            >
+              Số điện thoại
+            </button>
           </div>
-        )}
+        )} */}
+
+        <div className="relative">
+          <FormInputControl
+            key={current.name}
+            form={form}
+            name={current.name}
+            disabled={isPending}
+            label={current.label}
+            placeholder={current.placeholder}
+          />
+          <button
+            type="button"
+            // onMouseDown={() => handleSwitch(current.switchTo)}
+            onClick={(e) => handleSwitch(current.switchTo)}
+            className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer"
+          >
+            {current.switchLabel}
+          </button>
+        </div>
+
         <FormInputControl
           form={form}
           name="name"

@@ -12,6 +12,17 @@ import {
   UserRound,
   Settings,
   MessageSquareMore,
+  Fan,
+  Gift,
+  CalendarRange,
+  Warehouse,
+  NotebookPen,
+  Banknote,
+  ShieldCheck,
+  PackagePlus,
+  Wallet,
+  History,
+  CircleArrowOutDownRight,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -63,6 +74,23 @@ const data = {
       ],
     },
     {
+      title: "Quản lí ví",
+      url: "/admin/wallet",
+      icon: Wallet,
+      items: [
+        {
+          title: "Lịch sử ví",
+          url: "/admin/wallet",
+          icon: History,
+        },
+        {
+          title: "Yêu cầu rút tiền",
+          url: "/admin/wallet/withdraw",
+          icon: CircleArrowOutDownRight
+        }
+      ],
+    },
+    {
       title: "Cài đặt",
       url: "/admin/settings",
       icon: Settings,
@@ -71,6 +99,16 @@ const data = {
           title: "Thanh trượt",
           url: "/admin/settings/sliders",
           icon: GalleryHorizontal,
+        },
+        {
+          title: "Thanh toán",
+          url: "/admin/settings/payments",
+          icon: Banknote,
+        },
+        {
+          title: "Gói quà",
+          url: "/admin/settings/combo",
+          icon: PackagePlus,
         },
       ],
     },
@@ -96,6 +134,41 @@ const data = {
       url: "/admin/feedback",
       icon: MessageSquareMore,
     },
+    {
+      name: "Khuyến mãi",
+      url: "/admin/promotion",
+      icon: Fan,
+    },
+    {
+      name: "Gói quà",
+      url: "/admin/combo",
+      icon: Gift,
+    },
+    {
+      name: "Sự kiện",
+      url: "/admin/event",
+      icon: CalendarRange,
+    },
+    {
+      name: "Kho",
+      url: "/admin/inventory",
+      icon: Warehouse,
+    },
+    {
+      name: "Kế hoạch",
+      url: "/admin/plan",
+      icon: NotebookPen,
+    },
+    {
+      name: "Chứng chỉ",
+      url: "/admin/certification",
+      icon: ShieldCheck,
+    },
+    {
+      name: "Lịch sử thanh toán",
+      url: "/admin/payment",
+      icon: Banknote,
+    }
   ],
 };
 

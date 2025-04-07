@@ -43,16 +43,6 @@ export const FloatingButton = () => {
     initialMessages: [],
   };
 
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    append,
-    stop,
-    isLoading,
-  } = useChat(props);
-
   return (
     <GooeyMenu
       className="fixed h-10 w-10 bottom-28 right-10 z-20 "
@@ -63,12 +53,14 @@ export const FloatingButton = () => {
           trigger={
             <PhoneCall onClick={() => setIsOpen(true)} className={iconStyle} />
           }
-          description={"Call Us"}
-          title={"Call Us"}
+          description={"Bạn có thể hỏi bất cứ điều gì!"}
+          title={"Hỏi đáp cùng AI"}
           // content={<SpaceChat />}
           content={<ChatDemo {...props} />}
           open={isOpen}
           onClose={setIsOpen}
+          // className="max-w-[400px] md:max-w-[700px] max-h-[70%] overflow-hidden"
+          className="w-[90vw] rounded-3xl md:w-[50vw] max-w-[700px] h-[80vh] md:h-auto min-h-[700px] overflow-hidden"
         />
 
         <PhoneMissed className={iconStyle} />
@@ -133,9 +125,9 @@ export function ChatDemo(props: ChatDemoProps) {
         transcribeAudio={transcribeAudio}
         // transcribeAudio={recordAudio}
         suggestions={[
-          "What is the weather in San Francisco?",
-          "Explain step-by-step how to solve this math problem: If x² + 6x + 9 = 25, what is x?",
-          "Design a simple algorithm to find the longest palindrome in a string.",
+          "Trái cây xấy có những đặc tính gì?",
+          "Có bao nhiêu phương pháp cho trái cây xấy?",
+          "Ăn trái cây xấy có giảm cân được không?",
         ]}
       />
     </div>

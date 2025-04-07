@@ -49,12 +49,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<DecodeData | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  // console.log({ token });
-
-  // const [updateCookie, deleteCookie] = useCookie("my-cookie");
-
-  useEffect(() => {}, []);
-
   useEffect(() => {
     if (token) {
       try {
@@ -71,8 +65,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [token]);
 
   const [value, setValue, remove] = useLocalStorage("user");
-
-  console.log({ value });
 
   // console.log({ userDecoded: user });
   return (

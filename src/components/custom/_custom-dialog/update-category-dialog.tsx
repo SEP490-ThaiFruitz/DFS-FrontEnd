@@ -17,6 +17,7 @@ import { FormTextareaControl } from "@/components/global-components/form/form-te
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
 import { Category } from "@/features/admin/category/column";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UpdateCategoryDialogProps {
   category: Category;
@@ -32,7 +33,7 @@ export const UpdateCategoryDialog = ({
   const form = useForm<z.infer<typeof UpdateCategorySafeTypes>>({
     resolver: zodResolver(UpdateCategorySafeTypes),
   });
-
+  const queryClient = useQueryClient();
   const onSubmit = async (values: z.infer<typeof UpdateCategorySafeTypes>) => {
     try {
       const formData = new FormData();
@@ -47,9 +48,10 @@ export const UpdateCategoryDialog = ({
       if (response?.isSuccess) {
         form.reset();
         onClose();
-        toast.success("Cập nhập loại bài viết thành công")
+        queryClient.invalidateQueries({ queryKey: ["categories"] })
+        toast.success("Cập nhập loại sản phẩm thành công")
       } else {
-        toast.error(response?.status == 409 ? "Tên loại bài viết đã tồn tại" : "Lỗi hệ thống")
+        toast.error(response?.status == 409 ? "Tên loại sản phẩm đã tồn tại" : "Lỗi hệ thống")
       }
 
       console.log({ response });

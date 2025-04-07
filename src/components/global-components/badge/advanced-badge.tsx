@@ -171,6 +171,7 @@ export function AdvancedColorfulBadges({
   {
     className?: string;
     children: ReactNode;
+    onClick?: () => void;
   } & VariantProps<typeof badgesVariants>
 >) {
   return (
@@ -179,6 +180,7 @@ export function AdvancedColorfulBadges({
         badgesVariants({ color, rounded, size, border }),
         className
       )}
+      onClick={props.onClick}
       {...props}
     >
       {children}

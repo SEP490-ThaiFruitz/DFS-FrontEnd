@@ -44,7 +44,7 @@ export const AdminFormLogin = () => {
     }
   }
 
-  console.log({ decode });
+  // console.log({ decode });
 
   const form = useForm<z.infer<typeof LoginSafeTypesHaveEmail>>({
     resolver: zodResolver(LoginSafeTypesHaveEmail),
@@ -61,7 +61,7 @@ export const AdminFormLogin = () => {
       try {
         const response = await loginAction({ username, password });
 
-        console.log({ response });
+        // console.log({ response });
 
         if (!response?.isSuccess) {
           if (response?.status === 400 || response?.status === 404) {
@@ -83,7 +83,7 @@ export const AdminFormLogin = () => {
         duration: 1000,
       });
 
-      console.log(decode);
+      // console.log(decode);
 
       const userRole = decode?.Role.toUpperCase() as string;
 
@@ -92,7 +92,10 @@ export const AdminFormLogin = () => {
       const admin = userRole === ROLES.Administrator.toUpperCase();
       const manager = userRole === ROLES.Manager.toUpperCase();
 
-      queryClient.invalidateQueries({ queryKey: ["authUser, mange"] });
+      // console.log({ admin, manager });
+
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: ["mange"] });
 
       if (admin) {
         window.location.href = "/admin/dashboard";

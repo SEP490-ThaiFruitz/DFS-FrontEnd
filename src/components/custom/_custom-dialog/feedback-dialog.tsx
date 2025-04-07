@@ -15,32 +15,59 @@ import { FormItem } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Star } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { createFeedback, updateFeedback } from "@/actions/feedback";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FeedbackDialogProps {
-    feedback?: {
-        id: string;
-        rating: number;
-        content: string;
-    };
+    orderItemId: string,
+    stars?: number;
+    content?: string;
     isOpen: boolean;
+    isUpdateFeedback?: boolean;
     onClose: () => void;
+    refreshKey?: [string, ...string[]];
 }
 
-export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProps) => {
+export const FeedbackDialog = ({ content, stars, isOpen, onClose, orderItemId, isUpdateFeedback, refreshKey }: FeedbackDialogProps) => {
     const form = useForm<z.infer<typeof FeedbackSafeTypes>>({
         resolver: zodResolver(FeedbackSafeTypes),
-        defaultValues: feedback || { content: "", star: 3 },
+        defaultValues: { orderItemId: orderItemId ?? undefined, content: content ?? "", stars: stars ?? 3 },
     });
-
-    const [rating, setRating] = useState(feedback?.rating ?? 3);
+    const queryClient = useQueryClient();
+    const [rating, setRating] = useState(stars ?? 3);
     const [hoverRating, setHoverRating] = useState<number | null>(null);
 
     const onSubmit = async (values: z.infer<typeof FeedbackSafeTypes>) => {
         try {
-            if (feedback) {
-                toast.success("Đánh giá đã được cập nhật!");
+            const formData = new FormData();
+            formData.append("orderItemId", values?.orderItemId)
+            if (values?.content) {
+                formData.append("content", values?.content)
+            }
+            if (values?.images) {
+                values?.images.forEach((file: File) => {
+                    formData.append("images", file)
+                })
+            }
+            formData.append("stars", values?.stars.toString())
+            if (isUpdateFeedback) {
+                const response = await updateFeedback(formData)
+                if (response?.isSuccess) {
+                    toast.success("Đánh giá đã được cập nhật!");
+                    queryClient.invalidateQueries({ queryKey: refreshKey })
+                    onClose();
+                } else {
+                    toast.error("Lỗi cập nhật đánh giá!");
+                }
             } else {
-                toast.success("Đánh giá đã được tạo mới!");
+                const response = await createFeedback(formData)
+                if (response?.isSuccess) {
+                    toast.success("Đánh giá thành công!");
+                    onClose();
+                    queryClient.invalidateQueries({ queryKey: refreshKey })
+                } else {
+                    toast.error("Lỗi đánh giá!");
+                }
             }
         } catch (error: unknown) {
             toast.error(error instanceof Error ? error?.message : "Có lỗi xảy ra khi xử lý yêu cầu!");
@@ -49,15 +76,15 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
 
     const title = (
         <div className="text-center">
-            {feedback ? "Cập nhật đánh giá sản phẩm" : "Thêm mới đánh giá sản phẩm"}
+            {isUpdateFeedback ? "Cập nhật đánh giá sản phẩm" : "Đánh giá sản phẩm"}
         </div>
     );
 
-    const buttonLabel = feedback ? "Cập nhật" : "Thêm mới";
+    const buttonLabel = isUpdateFeedback ? "Cập nhật" : "Thêm mới";
 
     const handleStarClick = (starValue: number) => {
         setRating(starValue);
-        form.setValue("star", starValue);
+        form.setValue("stars", starValue);
     };
 
     const handleStarHover = (starValue: number) => {
@@ -72,7 +99,7 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
         <ScrollArea className="max-h-[600px] overflow-auto">
             <FormValues classNameForm="p-4" form={form} onSubmit={onSubmit}>
                 <Controller
-                    name="star"
+                    name="stars"
                     control={form.control}
                     render={({ field }) => (
                         <FormItem className="pt-8">
@@ -97,17 +124,25 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
                         </FormItem>
                     )}
                 />
-                <FormTextareaControl form={form} label="Nội dung" name="content" rows={6} />
+                <FormTextareaControl
+                    form={form}
+                    disabled={form.formState.isSubmitting}
+                    label="Nội dung"
+                    name="content"
+                    rows={6} />
                 <FormFileControl
                     form={form}
+                    disabled={form.formState.isSubmitting}
                     name="images"
                     type={"image/jpeg, image/jpg, image/png, image/webp"}
                     maxFiles={5}
+                    label="Ảnh"
                     mutiple
                 />
                 <DialogFooter>
                     <DialogClose asChild>
                         <ButtonCustomized
+                            disabled={form.formState.isSubmitting}
                             className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
                             variant="outline"
                             label="Hủy"
@@ -122,7 +157,7 @@ export const FeedbackDialog = ({ feedback, isOpen, onClose }: FeedbackDialogProp
                             form.formState.isSubmitting ? (
                                 <WaitingSpinner
                                     variant="pinwheel"
-                                    label={feedback ? "Đang cập nhật..." : "Đang tạo mới..."}
+                                    label={isUpdateFeedback ? "Đang cập nhật..." : "Đang tạo mới..."}
                                     className="font-semibold"
                                     classNameLabel="font-semibold text-sm"
                                 />

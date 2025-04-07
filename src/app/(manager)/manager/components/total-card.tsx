@@ -32,13 +32,13 @@ export const TotalCard = ({
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
 
-        <Icon className={cn("h-4 w-4 text-muted-foreground", classNameIcon)} />
+        <Icon className={cn("h-4 w-4 text-slate-800", classNameIcon)} />
       </CardHeader>
 
       <CardContent className={cn("", className)}>
         <div className="text-2xl font-bold">{value}</div>
 
-        <div className="text-muted-foreground">{subtitle}</div>
+        <div className="text-slate-800">{subtitle}</div>
       </CardContent>
     </Card>
   );

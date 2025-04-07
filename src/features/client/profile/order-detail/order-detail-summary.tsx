@@ -4,134 +4,100 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from '@/components/ui/separator';
 import { formatVND } from '@/lib/format-currency';
-import { ShoppingCart } from 'lucide-react'
+import { Banknote, ShoppingCart } from 'lucide-react'
 import React from 'react'
+import { OrderItem } from '../order-tracking/product-list';
 
-const OrderDetaiSummary = () => {
-    const cartItems: any[] = [
-        {
-            id: 1,
-            name: "Dried Mango Slices gói 500g",
-            price: 12.99,
-            quantity: 2,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 2,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 3,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 4,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 5,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 6,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 7,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        }, {
-            id: 7,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 7,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-        {
-            id: 7,
-            name: "Mixed Dried Berries",
-            price: 15.99,
-            quantity: 1,
-            image: "/images/third-background.png",
-        },
-    ];
+
+
+interface OrderDetaiSummaryProps {
+    totalPrice: number,
+    feePrice: number,
+    voucherPrice: number | null,
+    usedPoint: number,
+    orderItems: OrderItem[],
+    shipCode: boolean,
+    orderStatus: string,
+}
+const OrderDetaiSummary = ({ orderItems, totalPrice, feePrice, usedPoint, voucherPrice, shipCode, orderStatus }: Readonly<OrderDetaiSummaryProps>) => {
+    const totalPriceProducts = orderItems.reduce((total, item) => {
+        return total + item.unitPrice * item.quantity;
+    }, 0);
+    const totalDiscountPriceProducts = orderItems.reduce((total, item) => {
+        return total + item.discountPrice * item.quantity;
+    }, 0);
     return (
-        <div className='flex flex-col-reverse lg:flex-col gap-10'>
-            <Card className="top-8">
+        <div className='flex flex-col-reverse lg:flex-col gap-4'>
+            <Card className="top-8 cardStyle">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex justify-center items-center gap-2">
+                        <Banknote className="w-8 h-8" />
                         Thông tin thanh toán
                     </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-4'>
-                    <div className="flex justify-between items-center">
-                        <span className="text-gray-700 font-semibold">Số tiền hàng:</span>
-                        <span className="text-gray-900 font-semibold">{formatVND(2000000)}</span>
+                    <div className="flex justify-between">
+                        <span className="text-gray-700 font-semibold">Tạm tính:</span>
+                        <span className='text-lg font-bold text-sky-500/70'>{formatVND(totalPriceProducts)}</span>
                     </div>
+                    {(totalPriceProducts - totalDiscountPriceProducts) > 0 && (
+                        <div className="flex justify-between">
+                            <span className="text-gray-700 font-semibold">Giá đã giảm:</span>
+                            <span className='text-sm text-gray-400'>- {formatVND(totalPriceProducts - totalDiscountPriceProducts)}</span>
+                        </div>
+                    )}
+
                     <div className="flex justify-between items-center">
                         <span className="text-gray-700 font-semibold">Phí vận chuyển:</span>
-                        <span className="text-gray-900">{`${formatVND(20000)}`}</span>
+                        <span className="text-lg font-bold text-sky-500/70">{`${formatVND(feePrice)}`}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-gray-700 font-semibold">Số mã giảm giá:</span>
-                        <span className="text-gray-900">{`- ${formatVND(2000)} (20%)`}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-gray-700 font-semibold">Số điểm:</span>
-                        <span className="text-gray-900">{`- ${formatVND(100)} (100 điểm)`}</span>
-                    </div>
+                    {voucherPrice && (
+                        <div className="flex justify-between items-center">
+                            <span className="text-gray-700 font-semibold">Mã giảm giá:</span>
+                            <span className="text-sm text-gray-400">{`- ${formatVND(voucherPrice)}`}</span>
+                        </div>
+                    )}
+                    {usedPoint > 0 && (
+                        <div className="flex justify-between items-center">
+                            <span className="text-gray-700 font-semibold">Số điểm:</span>
+                            <span className="text-sm text-gray-400">{`- ${formatVND(usedPoint)}`}</span>
+                        </div>
+                    )}
                     <Separator />
                     <div className="flex justify-between items-center">
                         <span className='text-gray-900 font-semibold'>Tổng tiền:</span>
-                        <span className='text-gray-900 font-semibold'>{formatVND(2000000)}</span>
+                        <span className='text-base font-bold text-sky-500'>{formatVND(totalPrice)}</span>
                     </div>
-                    <div className='flex items-center space-x-2'>
-                        <p className='text-red-500'>(*)</p>
-                        <p className='text-muted-foreground'>{`Vui lòng chuẩn bị ${formatVND(2000000)} thanh toán khi nhận hàng`}</p>
-                    </div>
+                    {shipCode && (
+                        <div className='flex items-center space-x-2'>
+                            <p className='text-red-500'>(*)</p>
+                            <p className='text-muted-foreground'>{`Vui lòng chuẩn bị ${formatVND(totalPrice)} thanh toán khi nhận hàng`}</p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
-            <Card className="top-8">
+            <Card className="top-8 cardStyle">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <ShoppingCart className="w-6 h-6" />
+                    <CardTitle className="flex justify-center items-center gap-2">
+                        <ShoppingCart className="w-8 h-8" />
                         Chi tiết đơn hàng
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ScrollArea className="max-h-fit overflow-auto">
                         <div className='mr-5'>
-                            {cartItems.map((item) => (
+                            {orderItems.map((item: OrderItem) => (
                                 <ViewCardProduct
-                                    key={item.id}
-                                    productImage={item.image}
+                                    key={item.referenceId}
+                                    orderItemId={item.id}
                                     productName={item.name}
-                                    productPrice={item.price}
+                                    isCanFeedback={item.isCanFeedback}
+                                    orderStatus={orderStatus}
+                                    productPrice={item.unitPrice}
                                     productQuantity={item.quantity}
+                                    productImage={item.image}
+                                    productPercentage={item.percentage}
+                                    productDiscountPrice={item.discountPrice}
                                 />
                             ))}
                         </div>

@@ -83,7 +83,7 @@ export default function ImagePreview({
                   alt={`Image ${currentIndex + 1}`}
                   width={1000}
                   height={1000}
-                  className="object-contain max-h-screen"
+                  className="object-contain max-h-screen py-16"
                 />
 
                 {images.length > 1 && (

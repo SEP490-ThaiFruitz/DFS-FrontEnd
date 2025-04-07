@@ -1,13 +1,20 @@
+import { FeedbackDialog } from "@/components/custom/_custom-dialog/feedback-dialog";
+import { Button } from "@/components/ui/button";
 import { formatVND } from "@/lib/format-currency";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 interface ViewCardProductProps {
+  orderItemId: string;
   productName: string;
   productPrice: number;
   productQuantity: number;
   productImage: string;
-
+  productPercentage: number;
+  productDiscountPrice: number;
+  orderStatus: string;
+  isCanFeedback: boolean;
   className?: string;
 }
 export const ViewCardProduct = ({
@@ -15,8 +22,14 @@ export const ViewCardProduct = ({
   productImage,
   productPrice,
   productQuantity,
+  productPercentage,
+  productDiscountPrice,
+  orderStatus,
+  isCanFeedback,
+  orderItemId,
   className,
 }: ViewCardProductProps) => {
+  const [feedback, setFeedback] = useState<string | undefined>(undefined);
   return (
     <div className={cn("flex items-center gap-4 my-2", className)}>
       <Image
@@ -28,16 +41,32 @@ export const ViewCardProduct = ({
       />
       <div className="flex-1">
         <h3 className="font-medium">{productName}</h3>
-        <p className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           Số lượng: {productQuantity}
-        </p>
+        </span>
       </div>
-      <p className="font-light text-slate-400 line-through">
-        {formatVND((productPrice * productQuantity * 15000).toFixed(2))}
-      </p>
-      <p className="font-medium">
-        {formatVND((productPrice * productQuantity * 10000).toFixed(2))}
-      </p>
+      {productPercentage > 0 && (
+        <span className="text-sm text-[#fdba74] line-through">
+          {formatVND((productPrice * productQuantity).toFixed(2))}
+        </span>
+      )}
+      <span className="text-lg font-bold text-sky-500/70">
+        {productPercentage > 0
+          ? formatVND((productDiscountPrice * productQuantity).toFixed(2))
+          : formatVND((productPrice * productQuantity).toFixed(2))}
+      </span>
+      {orderStatus === "Received" && isCanFeedback && (
+        <Button onClick={() => setFeedback(orderItemId)} size={"sm"}>
+          Đánh giá
+        </Button>
+      )}
+      <FeedbackDialog
+        refreshKey={["Customer", "Orders"]}
+        isUpdateFeedback={false}
+        orderItemId={orderItemId}
+        isOpen={feedback !== undefined}
+        onClose={() => setFeedback(undefined)}
+      />
     </div>
   );
 };

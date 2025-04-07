@@ -14,7 +14,7 @@ interface VoucherDetail extends Voucher {
   image: string;
   createdOnUtc: string;
   modifiedOnUtc: string;
-  isDeletedIsDeleted: boolean;
+  isDeleted: boolean;
 }
 
 function VoucherDetailPage() {
@@ -118,23 +118,25 @@ function VoucherDetailPage() {
                 )}
               </span>
             </div>
-            <div className="flex justify-between gap-20">
-              <span className="font-bold">Ngày cập nhật:</span>
-              <span>
-                {formatTimeVietNam(
-                  new Date(voucher?.value?.modifiedOnUtc ?? "N/A"),
-                  true
-                )}
-              </span>
-            </div>
+            {voucher?.value?.modifiedOnUtc && (
+              <div className="flex justify-between gap-20">
+                <span className="font-bold">Ngày cập nhật:</span>
+                <span>
+                  {formatTimeVietNam(
+                    new Date(voucher?.value?.modifiedOnUtc ?? "N/A"),
+                    true
+                  )}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between gap-20">
               <span className="font-bold">Trạng thái:</span>
-              {voucher?.value?.isDeletedIsDeleted ? (
-                <span className="py-2 p-1 w-fit bg-red-300 text-red-600 rounded-md">
+              {voucher?.value?.isDeleted ? (
+                <span className="bg-red-50 text-red-600 w-fit py-1 px-2 rounded-lg">
                   Đã xóa
                 </span>
               ) : (
-                <span className="py-2 p-1 w-fit bg-green-300 text-green-600 rounded-md">
+                <span className="bg-green-50 text-green-600 w-fit py-1 px-2 rounded-lg">
                   Hoạt động
                 </span>
               )}

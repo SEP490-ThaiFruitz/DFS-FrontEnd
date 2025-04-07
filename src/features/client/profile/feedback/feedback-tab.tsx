@@ -8,102 +8,33 @@ import { Button } from '@/components/ui/button';
 import { Images, Pencil } from 'lucide-react';
 import { FeedbackDialog } from '@/components/custom/_custom-dialog/feedback-dialog';
 import ImagePreview from '@/components/custom/_custom-image/image-preview';
+import Image from 'next/image';
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
+import Link from 'next/link';
+
+interface ProductVariant {
+    packagingType: string;
+    netWeight: number;
+    image: string;
+}
 
 interface Feedback {
-    id: string,
-    orderItemId: string,
-    productId: string,
-    productName: string,
-    variant: {
-        type: string,
-        weight: string,
-        variantImage: string,
-    }
-    quantity: number,
-    content: string,
-    rating: number,
-    images?: string[]
-    createDate: string,
+    id: string;
+    orderItemId: string;
+    productId: string;
+    productName: string;
+    productImage: string;
+    type: string;
+    productVariant: ProductVariant;
+    quantity: number;
+    content: string;
+    rating: number;
+    images: string[];
+    createdOnUtc: string;
 }
+
 const FeedbackTab = () => {
-    const feedbacks: Feedback[] = [
-        {
-            id: "1",
-            productId: "P001",
-            productName: "Product A",
-            orderItemId: "312312"
-            , variant: {
-                type: "Size M",
-                weight: "500g",
-                variantImage: "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a92bbd2b803dd598-2te3sYn--medium.jpg",
-            },
-            quantity: 1,
-            content: "Great product! Really satisfied with the quality.",
-            rating: 5,
-            createDate: "2025-03-03T10:00:00Z",
-        },
-        {
-            id: "2",
-            productId: "P002",
-            productName: "Product B",
-            orderItemId: "312312"
-            , variant: {
-                type: "Size L",
-                weight: "300g",
-                variantImage: "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a92bbd2b803dd598-2te3sYn--medium.jpg",
-            },
-            quantity: 2,
-            content: "Good product, but the packaging could be improved.",
-            rating: 4,
-            createDate: "2025-03-02T15:30:00Z",
-        },
-        {
-            id: "3",
-            productId: "P003",
-            productName: "Product C",
-            orderItemId: "312312"
-            , variant: {
-                type: "Size S",
-                weight: "200g",
-                variantImage: "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a92bbd2b803dd598-2te3sYn--medium.jpg",
-            },
-            quantity: 3,
-            content: "Not as expected. The quality is below average.",
-            rating: 2,
-            createDate: "2025-03-01T12:15:00Z",
-        },
-        {
-            id: "4",
-            productId: "P004",
-            productName: "Product D",
-            orderItemId: "312312"
-            , variant: {
-                type: "Size XL",
-                weight: "700g",
-                variantImage: "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a92bbd2b803dd598-2te3sYn--medium.jpg",
-            },
-            quantity: 1,
-            content: "Excellent value for the price. Highly recommended!",
-            rating: 5,
-            createDate: "2025-02-28T18:00:00Z",
-        },
-        {
-            id: "5",
-            productId: "P005",
-            productName: "Product E",
-            orderItemId: "312312"
-            , variant: {
-                type: "Size M",
-                weight: "400g",
-                variantImage: "https://nuts.com/images/rackcdn/ed910ae2d60f0d25bcb8-80550f96b5feb12604f4f720bfefb46d.ssl.cf1.rackcdn.com/a92bbd2b803dd598-2te3sYn--medium.jpg",
-            },
-            quantity: 2,
-            content: "Average experience. Could improve the delivery time.",
-            rating: 3,
-            createDate: "2025-02-25T08:45:00Z",
-        },
-    ];
-    const isPending = false;
+    const { data: feedbacks, isPending } = useFetch<ApiResponse<PageResult<Feedback>>>("/Feedbacks/user?pageIndex=1&pageSize=100", ["feedbacks", "user"])
     const [feedback, setFeedback] = useState<Feedback | undefined>(undefined)
     return (
         <>
@@ -142,21 +73,28 @@ const FeedbackTab = () => {
                         </div>
                     </div>
 
-                    {feedbacks?.map((feedback: Feedback, index) => (
+                    {feedbacks?.value?.items?.map((feedback: Feedback) => (
                         <div
                             key={feedback.id}
                             className="p-4 grid grid-cols-1 md:grid-cols-6 lg:grid-cols-7 items-center gap-4 bg-white hover:bg-gray-50 transition-colors"
                         >
-                            <p className='mx-auto md:ml-0'>
-                                <ImagePreview
-                                    images={[feedback.variant.variantImage, "/images/dried-fruit.webp"]}
+                            <Link href={`/product-detail/${feedback.productId}`} className='mx-auto md:ml-0'>
+                                <Image
+                                    src={feedback.productImage || "/images/dried-fruit.webp"}
+                                    height={1000}
+                                    width={1000}
+                                    alt={feedback.productName}
                                     className="h-26 w-26 object-fill hover:cursor-pointer"
                                 />
+                            </Link>
+                            <p className="font-bold text-center md:text-left">
+                                {`${feedback.productName} 
+                                ${feedback.productVariant.packagingType} 
+                                (số lượng ${feedback.quantity})`}
                             </p>
-                            <p className="font-bold text-center md:text-left">{`${feedback.productName} ${feedback.variant.type} (số lượng ${feedback.quantity})`}</p>
                             <p className='md:col-span-2'>{feedback.content}</p>
                             <p className='text-center'>{feedback.rating} <span className="text-yellow-500">⭐</span></p>
-                            <p className='text-center'>{formatTimeVietNam(new Date(feedback.createDate), true)}</p>
+                            <p className='text-center'>{formatTimeVietNam(new Date(feedback.createdOnUtc), true)}</p>
                             <p className='space-x-4 mx-auto'>
                                 {feedback.images && (
                                     <ImagePreview
@@ -177,7 +115,7 @@ const FeedbackTab = () => {
                     ))}
                 </div>
             }
-            {feedback && <FeedbackDialog isOpen={feedback !== undefined} onClose={() => setFeedback(undefined)} />}
+            {feedback && <FeedbackDialog content={feedback.content} stars={feedback.rating} refreshKey={["feedbacks", "user"]} orderItemId={feedback.orderItemId} isUpdateFeedback={true} isOpen={feedback !== undefined} onClose={() => setFeedback(undefined)} />}
         </>
 
     )

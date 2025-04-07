@@ -25,14 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 import {
   ChartConfig,
@@ -40,18 +32,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ProductPerformance } from "./product-performance-chart";
 import { formatVND } from "@/lib/format-currency";
 import { format } from "date-fns";
@@ -61,6 +42,13 @@ import { DataTable } from "@/components/global-components/data-table/data-table"
 import { productTopRevenueColumn } from "@/features/manager/report-revenue/product-top-revenue-column";
 import { REPORT_KEY } from "@/app/key/manager-key";
 import { TotalCard } from "./components/total-card";
+import {
+  createDateRange,
+  fillMissingDatesDynamics,
+  vietnameseDate,
+} from "@/utils/date";
+import { customerRevenueColumns } from "@/features/manager/report-revenue/user-top-revenue-column";
+import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 
 type TopProductRevenueStatistics = {
   type: "Single" | "Combo";
@@ -71,12 +59,14 @@ type TopProductRevenueStatistics = {
   quantity: number;
   revenue: number;
   revenueDiscount: number;
+  lastBuyDate: string;
 };
 
 type TopCustomerRevenueStatistics = {
   userName: string;
   email: string;
   phone: string;
+  image: string | null;
   address: string;
   moneySpend: number;
   lastBuyDate: string;
@@ -94,126 +84,18 @@ type RevenueData = {
 export default function RevenueDashboard() {
   const [timeRange, setTimeRange] = useState("month");
 
-  // Dummy data
-  const stats = {
-    totalRevenue: "$124,750.89",
-    revenueChange: "+12.5%",
-    totalOrders: "1,429",
-    ordersChange: "+8.2%",
-    averageOrder: "$87.30",
-    averageChange: "+3.1%",
-    conversionRate: "3.2%",
-    conversionChange: "+0.8%",
-  };
-
-  const topProducts = [
-    {
-      id: 1,
-      name: "Premium Wireless Headphones",
-      price: "$199.99",
-      sold: 245,
-      revenue: "$48,997.55",
-      growth: "+18%",
-    },
-    {
-      id: 2,
-      name: "Smart Fitness Tracker",
-      price: "$129.99",
-      sold: 187,
-      revenue: "$24,308.13",
-      growth: "+24%",
-    },
-    {
-      id: 3,
-      name: "Ultra HD Streaming Device",
-      price: "$89.99",
-      sold: 156,
-      revenue: "$14,038.44",
-      growth: "+5%",
-    },
-    {
-      id: 4,
-      name: "Ergonomic Desk Chair",
-      price: "$249.99",
-      sold: 52,
-      revenue: "$12,999.48",
-      growth: "+10%",
-    },
-    {
-      id: 5,
-      name: "Portable Power Bank 20000mAh",
-      price: "$59.99",
-      sold: 203,
-      revenue: "$12,177.97",
-      growth: "-2%",
-    },
-  ];
-
-  const topCustomers = [
-    {
-      id: 1,
-      name: "Hữu Phúc",
-      email: "huuphuc@gmail.com",
-      orders: 12,
-      spent: "$2,458.32",
-      lastPurchase: "2 ngày trước",
-    },
-    {
-      id: 2,
-      name: "Văn Minh",
-      email: "vanminh@gmail.com",
-      orders: 9,
-      spent: "$1,879.",
-      lastPurchase: "1 tuần trước",
-    },
-    {
-      id: 3,
-      name: "Thanh Toàn",
-      email: "thanhtoan@gmail.com",
-      orders: 8,
-      spent: "$1,654.21",
-      lastPurchase: "3 ngày trước",
-    },
-    {
-      id: 4,
-      name: "Mai Hà",
-      email: "maiha@gmail.com",
-      orders: 7,
-      spent: "$1,432",
-      lastPurchase: "5 ngày trước",
-    },
-    {
-      id: 5,
-      name: "Ái Khanh",
-      email: "aikhanh@gmail.com",
-      orders: 6,
-      spent: "$1,298.56",
-      lastPurchase: "2 tuần trước",
-    },
-  ];
-
   // Revenue chart data
   const revenueData = [
-    { date: "Tháng 1", revenue: 12500 },
-    { date: "Tháng 2", revenue: 18200 },
-    { date: "Tháng 3", revenue: 15800 },
-    { date: "Tháng 4", revenue: 14300 },
-    { date: "Tháng 5", revenue: 19500 },
-    { date: "Tháng 6", revenue: 22800 },
-    { date: "Tháng 7", revenue: 21400 },
+    { date: "2025-01-12", revenue: 12500 },
+    { date: "2024-12-12", revenue: 18200 },
+    { date: "2024-12-15", revenue: 15800 },
+    { date: "2025-01-15", revenue: 14300 },
+    { date: "2025-02-15", revenue: 19500 },
+    { date: "2025-03-15", revenue: 22800 },
+    { date: "2025-03-17", revenue: 21400 },
   ];
 
   // Product performance chart data
-  const productPerformanceData = topProducts.map((product) => ({
-    name:
-      product.name.length > 15
-        ? product.name.substring(0, 15) + "..."
-        : product.name,
-    revenue: Number.parseFloat(
-      product.revenue.replace("$", "").replace(",", "")
-    ),
-    units: product.sold,
-  }));
 
   const HeaderTitle = () => {
     return (
@@ -238,18 +120,25 @@ export default function RevenueDashboard() {
     );
   };
 
+  const fromDate = "2025-01-22";
+
   const currentDate = format(new Date(), "yyyy-MM-dd");
 
   const reportRevenue = useFetch<ApiResponse<RevenueData>>(
-    `/Statistics/manager/report-revenue?fromDate=2025-01-22&toDate=${currentDate}`,
+    `/Statistics/manager/report-revenue?fromDate=${fromDate}&toDate=${currentDate}`,
     [REPORT_KEY.REPORT_REVENUE]
   );
   // console.log(currentDate);
 
-  console.log(reportRevenue);
+  // console.log(reportRevenue.data);
 
   const chartConfig = {
     revenue: {
+      label: "Doanh thu",
+      color: "hsl(var(--chart-5))",
+    },
+
+    name: {
       label: "Doanh thu",
       color: "hsl(var(--chart-5))",
     },
@@ -284,8 +173,28 @@ export default function RevenueDashboard() {
     }
   }, [reportRevenue.data?.value?.topProductRevenueStatistics]);
 
+  const allDates = createDateRange(fromDate, currentDate);
+
+  const enrichRevenue = reportRevenue.data?.value?.topProductRevenueStatistics
+    ? reportRevenue.data?.value?.topProductRevenueStatistics.map((report) => {
+        return {
+          revenue: report.revenueDiscount
+            ? report.revenueDiscount
+            : report.revenue,
+          lastBuyDate: report.lastBuyDate,
+        };
+      })
+    : [];
+
+  const filledRevenueData = fillMissingDatesDynamics(
+    enrichRevenue,
+    allDates,
+    "lastBuyDate",
+    ["revenue"]
+  );
+
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/20">
+    <div className="flex min-h-screen w-full flex-col ">
       <div className="flex flex-col">
         <HeaderTitle />
         <main className="flex-1 space-y-6 p-6">
@@ -301,23 +210,6 @@ export default function RevenueDashboard() {
                 <div className="text-2xl font-bold">
                   {formatVND(reportRevenue.data?.value?.totalRevenue ?? 0)}
                 </div>
-                {/* <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.revenueChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.revenueChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.revenueChange}
-                  </span>{" "}
-                  Từ kỳ trước
-                </p> */}
               </CardContent>
             </Card>
             <TotalCard
@@ -337,72 +229,25 @@ export default function RevenueDashboard() {
               value={formatVND(sumOrder)}
               icon={ShoppingCart}
             />
-            {/* <Card className="cardStyle">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Tổng đơn hàng
-                </CardTitle>
-                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.totalOrders}</div>
-                <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.ordersChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.ordersChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.ordersChange}
-                  </span>{" "}
-                  Từ kỳ trước
-                </p>
-              </CardContent>
-            </Card> */}
-            {/* <Card className="cardStyle">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Trung bình mỗi đơn hàng
-                </CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.averageOrder}</div>
-                <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.averageChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.averageChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.averageChange}
-                  </span>{" "}
-                  từ kỳ trước
-                </p>
-              </CardContent>
-            </Card> */}
+
             <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Tỷ lệ chuyển đổi
+                  Tỷ lệ đơn hàng trung bình
                 </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.conversionRate}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold">
+                  {reportRevenue?.data?.value
+                    ? (
+                        reportRevenue?.data?.value?.numberOfProductSold /
+                        reportRevenue?.data?.value?.totalOrder
+                      ).toFixed(2)
+                    : 0}
+                  %
+                </div>
+                {/* <p className="text-xs text-muted-foreground">
                   <span
                     className={`inline-flex items-center ${
                       stats.conversionChange.startsWith("+")
@@ -416,9 +261,9 @@ export default function RevenueDashboard() {
                       <ArrowDown className="mr-1 h-3 w-3" />
                     )}
                     {stats.conversionChange}
-                  </span>{" "}
+                  </span>
                   from last period
-                </p>
+                </p> */}
               </CardContent>
             </Card>
           </div>
@@ -428,7 +273,14 @@ export default function RevenueDashboard() {
               <CardHeader>
                 <CardTitle>Tổng quan doanh thu</CardTitle>
                 <CardDescription>
-                  Doanh thu trong thời gian đã chọn
+                  Doanh thu trong thời gian{" "}
+                  <span className="font-semibold text-sky-600">
+                    {vietnameseDate(fromDate)}
+                  </span>
+                  -
+                  <span className="font-semibold text-sky-600">
+                    {vietnameseDate(currentDate)}
+                  </span>
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -439,7 +291,7 @@ export default function RevenueDashboard() {
                 >
                   <AreaChart
                     accessibilityLayer
-                    data={revenueData}
+                    data={filledRevenueData}
                     margin={{
                       top: 10,
                       right: 30,
@@ -473,8 +325,12 @@ export default function RevenueDashboard() {
                     </defs>
                     {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
                     <CartesianGrid vertical={false} />
-                    <XAxis dataKey="date" />
-                    <YAxis tickFormatter={formatVND} width={80} />
+                    <XAxis dataKey="lastBuyDate" />
+                    <YAxis
+                      tickFormatter={formatVND}
+                      width={80}
+                      allowDataOverflow
+                    />
                     {/* <Tooltip
                         formatter={(value) => [
                           formatCurrency(value),
@@ -523,49 +379,6 @@ export default function RevenueDashboard() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {/* <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Sản Phẩm</TableHead>
-                          <TableHead className="text-right">Giá</TableHead>
-                          <TableHead className="text-right">Đã bán</TableHead>
-                          <TableHead className="text-right">
-                            Doanh Thu
-                          </TableHead>
-                          <TableHead className="text-right">
-                            Tăng trưởng
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {topProducts.map((product) => (
-                          <TableRow key={product.id}>
-                            <TableCell className="font-medium">
-                              {product.name}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {product.price}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {product.sold}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {product.revenue}
-                            </TableCell>
-                            <TableCell
-                              className={`text-right ${
-                                product.growth.startsWith("+")
-                                  ? "text-green-500"
-                                  : "text-red-500"
-                              }`}
-                            >
-                              {product.growth}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table> */}
-
                     <DataTable
                       columns={productTopRevenueColumn}
                       data={
@@ -591,43 +404,14 @@ export default function RevenueDashboard() {
                 </CardHeader>
                 <CardContent>
                   <DataTable
-                    columns={productTopRevenueColumn}
+                    columns={customerRevenueColumns}
                     data={
-                      reportRevenue.data?.value?.topProductRevenueStatistics ||
+                      reportRevenue.data?.value?.topCustomerRevenueStatistics ||
                       []
                     }
-                    searchFiled="name"
+                    searchFiled="userName"
                     isLoading={reportRevenue.isLoading}
                   />
-
-                  {/* <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Khách hàng</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead className="text-right">Đơn hàng</TableHead>
-                        <TableHead className="text-right">Đã chi</TableHead>
-                        <TableHead>Lần mua cuối</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {topCustomers.map((customer) => (
-                        <TableRow key={customer.id}>
-                          <TableCell className="font-medium">
-                            {customer.name}
-                          </TableCell>
-                          <TableCell>{customer.email}</TableCell>
-                          <TableCell className="text-right">
-                            {customer.orders}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {customer.spent}
-                          </TableCell>
-                          <TableCell>{customer.lastPurchase}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table> */}
                 </CardContent>
               </Card>
             </TabsContent>

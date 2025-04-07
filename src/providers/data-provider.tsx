@@ -12,11 +12,13 @@ import { AddressTypes } from "@/types/address.types";
 import { Product } from "@/hooks/use-cart-store";
 import { UseQueryResult } from "@tanstack/react-query";
 import { USER_KEY } from "@/app/key/user-key";
+import { CustomComboProduct } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 
 export type DataContextType = {
   products: UseQueryResult<ProductTransformType, Error>;
 
   addresses: UseQueryResult<ApiResponse<PageResult<AddressTypes>>, Error>;
+  customCombo: UseQueryResult<ApiResponse<CustomComboProduct[]>, Error>;
 };
 
 export type ProductTransformType = Omit<PageResult<Product>, "items"> & {
@@ -48,6 +50,11 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     [USER_KEY.ADDRESS]
   );
 
+  const customCombo = useFetch<ApiResponse<CustomComboProduct[]>>(
+    "/Combos/user",
+    [USER_KEY.CUSTOM_COMBO]
+  );
+
   // console.log({ productList });
   // console.log({ carts });
   // if (isLoading) {
@@ -61,6 +68,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         products,
         addresses,
+        customCombo,
       }}
     >
       {children}

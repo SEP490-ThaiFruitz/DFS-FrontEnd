@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { BlogCategory } from '../category/page';
 import { createBlog } from '@/actions/blog';
-import FormTextEditorControl from '@/components/global-components/form/form-text-editor-control';
 
 function CreateBlogPage() {
     const { data: categoriesBlog } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", ["BlogCategories", "select"])
@@ -92,14 +91,7 @@ function CreateBlogPage() {
                             label="Ảnh bài viết"
                             require
                         />
-                        <FormTextEditorControl
-                            form={form}
-                            name="content"
-                            placeholder='Nhập mô tả'
-                            disabled={isPending}
-                            label="Nội dung bài viết"
-                            require
-                        />
+
                     </div>
                 </CardContent>
             </Card>

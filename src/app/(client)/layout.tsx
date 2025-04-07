@@ -15,16 +15,18 @@ export async function generateMetadata() {
 }
 const ClientLayout = ({ children, common }: ClientLayoutProps) => {
   return (
-    <>
+    <div className="bg-gradient-to-b from-amber-50 to-amber-50/60">
       <Navigate />
-      <div className="bg-white">
+      <div className="">
+        {/* <div className="bg-[#fefcfb]"> */}
+        {/* <div className="bg-white"> */}
         {/* <div> */}
         {children}
 
         {common}
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

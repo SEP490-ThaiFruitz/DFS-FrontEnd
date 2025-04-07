@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { MouseEvent, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -193,22 +193,6 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
     {},
     { enabled: !!district }
   );
-  useEffect(() => {
-    if (address) {
-      form.setValue(
-        "district",
-        `${address?.districtID}-${
-          address?.receiverAddress?.split(",")[2]?.trim() ?? ""
-        }`
-      );
-      form.setValue(
-        "ward",
-        `${address?.wardID}-${
-          address?.receiverAddress?.split(",")[1]?.trim() ?? ""
-        }`
-      );
-    }
-  }, [address, form, wards]);
 
   if (!provinces) {
     return (
@@ -221,10 +205,6 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
       </ResizablePanel>
     );
   }
-
-  const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
 
   const isEditMode = !!address;
   const title = isEditMode
@@ -317,7 +297,8 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
             <div className="pt-5 pb-3 flex flex-row-reverse justify-between">
               <Button
                 className="h-10"
-                onClick={() => {
+                onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                  e.stopPropagation();
                   onClose();
                   form.reset();
                 }}
@@ -326,7 +307,16 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
                 Đóng
               </Button>
               <ButtonCustomized
-                type="submit"
+                // type="submit"
+                type="button"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+
+                  form.handleSubmit((values) =>
+                    onSubmit(values, addressMutation)
+                  )();
+                }}
                 className="max-w-fit h-10 rounded-md bg-purple-500 hover:bg-purple-700"
                 variant="secondary"
                 disabled={isPending}

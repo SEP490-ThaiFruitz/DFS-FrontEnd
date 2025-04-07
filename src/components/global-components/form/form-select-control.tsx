@@ -92,7 +92,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
               className={cn(
                 "text-text-foreground",
                 require
-                  ? "after:content-['(*)'] after:text-red-500 after:ml-1"
+                  ? "after:content-['*'] after:text-red-500 after:ml-1"
                   : "",
                 classNameLabel
               )}
@@ -123,7 +123,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
                       isImage ? (
                         <SelectItem
                           key={data.id}
-                          value={isCustomValue ?  `${data.id.toString()}-${data.name}` : data.id.toString()}
+                          value={isCustomValue ? `${data.id.toString()}-${data.name}` : data.id.toString()}
                           className="block w-full text-left cursor-pointer"
                         >
                           <div className="inline-flex justify-between items-center w-full">
@@ -140,7 +140,7 @@ export const FormSelectControl = <T extends FieldValues, K>({
                         <SelectItem
                           className="cursor-pointer"
                           key={data.id}
-                          value={isCustomValue ?  `${data.id.toString()}-${data.name}` : data.id.toString()}
+                          value={isCustomValue ? `${data.id.toString()}-${data.name}` : data.id.toString()}
                         >
                           {data.name}
                         </SelectItem>

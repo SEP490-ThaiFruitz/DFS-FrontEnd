@@ -202,7 +202,7 @@ export function OrderStatusBadge({
         });
         toast.success("Cập nhật trạng thái thành công");
       }
-      console.log("Cập nhật thành công:", response.data);
+      // console.log("Cập nhật thành công:", response.data);
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
     } finally {
@@ -355,7 +355,7 @@ export const UpdateStatusButtonDropdown = ({
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log({ response });
+      // console.log({ response });
 
       if (response.status === 200) {
         queryClient.invalidateQueries({

@@ -1,89 +1,89 @@
 "use client";
-import { createVoucher } from '@/actions/voucher';
-import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
-import { FancySelect } from '@/components/custom/_custom_select/select';
-import { FormDateControl } from '@/components/global-components/form/form-date-control';
-import { FormFileControl } from '@/components/global-components/form/form-file-control';
-import { FormInputControl } from '@/components/global-components/form/form-input-control';
-import { FormNumberInputControl } from '@/components/global-components/form/form-number-control';
-import { FormSelectControl } from '@/components/global-components/form/form-select-control';
-import { FormValues } from '@/components/global-components/form/form-values';
-import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
-import { CreateVoucherSafeTypes } from '@/zod-safe-types/voucher-safe-types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
+import { createVoucher } from "@/actions/voucher";
+import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
+import { FancySelect } from "@/components/custom/_custom_select/select";
+import { FormDateControl } from "@/components/global-components/form/form-date-control";
+import { FormFileControl } from "@/components/global-components/form/form-file-control";
+import { FormInputControl } from "@/components/global-components/form/form-input-control";
+import { FormNumberInputControl } from "@/components/global-components/form/form-number-control";
+import { FormSelectControl } from "@/components/global-components/form/form-select-control";
+import { FormValues } from "@/components/global-components/form/form-values";
+import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { QUANTITY_SELECT } from "@/features/admin/admin-lib/admin-lib";
+import { CreateVoucherSafeTypes } from "@/zod-safe-types/voucher-safe-types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 function CreateVoucherPage() {
-
   const { isPending, mutate: createVoucherMutation } = useMutation({
     mutationFn: async (values: FormData) => {
       try {
         const response = await createVoucher(values);
         if (!response?.isSuccess) {
           if (response?.status === 409) {
-            throw new Error("Tên mã giảm giá đã tồn tại")
+            throw new Error("Tên mã giảm giá đã tồn tại");
           }
-          throw new Error("Tạo mã giảm giá thất bại")
+          throw new Error("Tạo mã giảm giá thất bại");
         }
-      }
-      catch (error: unknown) {
-        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống")
+      } catch (error: unknown) {
+        throw new Error(
+          error instanceof Error ? error?.message : "Lỗi hệ thống"
+        );
       }
     },
     onSuccess: () => {
       form.reset();
-      toast.success("Tạo mã giảm giá thành công")
+      toast.success("Tạo mã giảm giá thành công");
     },
     onError: (value) => {
-      toast.error(value.message)
-    }
-  })
+      toast.error(value.message);
+    },
+  });
 
   const form = useForm<z.infer<typeof CreateVoucherSafeTypes>>({
     resolver: zodResolver(CreateVoucherSafeTypes),
   });
 
   const onSubmit = async (values: z.infer<typeof CreateVoucherSafeTypes>) => {
-    const formData = new FormData()
-    formData.append("name", values.name)
+    const formData = new FormData();
+    formData.append("name", values.name);
     if (values.code) {
-      formData.append("code", values.code)
+      formData.append("code", values.code);
     }
     if (values.moneyDiscount) {
-      formData.append("value", values.moneyDiscount)
+      formData.append("value", values.moneyDiscount);
     } else if (values.percentDiscount) {
-      formData.append("value", values.percentDiscount)
+      formData.append("value", values.percentDiscount);
     }
-    formData.append("discountType", values.discountType)
-    formData.append("startDate", format(values.startDate, 'yyyy-MM-dd'));
-    formData.append("endDate", format(values.endDate, 'yyyy-MM-dd'));
+    formData.append("discountType", values.discountType);
+    formData.append("startDate", format(values.startDate, "yyyy-MM-dd"));
+    formData.append("endDate", format(values.endDate, "yyyy-MM-dd"));
     if (values.image) {
-      formData.append("image", values.image[0])
+      formData.append("image", values.image[0]);
     }
-    formData.append("minimumOrderAmount", values.minimumOrderAmount)
-    formData.append("maximumDiscountAmount", values.maximumDiscount)
-    formData.append("quantity", values.quantity)
+    formData.append("minimumOrderAmount", values.minimumOrderAmount);
+    formData.append("maximumDiscountAmount", values.maximumDiscount);
+    formData.append("quantity", values.quantity);
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(`${key}:`, value);
+    // }
 
-    createVoucherMutation(formData)
+    createVoucherMutation(formData);
   };
 
   useEffect(() => {
-    if (form.watch("discountType") === 'Amount') {
-      form.setValue("percentDiscount", undefined); 
+    if (form.watch("discountType") === "Amount") {
+      form.setValue("percentDiscount", undefined);
     } else {
-      form.setValue("moneyDiscount", undefined); 
+      form.setValue("moneyDiscount", undefined);
     }
   }, [form.watch("discountType")]);
 
@@ -112,24 +112,26 @@ function CreateVoucherPage() {
               <FormSelectControl
                 form={form}
                 name="discountType"
-                classNameInput='h-fit'
-                placeholder='Chọn loại giảm giá'
+                classNameInput="h-fit"
+                placeholder="Chọn loại giảm giá"
                 items={[
-                  { id: 'Amount', name: 'Cố định' },
-                  { id: 'Percentage', name: 'Phần trăm' },
+                  { id: "Amount", name: "Cố định" },
+                  { id: "Percentage", name: "Phần trăm" },
                 ]}
                 disabled={isPending}
                 label="Chọn loại giảm giá"
                 require
               />
-              {form.watch("discountType") === 'Amount' ? <FormNumberInputControl
-                form={form}
-                name="moneyDiscount"
-                isMoney
-                disabled={isPending}
-                label="Số tiền giảm"
-                require
-              /> :
+              {form.watch("discountType") === "Amount" ? (
+                <FormNumberInputControl
+                  form={form}
+                  name="moneyDiscount"
+                  isMoney
+                  disabled={isPending}
+                  label="Số tiền giảm"
+                  require
+                />
+              ) : (
                 <div>
                   <Controller
                     name="percentDiscount"
@@ -140,24 +142,25 @@ function CreateVoucherPage() {
                           Số phần trăm giảm
                         </FormLabel>
                         <FancySelect
-                          placeholder='Số phần trăm giảm hoặc nhập mới'
+                          placeholder="Số phần trăm giảm hoặc nhập mới"
                           options={QUANTITY_SELECT}
                           onChangeValue={(selectedValues: any) => {
-                            field.onChange(selectedValues.value)
+                            field.onChange(selectedValues.value);
                           }}
                           defaultValue={{
-                            label: form.getValues("percentDiscount") ?? '0',
-                            value: form.getValues("percentDiscount") ?? '0'
+                            label: form.getValues("percentDiscount") ?? "0",
+                            value: form.getValues("percentDiscount") ?? "0",
                           }}
                           isNumber
-                          unit='%'
+                          unit="%"
                         />
                         <FormMessage>{fieldState.error?.message}</FormMessage>
                       </FormItem>
                     )}
                   />
-                </div>}
-              <div className='grid sm:grid-cols-2 gap-5'>
+                </div>
+              )}
+              <div className="grid sm:grid-cols-2 gap-5">
                 <FormDateControl
                   minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
@@ -200,14 +203,14 @@ function CreateVoucherPage() {
                           Số lượng
                         </FormLabel>
                         <FancySelect
-                          placeholder='Số lượng hoặc nhập mới'
+                          placeholder="Số lượng hoặc nhập mới"
                           options={QUANTITY_SELECT}
                           onChangeValue={(selectedValues: any) => {
-                            field.onChange(selectedValues.value)
+                            field.onChange(selectedValues.value);
                           }}
                           defaultValue={{
-                            label: form.getValues("quantity") ?? '',
-                            value: form.getValues("quantity") ?? ''
+                            label: form.getValues("quantity") ?? "",
+                            value: form.getValues("quantity") ?? "",
                           }}
                           isNumber
                         />
@@ -251,7 +254,7 @@ function CreateVoucherPage() {
           )
         }
       />
-    </FormValues >
+    </FormValues>
   );
 }
 

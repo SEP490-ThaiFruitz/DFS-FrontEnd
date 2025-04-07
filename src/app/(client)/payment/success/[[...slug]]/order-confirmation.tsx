@@ -518,7 +518,7 @@ export default function OrderConfirmation() {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  console.log({ orderData });
+  // console.log({ orderData });
 
   if (isLoaded || !orderData.orderId) {
     return <ImprovedLoadingPage />;

@@ -281,7 +281,7 @@ export const CustomComboBuilder = memo(
           }
         );
 
-        console.log(response);
+        // console.log(response);
 
         if (response.status === 200) {
           queryClient.invalidateQueries({
@@ -289,7 +289,7 @@ export const CustomComboBuilder = memo(
           });
           toast.success("Tạo combo thành công!");
 
-          console.log(response.data);
+          // console.log(response.data);
 
           setComboName("");
           setSelectedItems([]);
@@ -368,7 +368,7 @@ export const CustomComboBuilder = memo(
     //   return acc + curr.quantity;
     // }, 0);
 
-    console.log({ selectedItems });
+    // console.log({ selectedItems });
 
     return (
       <DndContext

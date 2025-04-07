@@ -48,6 +48,8 @@ export const registerAction = async <TValues>(values: TValues) => {
   try {
     const response = await interactApi.post<TValues>("/Auths/sign-up", values);
 
+    // console.log(response);
+
     if (!response?.isSuccess) {
       return {
         isSuccess: false,

@@ -22,6 +22,7 @@ import { useForgetPasswordDialog } from "@/hooks/use-forget-password-dialog";
 import { FormForgetPassword } from "@/features/auth/forget-password/form-forget-password";
 import { useAuth } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
+import { USER_KEY } from "@/app/key/user-key";
 
 export const LoginDialog = () => {
   const form = useForm<z.infer<typeof LoginSafeTypes>>({
@@ -68,6 +69,10 @@ export const LoginDialog = () => {
       });
 
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.CUSTOM_COMBO] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.ADDRESS] });
+
       registerDialog.onClose();
       router.refresh();
       loginDialog.onClose();

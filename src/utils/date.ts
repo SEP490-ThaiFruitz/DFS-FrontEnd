@@ -66,12 +66,12 @@ export const fillMissingDatesDynamics = <T>(
     const dayData = dataMap[date] || {};
     const result: Record<string, number | string> = { date };
 
-    console.log(dayData);
+    // console.log(dayData);
     fields.forEach((field) => {
       result[field as string] = dayData[field as string] || 0;
     });
 
-    console.log(result);
+    // console.log(result);
 
     return result;
   });

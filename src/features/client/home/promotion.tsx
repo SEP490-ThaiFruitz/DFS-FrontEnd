@@ -21,10 +21,12 @@ export interface FlashSale {
 }
 
 const Promotion = () => {
-  const { data: promotions, isLoading } =
-    useFetch<ApiResponse<FlashSale[]>>("/Promotions", ["promotions", "home"]);
+  const { data: promotions, isLoading } = useFetch<ApiResponse<FlashSale[]>>(
+    "/Promotions",
+    ["promotions", "home"]
+  );
 
-  console.log({ promotions });
+  // console.log({ promotions });
 
   if (isLoading) {
     <PromotionSkeleton />;

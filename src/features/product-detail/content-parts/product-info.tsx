@@ -120,7 +120,7 @@ export const ProductInfo = memo(
           {/* Certifications Preview */}
           <div className="hidden lg:flex flex-wrap gap-2 mt-4">
             {product.productCertification.slice(0, 3).map((cert) => (
-              <TooltipProvider key={cert.id}>
+              <TooltipProvider key={cert.name}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="bg-gray-100 p-2 rounded-full">

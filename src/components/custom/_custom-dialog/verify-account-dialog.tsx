@@ -31,7 +31,10 @@ import {
 import { getProfile } from "@/actions/user";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const VerifyDialog = () => {
+interface VerifyDialogProps {
+  user: Profile | undefined;
+}
+export const VerifyDialog = ({ user }: VerifyDialogProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -46,17 +49,17 @@ export const VerifyDialog = () => {
 
   //   const user = queryClient.getQueryData<Profile>(["authUser"]);
 
-  const { data: user, isLoading: isUserLoading } = useQuery<Profile>({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      const response = await getProfile();
-      if (!response || !response.isSuccess || !response.data) {
-        toast.error("Lỗi hệ thống");
-        return undefined;
-      }
-      return response.data;
-    },
-  });
+  // const { data: user, isLoading: isUserLoading } = useQuery<Profile>({
+  //   queryKey: ["authUser"],
+  //   queryFn: async () => {
+  //     const response = await getProfile();
+  //     if (!response || !response.isSuccess || !response.data) {
+  //       toast.error("Lỗi hệ thống");
+  //       return undefined;
+  //     }
+  //     return response.data;
+  //   },
+  // });
 
   const [type, setType] = useState<string>("email");
 
@@ -175,7 +178,27 @@ export const VerifyDialog = () => {
           Gửi lại OTP
         </button>
 
-        {!isUserLoading ? (
+        <Select
+          disabled={isSending || isPending}
+          defaultValue={user?.email ? "email" : "phone"}
+          onValueChange={(value) => setType(value)}
+        >
+          <SelectTrigger disabled={isSending || isPending} className="w-fit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {user?.email && (
+                <SelectItem value={"email"}>{user?.email}</SelectItem>
+              )}
+              {user?.phone && (
+                <SelectItem value={"phone"}>{user?.phone}</SelectItem>
+              )}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        {/* {!isUserLoading ? (
           <Select
             disabled={isSending || isPending}
             defaultValue={user?.email ? "email" : "phone"}
@@ -197,7 +220,7 @@ export const VerifyDialog = () => {
           </Select>
         ) : (
           <Skeleton className="w-32 h-10" />
-        )}
+        )} */}
 
         <div className={`${time > 0 ? "visible" : "invisible"} ml-5`}>
           <div className="relative flex items-center justify-center">

@@ -44,6 +44,7 @@ import { Skeleton } from "../ui/skeleton";
 import { USER_KEY } from "@/app/key/user-key";
 import { getProfile } from "@/actions/user";
 import { toast } from "sonner";
+import { UserMenu } from "./user-menu";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
@@ -60,20 +61,20 @@ export const Navigate = () => {
   const queryClient = useQueryClient();
   const loginDialog = useLoginDialog();
 
-  const { data: user, isLoading: isUserLoading } = useQuery<Profile>({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      const response = await getProfile();
-      if (!response || !response.isSuccess || !response.data) {
-        toast.error("Lỗi hệ thống");
-        return undefined; // Handle error case
-      }
-      return response.data; // Ensure this matches `Profile`
-    },
-  });
+  // const { data: user, isLoading: isUserLoading } = useQuery<Profile>({
+  //   queryKey: ["authUser"],
+  //   queryFn: async () => {
+  //     const response = await getProfile();
+  //     if (!response || !response.isSuccess || !response.data) {
+  //       toast.error("Lỗi hệ thống");
+  //       return undefined; // Handle error case
+  //     }
+  //     return response.data; // Ensure this matches `Profile`
+  //   },
+  // });
 
-  console.log(user);
-  console.log({ isUserLoading });
+  // console.log(user);
+  // console.log({ isUserLoading });
 
   const navItemClassName =
     "relative inline-flex text-sm h-11 w-full md:w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0 before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer";
@@ -89,7 +90,6 @@ export const Navigate = () => {
         setActive={setActive}
         className="h-full flex items-center justify-between w-full rounded-none md:px-4"
       >
-        {/* Logo */}
         <div className="hidden md:flex items-center">
           <Logo height={60} width={60} />
         </div>
@@ -173,11 +173,10 @@ export const Navigate = () => {
         <div className="flex items-center space-x-2">
           <ShoppingBagSheet />
 
-          {isUserLoading ? (
+          {/* {isUserLoading ? (
             <Skeleton className="h-10 w-10 rounded-full" />
           ) : user && Object.keys(user).length > 0 ? (
             <>
-              {/* Notification Popover */}
               <Notification />
               <Link
                 href="/favorites"
@@ -274,7 +273,9 @@ export const Navigate = () => {
                 <RegisterDialog />
               </div>
             </div>
-          )}
+          )} */}
+
+          <UserMenu />
         </div>
       </Menu>
 
@@ -347,3 +348,5 @@ export const Navigate = () => {
 };
 
 export default Navigate;
+
+//yru84817@jioso.com

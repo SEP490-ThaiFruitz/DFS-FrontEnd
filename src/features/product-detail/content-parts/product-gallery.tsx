@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Certificate } from "../product-detail.types";
 import { Promotion } from "@/hooks/use-cart-store";
-import { memo, useState } from "react";
+import React, { memo, useState } from "react";
 
 interface ProductGalleryProps {
   images: string[];
@@ -63,6 +63,9 @@ export const ProductGallery = memo(
         prev === images.length - 1 ? 0 : prev + 1
       );
     };
+
+    console.log(productCertification);
+
     return (
       // <div className="p-6 lg:p-8 border-b lg:border-b-0 lg:border-r border-gray-100">
       <div className="p-6 lg:p-8 ">
@@ -190,11 +193,14 @@ export const ProductGallery = memo(
           </div>
 
           {/* Certification badges - Mobile */}
-          <div className="flex flex-wrap gap-2 lg:hidden">
-            {productCertification.slice(0, 3).map((cert) => (
-              <TooltipProvider key={cert.id}>
+          {/* <div className="flex flex-wrap gap-2 lg:hidden">
+            {productCertification.slice(0, 3).map((cert, index) => (
+              <TooltipProvider
+                key={`certificate-${cert.name}-${index}`}
+                delayDuration={100}
+              >
                 <Tooltip>
-                  <TooltipTrigger asChild>
+                  <TooltipTrigger asChild className="cursor-pointer">
                     <div className="bg-gray-100 p-2 rounded-full">
                       <ShieldCheck className="h-5 w-5 text-green-600" />
                     </div>
@@ -205,7 +211,23 @@ export const ProductGallery = memo(
                 </Tooltip>
               </TooltipProvider>
             ))}
-          </div>
+          </div> */}
+          <TooltipProvider>
+            <div className="flex flex-wrap gap-2 lg:hidden">
+              {productCertification.slice(0, 3).map((cert) => (
+                <Tooltip key={cert.name}>
+                  <TooltipTrigger asChild>
+                    <div className="bg-gray-100 p-2 rounded-full">
+                      <ShieldCheck className="h-5 w-5 text-green-600" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{cert.name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          </TooltipProvider>
         </div>
       </div>
     );

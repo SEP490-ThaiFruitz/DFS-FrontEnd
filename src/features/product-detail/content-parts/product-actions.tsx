@@ -43,7 +43,7 @@ export const ProductActions = memo(
         item.variant.productVariantId === selectedVariant.productVariantId
     );
 
-    console.log({ findCart });
+    // console.log({ findCart });
 
     return (
       <div className="space-y-4">

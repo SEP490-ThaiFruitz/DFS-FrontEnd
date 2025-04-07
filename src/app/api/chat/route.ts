@@ -67,13 +67,13 @@ export async function POST(req: Request) {
     },
   });
 
-  console.log(result);
+  // console.log(result);
 
-  console.log(
-    result.toDataStreamResponse({
-      sendUsage: true,
-    })
-  );
+  // console.log(
+  //   result.toDataStreamResponse({
+  //     sendUsage: true,
+  //   })
+  // );
 
   return result.toDataStreamResponse({
     // sendReasoning: true,

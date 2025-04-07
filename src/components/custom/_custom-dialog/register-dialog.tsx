@@ -29,6 +29,25 @@ interface RegisterUser {
   phone?: string;
 }
 
+const inputOptions = {
+  phone: {
+    name: "phone",
+    label: "Số điện thoại",
+    placeholder: "+84...",
+    switchTo: "email",
+    switchLabel: "Email",
+  },
+  email: {
+    name: "email",
+    label: "Email",
+    placeholder: "example@mail.com",
+    switchTo: "phone",
+    switchLabel: "Số điện thoại",
+  },
+} as const;
+
+type LoginType = keyof typeof inputOptions;
+
 export const RegisterDialog = () => {
   const form = useForm<z.infer<typeof RegisterSafeTypes>>({
     resolver: zodResolver(RegisterSafeTypes),
@@ -66,6 +85,8 @@ export const RegisterDialog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.CUSTOM_COMBO] });
       queryClient.invalidateQueries({ queryKey: [USER_KEY.ADDRESS] });
       router.refresh();
       registerDialog.onClose();
@@ -78,6 +99,7 @@ export const RegisterDialog = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof RegisterSafeTypes>) => {
+    // console.log(values);
     registerAccountMutation(values);
   };
 
@@ -96,16 +118,35 @@ export const RegisterDialog = () => {
     <button
       disabled={isPending}
       onClick={registerDialog.onOpen}
-      className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
+      className="relative inline-flex text-sm h-11 w-28 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0 before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer"
     >
       <UserPlus className="size-4 mr-1" /> Đăng kí
     </button>
   );
 
+  const handleSwitch = (type: LoginType) => {
+    const current = inputOptions[type];
+    const opposite = inputOptions[current.switchTo];
+
+    form.resetField(opposite.name);
+    form.setValue("type", type);
+    form.trigger("type");
+    setLoginType(type);
+
+    setTimeout(() => {
+      const inputElement = document.querySelector(
+        `input[name="${current.name}"]`
+      ) as HTMLInputElement;
+      inputElement?.focus();
+    }, 0);
+  };
+
+  const current = inputOptions[loginType];
+
   const body = (
     <div>
       <FormValues form={form} onSubmit={onSubmit}>
-        {loginType === "phone" ? (
+        {/* {loginType === "phone" ? (
           <div className="relative">
             <FormInputControl
               form={form}
@@ -147,7 +188,27 @@ export const RegisterDialog = () => {
               Số điện thoại
             </button>
           </div>
-        )}
+        )} */}
+
+        <div className="relative">
+          <FormInputControl
+            key={current.name}
+            form={form}
+            name={current.name}
+            disabled={isPending}
+            label={current.label}
+            placeholder={current.placeholder}
+          />
+          <button
+            type="button"
+            // onMouseDown={() => handleSwitch(current.switchTo)}
+            onClick={(e) => handleSwitch(current.switchTo)}
+            className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer"
+          >
+            {current.switchLabel}
+          </button>
+        </div>
+
         <FormInputControl
           form={form}
           name="name"

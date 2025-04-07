@@ -172,7 +172,7 @@ function PaymentClientPage() {
         }
       );
 
-      console.log({ response });
+      // console.log({ response });
 
       if (response.status === 200) {
         toast.success("Đặt hàng thành công");

@@ -1,3 +1,5 @@
+export const placeholderImage = "/placeholder.jpg";
+
 enum SexEnum {
   MALE = "male",
   FEMALE = "female",

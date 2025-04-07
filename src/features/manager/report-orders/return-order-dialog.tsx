@@ -145,11 +145,11 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
 
     // Simulate API call
     setTimeout(() => {
-      console.log("Confirmed return with reason:", selectedReason);
-      console.log("Items to return:", selectedItems);
-      console.log("Item condition:", itemCondition);
-      console.log("Preferred action:", preferredAction);
-      console.log("Additional comments:", additionalComments);
+      // console.log("Confirmed return with reason:", selectedReason);
+      // console.log("Items to return:", selectedItems);
+      // console.log("Item condition:", itemCondition);
+      // console.log("Preferred action:", preferredAction);
+      // console.log("Additional comments:", additionalComments);
       setIsSubmitting(false);
       setOpen(false);
 
@@ -208,6 +208,8 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
           }, 300);
         }
       }}
+
+      
     >
       <DialogTrigger asChild>
         <Button

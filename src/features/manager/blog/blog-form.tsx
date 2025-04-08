@@ -209,7 +209,7 @@ export default function BlogForm() {
         },
       });
 
-      console.log({ response });
+      // console.log({ response });
       if (response.status) {
         form.reset();
         setEditorState(initialValue);

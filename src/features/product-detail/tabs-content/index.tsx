@@ -49,7 +49,7 @@ interface TabContainerProps {
 export const TabContainer = ({ product }: TabContainerProps) => {
   const [tab, setTab] = useState(TABS[0].id);
 
-  console.log(tab);
+  // console.log(tab);
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">

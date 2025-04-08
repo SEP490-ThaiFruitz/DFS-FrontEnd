@@ -90,7 +90,7 @@ const put = async <TValues>(endpoint: string, body: TValues) => {
     const url = `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`;
 
     const response = await fetch(url, requestOptions);
-    console.log(requestOptions);
+    // console.log(requestOptions);
     return await handleResponse(response);
   } catch (error) {
     console.log("Error in updating data:", error);

@@ -95,54 +95,10 @@ const WalletPage = () => {
       toast.error("Có lỗi xảy ra khi kết nối API");
     } finally {
       setIsLoaded(false);
-
-      // clearCart();
     }
   }, [searchParams]);
 
   useEffect(() => {
-    // const fetchDepositWallet = async () => {
-    //   const isVnPay = searchParams.has("vnp_TxnRef");
-    //   // let apiUrl = "";
-
-    //   setIsLoaded(true);
-
-    //   try {
-    //     if (isVnPay) {
-    //       // VNPay API call
-    //       const result = await interactApiClient.post<
-    //         ApiResponse<DepositWalletResponse>,
-    //         { test: string }
-    //       >(`/Payments/vnpay-return?${searchParams.toString()}`);
-
-    //       console.log({ result });
-
-    //       if (result?.isSuccess) {
-    //         setData(result?.value as DepositWalletResponse);
-    //       } else {
-    //         toast.error("Lỗi khi lấy dữ liệu đơn hàng");
-    //       }
-    //     } else if (searchParams.has("orderCode")) {
-    //       // PayOS API call
-    //       const orderCode = searchParams.get("orderCode");
-    //       const result = await interactApiClient.get<
-    //         ApiResponse<DepositWalletResponse>
-    //       >(`/Wallets/information-deposit/${orderCode}`);
-    //       if (result?.isSuccess) {
-    //         setData(result?.value as DepositWalletResponse);
-    //       } else {
-    //         toast.error("Lỗi khi lấy dữ liệu đơn hàng");
-    //       }
-    //     }
-    //   } catch (error) {
-    //     toast.error("Có lỗi xảy ra khi kết nối API");
-    //   } finally {
-    //     setIsLoaded(false);
-
-    //     // clearCart();
-    //   }
-    // };
-
     fetchDepositWallet();
     const timer = setTimeout(() => setProgress(100), 500);
     return () => clearTimeout(timer);

@@ -1,4 +1,9 @@
-import { eachDayOfInterval, format, formatDistanceToNow } from "date-fns";
+import {
+  differenceInCalendarDays,
+  eachDayOfInterval,
+  format,
+  formatDistanceToNow,
+} from "date-fns";
 import { vi } from "date-fns/locale";
 
 export const YYYY_MM_DD = "yyyy-MM-dd";
@@ -96,10 +101,19 @@ export const formatRelativeTime = (dateString: string) => {
   }
 };
 
-const daysSince = (date: string | Date) => {
+export const daysSince = (date: string | Date) => {
   return (
     Math.floor(
       (new Date().getTime() - new Date(date).getTime()) / (1000 * 3600 * 24)
     ) < 1
   );
+};
+
+export const differenceDate = (date: string | Date) => {
+  const estimateDate = new Date(date); // => Tue Apr 15 2025
+  const today = new Date(); // giả sử hôm nay là '2025-04-09'
+
+  const daysLeft = differenceInCalendarDays(estimateDate, today);
+
+  return daysLeft;
 };

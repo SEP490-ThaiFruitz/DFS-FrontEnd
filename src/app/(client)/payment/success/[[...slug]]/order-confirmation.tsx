@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect, memo, useRef } from "react";
 import {
   CheckCircle,
   Package,
@@ -36,7 +36,7 @@ import { interactApiClient } from "@/actions/client/interact-api-client";
 import { ApiResponse } from "@/types/types";
 import { toast } from "sonner";
 import ImprovedLoadingPage from "@/app/(client)/loading";
-import { vietnameseDate } from "@/utils/date";
+import { differenceDate, vietnameseDate } from "@/utils/date";
 import { formatVND } from "@/lib/format-currency";
 import NotFound from "@/app/not-found";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
@@ -45,6 +45,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { useCartStore } from "@/hooks/use-cart-store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { orderTypeLabel } from "@/utils/label";
+import { useReactToPrint } from "react-to-print";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -180,165 +182,263 @@ const OrderProgress = memo(({ status }: { status: string }) => {
 });
 OrderProgress.displayName = "OrderProgress";
 
-const OrderDetailsCard = memo(({ order }: { order: PaymentOrderValue }) => (
-  <Card className="overflow-hidden  shadow-sm mb-6 cardStyle">
-    <CardHeader className="bg-slate-50/80 border-b border-slate-100 pb-4">
-      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-        <div>
-          <CardTitle className="text-xl text-slate-900 flex items-center gap-2">
-            {/* <span className="text-emerald-600">#</span> */}
-            <Barcode className="size-6 text-sky-500" />
-            {order.orderId}
-            <Badge
-              className={`ml-1 text-xs px-2 py-0.5 ${getStatusColor(
-                order.status
-              )}`}
-            >
-              <span className="flex items-center gap-1">
-                {getStatusIcon(order.status)}
-                {order.status}
-              </span>
-            </Badge>
-          </CardTitle>
-          <CardDescription className="flex items-center gap-1.5 mt-1 text-slate-500 underline">
-            <Calendar className="size-4" />
-            {vietnameseDate(order.buyDate)}
-          </CardDescription>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-        >
-          <Download className="h-4 w-4 mr-1.5" />
-          Download Receipt
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-slate-50/80 rounded-xl p-5 border cardStyle">
-          <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <CreditCard className="size-6 text-emerald-500" />
-            Thông tin thanh toán
-          </h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600 t ext-sm font-semibold">
-                Phương thức thanh toán
-              </span>
-
-              <AdvancedColorfulBadges
-                color="lavender"
-                className="font-semibold"
+const OrderDetailsCard = memo(
+  ({ order, print }: { order: PaymentOrderValue; print: () => void }) => (
+    <Card className="overflow-hidden  shadow-sm mb-6 cardStyle">
+      <CardHeader className="bg-slate-50/80 border-b border-slate-100 pb-4">
+        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+          <div>
+            <CardTitle className="text-xl text-slate-900 flex items-center gap-2">
+              {/* <span className="text-emerald-600">#</span> */}
+              <Barcode className="size-6 text-sky-500" />
+              {order.orderId}
+              <Badge
+                className={`ml-1 text-xs px-2 py-0.5 ${getStatusColor(
+                  order.status
+                )}`}
               >
-                {order.payment?.type}
-              </AdvancedColorfulBadges>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600 text-sm font-semibold">
-                Mã giao dịch
-              </span>
-              <span className="font-medium text-slate-900">
-                {order.payment.transactionNo}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600 text-sm font-semibold">
-                Trạng thái
-              </span>
-              <span className="font-medium flex items-center gap-1.5 text-green-600 bg-green-50 px-3 py-1 rounded-full text-sm">
-                {getStatusIcon(order.payment.status)}
-                {order.payment.status}
-              </span>
-            </div>
+                <span className="flex items-center gap-1">
+                  {getStatusIcon(order.status)}
+                  {order.status}
+                </span>
+              </Badge>
+            </CardTitle>
+            <CardDescription className="flex items-center gap-1.5 mt-1 text-slate-500 underline">
+              <Calendar className="size-4" />
+              {vietnameseDate(order.buyDate, true)}
+            </CardDescription>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+            onClick={() => print()}
+          >
+            <Download className="h-4 w-4 mr-1.5" />
+            In Hóa Đơn
+          </Button>
         </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-slate-50/80 rounded-xl p-5 border cardStyle">
+            <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <CreditCard className="size-6 text-emerald-500" />
+              Thông tin thanh toán
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 t ext-sm font-semibold">
+                  Phương thức thanh toán
+                </span>
 
-        <div className="bg-slate-50/80 p-5 border cardStyle">
-          <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <MapPin className="size-6 text-emerald-500" />
-            Thông tin giao hàng
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-900 font-bold">
-                {order.orderAddressDelivery.receiverName}
-              </span>
+                <AdvancedColorfulBadges
+                  color="lavender"
+                  className="font-semibold"
+                >
+                  {order.payment?.paymentMethod}
+                </AdvancedColorfulBadges>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 text-sm font-semibold">
+                  Mã giao dịch
+                </span>
+                <span className="font-medium text-slate-900">
+                  {order.payment.transactionNo}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 text-sm font-semibold">
+                  Trạng thái
+                </span>
+                <span className="font-medium flex items-center gap-1.5 text-green-600 bg-green-50 px-3 py-1 rounded-full text-sm">
+                  {getStatusIcon(order.payment.status)}
+                  {order.payment.status}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-slate-600">
-              <Phone className="size-4.5 text-slate-900" />
-              {formatVietnamesePhoneNumber(
-                order.orderAddressDelivery.receiverPhone
-              )}
+          </div>
+
+          <div className="bg-slate-50/80 p-5 border cardStyle">
+            <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <MapPin className="size-6 text-emerald-500" />
+              Thông tin giao hàng
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-900 font-bold">
+                  {order.orderAddressDelivery.receiverName}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-600">
+                <Phone className="size-4.5 text-slate-900" />
+                {formatVietnamesePhoneNumber(
+                  order.orderAddressDelivery.receiverPhone
+                )}
+              </div>
+              <p className="text-gray-600 text-xs font-semibold border-l-2 border-slate-600 pl-3 py-1">
+                {order.orderAddressDelivery.receiverAddress}
+              </p>
             </div>
-            <p className="text-gray-600 text-xs font-semibold border-l-2 border-slate-600 pl-3 py-1">
-              {order.orderAddressDelivery.receiverAddress}
-            </p>
           </div>
         </div>
-      </div>
-    </CardContent>
-  </Card>
-));
+      </CardContent>
+    </Card>
+  )
+);
 OrderDetailsCard.displayName = "OrderDetailsCard";
 
-export const OrderItem = memo(
-  ({ item }: { item: PaymentOrderValue["orderItems"][0] }) => (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-slate-50 cardStyle ">
-      <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden mr-4 mb-3 sm:mb-0 border border-slate-200">
+const CustomComboThumbnail = memo(({ images }: { images: string[] }) => {
+  return (
+    <div className="size-20 relative rounded-lg overflow-hidden bg-slate-50 border border-slate-200 shadow-sm group">
+      {/* Main image */}
+      <div className="absolute inset-0 z-10">
         <Image
-          src={item.image || "/placeholder.svg"}
-          alt={item.name}
+          src={images[0] || "/placeholder.svg"}
+          alt={`main-thumbnail-image`}
           width={80}
           height={80}
-          className="w-full h-full object-cover"
+          sizes="(max-width: 640px) 80px, 128px"
+          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+          priority={true}
+          loading="eager"
+          quality={85}
         />
+        {/* Subtle overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
-      <div className="flex-1">
-        <h3 className="text-base font-semibold text-slate-900 mb-1">
-          {item.name}
-        </h3>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {/* <Badge
-            variant="outline"
-            className="text-xs bg-slate-100 border-slate-200 text-slate-700"
-          >
-            {item.itemType}
-          </Badge> */}
-          <AdvancedColorfulBadges
-            size="sm"
-            color="green"
-            className="rounded-3xl text-xs font-medium"
-          >
-            {item.itemType}
-          </AdvancedColorfulBadges>
 
-          {item.percentage > 0 && (
-            <Badge className="text-xs bg-rose-100 border-rose-200 text-rose-700">
-              {item.percentage}% OFF
-            </Badge>
-          )}
+      {/* Thumbnail stack */}
+      {images.length > 1 && (
+        <div className="absolute right-1 bottom-1 z-20 flex flex-col-reverse gap-1">
+          {images.slice(1, 3).map((image, index) => (
+            <div
+              key={index}
+              className="h-7 w-7 rounded-sm overflow-hidden border border-white/70 shadow-sm"
+              style={{
+                transform: `translateX(${index * -3}px)`,
+                zIndex: 30 - index,
+              }}
+            >
+              <div className="relative h-full w-full">
+                <Image
+                  src={image || "/placeholder.svg"}
+                  alt={`product item  ${index + 1}`}
+                  // fill
+                  // className="object-cover"
+                  // sizes="28px"
+                  width={96}
+                  height={0}
+                  sizes="(max-width: 640px) 96px, 128px"
+                  className="w-24 h-full object-cover transition-transform group-hover:scale-105"
+                  priority={true}
+                  loading="eager"
+                  quality={85}
+                />
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="text-sm text-gray-700">
-          Đơn giá:{" "}
-          <span className="text-sky-500 text-base font-semibold">
-            {formatVND(item.unitPrice)}
-          </span>
+      )}
+
+      {/* Item count indicator (if more than 3 items) */}
+      {images.length > 3 && (
+        <div className="absolute left-1 bottom-1 z-20">
+          <div className="bg-white/90 backdrop-blur-sm text-[10px] font-medium rounded-sm px-1 shadow-sm">
+            +{images.length - 3}
+          </div>
         </div>
-      </div>
-      <div className="mt-3 sm:mt-0 text-right">
-        <div className="bg-white px-3 py-1.5 rounded-xl border border-gray-200 mb-2">
-          <span className="text-sm font-medium text-gray-600">
-            {item.quantity} × {formatVND(item.unitPrice)}
-          </span>
-        </div>
-        <p className="text-base font-semibold text-sky-600">
-          {formatVND(item.quantity * item.unitPrice)}
-        </p>
-      </div>
+      )}
     </div>
-  )
+  );
+});
+
+CustomComboThumbnail.displayName = "CustomComboThumbnail";
+
+export const OrderItem = memo(
+  ({ item }: { item: PaymentOrderValue["orderItems"][0] }) => {
+    const hasImages = item.customImages && item.customImages.length > 0;
+
+    const hasDiscount = item.discountPrice < item.unitPrice;
+
+    const discountPrice = item.discountPrice;
+    const originalPrice = item.unitPrice;
+
+    const priceItem = hasDiscount ? discountPrice : originalPrice;
+
+    return (
+      <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-slate-50 cardStyle ">
+        {hasImages ? (
+          <CustomComboThumbnail images={item.customImages as string[]} />
+        ) : (
+          <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden mr-4 mb-3 sm:mb-0 border border-slate-200">
+            <Image
+              src={item.image || "/placeholder.svg"}
+              alt={item.name}
+              width={80}
+              height={80}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        <div className="flex-1">
+          <h3 className="text-base font-semibold text-slate-900 mb-1">
+            {item.name}
+          </h3>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {/* <Badge
+              variant="outline"
+              className="text-xs bg-slate-100 border-slate-200 text-slate-700"
+            >
+              {item.itemType}
+            </Badge> */}
+            <AdvancedColorfulBadges
+              size="sm"
+              color="green"
+              className="rounded-3xl text-xs font-medium"
+            >
+              {orderTypeLabel(item.itemType)}
+            </AdvancedColorfulBadges>
+
+            {item.percentage > 0 && (
+              <Badge className="text-xs bg-rose-100 border-rose-200 text-rose-700">
+                {item.percentage}% OFF
+              </Badge>
+            )}
+          </div>
+          <div className="text-sm font-semibold text-gray-700 flex items-center gap-1">
+            Đơn giá:{" "}
+            {hasDiscount ? (
+              <div className="flex items-center gap-1">
+                <span className="text-sky-500 text-base font-semibold">
+                  {formatVND(item.discountPrice)}
+                </span>
+
+                <del className="text-rose-500 text-sm font-semibold">
+                  {formatVND(item.unitPrice)}
+                </del>
+              </div>
+            ) : (
+              <span className="text-sky-500 text-base font-semibold">
+                {formatVND(item.unitPrice)}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="mt-3 sm:mt-0 text-right">
+          <div className="bg-white px-3 py-1.5 rounded-xl border border-gray-200 mb-2">
+            <span className="text-sm font-medium text-gray-600">
+              {item.quantity} × {formatVND(priceItem)}
+            </span>
+          </div>
+          <p className="text-base font-semibold text-sky-600">
+            {formatVND(item.quantity * priceItem)}
+          </p>
+        </div>
+      </div>
+    );
+  }
 );
 OrderItem.displayName = "OrderItem";
 
@@ -402,16 +502,40 @@ const OrderSummaryCard = memo(({ order }: { order: PaymentOrderValue }) => (
     <CardContent className="p-6">
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <span className="text-slate-600">Tạm tính:</span>
-          <span className="font-medium text-sky-500">
+          <span className="text-slate-600 font-semibold">Tạm tính:</span>
+          <span className="font-bold text-sky-500">
             {formatVND(order.totalPrice)}
           </span>
         </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between items-center">
+            <span className="text-slate-600 font-semibold">
+              Phí vận chuyển:
+            </span>
+            <span className="font-bold text-sky-500">
+              {formatVND(order.delivery.fee)}
+            </span>
+          </div>
+
+          {order.delivery.estimateDate && (
+            <div className="flex justify-between items-center">
+              <span className="text-slate-600 font-semibold">
+                Thời gian giao hàng dự kiến:
+              </span>
+              <span>
+                Khoảng:
+                {differenceDate(order.delivery.estimateDate)} ngày
+              </span>
+            </div>
+          )}
+        </div>
+
         {order.discountPrice && (
           <div className="flex justify-between items-center">
             <span className="text-slate-600">Giá giảm</span>
             <span className="font-medium text-green-600">
-              -{formatVND(order.discountPrice)}
+              -{formatVND(order.discountPrice - order.delivery.fee)}
             </span>
           </div>
         )}
@@ -472,6 +596,9 @@ export default function OrderConfirmation() {
 
   const clearCart = useCartStore((state) => state.clearCart);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+
   useEffect(() => {
     const fetchPaymentData = async () => {
       const isVnPay = searchParams.has("vnp_TxnRef");
@@ -529,12 +656,18 @@ export default function OrderConfirmation() {
   }
 
   return (
-    <div className="min-h-screen pt-10  bg-gradient-to-b from-emerald-50 via-white to-white">
+    <div
+      className="min-h-screen pt-10  bg-gradient-to-b from-emerald-50 via-white to-white"
+      ref={contentRef}
+    >
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <SuccessBanner />
           <OrderProgress status={orderData.status} />
-          <OrderDetailsCard order={orderData as PaymentOrderValue} />
+          <OrderDetailsCard
+            order={orderData as PaymentOrderValue}
+            print={reactToPrintFn}
+          />
           <OrderItemsCard items={orderData.orderItems} />
           <OrderSummaryCard order={orderData as PaymentOrderValue} />
         </div>

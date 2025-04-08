@@ -197,8 +197,8 @@ export default function BlogForm() {
       TagNames: values.tagNames,
     };
 
-    console.log("Transformed values:", transFormValues);
-    console.log("Transformed values:", formData);
+    // console.log("Transformed values:", transFormValues);
+    // console.log("Transformed values:", formData);
 
     try {
       const response = await axios.post(`${API}/Blogs`, formData, {
@@ -386,7 +386,7 @@ export default function BlogForm() {
                 render={() => (
                   <FormItem className="space-y-4">
                     <div>
-                      <FormLabel className="text-base font-sm flex items-center gap-1">
+                      <FormLabel className="text-base font-semibold flex items-center gap-1">
                         <ImageIcon className="size-5" />
                         Hình tiêu đề
                       </FormLabel>

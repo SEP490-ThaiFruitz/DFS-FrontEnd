@@ -29,6 +29,7 @@ const request = async <T>(
     };
 
     const response: AxiosResponse<T> = await axios(config);
+
     return response.data;
   } catch (error) {
     handleError(error, `Error in ${method.toUpperCase()} ${endpoint}`);
@@ -50,21 +51,3 @@ export const interactApiClient = {
 
   delete: <T>(endpoint: string) => request<T>("delete", endpoint),
 };
-
-// setTimeout(() => {
-//   console.log("Form data:", Object.fromEntries(formData));
-//   toast({
-//     title: "Blog post created successfully",
-//     description: "Your blog post has been published and is now live.",
-//   });
-//   setIsSubmitting(false);
-//   form.reset();
-//   setThumbnailPreview(null);
-//   setUploadProgress(0);
-// }, 1500);
-
-// In a real application, you would send the formData to your API
-// fetch('/api/blog', {
-//   method: 'POST',
-//   body: formData,
-// })

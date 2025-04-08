@@ -9,6 +9,8 @@ export type OrderItem = {
   percentage: number;
   discountPrice: number;
   isCanFeedback: boolean;
+
+  customImages: string[] | null; // Assuming this is an array of image URLs
 };
 
 export type Delivery = {
@@ -25,6 +27,9 @@ type Payment = {
   status: string; // Assuming common payment statuses
   createdOnUtc: string; // ISO 8601 date string
   updateOnUtc: string; // ISO 8601 date string
+
+  paymentMethod: string;
+  walletId: string | null; // Assuming this is optional
 };
 
 export type OrderAddressDelivery = {

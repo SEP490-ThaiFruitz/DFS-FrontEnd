@@ -20,6 +20,20 @@ export const getSexLabel = (sex: string) => {
   return "Khác";
 };
 
+export const orderTypeLabel = (type: string) => {
+  const lowerType = type.toLowerCase();
+
+  if (lowerType === "single") {
+    return "Đơn Lẻ";
+  } else if (lowerType === "combo") {
+    return "Combo";
+  } else if (lowerType === "custom") {
+    return "Tùy Chỉnh Combo";
+  }
+
+  return "Khác";
+};
+
 export function getUserInitials(name: string): string {
   if (!name) return "";
 

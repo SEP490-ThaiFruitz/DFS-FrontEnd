@@ -1,9 +1,7 @@
 "use client";
 
-import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { CartSummary } from "@/components/global-components/card/card-summary";
 import {
-  // CartItem,
   ViewCardProductActions,
   ViewCardProductActionsSkeleton,
 } from "@/components/global-components/card/view-card-product-actions";
@@ -23,13 +21,11 @@ import { ShoppingBagIcon, ShoppingBasket, ShoppingCart } from "lucide-react";
 import React, { useState } from "react";
 
 import Cookies from "js-cookie";
-import { CART_KEY } from "@/app/key/comm-key";
 import { useFromStore } from "@/hooks/use-from-store";
 import { CartData, Product, useCartStore } from "@/hooks/use-cart-store";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useData } from "@/providers/data-provider";
-import { CustomComboBuilder } from "@/features/client/home/custom-combo/custom-combo-builder";
 import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 
 //
@@ -71,6 +67,8 @@ export const ShoppingBagSheet = () => {
       (acc, combo) => acc + combo.price,
       0
     );
+
+    quantityOrders += customCombo.data.value.length;
   }
 
   const increaseQuantity = useCartStore((state) => state.addOrder);
@@ -139,7 +137,7 @@ export const ShoppingBagSheet = () => {
 
         <div>
           <div className="w-full overflow-hidden">
-            {cart?.length ? (
+            {cart?.length || customCombo?.data?.value?.length ? (
               <div className="container mx-auto p-4 md:p-6 w-full">
                 <>
                   <h1 className="text-2xl font-semibold">
@@ -198,13 +196,6 @@ export const ShoppingBagSheet = () => {
             )}
           </div>
         </div>
-        {/* </SheetHeader> */}
-
-        {/* <div className="flex items-center justify-center">
-          <div className="flex justify-center">
-            <div>Add some items</div>
-          </div>
-        </div> */}
       </SheetContent>
     </Sheet>
   );

@@ -32,6 +32,7 @@ import { RegisterDialog } from "../custom/_custom-dialog/register-dialog";
 import { useRouter } from "next/navigation";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { placeholderImage } from "@/utils/label";
+import { WalletSheet } from "@/features/client/wallet/wallet-sheet";
 
 export const UserMenu = memo(() => {
   const {
@@ -139,6 +140,10 @@ export const UserMenu = memo(() => {
                 <span>Đơn hàng</span>
               </Link>
             </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <WalletSheet user={user} isUserLoading={isUserLoading} />
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem

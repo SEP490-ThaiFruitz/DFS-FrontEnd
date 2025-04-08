@@ -22,6 +22,8 @@ interface EditorProps {
   onSerializedChange?: (editorSerializedState: SerializedEditorState) => void;
 
   maxLength?: number;
+
+  readOnly?: boolean;
 }
 
 const editorConfig: InitialConfigType = {
@@ -40,12 +42,15 @@ const Editor = ({
   onChange,
   onSerializedChange,
   maxLength,
+
+  readOnly,
 }: EditorProps) => {
   return (
     <div className="overflow-hidden rounded-lg border bg-background shadow">
       <LexicalComposer
         initialConfig={{
           ...editorConfig,
+          editable: readOnly ? false : true,
           ...(editorState ? { editorState } : {}),
           ...(editorSerializedState
             ? { editorState: JSON.stringify(editorSerializedState) }
@@ -59,6 +64,7 @@ const Editor = ({
 
               <OnChangePlugin
                 ignoreSelectionChange={true}
+                // ignoreSelectionChange={false}
                 onChange={(editorState) => {
                   onChange?.(editorState);
                   onSerializedChange?.(editorState.toJSON());

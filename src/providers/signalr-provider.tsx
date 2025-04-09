@@ -34,7 +34,7 @@ export default function SignalRProvider({ children }: Props) {
         }
         return null;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         toast.error("Lỗi hệ thống");
       }
     },

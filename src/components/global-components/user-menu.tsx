@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { placeholderImage } from "@/utils/label";
 import { WalletSheet } from "@/features/client/wallet/wallet-sheet";
+import { Button } from "../ui/button";
 
 export const UserMenu = memo(() => {
   const {
@@ -131,7 +132,8 @@ export const UserMenu = memo(() => {
                 <span>Địa chỉ</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="hover:cursor-pointer">
+            {/* <DropdownMenuItem className="hover:cursor-pointer"> */}
+            <Button asChild size="sm" className="w-full" variant="outline">
               <Link
                 href="/profile?tab=order-tracking"
                 className="flex flex-row w-full items-center gap-2"
@@ -139,7 +141,8 @@ export const UserMenu = memo(() => {
                 <Boxes size={16} />
                 <span>Đơn hàng</span>
               </Link>
-            </DropdownMenuItem>
+            </Button>
+            {/* </DropdownMenuItem> */}
 
             <DropdownMenuSeparator />
 

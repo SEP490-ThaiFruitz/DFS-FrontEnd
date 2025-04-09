@@ -290,7 +290,7 @@ OrderDetailsCard.displayName = "OrderDetailsCard";
 
 const CustomComboThumbnail = memo(({ images }: { images: string[] }) => {
   return (
-    <div className="size-20 relative rounded-lg overflow-hidden bg-slate-50 border border-slate-200 shadow-sm group">
+    <div className="size-20 relative rounded-lg overflow-hidden bg-slate-50 border border-slate-200 shadow-sm group mr-4">
       {/* Main image */}
       <div className="absolute inset-0 z-10">
         <Image

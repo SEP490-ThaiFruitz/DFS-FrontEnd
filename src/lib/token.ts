@@ -1,3 +1,3 @@
-import Cookie from "js-cookie";
+import Cookies from "js-cookie";
 
-export const token = Cookie.get("accessToken");
+export const token = Cookies.get("accessToken");

@@ -10,9 +10,11 @@ export async function generateMetadata() {
 }
 
 const ProfilePage = () => {
-  return <Suspense>
-    <ProfileClientPage />
-  </Suspense>;
+  return (
+    <Suspense>
+      <ProfileClientPage />
+    </Suspense>
+  );
 };
 
 export default ProfilePage;

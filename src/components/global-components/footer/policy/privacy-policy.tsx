@@ -133,8 +133,9 @@ export function PrivacyPolicy() {
                   </p>
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm">
-                      Truy cập vào mục "User" trên thanh điều hướng của website,
-                      nơi có sẵn các tùy chọn chỉnh sửa hoặc xóa thông tin.
+                      Truy cập vào mục khách hàng trên thanh điều hướng của
+                      website, nơi có sẵn các tùy chọn chỉnh sửa hoặc xóa thông
+                      tin.
                     </p>
                   </div>
                   <p className="text-sm text-muted-foreground">

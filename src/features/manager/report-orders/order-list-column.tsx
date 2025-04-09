@@ -2,25 +2,18 @@
 
 import type { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import {
-  ArrowUpDown,
   MoreHorizontal,
-  Edit,
-  Trash2,
   Copy,
   Eye,
   Calendar,
   CreditCard,
   Tag,
-  CheckCircle2,
   XCircle,
   Receipt,
   ExternalLink,
-  PackageOpen,
-  Truck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,20 +22,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { format, formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  CancelOrderTypes,
   OrderData,
   OrderStatusEnum,
-  OrderStatusKey,
 } from "@/types/report-orders.types";
 import {
   OrderStatusBadge,
@@ -53,8 +43,6 @@ import { formatVND } from "@/lib/format-currency";
 import { formatRelativeTime, vietnameseDate } from "@/utils/date";
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
-import axios from "axios";
-import { API } from "@/app/key/url";
 import { toast } from "sonner";
 import { CancelOrderDialog } from "./cancel-order-dialog";
 import { ReturnOrderDialog } from "./return-order-dialog";
@@ -139,17 +127,27 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
+      const cancelled = row.original.cancel as CancelOrderTypes;
       const statusStep = getStatusStep(status);
 
       if (statusStep === -1) {
         return (
-          <AdvancedColorfulBadges
-            className="flex items-center gap-1 w-fit"
-            color="red"
-          >
-            <XCircle className="h-3.5 w-3.5" />
-            <span>Đã hủy</span>
-          </AdvancedColorfulBadges>
+          <div className="flex flex-col">
+            <AdvancedColorfulBadges
+              className="flex items-center gap-1 w-fit"
+              color="red"
+            >
+              <XCircle className="h-3.5 w-3.5" />
+              <span>Đã hủy</span>
+            </AdvancedColorfulBadges>
+
+            <div className="line-clamp-3 text-sm text-slate-700  mt-0.5">
+              Lý do:{" "}
+              <span className="text-rose-400 underline font-semibold">
+                {cancelled.reason}
+              </span>
+            </div>
+          </div>
         );
       } else if (statusStep === 7) {
         return (

@@ -9,12 +9,12 @@ import {
   BookCheck,
   Check,
   ClipboardX,
+  Copy,
   Package,
-  ShoppingBag,
-  Truck,
+  PhoneOff,
+  ServerCrash,
   X,
 } from "lucide-react";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -49,7 +49,6 @@ import { API } from "@/app/key/url";
 import Cookies from "js-cookie";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { isEmpty } from "lodash";
 import {
   OrderItem,
   OrderItemSkeleton,
@@ -58,41 +57,94 @@ import { vietnameseDate } from "@/utils/date";
 import { getStatusText } from "./order-status-badge";
 
 const cancelReasons = [
+  // {
+  //   id: "address",
+  //   reason: "Tôi muốn thay đổi địa chỉ giao hàng",
+  //   description: "Địa chỉ giao hàng không chính xác hoặc đã thay đổi",
+  //   icon: <Truck className="h-4 w-4" />,
+  // },
+  // {
+  //   id: "payment",
+  //   reason: "Tôi muốn thay đổi phương thức thanh toán",
+  //   description: "Muốn sử dụng phương thức thanh toán khác",
+  //   icon: <ShoppingBag className="h-4 w-4" />,
+  // },
+  // {
+  //   id: "wrong-product",
+  //   reason: "Tôi đặt nhầm sản phẩm",
+  //   description: "Sản phẩm không phù hợp với nhu cầu",
+  //   icon: <Package className="h-4 w-4" />,
+  // },
+  // {
+  //   id: "cheaper",
+  //   reason: "Tôi tìm thấy sản phẩm giá rẻ hơn ở nơi khác",
+  //   description: "Đã tìm được lựa chọn tốt hơn về giá cả",
+  //   icon: <ShoppingBag className="h-4 w-4" />,
+  // },
+  // {
+  //   id: "no-need",
+  //   reason: "Tôi không còn nhu cầu mua sản phẩm này nữa",
+  //   description: "Đã thay đổi quyết định mua hàng",
+  //   icon: <X className="h-4 w-4" />,
+  // },
+  // {
+  //   id: "delivery-time",
+  //   reason: "Thời gian giao hàng quá lâu",
+  //   description: "Không thể đợi thời gian giao hàng dự kiến",
+  //   icon: <Truck className="h-4 w-4" />,
+  // },
+
   {
-    id: "address",
-    reason: "Tôi muốn thay đổi địa chỉ giao hàng",
-    description: "Địa chỉ giao hàng không chính xác hoặc đã thay đổi",
-    icon: <Truck className="h-4 w-4" />,
-  },
-  {
-    id: "payment",
-    reason: "Tôi muốn thay đổi phương thức thanh toán",
-    description: "Muốn sử dụng phương thức thanh toán khác",
-    icon: <ShoppingBag className="h-4 w-4" />,
-  },
-  {
-    id: "wrong-product",
-    reason: "Tôi đặt nhầm sản phẩm",
-    description: "Sản phẩm không phù hợp với nhu cầu",
+    id: "out-of-stock",
+    reason: "Sản phẩm đã hết hàng",
+    description: "Không còn đủ tồn kho để xử lý đơn hàng",
     icon: <Package className="h-4 w-4" />,
   },
   {
-    id: "cheaper",
-    reason: "Tôi tìm thấy sản phẩm giá rẻ hơn ở nơi khác",
-    description: "Đã tìm được lựa chọn tốt hơn về giá cả",
-    icon: <ShoppingBag className="h-4 w-4" />,
+    id: "fraud-detected",
+    reason: "Phát hiện dấu hiệu gian lận",
+    description: "Đơn hàng có dấu hiệu không hợp lệ hoặc gian lận",
+    icon: <AlertCircle className="h-4 w-4" />,
   },
   {
-    id: "no-need",
-    reason: "Tôi không còn nhu cầu mua sản phẩm này nữa",
-    description: "Đã thay đổi quyết định mua hàng",
+    id: "invalid-info",
+    reason: "Thông tin đơn hàng không hợp lệ",
+    description:
+      "Số điện thoại, địa chỉ hoặc thông tin người nhận không chính xác",
     icon: <X className="h-4 w-4" />,
   },
   {
-    id: "delivery-time",
-    reason: "Thời gian giao hàng quá lâu",
-    description: "Không thể đợi thời gian giao hàng dự kiến",
-    icon: <Truck className="h-4 w-4" />,
+    id: "customer-unresponsive",
+    reason: "Không liên lạc được với khách hàng",
+    description: "Không thể xác nhận đơn hàng do khách hàng không phản hồi",
+    icon: <PhoneOff className="h-4 w-4" />,
+  },
+
+  {
+    id: "called",
+    reason: "Đã liên lạc nhưng không nhận hàng",
+    description: "Đã liên lạc với khách hàng nhưng không nhận hàng",
+    icon: <PhoneOff className="h-4 w-4" />,
+  },
+
+  {
+    id: "call-5-times",
+    reason: "Đã gọi 5 lần nhưng không nhận hàng",
+    description: "Đã gọi 5 lần nhưng không nhận hàng",
+    icon: <PhoneOff className="h-4 w-4" />,
+  },
+
+  {
+    id: "duplicate-order",
+    reason: "Đơn hàng bị trùng lặp",
+    description: "Phát hiện khách hàng đặt nhiều đơn hàng giống nhau",
+    icon: <Copy className="h-4 w-4" />,
+  },
+  {
+    id: "internal-error",
+    reason: "Lỗi hệ thống hoặc xử lý đơn hàng",
+    description: "Có lỗi trong quá trình xử lý đơn hoặc hệ thống",
+    icon: <ServerCrash className="h-4 w-4" />,
   },
   {
     id: "other",
@@ -274,12 +326,12 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       )}
                     >
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start gap-3 ">
                         <RadioGroupItem
                           value={item.reason}
                           id={item.id}
                           className={cn(
-                            "transition-colors duration-200",
+                            "transition-colors duration-200 mt-1",
                             selectedReason === item.reason
                               ? "border-rose-500 text-rose-500"
                               : ""

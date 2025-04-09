@@ -84,19 +84,6 @@ type RevenueData = {
 export default function RevenueDashboard() {
   const [timeRange, setTimeRange] = useState("month");
 
-  // Revenue chart data
-  const revenueData = [
-    { date: "2025-01-12", revenue: 12500 },
-    { date: "2024-12-12", revenue: 18200 },
-    { date: "2024-12-15", revenue: 15800 },
-    { date: "2025-01-15", revenue: 14300 },
-    { date: "2025-02-15", revenue: 19500 },
-    { date: "2025-03-15", revenue: 22800 },
-    { date: "2025-03-17", revenue: 21400 },
-  ];
-
-  // Product performance chart data
-
   const HeaderTitle = () => {
     return (
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
@@ -130,7 +117,7 @@ export default function RevenueDashboard() {
   );
   // console.log(currentDate);
 
-  // console.log(reportRevenue.data);
+  console.log(reportRevenue.data);
 
   const chartConfig = {
     revenue: {
@@ -176,18 +163,32 @@ export default function RevenueDashboard() {
   const allDates = createDateRange(fromDate, currentDate);
 
   const enrichRevenue = reportRevenue.data?.value?.topProductRevenueStatistics
-    ? reportRevenue.data?.value?.topProductRevenueStatistics.map((report) => {
-        return {
-          revenue: report.revenueDiscount
-            ? report.revenueDiscount
-            : report.revenue,
-          lastBuyDate: report.lastBuyDate,
-        };
-      })
-    : [];
+    ? reportRevenue.data.value.topProductRevenueStatistics.reduce(
+        (acc, report) => {
+          const date = report.lastBuyDate.split("T")[0];
+
+          const revenue = report.revenueDiscount ?? report.revenue;
+          if (acc[date]) {
+            acc[date] += revenue;
+          } else {
+            acc[date] = revenue;
+          }
+
+          return acc;
+        },
+        {} as Record<string, number>
+      )
+    : {};
+
+  const enrichRevenueArray = Object.entries(enrichRevenue).map(
+    ([date, revenue]) => ({
+      lastBuyDate: date,
+      revenue,
+    })
+  );
 
   const filledRevenueData = fillMissingDatesDynamics(
-    enrichRevenue,
+    enrichRevenueArray,
     allDates,
     "lastBuyDate",
     ["revenue"]

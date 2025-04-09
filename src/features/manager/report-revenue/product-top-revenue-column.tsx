@@ -31,9 +31,11 @@ import {
 } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { formatVND } from "@/lib/format-currency";
+import { orderTypeLabel } from "@/utils/label";
+import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 
 export type ProductRevenue = {
-  type: "Single" | "Combo";
+  type: "Single" | "Combo" | "Custom";
   id: string;
   name: string;
   image: string;
@@ -115,15 +117,12 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-medium line-clamp-1 max-w-[200px]">
+            <span className="font-bold line-clamp-1 text-base text-slate-700 max-w-[200px]">
               {product.name}
             </span>
-            <Badge
-              variant={product.type === "Combo" ? "secondary" : "outline"}
-              className="w-fit mt-1"
-            >
-              {product.type === "Combo" ? "🎁 Combo" : "📦 Single"}
-            </Badge>
+            <AdvancedColorfulBadges color="violet" className="w-fit mt-1">
+              {orderTypeLabel(product.type)}
+            </AdvancedColorfulBadges>
           </div>
         </div>
       );
@@ -151,7 +150,11 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
     cell: ({ row }) => {
       const price = Number.parseFloat(row.getValue("price"));
 
-      return <div className="font-medium ">{formatVND(price)}</div>;
+      return (
+        <span className="font-bold text-sky-500 text-lg">
+          {formatVND(price)}
+        </span>
+      );
     },
   },
   {
@@ -212,7 +215,11 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
     cell: ({ row }) => {
       const revenue = Number.parseFloat(row.getValue("revenue"));
 
-      return <div className="font-medium ">{formatVND(revenue)}</div>;
+      return (
+        <span className="font-bold text-sky-500 text-lg">
+          {formatVND(revenue)}
+        </span>
+      );
     },
   },
   {
@@ -244,7 +251,9 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
 
       return (
         <div className="flex items-center justify-end gap-2">
-          <div className="font-medium">{formatVND(revenueDiscount)}</div>
+          <span className="font-bold text-sky-500 text-lg">
+            {formatVND(revenueDiscount)}
+          </span>
           {discountPercentage > 0 && (
             <Badge variant="destructive" className="text-xs animate-pulse">
               -{discountPercentage}%

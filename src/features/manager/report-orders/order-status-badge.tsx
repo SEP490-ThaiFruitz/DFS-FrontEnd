@@ -31,6 +31,7 @@ import { API } from "@/app/key/url";
 import { useQueryClient } from "@tanstack/react-query";
 import { ORDERS_KEY } from "@/app/key/manager-key";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface OrderStatusBadgeProps {
   status: string;
@@ -372,14 +373,17 @@ export const UpdateStatusButtonDropdown = ({
 
   return (
     <>
-      <DropdownMenuItem
-        className={`flex items-center gap-2 cursor-pointer ${statusColor} hover:${statusColor}`}
+      <Button
+        className={`flex items-center gap-2 w-fit cursor-pointer ${statusColor} hover:${statusColor}`}
         onClick={updateStatus}
         disabled={isPending}
+        variant="outline"
       >
         {statusIcon}
-        <span>{isCancelled || isReturned ? statusText : statusTextNext}</span>
-      </DropdownMenuItem>
+        <span className="text-ellipsis">
+          {isCancelled || isReturned ? statusText : statusTextNext}
+        </span>
+      </Button>
     </>
   );
 };

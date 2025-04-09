@@ -164,7 +164,7 @@ function PaymentClientPage() {
       paymentMethod: paymentMethodWatch,
     };
 
-    console.log({ omitValue });
+    // console.log({ omitValue });
 
     try {
       const response = await axios.post(

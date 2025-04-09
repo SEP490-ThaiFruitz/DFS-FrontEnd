@@ -2,7 +2,7 @@ export type OrderItem = {
   id: string;
   referenceId: string;
   name: string;
-  image: string;
+  image: string | null;
   itemType: "Single" | "Combo" | "Custom"; // Assuming there are only these types
   quantity: number;
   unitPrice: number;
@@ -15,7 +15,7 @@ export type OrderItem = {
 
 export type Delivery = {
   fee: number;
-  estimateDate: string; // ISO 8601 date string
+  estimateDate: string | null; // ISO 8601 date string
 };
 
 type Payment = {

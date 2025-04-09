@@ -46,6 +46,7 @@ import { AdvancedColorfulBadges } from "@/components/global-components/badge/adv
 import { toast } from "sonner";
 import { CancelOrderDialog } from "./cancel-order-dialog";
 import { ReturnOrderDialog } from "./return-order-dialog";
+import OrderDetails from "../order-detail-components/order-detail";
 
 // Update the getStatusStep function to reflect the new order flow
 // Get status step
@@ -432,16 +433,18 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
               <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-              <DropdownMenuItem
+              <Button
                 onClick={() => {
                   navigator.clipboard.writeText(order.code);
                   toast.success("Đã sao chép mã đơn hàng");
                 }}
-                className="flex items-center gap-2 cursor-pointer"
+                className="flex items-center gap-2 cursor-pointer w-full"
+                variant="outline"
               >
                 <Copy className="h-4 w-4" />
                 <span>Sao chép mã</span>
-              </DropdownMenuItem>
+              </Button>
+              <OrderDetails orderId={row.original.id} />
               <DropdownMenuSeparator />
 
               {conditionalUpdate && (

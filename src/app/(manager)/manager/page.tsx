@@ -51,7 +51,7 @@ import { customerRevenueColumns } from "@/features/manager/report-revenue/user-t
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 
 type TopProductRevenueStatistics = {
-  type: "Single" | "Combo";
+  type: "Single" | "Combo" | "Custom";
   id: string;
   name: string;
   image: string;

@@ -20,6 +20,15 @@ export type VoucherTypes = {
   isDeleted: boolean;
 } | null;
 
+export type CancelOrderTypes = {
+  userId: string;
+  name: string;
+  image: string | null;
+  role: string;
+  date: string;
+  reason: string;
+};
+
 export type AddressDeliveryTypes = {
   id: string;
   receiverName: string;
@@ -43,6 +52,7 @@ export type OrderData = {
     avatar: string | null;
   };
   totalPrice: number;
+  cancel: CancelOrderTypes | null;
   voucher: VoucherTypes;
   voucherPrice: number | null;
   shipFee: number;

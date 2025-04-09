@@ -20,16 +20,37 @@ interface DialogProductDetailProps {
 const DialogProductDetail = ({ onClose, isOpen, request }: Readonly<DialogProductDetailProps>) => {
     const getStatusBadge = (status: string) => {
         const statusMap: Record<string, { color: string; label: string }> = {
-            Pending: { color: "bg-yellow-100 hover:bg-yellow-100/80 text-yellow-800", label: "Chờ xác nhận" },
-            Processing: { color: "bg-green-100 hover:bg-green-100/80 text-green-800", label: "Đang xử lí" },
-            Declined: { color: "bg-red-100 hover:bg-red-100/80 text-red-800", label: "Từ chối" },
-            Approved: { color: "bg-blue-100 hover:bg-blue-100/80 text-blue-800", label: "Hoàn thành" },
-        }
+            Pending: {
+                color: "bg-yellow-100 hover:bg-yellow-100/80 text-yellow-800",
+                label: "Chờ xác nhận",
+            },
+            Processing: {
+                color: "bg-green-100 hover:bg-green-100/80 text-green-800",
+                label: "Đang xử lí",
+            },
+            Declined: {
+                color: "bg-red-100 hover:bg-red-100/80 text-red-800",
+                label: "Từ chối",
+            },
+            Approved: {
+                color: "bg-blue-100 hover:bg-blue-100/80 text-blue-800",
+                label: "Hoàn thành",
+            },
+            PartiallyCompleted: {
+                color: "bg-indigo-100 hover:bg-indigo-100/80 text-indigo-800",
+                label: "Hoàn thành một phần",
+            },
+            Completed: {
+                color: "bg-blue-200 hover:bg-blue-200/80 text-blue-900",
+                label: "Đã hoàn thành",
+            },
+        };
 
         return statusMap[status] || { color: "bg-gray-100 text-gray-800", label: status }
     }
     const totalQuantity = request.productVariants.reduce((sum, variant) => sum + variant.quantity, 0)
     const totalWeight = request.productVariants.reduce((sum, variant) => sum + variant.netWeight * variant.quantity, 0)
+    console.log(request.updatedDate)
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="min-w-[460px] md:min-w-[800px]">
@@ -56,7 +77,13 @@ const DialogProductDetail = ({ onClose, isOpen, request }: Readonly<DialogProduc
                             <span className="text-sm text-muted-foreground font-medium">Ngày dự kiến:</span>
                             <span className="text-sm font-semibold">{formatTimeVietNam(new Date(request.expectedDate))}</span>
                         </div>
-
+                        {request.updatedDate && (
+                            <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground font-medium">Ngày cập nhật:</span>
+                                <span className="text-sm font-semibold">{formatTimeVietNam(new Date(request.updatedDate), true)}</span>
+                            </div>
+                        )}
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground font-medium">Loại yêu cầu:</span>
                             <Badge variant="outline" className="px-2">
@@ -123,7 +150,7 @@ const DialogProductDetail = ({ onClose, isOpen, request }: Readonly<DialogProduc
                                             </Link>
                                         </div>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm mt-2">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-3 text-sm mt-2">
                                             <div className="space-y-1.5">
                                                 <div className="text-muted-foreground font-medium">Trọng lượng</div>
                                                 <div className="font-semibold text-xl text-primary">{variant.netWeight}g</div>
@@ -131,6 +158,10 @@ const DialogProductDetail = ({ onClose, isOpen, request }: Readonly<DialogProduc
                                             <div className="space-y-1.5">
                                                 <div className="text-muted-foreground font-medium">Số lượng</div>
                                                 <div className="font-semibold text-xl text-primary">{variant.quantity}</div>
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <div className="text-muted-foreground font-medium">Số lượng đã nhập</div>
+                                                <div className="font-semibold text-xl text-primary">{variant.enteredQuantity}</div>
                                             </div>
                                         </div>
                                     </div>

@@ -250,6 +250,7 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
+                  type="button"
                   checked={
                     selectedVariants.length > 0 &&
                     selectedVariants.length === products.flatMap((p) => p.productVariants).length
@@ -289,6 +290,7 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                         <Button
                           variant="ghost"
                           size="icon"
+                          type="button"
                           className="h-6 w-6 p-0 mr-1"
                           onClick={() => toggleProductExpansion(product.productId)}
                         >
@@ -296,6 +298,7 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                         </Button>
                         <Checkbox
                           checked={isFullySelected}
+                          type="button"
                           data-state={isPartiallySelected ? "indeterminate" : "unchecked"}
                           onCheckedChange={(checked) => handleSelectProduct(product, checked === true)}
                           aria-label={`Chọn ${product.name}`}
@@ -331,6 +334,7 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                             <Checkbox
                               disabled={!variant.isCanDiscount}
                               checked={isSelected}
+                              type="button"
                               onCheckedChange={(checked) =>
                                 handleSelectVariant(variant.productVariantId, checked === true)
                               }

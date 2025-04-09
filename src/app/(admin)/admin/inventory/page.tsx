@@ -7,6 +7,8 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/global-components/data-table/data-table"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import Image from "next/image"
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
+import { ApiResponse } from "@/types/types"
 
 interface ProductBatchItem {
     number: number
@@ -23,48 +25,7 @@ interface ProductBatchItem {
 }
 
 const InventoryPage = () => {
-
-    const [products, setProducts] = useState<ProductBatchItem[]>([
-        {
-            number: 1,
-            productId: "1a2b3c4d-1234-5678-9abc-def012345678",
-            productName: "Cà phê Espresso",
-            productVariantId: "1a2b3c4d-1234-5678-9abc-def012345678",
-            productVariantImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaf0KZGvHKJ-NcKdGAjvdPt6hd71iqoqvpeg&s",
-            packagingType: "Hộp thiếc",
-            quantity: 80,
-            netWeight: 500, // gram
-            preservationMethod: "Nhiệt độ phòng",
-            productionDate: "2025-01-15T09:00:00.000Z",
-            expiredDate: "2026-01-15T09:00:00.000Z",
-        },
-        {
-            number: 2,
-            productId: "2b3c4d5e-2345-6789-abcd-ef0123456789",
-            productName: "Trà Oolong",
-            productVariantId: "2b3c4d5e-2345-6789-abcd-ef0123456789",
-            productVariantImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzVcOhtmQ6Y9PHjqb4bEGInECZVSUP7G2Hhw&s",
-            packagingType: "Túi lọc",
-            quantity: 120,
-            netWeight: 250, // gram
-            preservationMethod: "Nhiệt độ phòng",
-            productionDate: "2025-02-10T10:30:00.000Z",
-            expiredDate: "2025-08-10T10:30:00.000Z",
-        },
-        {
-            number: 3,
-            productId: "3c4d5e6f-3456-789a-bcde-f0123456789a",
-            productName: "Bột Matcha",
-            productVariantId: "3c4d5e6f-3456-789a-bcde-f0123456789a",
-            productVariantImage: "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTvi1TKXeSf1xexu-DfDgsS5jJ0hKhPN6QxxmuytZyHPUkj1cUkv1aYKo3aWfCcMRGOkbjnaIdzDpGLE0vneNSri44ePnRJpyyiBSdSVEKcJ88psFTQyYzcfJTu7JHiRp2KMCLRB3M&usqp=CAc",
-            packagingType: "Hộp giấy",
-            quantity: 200,
-            netWeight: 300, // gram
-            preservationMethod: "Bảo quản lạnh",
-            productionDate: "2025-03-05T08:45:00.000Z",
-            expiredDate: "2025-09-05T08:45:00.000Z",
-        },
-    ]);
+    const {data: products} = useFetch<ApiResponse<ProductBatchItem[]>>("/ProductBatches/items")
 
     const columns: ColumnDef<ProductBatchItem>[] = [
         {
@@ -161,7 +122,7 @@ const InventoryPage = () => {
                 </Button>
             </div>
 
-            <DataTable data={products} columns={columns} searchFiled="productName" />
+            <DataTable data={products?.value ?? []} columns={columns} searchFiled="productName" />
         </div>
     )
 }

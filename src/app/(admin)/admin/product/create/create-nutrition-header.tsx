@@ -47,7 +47,7 @@ const NutriontionHeader = ({ formProduct }: Readonly<NutriontionHeaderProps>) =>
                 {!isHeaderEditing && (
                     <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                         type='button'
                         onClick={handleHeaderEdit}
                     >

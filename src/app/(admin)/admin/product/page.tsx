@@ -130,6 +130,13 @@ function ProductPage() {
             size: 120,
         },
         {
+            accessorKey: "variants",
+            header: "Tổng biến thể",
+            cell: ({ row }) => <div className='text-center'>
+                {row.original.productVarians.length}
+            </div>
+        },
+        {
             accessorKey: "productVarians",
             header: "Tổng số lượng",
             cell: ({ row }) => (

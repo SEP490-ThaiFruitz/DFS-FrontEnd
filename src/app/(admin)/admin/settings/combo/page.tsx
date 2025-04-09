@@ -38,7 +38,6 @@ const ComboPage = () => {
     useEffect(() => {
         if (data) {
             setComboSettings(data)
-            console.log("comboSettings", data)
         }
     }, [data])
 

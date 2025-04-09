@@ -22,6 +22,7 @@ import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 import { token } from "@/lib/token";
 import { Separator } from "@/components/ui/separator";
 import { formatVND } from "@/lib/format-currency";
+import { orderTypeLabel } from "@/utils/label";
 
 interface ViewCardProductActionsProps {
   product: CartData;
@@ -67,15 +68,6 @@ export const ViewCardProductActions = ({
     >
       {/* Product Image */}
       <div className="relative overflow-hidden rounded-lg border bg-background flex-shrink-0">
-        {/* <Image
-          src={product.mainImageUrl || "/placeholder.svg"}
-          alt={product.name}
-          width={96}
-          height={0}
-          sizes=""
-          className="w-24 h-full object-cover transition-transform group-hover:scale-105"
-        /> */}
-
         <Image
           src={product.mainImageUrl || "/placeholder.svg"}
           alt={product.name}
@@ -126,9 +118,7 @@ export const ViewCardProductActions = ({
                 <Separator className="h-7 w-[1px] text-slate-700" />
 
                 <span className="font-semibold text-slate-700">
-                  {product.type.toLowerCase() === "single"
-                    ? "📦 Single"
-                    : "🎁 Combo"}
+                  {orderTypeLabel(product.type)}
                 </span>
               </>
             </div>
@@ -221,7 +211,7 @@ export const ViewCardProductActions = ({
             {discountPrice ? (
               <>
                 <span className="font-bold text-sky-500">
-                  {formatVND(product.variant.price * product.quantityOrder!)}
+                  {formatVND(discountPrice * product.quantityOrder!)}
                 </span>
                 <span className="text-rose-500 text-sm font-semibold line-through">
                   {formatVND(
@@ -243,7 +233,7 @@ export const ViewCardProductActions = ({
         {discountPrice ? (
           <>
             <span className=" font-bold text-sky-500/70">
-              {formatVND(product.variant.price * product.quantityOrder!)}
+              {formatVND(discountPrice * product.quantityOrder!)}
             </span>
             <span className="text-rose-500 text-sm font-semibold line-through">
               {formatVND(product.variant.price * (product?.quantityOrder ?? 0))}

@@ -59,6 +59,7 @@ import { USER_KEY } from "@/app/key/user-key";
 import { interactApiClient } from "@/actions/client/interact-api-client";
 import { useQuery } from "@tanstack/react-query";
 import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
+import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 
 interface Product {
   id: number;
@@ -140,6 +141,8 @@ function PaymentClientPage() {
     );
   }
 
+  console.log(customCombo.data?.value);
+
   const customComboItem = useMemo(() => {
     return customCombo.data?.value
       ? customCombo.data.value.map((custom) => ({
@@ -160,6 +163,8 @@ function PaymentClientPage() {
       items: mergeValue,
       paymentMethod: paymentMethodWatch,
     };
+
+    console.log({ omitValue });
 
     try {
       const response = await axios.post(
@@ -203,7 +208,10 @@ function PaymentClientPage() {
 
   const total =
     cart?.reduce(
-      (acc, curr) => acc + curr.variant.price * Number(curr?.quantityOrder),
+      (acc, curr) =>
+        acc +
+        (curr.variant.promotion ? curr.variant.price : curr.variant.price) *
+          Number(curr?.quantityOrder),
       0
     ) || 0;
 
@@ -240,20 +248,6 @@ function PaymentClientPage() {
     if ((cart && cart.length === 0) || !token) {
       return;
     }
-
-    // const items = cart?.map((product) => ({
-    //   id: product.variant.productVariantId,
-    //   quantity: Number(product.quantityOrder),
-    //   type: product.type,
-    // }));
-
-    // const customComboValue = customCombo.data?.value
-    //   ? customCombo.data.value.map((custom) => ({
-    //       id: custom.id,
-    //       quantity: 1,
-    //       type: "combo",
-    //     }))
-    //   : [];
 
     const items =
       cart?.map((product) => ({
@@ -370,7 +364,7 @@ function PaymentClientPage() {
                           </div>
                         </div>
                       </div>
-                      <span className="font-medium">
+                      <span className="font-semibold text-sky-500">
                         {formatVND(String(method.price))}
                       </span>
                     </RadioItem>
@@ -489,15 +483,15 @@ function PaymentClientPage() {
                 </div>
 
                 <div className="mt-6 space-y-2 border-t pt-4">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-sm font-semibold">
                     <span className="text-slate-700">Tạm tính</span>
-                    <span className="font-semibold text-sky-400">
+                    <span className="font-semibold text-sky-500">
                       {formatVND(subtotal + customComboPrice)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-sm font-semibold">
                     <span className="text-slate-700">Vận chuyển</span>
-                    <span className="font-semibold text-sky-400">
+                    <span className="font-semibold text-sky-500">
                       {calculating
                         ? "Đang tính..."
                         : formatVND(shippingFee?.totalFee ?? 0)}
@@ -512,13 +506,16 @@ function PaymentClientPage() {
                   )}
                   <div className="flex justify-between text-lg font-bold pt-2">
                     <span>Tổng</span>
-                    <span className="text-sky-500 text-lg">
+                    <AdvancedColorfulBadges
+                      color="amber"
+                      className="text-sky-500 text-xl"
+                    >
                       {formatVND(
                         total +
                           customComboPrice +
                           Number(shippingFee?.totalFee ?? 0)
                       )}
-                    </span>
+                    </AdvancedColorfulBadges>
                   </div>
                 </div>
               </CardContent>

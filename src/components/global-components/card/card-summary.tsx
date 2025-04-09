@@ -15,6 +15,8 @@ import { CartData } from "@/hooks/use-cart-store";
 import { token } from "@/lib/token";
 import { useRouter } from "next/navigation";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
+import { formatVND } from "@/lib/format-currency";
+import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 
 interface CartSummaryProps {
   cart: CartData[];
@@ -42,43 +44,40 @@ export const CartSummary = memo(
       return { subtotal, discount, total };
     }, [cart]);
 
-    const formatPrice = (price: number) => {
-      return new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-        maximumFractionDigits: 0,
-      }).format(price);
-    };
+    // console.log({ subtotal, customComboPrice, total, discount });
 
     return (
-      <Card className="w-full">
+      <Card className="w-full rounded-xl shadow-lg border-0 bg-white dark:bg-slate-800 ">
         <CardHeader>
           <CardTitle>Tổng giỏ hàng</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Tạm tính</span>
-            <span>{formatPrice(subtotal + customComboPrice)}</span>
+            <span className="text-slate-700 font-semibold">Tạm tính</span>
+            <span className="text-base text-sky-500 font-semibold">
+              {formatVND(subtotal + customComboPrice)}
+            </span>
           </div>
-          {discount > 0 && (
+          {discount && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Giảm giá</span>
-              <span className="text-destructive">
-                -{formatPrice(discount + customComboPrice)}
-              </span>
+              <span className="text-slate-700 font-semibold">Giảm giá</span>
+              <span className="text-destructive">-{formatVND(discount)}</span>
             </div>
           )}
-          <div className="flex justify-between font-medium">
+          <div className="flex justify-between text-slate-700 font-semibold">
             <span>Tổng tiền</span>
-            <span className="text-lg text-primary">
-              {formatPrice(total + customComboPrice)}
-            </span>
+            <AdvancedColorfulBadges
+              color="blush"
+              className="text-lg text-sky-500 font-semibold"
+            >
+              {formatVND(total + customComboPrice)}
+            </AdvancedColorfulBadges>
           </div>
         </CardContent>
         <CardFooter>
           <Link href={"/payment"} onClick={close} className="w-full">
             <ButtonCustomized
-              className="w-full bg-sky-500 hover:bg-sky-600/75 transition duration-300 font-bold text-slate-700"
+              className="w-full bg-sky-600 hover:bg-sky-400 transition-colors  duration-300 font-bold text-white"
               variant="secondary"
               size="lg"
               label={`Thanh toán (${cart.length} sản phẩm)`}

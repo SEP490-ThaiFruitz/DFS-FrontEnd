@@ -42,6 +42,7 @@ import {
 import { formatVND } from "@/lib/format-currency";
 import { AdvancedColorfulBadges } from "../../badge/advanced-badge";
 import { Separator } from "@/components/ui/separator";
+import { Promotion } from "@/hooks/use-cart-store";
 
 interface CustomComboItem {
   id: string;
@@ -53,6 +54,8 @@ interface CustomComboItem {
   netWeight: number;
   price: number;
   quantity: number;
+
+  promotion: Promotion | null;
 }
 
 export interface CustomComboProduct {
@@ -101,6 +104,8 @@ export const CustomComboProductCard = memo(
       (total, item) => total + item.netWeight * item.quantity,
       0
     );
+
+    console.log(combo);
 
     return (
       <div
@@ -197,7 +202,7 @@ export const CustomComboProductCard = memo(
               <div className="flex gap-2">
                 <span className="font-normal text-slate-700">
                   Khối lượng:{" "}
-                  <span className="text-[#f59e0b] font-semibold">
+                  <span className="text-[#252525] font-semibold">
                     {netWeight}g
                   </span>
                 </span>
@@ -226,7 +231,7 @@ export const CustomComboProductCard = memo(
               color="violet"
               className="font-semibold text-sm"
             >
-              {combo.comboItems.length} sản phẩm
+              {combo.capacity} sản phẩm
             </AdvancedColorfulBadges>
 
             {combo.save > 0 && (
@@ -234,7 +239,7 @@ export const CustomComboProductCard = memo(
                 color="green"
                 className="font-semibold text-sm"
               >
-                <Tag className="h-2.5 w-2.5 mr-0.5" />
+                <Tag className="size-4 mr-0.5" />
                 Tiết kiệm {formatVND(combo.save)}
               </AdvancedColorfulBadges>
             )}
@@ -259,40 +264,75 @@ export const CustomComboProductCard = memo(
                     Các sản phẩm trong Combo tự chọn:
                   </h5>
                   <div className="overflow-y-auto pr-1 space-y-2">
-                    {combo.comboItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center gap-2 text-xs"
-                      >
-                        <div className="relative size-14 rounded-sm overflow-hidden flex-shrink-0 border">
-                          {item.image ? (
-                            <Image
-                              src={item.image || "/placeholder.svg"}
-                              alt={item.productName}
-                              fill
-                              className="object-cover"
-                              sizes="56px"
-                            />
-                          ) : (
-                            <div className="bg-muted h-full w-full" />
-                          )}
+                    {combo.comboItems.map((item) => {
+                      const hasDiscount = item.promotion != null;
+
+                      const discountPrice =
+                        hasDiscount && item.promotion?.price;
+
+                      console.log({ item });
+
+                      const originalPrice = item.price;
+
+                      const discountPercent =
+                        hasDiscount && item.promotion?.percentage;
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex items-center gap-2 text-xs"
+                        >
+                          <div className="relative size-14 rounded-sm overflow-hidden flex-shrink-0 border">
+                            {item.image ? (
+                              <Image
+                                src={item.image || "/placeholder.svg"}
+                                alt={item.productName}
+                                fill
+                                className="object-cover"
+                                sizes="56px"
+                              />
+                            ) : (
+                              <div className="bg-muted h-full w-full" />
+                            )}
+
+                            {hasDiscount && (
+                              <AdvancedColorfulBadges
+                                size="icon"
+                                color="violet"
+                                className="absolute top-0 left-0"
+                              >
+                                {discountPercent}
+                              </AdvancedColorfulBadges>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-1 w-full">
+                            <span className="font-semibold text-base italic truncate">
+                              {item.productName}
+                            </span>
+                            <span className="text-slate-700 text-sm">
+                              {item.packagingType}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            {hasDiscount ? (
+                              <div>
+                                <h1 className="text-sky-700 font-bold ">
+                                  {formatVND(discountPrice as number)}
+                                  <h1 className="text-rose-500 font-bold line-through">
+                                    {formatVND(item.price)}
+                                  </h1>
+                                </h1>
+                              </div>
+                            ) : (
+                              <h1 className="text-sky-700 font-bold ">
+                                {formatVND(item.price)}
+                              </h1>
+                            )}
+                            <h2 className="text-slate-700">x{item.quantity}</h2>
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-1 w-full">
-                          <span className="font-semibold text-base italic truncate">
-                            {item.productName}
-                          </span>
-                          <span className="text-slate-700 text-sm">
-                            {item.packagingType}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <h1 className="text-sky-700 font-bold ">
-                            {formatVND(item.price)}
-                          </h1>
-                          <h2 className="text-slate-700">x{item.quantity}</h2>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>

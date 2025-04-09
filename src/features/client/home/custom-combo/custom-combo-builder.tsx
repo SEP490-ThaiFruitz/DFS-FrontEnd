@@ -245,6 +245,11 @@ export const CustomComboBuilder = memo(
       };
     };
 
+    // const { discountAmount, discountPercentage, subtotal, total } =
+    //   calculateTotalPrice();
+
+    // console.log({ discountAmount, discountPercentage, subtotal, total });
+
     const accessToken = Cookie.get("accessToken") || null;
 
     const handleSubmit = async () => {

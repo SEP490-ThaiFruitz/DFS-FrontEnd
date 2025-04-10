@@ -35,9 +35,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
 
-import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { interactApiClient } from "@/actions/client/interact-api-client";
 import { toast } from "sonner";
 
@@ -46,7 +44,6 @@ import { CreateWallet } from "./create-wallet";
 import { ConfirmWallet } from "./confirm-wallet";
 import { useQueryClient } from "@tanstack/react-query";
 import { USER_KEY } from "@/app/key/user-key";
-import { formatVND } from "@/lib/format-currency";
 import { SuccessWallet } from "./success-wallet";
 
 interface WalletSheetProps {
@@ -138,8 +135,6 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
       >("/Wallets", { pin: confirmPin });
 
       if (response?.isSuccess) {
-        // console.log("Tạo ví thành công");
-
         queryClient.invalidateQueries({
           queryKey: [USER_KEY.PROFILE],
         });
@@ -174,7 +169,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
   useEffect(() => {
     const balance = user?.value?.balance;
 
-    if (balance === null || balance === undefined) {
+    if (balance == null || balance === undefined) {
       setStep("create");
     } else if (typeof balance === "number" && balance >= 0) {
       setStep("success");
@@ -185,7 +180,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
     setError("");
     setRememberDevice(false);
     setAcceptTerms(false);
-  }, [user?.isSuccess, user?.value?.balance]);
+  }, [user?.value?.balance]);
 
   return (
     <TooltipProvider>

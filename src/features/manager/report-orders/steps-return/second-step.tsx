@@ -38,12 +38,8 @@ export const SecondStep = memo(
     orderDetail,
     orderId,
   }: SecondStepProps) => {
-    console.log({ selectedOrderItem });
-
     return (
       <div className="p-6 max-h-[60vh] overflow-y-auto motion-preset-focus">
-        {/* <h1>12312736781263781263612783678126378126378126378126</h1> */}
-
         <div className="mb-6">
           <h3 className="text-sm font-bold text-slate-700 mb-2">
             Thông tin trả hàng

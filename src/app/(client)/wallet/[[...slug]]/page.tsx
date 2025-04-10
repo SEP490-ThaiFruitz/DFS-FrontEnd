@@ -209,10 +209,10 @@ const WalletPage = () => {
                 </div>
                 <div className="text-right">
                   <div className="font-semibold">
-                    {vietnameseDate(data?.payment?.updatedOnUtc, true)}
+                    {vietnameseDate(data?.payment?.createdOnUtc, true)}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {formatRelativeTime(data?.payment?.updatedOnUtc)}
+                    {formatRelativeTime(data?.payment?.createdOnUtc)}
                   </div>
                 </div>
               </div>

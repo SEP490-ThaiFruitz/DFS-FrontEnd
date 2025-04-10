@@ -80,8 +80,8 @@ export const CreateWallet = memo(
               maxLength={6}
               value={pin}
               onChange={setPin}
-              pattern="^[0-9]+$"
-              inputMode="numeric"
+              // pattern="^[0-9]+$"
+              // inputMode="numeric"
               containerClassName="gap-2"
             >
               <InputOTPGroup>

@@ -95,6 +95,7 @@ export function FancySelect({
       }
       options.push(newOption)
       setSelected(newOption)
+      console.log(newOption)
       setOpen(false)
       setInputValue("");
     }
@@ -118,6 +119,8 @@ export function FancySelect({
             onFocus={() => setOpen(true)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation(); 
                 handlerEnterNewSelect();
               }
             }}

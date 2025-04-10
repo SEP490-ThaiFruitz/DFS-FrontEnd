@@ -1,14 +1,15 @@
 "use client";
 
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 import { FancySelect } from '@/components/custom/_custom_select/select';
-import { FormNumberInputControl } from '@/components/global-components/form/form-number-control';
 import { FormSelectControl } from '@/components/global-components/form/form-select-control'
 import { Button } from '@/components/ui/button'
 import { CardContent } from '@/components/ui/card'
 import { FormItem, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { NUTRITIONS_SELECT, QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
+import { QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
 import { formatNumberWithUnit } from '@/lib/format-currency';
+import { ApiResponse } from '@/types/types';
 import { FromNutrionFact } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, CirclePlusIcon, Pencil, X } from 'lucide-react'
@@ -26,13 +27,14 @@ interface NutritionFactProps {
     formProduct: UseFormReturn<any>
 }
 
-interface NutritionSelect {
-    Id: number;
-    Name: string;
-    Unit: string;
-};
+interface Nutrient {
+    id: number;
+    name: string;
+    unit: string;
+}
 
 const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
+    const { data: nutritions } = useFetch<ApiResponse<Nutrient[]>>("/Products/products/nutrients")
     const [nutritionFacts, setNutritionFacts] = useState<NutritionFact[]>([])
     const [editingId, setEditingId] = useState<number | null>(null)
     const form = useForm<z.infer<typeof FromNutrionFact>>({
@@ -77,7 +79,7 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
 
     const handleUnit = () => {
         const nutritionId: string = form.getValues("nutrientId");
-        return NUTRITIONS_SELECT.find((nutrition: NutritionSelect) => nutrition.Id.toString() == nutritionId)?.Unit
+        return nutritions?.value?.find((nutrition: Nutrient) => nutrition.id.toString() == nutritionId)?.unit
     }
 
     const handleAddNew = () => {
@@ -113,14 +115,14 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
                                         form={form}
                                         name="nutrientId"
                                         defaultValue={fact?.nutrientId.toString() ?? 1}
-                                        items={NUTRITIONS_SELECT
-                                            .filter(item =>
-                                                item.Id == fact.nutrientId ||
-                                                !nutritionFacts.some(fact => fact.nutrientId == item.Id)
+                                        items={nutritions?.value
+                                            ?.filter(item =>
+                                                item.id !== fact?.nutrientId ||
+                                                !nutritionFacts.some(fact => fact.nutrientId !== item.id)
                                             )
                                             .map(item => ({
-                                                id: item.Id,
-                                                name: item.Name,
+                                                id: item.id,
+                                                name: item.name,
                                             }))}
                                     />
                                 </TableCell>
@@ -150,10 +152,10 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
                                     />
                                 </TableCell>
                                 <TableCell className='flex space-x-3'>
-                                    <Button onClick={form.handleSubmit(onSubmit)} type='button' size="sm" variant="ghost">
+                                    <Button onClick={form.handleSubmit(onSubmit)} type='button' size="sm" variant="outline">
                                         <Check className="h-4 w-4" />
                                     </Button>
-                                    <Button type='button' size="sm" variant="ghost" onClick={handleCancel}>
+                                    <Button type='button' size="sm" variant="outline" onClick={handleCancel}>
                                         <X className="h-4 w-4" />
                                     </Button>
                                 </TableCell>
@@ -161,16 +163,16 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
 
                         ) : (
                             <TableRow key={fact.nutritionFactId}>
-                                <TableCell className="font-medium">{NUTRITIONS_SELECT.find(x => x.Id == fact.nutrientId)?.Name}</TableCell>
-                                <TableCell>{`${formatNumberWithUnit(fact.amount)} ${NUTRITIONS_SELECT.find(x => x.Id == fact.nutrientId)?.Unit}`}</TableCell>
+                                <TableCell className="font-medium">{nutritions?.value?.find(x => x.id == fact.nutrientId)?.name}</TableCell>
+                                <TableCell>{`${formatNumberWithUnit(fact.amount)} ${nutritions?.value?.find(x => x.id == fact.nutrientId)?.unit}`}</TableCell>
                                 <TableCell className='flex space-x-3'>
-                                    <Button type='button' size="sm" variant="ghost" onClick={(e) => {
+                                    <Button type='button' size="sm" variant="outline" onClick={(e) => {
                                         e.preventDefault();
                                         handleEdit(fact)
                                     }}>
                                         <Pencil className="h-4 w-4" />
                                     </Button>
-                                    <Button type='button' size="sm" variant="ghost" onClick={() => handleRemoveFact(fact)}>
+                                    <Button type='button' size="sm" variant="outline" onClick={() => handleRemoveFact(fact)}>
                                         <X className="h-4 w-4" />
                                     </Button>
                                 </TableCell>

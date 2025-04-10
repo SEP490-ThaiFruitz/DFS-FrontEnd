@@ -172,7 +172,7 @@ const NutriontionHeader = ({ productId, servingSize, ingredients, id, calories }
                         </div>
                     </div>
                     <div className='flex items-center gap-2'>
-                        Calories: <div className='font-bold text-xl'>{0}</div> kcal
+                        Calories: <div className='font-bold text-xl'>{calories}</div> kcal
                     </div>
                 </div>
             )}

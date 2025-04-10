@@ -23,6 +23,7 @@ import {
   Wallet,
   History,
   CircleArrowOutDownRight,
+  Import,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -158,6 +159,11 @@ const data = {
       name: "Kế hoạch",
       url: "/admin/plan",
       icon: NotebookPen,
+    },
+    {
+      name: "Nhập hàng",
+      url: "/admin/product-batch",
+      icon: Import,
     },
     {
       name: "Chứng chỉ",

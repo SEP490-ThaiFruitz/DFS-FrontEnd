@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { vi } from "date-fns/locale"
 import { API } from "@/actions/client/api-config"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
 import { toast } from "sonner"
 import { useRef, useState } from "react"
+import { USER_KEY } from "@/app/key/user-key"
 
 
 enum NotificationType {
@@ -124,11 +125,33 @@ const NotificationCard = ({ notification }: NotificationCardProps) => {
         }
     }
 
+    const handleNotificationNavToPage = (
+        redirectUrl: string,
+        notificationCategory: NotificationCategory
+    ): string => {
+        switch (notificationCategory) {
+            case NotificationCategory.Order:
+                return `/profile?tab=order-tracking&order=${redirectUrl}`;
+            case NotificationCategory.Voucher:
+                return "/vouchers";
+            case NotificationCategory.Product:
+                return "/products";
+            case NotificationCategory.Combo:
+                return "/combos";
+            case NotificationCategory.System:
+                return "/system";
+            case NotificationCategory.Payment:
+                return "/payments";
+            default:
+                return "/";
+        }
+    };
+
     return <>
         {
             notification.redirectUrl ? (
                 <Link
-                    href={notification.redirectUrl}
+                    href={handleNotificationNavToPage(notification.redirectUrl, notification.category)}
                     className={cn("flex gap-3 p-4 border-b hover:bg-muted/50 transition-colors", getBackgroundColor())}
                     onClick={() => handleReadNotification(notification.id)}
                     onMouseDown={() => handleMouseDown(notification)}

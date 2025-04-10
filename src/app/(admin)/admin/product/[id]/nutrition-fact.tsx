@@ -1,6 +1,7 @@
 "use client";
 
 import { createNutritionFact, deleteNutritionFact, updateNutritionFact } from '@/actions/product';
+import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog';
 import { FancySelect } from '@/components/custom/_custom_select/select';
 import { FormSelectControl } from '@/components/global-components/form/form-select-control'
@@ -8,10 +9,11 @@ import { FormValues } from '@/components/global-components/form/form-values'
 import { Spinner } from '@/components/global-components/spinner';
 import { Button } from '@/components/ui/button'
 import { CardContent } from '@/components/ui/card'
-import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormItem, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { NUTRITIONS_SELECT, QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
 import { formatNumberWithUnit } from '@/lib/format-currency';
+import { ApiResponse } from '@/types/types';
 import { FromNutrionFact } from '@/zod-safe-types/nutrition-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -53,6 +55,8 @@ interface NutritionSelect {
 };
 
 const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, productNutritionId }: Readonly<NutritionFactProps>) => {
+    const { data: nutritions } = useFetch<ApiResponse<Nutrient[]>>("/Products/products/nutrients")
+
     const [nutritionFacts, setNutritionFacts] = useState<NutritionFact[]>(intialNutritionFacts)
     const [nutritionFact, setNutritionFact] = useState<NutritionFact | undefined>(undefined)
     const [editingId, setEditingId] = useState<number | null>(null)
@@ -65,6 +69,9 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
     }, [intialNutritionFacts])
 
     const handleEdit = (fact: NutritionFact) => {
+        if (fact.id !== 0 && editingId === 0) {
+            setNutritionFacts((prev) => prev.filter((nutritionFact: NutritionFact) => nutritionFact.id !== 0))
+        }
         setEditingId(fact.id)
         form.setValue("nutritionFactId", fact.id?.toString())
         form.setValue("amount", fact?.amount.toString())
@@ -119,7 +126,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
 
     const handleUnit = () => {
         const nutritionId: string = form.getValues("nutrientId");
-        return NUTRITIONS_SELECT.find((nutrition: NutritionSelect) => nutrition.Id.toString() === nutritionId)?.Unit
+        return nutritions?.value?.find((nutrition: Nutrient) => nutrition.id.toString() == nutritionId)?.unit
     }
 
     const handleAddNew = () => {
@@ -161,14 +168,14 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                             form={form}
                                             name="nutrientId"
                                             defaultValue={fact?.nutrient?.id?.toString()}
-                                            items={NUTRITIONS_SELECT
-                                                .filter(item =>
-                                                    item.Id === fact?.nutrient?.id ||
-                                                    !nutritionFacts.some(fact => fact.nutrient?.id === item.Id)
+                                            items={nutritions?.value
+                                                ?.filter(item =>
+                                                    item.id === fact?.nutrient?.id ||
+                                                    !nutritionFacts.some(fact => fact.nutrient?.id === item.id)
                                                 )
                                                 .map(item => ({
-                                                    id: item.Id,
-                                                    name: item.Name,
+                                                    id: item.id,
+                                                    name: item.name,
                                                 }))}
                                         />
                                     </TableCell>
@@ -201,10 +208,10 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
 
                                     </TableCell>
                                     <TableCell className='flex space-x-3'>
-                                        <Button disabled={isPending} type='submit' size="sm" variant="ghost">
+                                        <Button disabled={isPending} type='submit' size="sm" variant="outline">
                                             {isPending ? <Spinner /> : <Check className="h-4 w-4" />}
                                         </Button>
-                                        <Button disabled={isPending} type='button' size="sm" variant="ghost" onClick={handleCancel}>
+                                        <Button disabled={isPending} type='button' size="sm" variant="outline" onClick={handleCancel}>
                                             <X className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
@@ -216,13 +223,13 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
                                     <TableCell>{`${fact.amount} ${fact?.nutrient?.unit}`}</TableCell>
                                     <TableCell>{formatNumberWithUnit(fact.dailyValue, "%")}</TableCell>
                                     <TableCell className='flex space-x-3'>
-                                        <Button type='button' size="sm" variant="ghost" onClick={(e) => {
+                                        <Button type='button' size="sm" variant="outline" onClick={(e) => {
                                             e.preventDefault();
                                             handleEdit(fact)
                                         }}>
                                             <Pencil className="h-4 w-4" />
                                         </Button>
-                                        <Button type='button' size="sm" variant="ghost" onClick={() => handleRemoveFact(fact)}>
+                                        <Button type='button' size="sm" variant="outline" onClick={() => handleRemoveFact(fact)}>
                                             <X className="h-4 w-4" />
                                         </Button>
                                     </TableCell>

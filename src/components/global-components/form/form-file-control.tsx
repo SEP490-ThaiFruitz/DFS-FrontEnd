@@ -97,6 +97,13 @@ export const FormFileControl = <T extends FieldValues>({
       });
       return;
     }
+    if (fileList.findLast((file: File) => files.some(f => f.name === file.name))) {
+      form.setError(name, {
+        message: `Tệp ${fileInputRef.current?.name} đã được chọn`,
+      });
+      return;
+    }
+
     const newFiles = fileList.reduce<FileWithPreview[]>((acc, file) => {
       if (!type.includes(file.type)) {
         form.setError(name, { message: `Vui lòng chọn file ${type}` });
@@ -148,7 +155,7 @@ export const FormFileControl = <T extends FieldValues>({
             <FormControl>
               <div className={classNameInput}>
                 <motion.div
-                  className={`relative size-full cursor-pointer rounded-xl border-2 border-dashed p-12 text-center transition-colors ${isDragActive
+                  className={`relative size-full cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-colors ${isDragActive
                     ? "border-blue-500 bg-blue-500/5"
                     : "border-neutral-300 hover:border-neutral-400 dark:border-neutral-700 dark:hover:border-neutral-500"
                     }`}
@@ -170,68 +177,109 @@ export const FormFileControl = <T extends FieldValues>({
                     ref={fileInputRef}
                     type="file"
                   />
+                  {files.length === 0 && (
+                    <AnimatePresence>
+                      {isDragActive ? (
+                        <motion.div
+                          animate={{ opacity: 1, y: 0 }}
+                          className=" pointer-events-none select-none"
+                          exit={{ opacity: 0, y: -10 }}
+                          initial={{ opacity: 0, y: 10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Upload className="pointer-events-none mx-auto size-8 select-none text-blue-500" />
+                          <p className="pointer-events-none mt-2 select-none text-blue-500 text-sm">
+                            Thả file ở đây..
+                          </p>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          initial={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Upload className="mx-auto size-8 text-neutral-400 dark:text-neutral-500" />
+                          <p className="mt-2 text-balance font-medium text-neutral-400 text-sm tracking-tighter dark:text-neutral-500">
+                            Kéo và thả các tập tin ở đây hoặc nhấp để chọn
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
                   <AnimatePresence>
-                    {isDragActive ? (
-                      <motion.div
-                        animate={{ opacity: 1, y: 0 }}
-                        className=" pointer-events-none select-none"
-                        exit={{ opacity: 0, y: -10 }}
-                        initial={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Upload className="pointer-events-none mx-auto size-8 select-none text-blue-500" />
-                        <p className="pointer-events-none mt-2 select-none text-blue-500 text-sm">
-                          Thả file ở đây..
-                        </p>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        initial={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Upload className="mx-auto size-8 text-neutral-400 dark:text-neutral-500" />
-                        <p className="mt-2 text-balance font-medium text-neutral-400 text-sm tracking-tighter dark:text-neutral-500">
-                          Kéo và thả các tập tin ở đây hoặc nhấp để chọn
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                <AnimatePresence>
-                  {files.length > 0 && (
-                    <motion.div
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-4 space-y-2"
-                      exit={{ opacity: 0, height: 0 }}
-                      initial={{ opacity: 0, height: 0 }}
-                    >
-                      {files.map((file) => (
+                    {mutiple ?
+                      files.length > 0 && (
+                        <motion.div
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="mb-4 space-y-2"
+                          exit={{ opacity: 0, height: 0 }}
+                          initial={{ opacity: 0, height: 0 }}
+                        >
+                          {files.map((file) => (
+                            <motion.div
+                              animate={{ opacity: 1, x: 0 }}
+                              className="flex items-center rounded-lg bg-neutral-400/10 p-1"
+                              exit={{ opacity: 0, x: 20 }}
+                              initial={{ opacity: 0, x: -20 }}
+                              key={file.name}
+                            >
+                              {file.type.startsWith("image/") ? (
+                                <ImagePreview
+                                  images={[file.preview]}
+                                  className="mr-2 size-10 rounded object-cover hover:cursor-pointer"
+                                />
+                              ) : (
+                                <File onClick={() => window.open(file.preview, '_blank')} className="mr-2 size-10 text-neutral-500 hover:cursor-pointer hover:scale-105 ease-linear" />
+                              )}
+                              <span className="flex-1 truncate text-neutral-600 text-xs tracking-tighter dark:text-neutral-400">
+                                {file.name}
+                              </span>
+                              <div className="flex gap-3 items-center">
+                                <span className="font-medium text-sm">
+                                  {file.size < 1024 * 1024
+                                    ? `${(file.size / 1024).toFixed(2)} KB`
+                                    : `${(file.size / (1024 * 1024)).toFixed(
+                                      2
+                                    )} MB`}
+                                </span>
+                                <Trash2
+                                  className="mr-2 size-5 cursor-pointer text-red-500 transition-colors hover:text-red-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteFile(file);
+                                  }}
+                                />
+                              </div>
+                            </motion.div>
+                          ))}
+                        </motion.div>
+                      )
+                      :
+                      files.length > 0 ?
                         <motion.div
                           animate={{ opacity: 1, x: 0 }}
                           className="flex items-center rounded-lg bg-neutral-400/10 p-1"
                           exit={{ opacity: 0, x: 20 }}
                           initial={{ opacity: 0, x: -20 }}
-                          key={file.name}
+                          key={files[0].name}
                         >
-                          {file.type.startsWith("image/") ? (
+                          {files[0].type.startsWith("image/") ? (
                             <ImagePreview
-                              images={[file.preview]}
+                              images={[files[0].preview]}
                               className="mr-2 size-10 rounded object-cover hover:cursor-pointer"
                             />
                           ) : (
-                            <File className="mr-2 size-10 text-neutral-500" />
+                            <File onClick={() => window.open(files[0].preview, '_blank')} className="mr-2 size-10 text-neutral-500 hover:cursor-pointer hover:scale-105 ease-linear" />
                           )}
                           <span className="flex-1 truncate text-neutral-600 text-xs tracking-tighter dark:text-neutral-400">
-                            {file.name}
+                            {files[0].name}
                           </span>
                           <div className="flex gap-3 items-center">
                             <span className="font-medium text-sm">
-                              {file.size < 1024 * 1024
-                                ? `${(file.size / 1024).toFixed(2)} KB`
-                                : `${(file.size / (1024 * 1024)).toFixed(
+                              {files[0].size < 1024 * 1024
+                                ? `${(files[0].size / 1024).toFixed(2)} KB`
+                                : `${(files[0].size / (1024 * 1024)).toFixed(
                                   2
                                 )} MB`}
                             </span>
@@ -239,15 +287,17 @@ export const FormFileControl = <T extends FieldValues>({
                               className="mr-2 size-5 cursor-pointer text-red-500 transition-colors hover:text-red-600"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDeleteFile(file);
+                                handleDeleteFile(files[0]);
                               }}
                             />
                           </div>
                         </motion.div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+
+                        : <></>
+                    }
+
+                  </AnimatePresence>
+                </motion.div>
               </div>
             </FormControl>
             <FormMessage>{fieldState.error?.message}</FormMessage>

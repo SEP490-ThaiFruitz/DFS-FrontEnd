@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OrderDetailPage from "../order-detail/order-detail-page";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ApiResponse } from "@/types/types";
@@ -139,6 +139,10 @@ export const OrderTrackingPage = () => {
       toast.error("Lỗi hệ thống");
     }
   };
+
+  useEffect(() => {
+    setOrderId(searchParams.get("order") ?? undefined);
+  }, [searchParams.get("order")]);
 
   return orderId !== undefined ? (
     <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} />

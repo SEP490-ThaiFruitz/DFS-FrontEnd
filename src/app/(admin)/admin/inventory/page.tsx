@@ -2,11 +2,15 @@
 
 import { Button } from "@/components/ui/button"
 import { CirclePlus } from "lucide-react"
-import { useState } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/global-components/data-table/data-table"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import Image from "next/image"
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
+import type { ApiResponse } from "@/types/types"
+import Link from "next/link"
+import { Checkbox } from "@/components/ui/checkbox"
+import { useState } from "react"
 
 interface ProductBatchItem {
     number: number
@@ -19,68 +23,30 @@ interface ProductBatchItem {
     netWeight: number
     preservationMethod: string
     productionDate: string
-    expiredDate: string
+    expirationDate: string
 }
 
 const InventoryPage = () => {
-
-    const [products, setProducts] = useState<ProductBatchItem[]>([
-        {
-            number: 1,
-            productId: "1a2b3c4d-1234-5678-9abc-def012345678",
-            productName: "Cà phê Espresso",
-            productVariantId: "1a2b3c4d-1234-5678-9abc-def012345678",
-            productVariantImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaf0KZGvHKJ-NcKdGAjvdPt6hd71iqoqvpeg&s",
-            packagingType: "Hộp thiếc",
-            quantity: 80,
-            netWeight: 500, // gram
-            preservationMethod: "Nhiệt độ phòng",
-            productionDate: "2025-01-15T09:00:00.000Z",
-            expiredDate: "2026-01-15T09:00:00.000Z",
-        },
-        {
-            number: 2,
-            productId: "2b3c4d5e-2345-6789-abcd-ef0123456789",
-            productName: "Trà Oolong",
-            productVariantId: "2b3c4d5e-2345-6789-abcd-ef0123456789",
-            productVariantImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzVcOhtmQ6Y9PHjqb4bEGInECZVSUP7G2Hhw&s",
-            packagingType: "Túi lọc",
-            quantity: 120,
-            netWeight: 250, // gram
-            preservationMethod: "Nhiệt độ phòng",
-            productionDate: "2025-02-10T10:30:00.000Z",
-            expiredDate: "2025-08-10T10:30:00.000Z",
-        },
-        {
-            number: 3,
-            productId: "3c4d5e6f-3456-789a-bcde-f0123456789a",
-            productName: "Bột Matcha",
-            productVariantId: "3c4d5e6f-3456-789a-bcde-f0123456789a",
-            productVariantImage: "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTvi1TKXeSf1xexu-DfDgsS5jJ0hKhPN6QxxmuytZyHPUkj1cUkv1aYKo3aWfCcMRGOkbjnaIdzDpGLE0vneNSri44ePnRJpyyiBSdSVEKcJ88psFTQyYzcfJTu7JHiRp2KMCLRB3M&usqp=CAc",
-            packagingType: "Hộp giấy",
-            quantity: 200,
-            netWeight: 300, // gram
-            preservationMethod: "Bảo quản lạnh",
-            productionDate: "2025-03-05T08:45:00.000Z",
-            expiredDate: "2025-09-05T08:45:00.000Z",
-        },
-    ]);
+    const { data: products } = useFetch<ApiResponse<ProductBatchItem[]>>("/ProductBatches/items")
 
     const columns: ColumnDef<ProductBatchItem>[] = [
         {
             accessorKey: "productVariantImage",
             header: "Hình ảnh",
-            cell: ({ row }) => (
-                <div className="flex justify-center">
-                    <Image
-                        height={600}
-                        width={600}
-                        src={row.getValue("productVariantImage")}
-                        alt={row.getValue("productName")}
-                        className="h-40 w-40 rounded-md object-cover"
-                    />
-                </div>
-            ),
+            cell: ({ row }) => {
+                const productBatchItem = row.original
+                return (
+                    <Link href={`/admin/product/${productBatchItem.productId}`} className="flex justify-center">
+                        <Image
+                            height={600}
+                            width={600}
+                            src={row.getValue("productVariantImage") || "/placeholder.svg"}
+                            alt={row.getValue("productName")}
+                            className="h-40 w-40 rounded-md object-cover"
+                        />
+                    </Link>
+                )
+            },
         },
         {
             accessorKey: "productName",
@@ -108,63 +74,72 @@ const InventoryPage = () => {
             accessorKey: "productionDate",
             header: "Ngày sản xuất",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("productionDate"))
+                const date = new Date(row.original.productionDate)
                 return <div>{formatTimeVietNam(date)}</div>
             },
         },
         {
-            accessorKey: "expiredDate",
+            accessorKey: "expirationDate",
             header: "Ngày hết hạn",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("expiredDate"))
+                const date = new Date(row.original.expirationDate)
                 return <div>{formatTimeVietNam(date)}</div>
             },
         },
         {
             accessorKey: "time",
             header: "Thời gian",
-            cell: ({ row }) => getRemainingTime(row.original.expiredDate),
-        }
+            cell: ({ row }) => getRemainingTime(row.original.expirationDate),
+        },
     ]
     const getRemainingTime = (endDate: string) => {
-        const remainingMilliseconds =
-            new Date(endDate).getTime() - new Date().getTime();
-        const remainingDays = Math.ceil(
-            remainingMilliseconds / (1000 * 60 * 60 * 24)
-        );
+        const remainingMilliseconds = new Date(endDate).getTime() - new Date().getTime()
+        const remainingDays = Math.ceil(remainingMilliseconds / (1000 * 60 * 60 * 24))
         if (remainingMilliseconds <= 0)
-            return (
-                <div className="px-2 py-1 bg-red-50 w-fit rounded-md text-red-700 font-bold text-center">
-                    Đã hết hạn
-                </div>
-            );
+            return <div className="px-2 py-1 bg-red-50 w-fit rounded-md text-red-700 font-bold text-center">Đã hết hạn</div>
 
         return (
             <div
-                className={`px-2 py-1  w-fit rounded-md font-bold text-center ${remainingDays > 3
-                    ? "bg-green-50 text-green-700 "
-                    : "bg-yellow-50 text-yellow-700 "
+                className={`px-2 py-1 w-fit rounded-md font-bold text-center ${remainingDays > 30
+                        ? "bg-green-50 text-green-700"
+                        : remainingDays > 15
+                            ? "bg-yellow-50 text-yellow-700"
+                            : "bg-orange-50 text-orange-700"
                     }`}
             >
                 {remainingDays} ngày
             </div>
-        );
-    };
+        )
+    }
 
     return (
         <div className="m-10">
             <div className="flex justify-between items-center mb-6">
                 <div className="text-2xl font-semibold leading-none tracking-tight">Danh sách sản phẩm trong kho</div>
-                <Button size={"sm"} className="text-white bg-green-500 hover:bg-green-600">
-                    <CirclePlus className="mr-2 h-4 w-4" />
-                    Thêm sản phẩm
-                </Button>
+                <div className="grid sm:grid-cols-2 gap-5">
+                    <Link href={"/admin/promotion/create"}>
+                        <Button size={"sm"} className="text-white bg-green-500 hover:bg-green-600">
+                            <CirclePlus className="mr-2 h-4 w-4" />
+                            Tạo chương trình khuyến mãi
+                        </Button>
+                    </Link>
+                    <Link href={"/admin/inventory/create"}>
+                        <Button size={"sm"} className="text-white bg-green-500 hover:bg-green-600">
+                            <CirclePlus className="mr-2 h-4 w-4" />
+                            Tạo xuất nhập kho
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
-            <DataTable data={products} columns={columns} searchFiled="productName" />
+
+            <DataTable
+                data={products?.value ?? []}
+                columns={columns}
+                searchFiled="productName"
+            />
         </div>
     )
 }
 
 export default InventoryPage
-

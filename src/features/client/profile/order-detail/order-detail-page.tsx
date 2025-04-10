@@ -35,6 +35,8 @@ interface Order {
   cancel: Cancel | null;
   orderAddressDelivery: OrderAddressDelivery;
   timeline: Timeline[];
+
+  // isException?:boolean
 }
 
 interface Timeline {

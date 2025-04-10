@@ -22,7 +22,7 @@ export interface Request {
     name: string
     user: User
     requestDate: string
-    updateDate: string | null
+    updatedDate: string | null
     status: string
     expectedDate: string,
     description: string,
@@ -46,20 +46,41 @@ export interface ProductVariant {
     image: string,
     netWeight: number,
     quantity: number,
+    enteredQuantity: number,
 }
 
 const PlanPage = () => {
-    const { data: requests, refetch } = useFetch<ApiResponse<PageResult<Request>>>("/Requests?pageIndex=1&pageSize=200", [
+    const { data: requests, refetch } = useFetch<ApiResponse<PageResult<Request>>>("/Requests?pageIndex=1&pageSize=20000", [
         "requests",
     ])
 
     const getStatusBadge = (status: string) => {
         const statusMap: Record<string, { color: string; label: string }> = {
-            Pending: { color: "bg-yellow-100 hover:bg-yellow-100/80 text-yellow-800", label: "Chờ xác nhận" },
-            Processing: { color: "bg-green-100 hover:bg-green-100/80 text-green-800", label: "Đang xử lí" },
-            Declined: { color: "bg-red-100 hover:bg-red-100/80 text-red-800", label: "Từ chối" },
-            Approved: { color: "bg-blue-100 hover:bg-blue-100/80 text-blue-800", label: "Hoàn thành" },
-        }
+            Pending: {
+                color: "bg-yellow-100 hover:bg-yellow-100/80 text-yellow-800",
+                label: "Chờ xác nhận",
+            },
+            Processing: {
+                color: "bg-green-100 hover:bg-green-100/80 text-green-800",
+                label: "Đang xử lí",
+            },
+            Declined: {
+                color: "bg-red-100 hover:bg-red-100/80 text-red-800",
+                label: "Từ chối",
+            },
+            Approved: {
+                color: "bg-blue-100 hover:bg-blue-100/80 text-blue-800",
+                label: "Hoàn thành",
+            },
+            PartiallyCompleted: {
+                color: "bg-indigo-100 hover:bg-indigo-100/80 text-indigo-800",
+                label: "Hoàn thành một phần",
+            },
+            Completed: {
+                color: "bg-blue-200 hover:bg-blue-200/80 text-blue-900",
+                label: "Đã hoàn thành",
+            },
+        };
 
         return statusMap[status] || { color: "bg-gray-100 text-gray-800", label: status }
     }
@@ -118,11 +139,11 @@ const PlanPage = () => {
             },
         },
         {
-            accessorKey: "expectedDate",
-            header: "Ngày dự kiến",
+            accessorKey: "updatedDate",
+            header: "Ngày cập nhật",
             cell: ({ row }) => {
-                const date = new Date(row.getValue("expectedDate"))
-                return <div>{formatTimeVietNam(date)}</div>
+                const date = new Date(row.getValue("updatedDate"))
+                return date && <div>{formatTimeVietNam(date, true)}</div>
             },
         },
         {

@@ -101,8 +101,9 @@ const Variant = ({ combo }: Readonly<VariantProps>) => {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Hình ảnh</TableHead>
-                                        <TableHead>Loại đóng gói</TableHead>
                                         <TableHead>Tên sản phẩm</TableHead>
+                                        <TableHead>Loại đóng gói</TableHead>
+                                        <TableHead>Trọng lượng</TableHead>
                                         <TableHead>Giá gốc</TableHead>
                                         <TableHead>Số lượng</TableHead>
                                         <TableHead className="text-right">Thao tác</TableHead>
@@ -122,9 +123,10 @@ const Variant = ({ combo }: Readonly<VariantProps>) => {
                                             </TableCell>
                                             <TableCell>
                                                 <Link href={`/admin/product/${comboItem.productId}`}>
-                                                    {comboItem.productName} - {comboItem.packagingType} - {comboItem.netWeight}g
+                                                    {comboItem.productName}
                                                 </Link>
                                             </TableCell>
+                                            <TableCell>{comboItem.packagingType}</TableCell>
                                             <TableCell>{comboItem.netWeight}g</TableCell>
                                             <TableCell>{formatVND(comboItem.price)}</TableCell>
                                             <TableCell>

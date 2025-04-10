@@ -1,3 +1,4 @@
+import ProductBatchPage from "@/app/(admin)/admin/product-batch/page";
 import { z } from "zod";
 
 export const CreatePlanSafeTypes = z.object({
@@ -33,4 +34,59 @@ export const CreatePlanSafeTypes = z.object({
             })
         )
         .min(1, "Phải chọn ít nhất một sản phẩm"),
+})
+
+export const ImportWareSafeTypes = z.object({
+    productBatchId: z.string({
+        required_error: "Vui lòng chọn lô",
+        message: "Vui lòng chọn lô",
+    }).nonempty({
+        message: "Vui lòng chọn lô",
+    }),
+    productBatchItemId: z.string({
+        required_error: "Vui lòng sản phẩm",
+        message: "Vui lòng sản phẩm",
+    }).nonempty({
+        message: "Vui lòng sản phẩm",
+    }),
+    orderId: z.string().optional(),
+    quantity: z.string({
+        required_error: "Vui lòng nhập số lượng",
+        message: "Vui lòng nhập số lượng",
+    }).nonempty({
+        message: "Vui lòng nhập số lượn",
+    }).refine((val) => parseFloat(val) > 0, "Số lượng hơn 0"),
+    note: z.string({
+        required_error: "Vui lòng ghi chú",
+        message: "Vui lòng ghi chú",
+    }).nonempty({
+        message: "Vui lòng ghi chú",
+    })
+})
+
+export const ExportWareSafeTypes = z.object({
+    productBatchId: z.string({
+        required_error: "Vui lòng chọn lô",
+        message: "Vui lòng chọn lô",
+    }).nonempty({
+        message: "Vui lòng chọn lô",
+    }),
+    productBatchItemId: z.string({
+        required_error: "Vui lòng sản phẩm",
+        message: "Vui lòng sản phẩm",
+    }).nonempty({
+        message: "Vui lòng sản phẩm",
+    }),
+    quantity: z.string({
+        required_error: "Vui lòng nhập số lượng",
+        message: "Vui lòng nhập số lượng",
+    }).nonempty({
+        message: "Vui lòng nhập số lượn",
+    }).refine((val) => parseFloat(val) > 0, "Số lượng hơn 0"),
+    note: z.string({
+        required_error: "Vui lòng ghi chú",
+        message: "Vui lòng ghi chú",
+    }).nonempty({
+        message: "Vui lòng ghi chú",
+    })
 })

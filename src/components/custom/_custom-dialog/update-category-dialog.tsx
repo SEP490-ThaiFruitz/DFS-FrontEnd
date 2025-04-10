@@ -41,7 +41,7 @@ export const UpdateCategoryDialog = ({
       formData.append("name", values.name);
       formData.append("description", values.description);
       if (values.image) {
-        formData.append("thumbnail", values.image);
+        formData.append("thumbnail", values.image[0]);
       }
 
       const response = await updateCategory(formData);

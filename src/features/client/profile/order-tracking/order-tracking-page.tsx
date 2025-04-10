@@ -11,7 +11,7 @@ import { Policies } from "./policy";
 import { Columns4, Copy, FileBox, PackageCheck, PackagePlus, PackageX, Search, Send, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OrderDetailPage from "../order-detail/order-detail-page";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ApiResponse } from "@/types/types";
@@ -95,6 +95,10 @@ export const OrderTrackingPage = () => {
       toast.error("Lỗi hệ thống")
     }
   }
+
+  useEffect(() => {
+    setOrderId(searchParams.get("order") ?? undefined);
+  }, [searchParams.get("order")])
 
   return (
     orderId !== undefined ? <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} /> : <>
@@ -183,7 +187,7 @@ export const OrderTrackingPage = () => {
                   voucherPrice={order.discountPrice}
                   feeShip={order.delivery?.fee}
                   pointUsed={order.pointUsed}
-                  orderItems={order.orderItems} 
+                  orderItems={order.orderItems}
                   totalPrice={order.totalPrice} />
               </div>
               <ScrollArea className="h-[220px] -mx-6 px-6">

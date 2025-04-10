@@ -83,7 +83,7 @@ const DialogProductBatchDetail = ({ onClose, isOpen, id }: Readonly<DialogProduc
                 <DialogHeader>
                     <DialogTitle>{productBatch?.value?.number}</DialogTitle>
                 </DialogHeader>
-                <ScrollArea className="pb-3 border-b overflow-y-auto max-h-[600px]">
+                <ScrollArea className="pb-3 overflow-y-auto max-h-[600px] pr-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                         <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -167,7 +167,7 @@ const DialogProductBatchDetail = ({ onClose, isOpen, id }: Readonly<DialogProduc
                         </div>
                     )}
 
-                    <ScrollArea className="w-full max-h-[600px] py-3 px-5">
+                    <div className="">
                         {productBatch?.value?.productBatchItems?.map((item) => (
                             <Card key={item.productVariantId} className="overflow-hidden border shadow-sm hover:shadow-md transition-shadow mb-6">
                                 <div className="flex flex-col sm:flex-row">
@@ -222,7 +222,7 @@ const DialogProductBatchDetail = ({ onClose, isOpen, id }: Readonly<DialogProduc
                                 </div>
                             </Card>
                         ))}
-                    </ScrollArea>
+                    </div>
                 </ScrollArea>
 
                 <DialogFooter>

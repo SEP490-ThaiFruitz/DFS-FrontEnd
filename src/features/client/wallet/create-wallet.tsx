@@ -1,3 +1,5 @@
+"use client";
+
 import { PrivacyPolicy } from "@/components/global-components/footer/policy/privacy-policy";
 import { ServicePolicy } from "@/components/global-components/footer/policy/service-policy";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +12,7 @@ import {
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { CreditCard, Fingerprint, ShieldCheck } from "lucide-react";
-import { memo } from "react";
+import { memo, useEffect, useRef } from "react";
 
 interface CreateWalletProps {
   pin: string;
@@ -56,6 +58,22 @@ export const CreateWallet = memo(
           return "";
       }
     };
+
+    const inputOTPRef = useRef(null);
+
+    const firstSlotRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+      // focus when component mount
+      if (inputOTPRef.current) {
+        (inputOTPRef.current as any).focus();
+      }
+
+      if (firstSlotRef.current) {
+        firstSlotRef.current.focus();
+      }
+    });
+
     return (
       <div className="space-y-6">
         <div className="space-y-3">
@@ -74,20 +92,21 @@ export const CreateWallet = memo(
             )}
           </Label>
 
-          {/* OTP Style PIN Input using shadcn/ui InputOTP */}
           <div className="flex justify-center">
             <InputOTP
               maxLength={6}
               value={pin}
+              // ref={inputOTPRef}
               onChange={setPin}
-              // pattern="^[0-9]+$"
-              // inputMode="numeric"
+              pattern="^[0-9]+$"
+              inputMode="numeric"
               containerClassName="gap-2"
             >
               <InputOTPGroup>
                 <InputOTPSlot
                   index={0}
                   className="h-14 w-14 text-center text-xl font-medium"
+                  ref={firstSlotRef}
                 />
                 <InputOTPSlot
                   index={1}

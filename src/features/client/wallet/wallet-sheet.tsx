@@ -175,7 +175,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
       setStep("success");
     }
 
-    setPin("");
+    setPin("1");
     setConfirmPin("");
     setError("");
     setRememberDevice(false);

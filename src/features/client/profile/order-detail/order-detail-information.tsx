@@ -1,6 +1,8 @@
-"use client"
+"use client";
 
-import Timeline, { TimelineEvent } from "@/components/global-components/timeline/timeline";
+import Timeline, {
+  TimelineEvent,
+} from "@/components/global-components/timeline/timeline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,6 +16,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { RePaymentDialog } from "@/components/custom/_custom-dialog/re-payment-dialog";
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
+import { ReturnOrderDialog } from "@/features/manager/report-orders/return-order-dialog";
 
 interface OrderDetailsProps {
   orderId?: string;
@@ -33,20 +36,20 @@ interface Delivery {
 }
 
 interface Cancel {
-  cancelBy: string,
-  date: string,
-  reason: string
+  cancelBy: string;
+  date: string;
+  reason: string;
 }
 
 interface Timeline {
-  status: string,
-  date: string,
-  details: SubTimeline[]
+  status: string;
+  date: string;
+  details: SubTimeline[];
 }
 
 interface SubTimeline {
-  statusTime: string,
-  content: string
+  statusTime: string;
+  content: string;
 }
 
 const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
@@ -58,10 +61,12 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   cancel,
   delivery,
   orderAddressDelivery,
-  timeline = []
+  timeline = [],
 }) => {
-  const [isCancel, setIsCancel] = useState<boolean>(false)
-  const [orderIdPayment, setOrderIdPayment] = useState<string | undefined>(undefined)
+  const [isCancel, setIsCancel] = useState<boolean>(false);
+  const [orderIdPayment, setOrderIdPayment] = useState<string | undefined>(
+    undefined
+  );
   const queryClient = useQueryClient();
   const orderStatusColors: Record<string, { color: string; text: string }> = {
     Pending: { color: "bg-amber-100 text-amber-800", text: "Chờ xác nhận" },
@@ -71,7 +76,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
     Delivered: { color: "bg-green-100 text-green-800", text: "Đã giao hàng" },
     Received: { color: "bg-green-100 text-green-800", text: "Đã nhận hàng" },
     Cancelled: { color: "bg-red-100 text-red-800", text: "Đã hủy" },
-    Returned: { color: "bg-gray-100 text-gray-800", text: "Đã trả hàng" }, 
+    Returned: { color: "bg-gray-100 text-gray-800", text: "Đã trả hàng" },
   };
 
   const paymentStatusColors: Record<string, { color: string; text: string }> = {
@@ -92,24 +97,24 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
     completed: true,
     subEvents: item.details.map((sub) => ({
       title: sub.content,
-      date: sub.statusTime
-    }))
+      date: sub.statusTime,
+    })),
   }));
 
   const handleReceivedOrder = async (orderId: string) => {
     try {
-      const response = await API.patch(`/Orders/${orderId}/confirm`, "")
+      const response = await API.patch(`/Orders/${orderId}/confirm`, "");
       if (response) {
-        queryClient.invalidateQueries({ queryKey: ["OrderDetail", orderId] })
-        toast.success("Xác nhận nhận hàng thành công")
+        queryClient.invalidateQueries({ queryKey: ["OrderDetail", orderId] });
+        toast.success("Xác nhận nhận hàng thành công");
       } else {
-        toast.error("Xác nhận nhận hàng thất bại")
+        toast.error("Xác nhận nhận hàng thất bại");
       }
     } catch (error) {
-      console.log(error)
-      toast.error("Lỗi hệ thống")
+      console.log(error);
+      toast.error("Lỗi hệ thống");
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -122,34 +127,48 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
 
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Ngày đặt:</span>
-            <span className="text-gray-900">{formatTimeVietNam(new Date(orderDate), true)}</span>
+            <span className="text-gray-900">
+              {formatTimeVietNam(new Date(orderDate), true)}
+            </span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-700 font-semibold">Trạng thái đơn hàng:</span>
+            <span className="text-gray-700 font-semibold">
+              Trạng thái đơn hàng:
+            </span>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${orderStatusColors[orderStatus]?.color || "bg-gray-100 text-gray-800"
-                }`}
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                orderStatusColors[orderStatus]?.color ||
+                "bg-gray-100 text-gray-800"
+              }`}
             >
               {orderStatusColors[orderStatus]?.text || "Không xác định"}
             </span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-700 font-semibold">Trạng thái thanh toán:</span>
+            <span className="text-gray-700 font-semibold">
+              Trạng thái thanh toán:
+            </span>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${paymentStatusColors[paymentStatus]?.color || "bg-gray-100 text-gray-800"
-                }`}
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                paymentStatusColors[paymentStatus]?.color ||
+                "bg-gray-100 text-gray-800"
+              }`}
             >
               {paymentStatusColors[paymentStatus]?.text || "Không xác định"}
             </span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-gray-700 font-semibold">Phương thức thanh toán:</span>
+            <span className="text-gray-700 font-semibold">
+              Phương thức thanh toán:
+            </span>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${paymentMethodColors[paymentMethod]?.color || "bg-gray-100 text-gray-800"
-                }`}
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                paymentMethodColors[paymentMethod]?.color ||
+                "bg-gray-100 text-gray-800"
+              }`}
             >
               {paymentMethod || "Không xác định"}
             </span>
@@ -157,23 +176,34 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           {cancel && (
             <>
               <div className="flex justify-between items-center">
-                <span className="text-gray-700 font-semibold">Người hủy đơn:</span>
-                <span className="text-gray-900">{cancel.cancelBy === "Customer" ?
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800
+                <span className="text-gray-700 font-semibold">
+                  Người hủy đơn:
+                </span>
+                <span className="text-gray-900">
+                  {cancel.cancelBy === "Customer" ? (
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800
                       }`}
-                  >
-                    Khách hàng
-                  </span> : <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800
+                    >
+                      Khách hàng
+                    </span>
+                  ) : (
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800
                       }`}
-                  >
-                    Cửa hàng
-                  </span>}</span>
+                    >
+                      Cửa hàng
+                    </span>
+                  )}
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-700 font-semibold">Thời gian hủy đơn:</span>
-                <span className="text-gray-900 text-right">{formatTimeVietNam(new Date(cancel.date), true)}</span>
+                <span className="text-gray-700 font-semibold">
+                  Thời gian hủy đơn:
+                </span>
+                <span className="text-gray-900 text-right">
+                  {formatTimeVietNam(new Date(cancel.date), true)}
+                </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-gray-700 font-semibold">Lí do hủy:</span>
@@ -185,19 +215,35 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           )}
         </CardContent>
         <CardFooter className="space-x-5">
-          {orderStatus === "Pending" && paymentStatus !== "Paid" && paymentMethod !== "ShipCode" && (
-            <Button onClick={() => setOrderIdPayment(orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
-              Thanh toán ngay
+          {orderStatus === "Pending" &&
+            paymentStatus !== "Paid" &&
+            paymentMethod !== "ShipCode" && (
+              <Button
+                onClick={() => setOrderIdPayment(orderId)}
+                className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm"
+              >
+                Thanh toán ngay
+              </Button>
+            )}
+          {orderStatus === "Received" && (
+            <Button className="ml-auto" variant={"destructive"}>
+              Hoàn trả
             </Button>
           )}
-          {orderStatus === "Received" && (
-            <Button className="ml-auto" variant={"destructive"}>Hoàn trả</Button>
-          )}
           {(orderStatus === "Pending" || orderStatus === "Packaging") && (
-            <Button className="ml-auto" onClick={() => setIsCancel(true)} variant={"destructive"}>Huỷ đơn hàng</Button>
+            <Button
+              className="ml-auto"
+              onClick={() => setIsCancel(true)}
+              variant={"destructive"}
+            >
+              Huỷ đơn hàng
+            </Button>
           )}
           {orderStatus === "Delivered" && (
-            <Button onClick={() => handleReceivedOrder(orderId)} className="ml-auto px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+            <Button
+              onClick={() => handleReceivedOrder(orderId)}
+              className="ml-auto px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm"
+            >
               Đã nhận hàng
             </Button>
           )}
@@ -210,26 +256,39 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Tên:</span>
-            <span className="text-gray-900 font-semibold">{orderAddressDelivery?.receiverName}</span>
+            <span className="text-gray-900 font-semibold">
+              {orderAddressDelivery?.receiverName}
+            </span>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Số điện thoại:</span>
-            <span className="text-gray-900">{formatVietnamesePhoneNumber(orderAddressDelivery?.receiverPhone ?? "")}</span>
+            <span className="text-gray-900">
+              {formatVietnamesePhoneNumber(
+                orderAddressDelivery?.receiverPhone ?? ""
+              )}
+            </span>
           </div>
 
           <div className="flex justify-between items-start space-x-6">
-            <span className="text-gray-700 font-semibold min-w-fit">Địa chỉ:</span>
-            <span className="text-gray-900">{orderAddressDelivery?.receiverAddress}</span>
+            <span className="text-gray-700 font-semibold min-w-fit">
+              Địa chỉ:
+            </span>
+            <span className="text-gray-900">
+              {orderAddressDelivery?.receiverAddress}
+            </span>
           </div>
 
           {delivery?.estimateDate && (
             <div className="flex justify-between items-start space-x-6">
-              <span className="text-gray-700 font-semibold min-w-fit">Thời gian dự tính:</span>
-              <span className="text-gray-900">{formatTimeVietNam(new Date(delivery?.estimateDate))}</span>
+              <span className="text-gray-700 font-semibold min-w-fit">
+                Thời gian dự tính:
+              </span>
+              <span className="text-gray-900">
+                {formatTimeVietNam(new Date(delivery?.estimateDate))}
+              </span>
             </div>
-          )
-          }
+          )}
         </CardContent>
         <Separator />
         <div className="w-full mx-auto py-5">
@@ -244,17 +303,24 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
           </ScrollArea>
         </div>
       </Card>
-      {isCancel && <CancelDialog
-        isOpen={isCancel}
-        onClose={() => setIsCancel(false)}
-        orderId={orderId}
-        refreshKey={["OrderDetail", orderId]}
-      />}
-      {orderIdPayment && <RePaymentDialog
-        isOpen={orderIdPayment !== undefined}
-        onClose={() => setOrderIdPayment(undefined)}
-        orderId={orderIdPayment}
-      />}
+
+      {/* actions to re-status */}
+      <ReturnOrderDialog orderId={orderId} />
+      {isCancel && (
+        <CancelDialog
+          isOpen={isCancel}
+          onClose={() => setIsCancel(false)}
+          orderId={orderId}
+          refreshKey={["OrderDetail", orderId]}
+        />
+      )}
+      {orderIdPayment && (
+        <RePaymentDialog
+          isOpen={orderIdPayment !== undefined}
+          onClose={() => setOrderIdPayment(undefined)}
+          orderId={orderIdPayment}
+        />
+      )}
     </div>
   );
 };

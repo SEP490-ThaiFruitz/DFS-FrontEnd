@@ -161,18 +161,18 @@ export const ReasonContent = memo(
               <div
                 className={cn(
                   "flex-1 relative flex flex-col rounded-lg border p-4 transition-all duration-200",
-                  preferredAction === "refund"
+                  preferredAction === "return"
                     ? "border-blue-200 bg-blue-50 shadow-sm"
                     : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="refund" id="refund" />
+                  <RadioGroupItem value="return" id="return" />
                   <Label
-                    htmlFor="refund"
+                    htmlFor="return"
                     className="font-semibold cursor-pointer"
                   >
-                    Hoàn tiền
+                    Trả lại sản phẩm
                   </Label>
                 </div>
               </div>

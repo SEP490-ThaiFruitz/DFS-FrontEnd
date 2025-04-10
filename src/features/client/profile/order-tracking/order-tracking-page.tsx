@@ -4,11 +4,21 @@ import { motion } from "framer-motion";
 import { CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { OrderHeader } from "./order-header";
-import { OrderItem, ProductList } from "./product-list";
+import { ProductList } from "./product-list";
 import { OrderAddressDelivery, ShippingInfo } from "./shipping-info";
 import { OrderSummary } from "./order-summary";
 import { Policies } from "./policy";
-import { Columns4, Copy, FileBox, PackageCheck, PackagePlus, PackageX, Search, Send, Truck } from "lucide-react";
+import {
+  Columns4,
+  Copy,
+  FileBox,
+  PackageCheck,
+  PackagePlus,
+  PackageX,
+  Search,
+  Send,
+  Truck,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -20,11 +30,11 @@ import { toast } from "sonner";
 import { API } from "@/actions/client/api-config";
 import { useSearchParams } from "next/navigation";
 import { RePaymentDialog } from "@/components/custom/_custom-dialog/re-payment-dialog";
-
+import { OrderItem } from "../../payment/successful/payment-successful.types";
 
 interface OrderResponse {
-  orders: Order[],
-  statusCounts: StatusCounts
+  orders: Order[];
+  statusCounts: StatusCounts;
 }
 
 interface Order {
@@ -34,86 +44,128 @@ interface Order {
   orderItems: OrderItem[];
   delivery: Delivery | null;
   discountPrice: number | null;
-  paymentStatus: string,
-  paymentMethod: string,
+  paymentStatus: string;
+  paymentMethod: string;
   pointUsed: number;
   price: number;
-  totalPrice: number,
+  totalPrice: number;
   orderAddressDelivery: OrderAddressDelivery;
 }
 
 interface Delivery {
-  fee: number,
-  estimateDate: string | null
+  fee: number;
+  estimateDate: string | null;
 }
 
 interface StatusCounts {
-  "Pending": number;
-  "Packaging": number;
-  "Shipping": number;
-  "Delivering": number;
+  Pending: number;
+  Packaging: number;
+  Shipping: number;
+  Delivering: number;
 }
 
 const MotionCard = motion.div;
 
 export const OrderTrackingPage = () => {
   const searchParams = useSearchParams();
-  const [orderId, setOrderId] = useState<string | undefined>(searchParams.get("order") ?? undefined);
+  const [orderId, setOrderId] = useState<string | undefined>(
+    searchParams.get("order") ?? undefined
+  );
   const [activeStatus, setActiveStatus] = useState("All");
-  const { data: orders, refetch } = useFetch<ApiResponse<OrderResponse>>('/Orders/user/orders', ["Customer", "Orders"])
-  const [searchText, setSearchText] = useState<string | undefined>()
-  const [orderIdPayment, setOrderIdPayment] = useState<string | undefined>(undefined)
+  const { data: orders, refetch } = useFetch<ApiResponse<OrderResponse>>(
+    "/Orders/user/orders",
+    ["Customer", "Orders"]
+  );
+  const [searchText, setSearchText] = useState<string | undefined>();
+  const [orderIdPayment, setOrderIdPayment] = useState<string | undefined>(
+    undefined
+  );
 
   const status = [
     { value: "All", label: "Tất cả", icon: Columns4 },
-    { value: "Pending", label: "Chờ xác nhận", icon: FileBox, quantity: orders?.value?.statusCounts["Pending"] },
-    { value: "Packaging", label: "Đang đóng gói", icon: PackagePlus, quantity: orders?.value?.statusCounts["Packaging"] },
-    { value: "Shipping", label: "Đang vận chuyển", icon: Truck, quantity: orders?.value?.statusCounts["Shipping"] },
-    { value: "Delivering", label: "Đang giao hàng", icon: Send, quantity: orders?.value?.statusCounts["Delivering"] },
+    {
+      value: "Pending",
+      label: "Chờ xác nhận",
+      icon: FileBox,
+      quantity: orders?.value?.statusCounts["Pending"],
+    },
+    {
+      value: "Packaging",
+      label: "Đang đóng gói",
+      icon: PackagePlus,
+      quantity: orders?.value?.statusCounts["Packaging"],
+    },
+    {
+      value: "Shipping",
+      label: "Đang vận chuyển",
+      icon: Truck,
+      quantity: orders?.value?.statusCounts["Shipping"],
+    },
+    {
+      value: "Delivering",
+      label: "Đang giao hàng",
+      icon: Send,
+      quantity: orders?.value?.statusCounts["Delivering"],
+    },
     { value: "Delivered, Received", label: "Đã giao hàng", icon: PackageCheck },
     { value: "Cancelled", label: "Đã hủy", icon: PackageX },
     { value: "Returned", label: "Hoàn trả", icon: Copy },
   ];
 
-  const orderSearch = searchText ? orders?.value?.orders.filter((order: Order) => order.orderId.includes(searchText))
-    : orders?.value?.orders
+  const orderSearch = searchText
+    ? orders?.value?.orders.filter((order: Order) =>
+        order.orderId.includes(searchText)
+      )
+    : orders?.value?.orders;
 
-  const orderFilter = activeStatus === "All" ? orderSearch :
-    orderSearch?.filter((order: Order) => activeStatus.includes(order.status));
+  const orderFilter =
+    activeStatus === "All"
+      ? orderSearch
+      : orderSearch?.filter((order: Order) =>
+          activeStatus.includes(order.status)
+        );
 
   const handleReceivedOrder = async (orderId: string) => {
     try {
-      const response = await API.patch(`/Orders/${orderId}/confirm`, "")
+      const response = await API.patch(`/Orders/${orderId}/confirm`, "");
       if (response) {
         refetch();
-        toast.success("Xác nhận nhận hàng thành công")
+        toast.success("Xác nhận nhận hàng thành công");
       } else {
-        toast.error("Xác nhận nhận hàng thất bại")
+        toast.error("Xác nhận nhận hàng thất bại");
       }
     } catch (error) {
-      console.log(error)
-      toast.error("Lỗi hệ thống")
+      console.log(error);
+      toast.error("Lỗi hệ thống");
     }
-  }
+  };
 
-  return (
-    orderId !== undefined ? <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} /> : <>
+  return orderId !== undefined ? (
+    <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} />
+  ) : (
+    <>
       <div className="grid w-full grid-cols-8 h-auto py-4 mb-4 bg-white cardStyle px-5 gap-4">
         {status.map((trigger) => (
           <Button
             variant={"outline"}
             key={trigger.value}
-            className={`relative cardStyle flex items-center justify-center gap-2 py-3 transition-all duration-200 ease-in-out font-bold rounded-sm ${activeStatus === trigger.value
-              ? "bg-slate-100 text-slate-700"
-              : "hover:bg-gray-100"
-              }`}
+            className={`relative cardStyle flex items-center justify-center gap-2 py-3 transition-all duration-200 ease-in-out font-bold rounded-sm ${
+              activeStatus === trigger.value
+                ? "bg-slate-100 text-slate-700"
+                : "hover:bg-gray-100"
+            }`}
             onClick={() => setActiveStatus(trigger.value)}
           >
             <trigger.icon className="h-5 w-5" />
             <span className="hidden lg:inline">{trigger.label}</span>
 
-            <span className={`absolute -right-2.5 -top-2.5 bg-red-500 text-white leading-6 w-6 text-sm rounded-full ${trigger.quantity && trigger.quantity > 0 ? 'block' : 'hidden'}`}>{trigger.quantity}</span>
-
+            <span
+              className={`absolute -right-2.5 -top-2.5 bg-red-500 text-white leading-6 w-6 text-sm rounded-full ${
+                trigger.quantity && trigger.quantity > 0 ? "block" : "hidden"
+              }`}
+            >
+              {trigger.quantity}
+            </span>
           </Button>
         ))}
       </div>
@@ -121,7 +173,9 @@ export const OrderTrackingPage = () => {
         <div className="relative w-full">
           <Input
             placeholder="Tìm kiếm mã đơn hàng"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value.toLocaleUpperCase())}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchText(e.target.value.toLocaleUpperCase())
+            }
             className="h-14 w-full cardStyle border border-gray-300 bg-white pl-10 pr-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -145,7 +199,8 @@ export const OrderTrackingPage = () => {
               status={order.status}
               buyDate={order.buyDate}
               timeEstimateDelivery={order.delivery?.estimateDate}
-              onClickDetail={() => setOrderId(order.orderId)} />
+              onClickDetail={() => setOrderId(order.orderId)}
+            />
 
             <div className="px-6 pb-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
               <div className="flex items-center justify-between h-14">
@@ -154,40 +209,108 @@ export const OrderTrackingPage = () => {
                   <Badge
                     variant="outline"
                     className={`w-fit font-medium 
-                    ${order.paymentStatus === "Paid" ? "bg-green-100 text-green-700 border-green-200" : ""}
-                    ${order.paymentStatus === "Fail" ? "bg-red-100 text-red-700 border-red-200" : ""}
-                    ${order.paymentStatus !== "Paid" && order.paymentStatus !== "Fail" ? "bg-amber-100 text-amber-700 border-amber-200" : ""}`}
+                    ${
+                      order.paymentStatus === "Paid"
+                        ? "bg-green-100 text-green-700 border-green-200"
+                        : ""
+                    }
+                    ${
+                      order.paymentStatus === "Fail"
+                        ? "bg-red-100 text-red-700 border-red-200"
+                        : ""
+                    }
+                    ${
+                      order.paymentStatus !== "Paid" &&
+                      order.paymentStatus !== "Fail"
+                        ? "bg-amber-100 text-amber-700 border-amber-200"
+                        : ""
+                    }`}
                   >
-                    {order.paymentStatus === "Paid" ? "Đã thanh toán" :
-                      order.paymentStatus === "Fail" ? "Thanh toán thất bại" :
-                        "Chưa thanh toán"}
+                    {order.paymentStatus === "Paid"
+                      ? "Đã thanh toán"
+                      : order.paymentStatus === "Fail"
+                      ? "Thanh toán thất bại"
+                      : "Chưa thanh toán"}
                   </Badge>
                 </div>
-                {order.status === "Pending" && order.paymentStatus !== "Paid" && order.paymentMethod !== "ShipCode" && (
-                  <Button onClick={() => setOrderIdPayment(order.orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
-                    Thanh toán ngay
-                  </Button>
-                )}
+                {order.status === "Pending" &&
+                  order.paymentStatus !== "Paid" &&
+                  order.paymentMethod !== "ShipCode" && (
+                    <Button
+                      onClick={() => setOrderIdPayment(order.orderId)}
+                      className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm"
+                    >
+                      Thanh toán ngay
+                    </Button>
+                  )}
                 {order.status === "Delivered" && (
-                  <Button onClick={() => handleReceivedOrder(order.orderId)} className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm">
+                  <Button
+                    onClick={() => handleReceivedOrder(order.orderId)}
+                    className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm"
+                  >
                     Đã nhận hàng
                   </Button>
                 )}
               </div>
+
+              {/* <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-3">
+                <span className="font-medium">Trạng thái thanh toán:</span>
+
+                {(() => {
+                  const paymentStatusMap: {
+                    [key: string]: {
+                      label: string;
+                      className: string;
+                    };
+                  } = {
+                    Paid: {
+                      label: "Đã thanh toán",
+                      className: "bg-green-100 text-green-700 border-green-200",
+                    },
+                    Fail: {
+                      label: "Thanh toán thất bại",
+                      className: "bg-red-100 text-red-700 border-red-200",
+                    },
+                    Default: {
+                      label: "Chưa thanh toán",
+                      className: "bg-amber-100 text-amber-700 border-amber-200",
+                    },
+                  };
+
+                  const { label, className } =
+                    paymentStatusMap[order.paymentStatus] ||
+                    paymentStatusMap.Default;
+
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={`w-fit font-medium ${className}`}
+                    >
+                      {label}
+                    </Badge>
+                  );
+                })()}
+              </div> */}
             </div>
 
             <CardContent className="p-6 space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
-                <ShippingInfo orderAddressDelivery={order.orderAddressDelivery} />
+                <ShippingInfo
+                  orderAddressDelivery={order.orderAddressDelivery}
+                />
                 <OrderSummary
                   voucherPrice={order.discountPrice}
                   feeShip={order.delivery?.fee}
                   pointUsed={order.pointUsed}
-                  orderItems={order.orderItems} 
-                  totalPrice={order.totalPrice} />
+                  orderItems={order.orderItems}
+                  totalPrice={order.totalPrice}
+                />
               </div>
               <ScrollArea className="h-[220px] -mx-6 px-6">
-                <ProductList orderStatus={order.status} orderItems={order.orderItems} />
+                <ProductList
+                  orderStatus={order.status}
+                  orderItems={order.orderItems}
+                />
               </ScrollArea>
               <Policies />
             </CardContent>

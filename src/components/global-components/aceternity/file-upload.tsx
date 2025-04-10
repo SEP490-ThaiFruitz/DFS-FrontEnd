@@ -2,7 +2,8 @@ import { cn } from "@/lib/utils";
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
-import { CloudUpload, Upload } from "lucide-react";
+import { CloudUpload, TrashIcon, Upload } from "lucide-react";
+import Image from "next/image";
 
 const mainVariant = {
   initial: {
@@ -27,8 +28,11 @@ const secondaryVariant = {
 
 export const FileUpload = ({
   onChange,
+
+  multiple = false,
 }: {
   onChange?: (files: File[]) => void;
+  multiple?: boolean;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,12 +42,18 @@ export const FileUpload = ({
     onChange && onChange(newFiles);
   };
 
+  const handleRemoveFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+
+    onChange && onChange(files.filter((_, i) => i !== index));
+  };
+
   const handleClick = () => {
     fileInputRef.current?.click();
   };
 
   const { getRootProps, isDragActive } = useDropzone({
-    multiple: false,
+    multiple: multiple,
     noClick: true,
     onDrop: handleFileChange,
     onDropRejected: (error) => {
@@ -76,6 +86,37 @@ export const FileUpload = ({
             Drag or drop your files here or click to upload
           </p>
           <div className="relative w-full mt-10 max-w-xl mx-auto">
+            {files.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
+                {files.map(
+                  (file, idx) =>
+                    file.type.startsWith("image/") && (
+                      <div
+                        key={`preview-${idx}`}
+                        className="relative rounded-3xl overflow-hidden border bg-white dark:bg-neutral-900 shadow"
+                      >
+                        <Image
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          width={200}
+                          height={200}
+                          className="w-full h-40 object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveFile(idx);
+                          }}
+                          className="absolute top-1 right-0 bg-rose-500 text-white rounded-full p-1 hover:bg-rose-600"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )
+                )}
+              </div>
+            )}
+
             {files.length > 0 &&
               files.map((file, idx) => (
                 <motion.div

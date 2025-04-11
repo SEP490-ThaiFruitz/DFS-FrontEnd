@@ -1,39 +1,11 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo } from "react";
 import Image from "next/image";
-import {
-  Minus,
-  Plus,
-  ChevronDown,
-  ChevronUp,
-  Package,
-  Gift,
-  ShoppingBag,
-  Tag,
-  Weight,
-  Info,
-} from "lucide-react";
+import { Package, Tag, Info, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+
 import {
   Popover,
   PopoverContent,
@@ -43,6 +15,10 @@ import { formatVND } from "@/lib/format-currency";
 import { AdvancedColorfulBadges } from "../../badge/advanced-badge";
 import { Separator } from "@/components/ui/separator";
 import { Promotion } from "@/hooks/use-cart-store";
+import { interactApiClient } from "@/actions/client/interact-api-client";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { USER_KEY } from "@/app/key/user-key";
 
 interface CustomComboItem {
   id: string;
@@ -85,6 +61,33 @@ interface ComboCartItemProps {
 //   quantity?: number;
 // }
 
+type RemoveCustomComboResponse = {
+  isSuccess: boolean;
+  error: {
+    code: string;
+    message: string;
+  };
+};
+
+export const removeCustomComboProduct = async (id: string) => {
+  try {
+    const response = await interactApiClient.delete<RemoveCustomComboResponse>(
+      `/Combos/${id}/user`
+    );
+
+    if (response?.isSuccess) {
+      toast.success("Xóa sản phẩm thành công!");
+      return response?.isSuccess;
+    } else {
+      toast.error("Xóa sản phẩm thất bại!");
+    }
+  } catch (error) {
+    toast.error("Có lỗi khi xóa sản phẩm!");
+    console.log({ error });
+  } finally {
+  }
+};
+
 export const CustomComboProductCard = memo(
   ({
     combo,
@@ -105,7 +108,9 @@ export const CustomComboProductCard = memo(
       0
     );
 
-    console.log(combo);
+    const queryClient = useQueryClient();
+
+    // console.log(combo);
 
     return (
       <div
@@ -114,6 +119,30 @@ export const CustomComboProductCard = memo(
           className
         )}
       >
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-background border shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+          // onClick={() => {
+          //   cartActions.removeProductOutOfCart(product.cartItemId);
+          //   queryClient.invalidateQueries({ queryKey: [CART_KEY.CARTS] });
+          // }}
+
+          onClick={async () => {
+            const remove = await removeCustomComboProduct(combo.id);
+
+            console.log("remove custom combo", remove);
+            if (remove) {
+              queryClient.invalidateQueries({
+                queryKey: [USER_KEY.CUSTOM_COMBO],
+              });
+            }
+          }}
+        >
+          <Trash2 className="h-4 w-4 text-muted-foreground" />
+          <span className="sr-only">Xóa sản phẩm</span>
+        </Button>
+
         {/* <div className="flex gap-3 w-full"> */}
         <div className="relative h-28 w-28 flex-shrink-0 rounded-md overflow-hidden bg-gradient-to-br from-muted/10 to-muted/30 border border-muted/20">
           {hasImages ? (

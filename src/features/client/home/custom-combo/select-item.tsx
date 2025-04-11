@@ -65,6 +65,12 @@ function SortableItem({
     ? item.variant.promotion.price
     : item.variant.price;
 
+  const hasDiscount = item?.variant?.promotion !== null;
+  const discountPrice = item?.variant?.promotion?.price;
+  const originalPrice = item.variant.price;
+
+  // const productVariantId = item?.productVariantId;
+
   return (
     <motion.div
       layout
@@ -152,15 +158,16 @@ function SortableItem({
           <div className="text-right">
             {/* <div className="flex items-center gap-1">  */}
 
-            {item.variant?.promotion?.price ? (
+            {hasDiscount ? (
               <div className="flex items-center gap-2">
                 <motion.div
-                  key={item.variant.promotion.price * item.quantity}
+                  // key={item.variant.promotion.price * item.quantity}
+                  key={`variant-${item.productVariantId}-${item.quantity}`}
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
                   className="font-bold text-base text-sky-500"
                 >
-                  {formatVND(item.variant.promotion.price * item.quantity)}
+                  {formatVND((discountPrice as number) * item.quantity)}
                 </motion.div>
 
                 <motion.div
@@ -169,12 +176,13 @@ function SortableItem({
                   animate={{ scale: 1 }}
                   className="font-bold text-xs text-rose-500 line-through"
                 >
-                  {formatVND(price * item.quantity)}
+                  {formatVND(originalPrice * item.quantity)}
                 </motion.div>
               </div>
             ) : (
               <motion.div
-                key={price * item.quantity}
+                // key={price * item.quantity}
+                key={`variant-${item.productVariantId}-${item.quantity}`}
                 initial={{ scale: 1.1 }}
                 animate={{ scale: 1 }}
                 className="font-bold text-base text-sky-500"

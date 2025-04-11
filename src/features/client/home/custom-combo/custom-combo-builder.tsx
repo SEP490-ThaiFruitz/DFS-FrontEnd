@@ -369,12 +369,6 @@ export const CustomComboBuilder = memo(
       setActiveItem(null);
     };
 
-    // const conditionQuantity = selectedItems.reduce((acc, curr) => {
-    //   return acc + curr.quantity;
-    // }, 0);
-
-    // console.log({ selectedItems });
-
     return (
       <DndContext
         onDragStart={handleDragStart}
@@ -524,7 +518,7 @@ export const CustomComboBuilder = memo(
                   )}
                 </div>
                 <h3 className="text-sm text-slate-700 font-semibold mb-2">
-                  Tạo Combo cần tối thiểu 4 sản phẩm
+                  Tạo Combo cần tối thiểu 5 sản phẩm
                 </h3>
 
                 <div className="mb-6">
@@ -597,7 +591,7 @@ export const CustomComboBuilder = memo(
 
                       {calculateTotalPrice().discountPercentage > 0 && (
                         <div className="flex justify-between items-center text-sm">
-                          <span className="text-sky-500 flex items-center gap-1">
+                          <span className="text-rose-400 flex items-center gap-1">
                             <span>
                               Giảm giá combo (
                               {calculateTotalPrice().discountPercentage}%):
@@ -610,7 +604,7 @@ export const CustomComboBuilder = memo(
                               sản phẩm
                             </span>
                           </span>
-                          <span className="text-sky-500 font-medium">
+                          <span className="text-rose-500 font-semibold text-base">
                             -{formatVND(calculateTotalPrice().discountAmount)}
                           </span>
                         </div>

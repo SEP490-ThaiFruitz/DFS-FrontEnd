@@ -47,6 +47,7 @@ import { useCartStore } from "@/hooks/use-cart-store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { orderTypeLabel } from "@/utils/label";
 import { useReactToPrint } from "react-to-print";
+import { cn } from "@/lib/utils";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -356,7 +357,13 @@ const CustomComboThumbnail = memo(({ images }: { images: string[] }) => {
 CustomComboThumbnail.displayName = "CustomComboThumbnail";
 
 export const OrderItem = memo(
-  ({ item }: { item: PaymentOrderValue["orderItems"][0] }) => {
+  ({
+    item,
+    className,
+  }: {
+    item: PaymentOrderValue["orderItems"][0];
+    className?: string;
+  }) => {
     const hasImages = item.customImages && item.customImages.length > 0;
 
     const hasDiscount = item.discountPrice < item.unitPrice;
@@ -367,7 +374,12 @@ export const OrderItem = memo(
     const priceItem = hasDiscount ? discountPrice : originalPrice;
 
     return (
-      <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-slate-50 cardStyle ">
+      <div
+        className={cn(
+          "flex flex-col sm:flex-row items-start sm:items-center p-4 bg-slate-50 cardStyle ",
+          className
+        )}
+      >
         {hasImages ? (
           <CustomComboThumbnail images={item.customImages as string[]} />
         ) : (
@@ -533,23 +545,24 @@ const OrderSummaryCard = memo(({ order }: { order: PaymentOrderValue }) => (
 
         {order.discountPrice && (
           <div className="flex justify-between items-center">
-            <span className="text-slate-600">Giá giảm</span>
-            <span className="font-medium text-green-600">
-              -{formatVND(order.discountPrice - order.delivery.fee)}
+            <span className="text-slate-600 font-semibold">Giá giảm</span>
+            <span className="font-semibold text-green-600">
+              {/* -{formatVND(order.discountPrice - order.delivery.fee)} */}-
+              {formatVND(order.discountPrice)}
             </span>
           </div>
         )}
         {order.pointUsed > 0 && (
           <div className="flex justify-between items-center">
             <span className="text-slate-600">Tích điểm</span>
-            <span className="font-medium text-green-600">
+            <span className="font-semibold text-green-600">
               -{order.pointUsed}
             </span>
           </div>
         )}
         <Separator className="my-4" />
         <div className="flex justify-between items-center">
-          <span className="text-slate-900 font-semibold">
+          <span className="text-slate-900 font-semibold text-xl  ">
             Tổng giá đơn hàng
           </span>
           <div className="bg-sky-50 px-4 py-2 rounded-lg border border-sky-100">

@@ -27,7 +27,7 @@ const groq = createGroq({
 export async function POST(req: Request) {
   const { messages, model = LLAMA_MODEL } = await req.json();
 
-  console.log(messages);
+  // console.log(messages);
 
   const result = streamText({
     model: groq(model),
@@ -39,32 +39,32 @@ export async function POST(req: Request) {
       ...convertToCoreMessages(messages),
     ],
     maxSteps: 3,
-    tools: {
-      weather: tool({
-        description:
-          "Hãy thử lấy thông tin thời tiết cho địa điểm nơi bạn ở và làm việc",
-        parameters: z.object({
-          location: z
-            .string()
-            .describe("Địa điểm bạn muốn xem thông tin thời tiết"),
-        }),
-        execute: async ({ location }) => {
-          return await getWeather(location);
-        },
-      }),
-      delay: tool({
-        description: "Pauses the chatbot for a given duration",
-        parameters: z.object({
-          duration: z
-            .number()
-            .positive()
-            .describe("The duration to pause in seconds"),
-        }),
-        execute: async ({ duration }) => {
-          return await delay(duration);
-        },
-      }),
-    },
+    // tools: {
+    //   weather: tool({
+    //     description:
+    //       "Hãy thử lấy thông tin thời tiết cho địa điểm nơi bạn ở và làm việc",
+    //     parameters: z.object({
+    //       location: z
+    //         .string()
+    //         .describe("Địa điểm bạn muốn xem thông tin thời tiết"),
+    //     }),
+    //     execute: async ({ location }) => {
+    //       return await getWeather(location);
+    //     },
+    //   }),
+    //   delay: tool({
+    //     description: "Pauses the chatbot for a given duration",
+    //     parameters: z.object({
+    //       duration: z
+    //         .number()
+    //         .positive()
+    //         .describe("The duration to pause in seconds"),
+    //     }),
+    //     execute: async ({ duration }) => {
+    //       return await delay(duration);
+    //     },
+    //   }),
+    // },
   });
 
   // console.log(result);
@@ -81,4 +81,4 @@ export async function POST(req: Request) {
   });
 }
 
-const SYSTEM_PROMPT = `You are a helpful AI assistant demonstrating the shadcn-chatbot-kit component library. You aim to be helpful and knowledgeable while showing off the UI capabilities of the chat interface.`;
+const SYSTEM_PROMPT = `Bạn là trợ lý AI hữu ích. Bạn muốn hữu ích và hiểu biết trong khi trình bày khả năng UI của giao diện trò chuyện.`;

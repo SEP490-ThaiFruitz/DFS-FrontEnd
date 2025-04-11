@@ -518,7 +518,7 @@ export const CustomComboBuilder = memo(
                   )}
                 </div>
                 <h3 className="text-sm text-slate-700 font-semibold mb-2">
-                  Tạo Combo cần tối thiểu 4 sản phẩm
+                  Tạo Combo cần tối thiểu 5 sản phẩm
                 </h3>
 
                 <div className="mb-6">

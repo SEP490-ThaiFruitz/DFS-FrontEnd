@@ -8,13 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import Link from "next/link";
 import { CartData } from "@/hooks/use-cart-store";
-import { token } from "@/lib/token";
-import { useRouter } from "next/navigation";
-import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { formatVND } from "@/lib/format-currency";
 import { AdvancedColorfulBadges } from "../badge/advanced-badge";
 
@@ -31,12 +27,17 @@ export const CartSummary = memo(
       const subtotal = cart.reduce(
         (acc, item) =>
           acc +
-            (item.variant?.promotion?.price || item.variant.price) *
-              item.quantityOrder! || 0,
+            // (item.variant?.promotion?.price || item.variant.price) *
+            item.variant.price * item.quantityOrder! || 0,
         0
       );
       const total = cart.reduce(
-        (acc, item) => acc + item.variant.price * item.quantityOrder!,
+        (acc, item) =>
+          acc +
+            (item.variant.promotion
+              ? item.variant.promotion.price
+              : item.variant.price) *
+              item.quantityOrder! || 0,
         0
       );
       const discount = subtotal - total;

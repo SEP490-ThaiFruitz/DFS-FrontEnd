@@ -60,6 +60,7 @@ import { interactApiClient } from "@/actions/client/interact-api-client";
 import { useQuery } from "@tanstack/react-query";
 import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
+import { ApplyVoucher, VoucherData } from "./vouchers-events";
 
 interface Product {
   id: number;
@@ -90,8 +91,9 @@ const paymentMethods: { value: string; label: string }[] = [
 ];
 
 function PaymentClientPage() {
-  const [promoCode, setPromoCode] = useState("");
   const { customCombo } = useData();
+
+  const [voucher, setVoucher] = useState<VoucherData | undefined>(undefined);
 
   const deliveryMethods: DeliveryMethodType[] = [
     {
@@ -141,7 +143,7 @@ function PaymentClientPage() {
     );
   }
 
-  console.log(customCombo.data?.value);
+  // console.log(customCombo.data?.value);
 
   const customComboItem = useMemo(() => {
     return customCombo.data?.value
@@ -204,16 +206,18 @@ function PaymentClientPage() {
       0
     ) || 0;
 
-  const discount = promoCode === "FRUIT10" ? subtotal * 0.1 : 0;
-
   const total =
     cart?.reduce(
       (acc, curr) =>
         acc +
-        (curr.variant.promotion ? curr.variant.price : curr.variant.price) *
+        (curr.variant.promotion
+          ? curr.variant.promotion.price
+          : curr.variant.price) *
           Number(curr?.quantityOrder),
       0
     ) || 0;
+
+  // console.log({ total });
 
   const isAuth = Boolean(token);
 
@@ -295,6 +299,37 @@ function PaymentClientPage() {
       controller.abort();
     };
   }, [getCalculateShippingFee]);
+
+  // handle voucher
+
+  const totalBeforeVoucher = total + customComboPrice;
+
+  const isVoucherValid =
+    voucher && totalBeforeVoucher >= voucher.minimumOrderAmount;
+  useEffect(() => {
+    if (voucher?.id && isVoucherValid) {
+      form.setValue("voucherId", voucher.id);
+    } else {
+      form.setValue("voucherId", null); // không hợp lệ thì không set
+    }
+  }, [voucher, isVoucherValid]);
+
+  const voucherDiscount = isVoucherValid
+    ? (() => {
+        let discount = 0;
+
+        if (voucher.discountType.toUpperCase() === "PERCENTAGE") {
+          discount = totalBeforeVoucher * (voucher.value / 100);
+        } else if (voucher.discountType.toUpperCase() === "AMOUNT") {
+          discount = voucher.value;
+        }
+
+        return Math.min(discount, voucher.maximumDiscountAmount);
+      })()
+    : 0;
+
+  const finalTotal =
+    totalBeforeVoucher + Number(shippingFee?.totalFee ?? 0) - voucherDiscount;
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 ">
@@ -457,36 +492,13 @@ function PaymentClientPage() {
                   ) : null}
                 </ScrollArea>
 
-                <div className="mt-6 space-y-4">
-                  <div className="flex items-end gap-2">
-                    <div className="flex-1 space-y-2">
-                      <Label className="flex items-center gap-1">
-                        <Tag className="w-4 h-4" />
-                        Mã giảm giá
-                      </Label>
-                      <Input
-                        value={promoCode}
-                        onChange={(e) =>
-                          setPromoCode(e.target.value.toUpperCase())
-                        }
-                        placeholder="Enter code"
-                        className="inputStyle"
-                      />
-                    </div>
-                    <Button variant="outline">Apply</Button>
-                  </div>
-                  {promoCode === "FRUIT10" && (
-                    <span className="text-green-600 text-sm">
-                      10% áp dụng khi có mã giảm giá
-                    </span>
-                  )}
-                </div>
+                <ApplyVoucher setVoucher={setVoucher} />
 
                 <div className="mt-6 space-y-2 border-t pt-4">
                   <div className="flex justify-between text-sm font-semibold">
                     <span className="text-slate-700">Tạm tính</span>
                     <span className="font-semibold text-sky-500">
-                      {formatVND(subtotal + customComboPrice)}
+                      {formatVND(subtotal + customComboPrice + voucherDiscount)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm font-semibold">
@@ -498,23 +510,39 @@ function PaymentClientPage() {
                       {/* {formatVND(shippingFee)} */}
                     </span>
                   </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-sm text-green-600">
+
+                  {voucher?.id && (
+                    <div
+                      className={`flex justify-between text-sm ${
+                        isVoucherValid ? "text-green-600" : "text-red-500"
+                      }`}
+                    >
                       <span>Giảm giá</span>
-                      <span>-${discount.toFixed(2)}</span>
+                      {isVoucherValid ? (
+                        // <span>-{formatVND(voucher.maximumDiscountAmount)}</span>
+                        <span>-{formatVND(voucherDiscount)}</span>
+                      ) : (
+                        <span>
+                          Không đủ điều kiện (tối thiểu{" "}
+                          {formatVND(voucher.minimumOrderAmount)})
+                        </span>
+                      )}
                     </div>
                   )}
+
                   <div className="flex justify-between text-lg font-bold pt-2">
                     <span>Tổng</span>
                     <AdvancedColorfulBadges
                       color="amber"
                       className="text-sky-500 text-xl"
                     >
-                      {formatVND(
+                      {/* {formatVND(
                         total +
                           customComboPrice +
                           Number(shippingFee?.totalFee ?? 0)
-                      )}
+                      )} */}
+
+                      {formatVND(finalTotal)}
                     </AdvancedColorfulBadges>
                   </div>
                 </div>
@@ -522,11 +550,6 @@ function PaymentClientPage() {
               <CardFooter>
                 <ButtonCustomized
                   type="submit"
-                  // onClick={() => {
-                  //   isAuth
-                  //     ? () => form.handleSubmit(onPaymentSubmit)()
-                  //     : loginModal.onOpen();
-                  // }}
                   className="w-full bg-sky-400/75 hover:bg-sky-600/80 font-semibold text-lg hover:motion-preset-confetti "
                   label="Tiến hành thanh toán"
                 />

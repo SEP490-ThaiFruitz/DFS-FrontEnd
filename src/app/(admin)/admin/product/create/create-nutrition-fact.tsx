@@ -55,6 +55,7 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
         form.setValue("nutritionFactId", fact?.nutritionFactId?.toString());
         form.setValue("amount", fact?.amount.toString())
         form.setValue("nutrientId", fact?.nutrientId.toString() ?? "1")
+        handleUnit();
     }
 
 

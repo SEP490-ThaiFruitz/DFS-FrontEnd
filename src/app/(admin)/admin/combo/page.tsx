@@ -22,7 +22,7 @@ interface Combo {
     capacity: number,
     quantity: number,
     price: number,
-    origin: number,
+    save: number,
     comboType: string,
     event: string,
     isLocked: boolean,
@@ -78,22 +78,27 @@ function ComboPage() {
             accessorKey: "price",
             size: 200,
             header: "Giá",
-            cell: ({ row }) => (
-                <div className="flex flex-col space-y-3">
-                    {row.original.origin > row.original.price ? (
-                        <>
-                            <div>
-                                <span>Giá niêm yết:</span> <span className="font-bold">{formatVND(row.original.price)}</span>
-                            </div>
-                            <div>
-                                <span>Giá gốc:</span> <span className="font-bold">{formatVND(row.original.origin)}</span>
-                            </div>
-                        </>
-                    ) : (
-                        <span className="font-bold">{formatVND(row.original.price)}</span>
-                    )}
-                </div>
-            )
+            cell: ({ row }) => {
+
+                const originPrice = row.original.price + row.original.save;
+
+                return (
+                    <div className="flex flex-col space-y-3">
+                        {originPrice > row.original.price ? (
+                            <>
+                                <div>
+                                    <span>Giá niêm yết:</span> <span className="font-bold">{formatVND(row.original.price)}</span>
+                                </div>
+                                <div>
+                                    <span>Giá gốc:</span> <span className="font-bold">{formatVND(originPrice)}</span>
+                                </div>
+                            </>
+                        ) : (
+                            <span className="font-bold">{formatVND(row.original.price)}</span>
+                        )}
+                    </div>
+                )
+            }
         },
         {
             accessorKey: "comboType",

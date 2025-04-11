@@ -37,19 +37,19 @@ const PaymentPage = () => {
         Order: { color: "bg-blue-100 text-blue-800", text: "Mua hàng" },
         Wallet: { color: "bg-teal-100 text-teal-700", text: "Nạp tiền" },
     };
-    
+
     const paymentMethodColors: Record<string, { color: string; text: string }> = {
         VnPay: { color: "bg-blue-100 text-blue-800", text: "VnPay" },
         PayOs: { color: "bg-teal-100 text-teal-700", text: "PayOs" },
         ShipCode: { color: "bg-yellow-100 text-yellow-800", text: "ShipCode" },
         Wallet: { color: "bg-indigo-100 text-indigo-800", text: "Ví" },
     };
-    
+
     const paymentSatusColors: Record<string, { color: string; text: string }> = {
         Pending: { color: "bg-blue-100 text-blue-800", text: "Chờ thanh toán" },
         Paid: { color: "bg-teal-100 text-teal-700", text: "Đã thanh toán" },
         Fail: { color: "bg-red-100 text-red-800", text: "Thất bại" },
-    };    
+    };
 
     const columns: ColumnDef<Transaction>[] = [
         {
@@ -59,6 +59,7 @@ const PaymentPage = () => {
         {
             accessorKey: "referenceId",
             header: "Mã tham chiếu",
+            cell: ({ row }) => row.original.walletId ?? row.original.orderId,
         },
         {
             accessorKey: "content",
@@ -165,7 +166,7 @@ const PaymentPage = () => {
                     isOpen={transaction !== undefined}
                     onClose={() => setTransaction(undefined)}
                     transactionNo={transaction.transactionNo}
-                    paymentMethod={transaction.type}
+                    paymentMethod={transaction.paymentMethod}
                 />
             )}
         </div>

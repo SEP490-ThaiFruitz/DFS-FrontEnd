@@ -71,6 +71,13 @@ export const ExportWareSafeTypes = z.object({
     }).nonempty({
         message: "Vui lòng chọn lô",
     }),
+    orderId: z.string().optional(),
+    exportType: z.string({
+        required_error: "Vui lòng chọn loại xuất",
+        message: "Vui lòng chọn loại xuất",
+    }).nonempty({
+        message: "Vui lòng chọn loại xuất",
+    }),
     productBatchItemId: z.string({
         required_error: "Vui lòng sản phẩm",
         message: "Vui lòng sản phẩm",

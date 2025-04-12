@@ -27,24 +27,6 @@ const CategorySlide = () => {
               key={category.id}
               className="md:basis-1/2 lg:basis-1/3 pl-4 p-4 "
             >
-              {/* <Link
-                href={`/find?category=${category.name}`}
-                key={category.id}
-                className="flex flex-col items-center justify-center border text-center p-1 shadow-sm hover:cursor-pointer animate-out hoverAnimate rounded-lg cardStyle bg-white"
-              >
-                <div>
-                  <Image
-                    className="object-cover"
-                    src={category.thumbnail ?? "/images/third-background.png"}
-                    alt={category.name}
-                    height={200}
-                    width={200}
-                  />
-                </div>
-                <h1 className="font-bold text-slate-700 font-7xl">
-                  {category.name}
-                </h1>
-              </Link> */}
               <Link
                 href={`/find?category=${category.name}`}
                 key={category.id}
@@ -62,7 +44,7 @@ const CategorySlide = () => {
                     priority
                   />
                 </div>
-                <h1 className="mt-2 text-base font-bold text-slate-700 text-center">
+                <h1 className="mt-2 text-xl  font-bold text-slate-700 text-center">
                   {category.name}
                 </h1>
               </Link>

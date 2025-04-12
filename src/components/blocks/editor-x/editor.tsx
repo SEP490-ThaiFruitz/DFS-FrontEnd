@@ -60,7 +60,7 @@ const Editor = ({
         <TooltipProvider>
           <SharedAutocompleteContext>
             <FloatingLinkContext>
-              <Plugins maxLength={maxLength} />
+              <Plugins maxLength={maxLength} readOnly={readOnly} />
 
               <OnChangePlugin
                 ignoreSelectionChange={true}

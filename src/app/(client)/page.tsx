@@ -5,6 +5,7 @@ import Promotion from "@/features/client/home/promotion";
 import CategorySlide from "@/features/client/home/category-slide";
 import { MarqueeMarketing } from "@/features/client/home/marquee-marketing";
 import dynamic from "next/dynamic";
+import { AppleCardBlogsCarousel } from "@/features/client/home/apple-card-carousel-blogs";
 // import { ProductFilterSidebarContainer } from "@/components/custom/filter-product-sidebar/product-filter-sidebar-container";
 
 const ProductFilterSidebarContainer = dynamic(() =>
@@ -39,6 +40,8 @@ const ClientPage = () => {
         <Promotion />
 
         <CategorySlide />
+
+        <AppleCardBlogsCarousel />
 
         {/* <div className=" my-10 max-w-full rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 dark:bg-neutral-800"> 
       

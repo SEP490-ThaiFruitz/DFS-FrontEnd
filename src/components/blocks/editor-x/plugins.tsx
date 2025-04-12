@@ -97,11 +97,12 @@ import { ContentEditable } from "@/components/editor/editor-ui/content-editable"
 
 interface PluginsProps {
   maxLength?: number;
+  readOnly?: boolean;
 }
 export const placeholder = "Press / for commands...";
 // const maxLength = 500;
 
-export function Plugins({ maxLength = 500 }: PluginsProps) {
+export function Plugins({ maxLength = 500, readOnly }: PluginsProps) {
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
 
@@ -113,59 +114,61 @@ export function Plugins({ maxLength = 500 }: PluginsProps) {
 
   return (
     <div className="relative">
-      <ToolbarPlugin>
-        {({ blockType }) => (
-          <div className="vertical-align-middle sticky top-0 z-10 flex gap-2 overflow-auto border-b p-1">
-            <HistoryToolbarPlugin />
-            <Separator orientation="vertical" className="h-8" />
-            <BlockFormatDropDown>
-              <FormatParagraph />
-              <FormatHeading levels={["h1", "h2", "h3"]} />
-              <FormatNumberedList />
-              <FormatBulletedList />
-              <FormatCheckList />
-              <FormatCodeBlock />
-              <FormatQuote />
-            </BlockFormatDropDown>
-            {blockType === "code" ? (
-              <CodeLanguageToolbarPlugin />
-            ) : (
-              <>
-                <FontFamilyToolbarPlugin />
-                <FontSizeToolbarPlugin />
-                <Separator orientation="vertical" className="h-8" />
-                <FontFormatToolbarPlugin format="bold" />
-                <FontFormatToolbarPlugin format="italic" />
-                <FontFormatToolbarPlugin format="underline" />
-                <FontFormatToolbarPlugin format="strikethrough" />
-                <Separator orientation="vertical" className="h-8" />
-                <SubSuperToolbarPlugin />
-                <LinkToolbarPlugin />
-                <Separator orientation="vertical" className="h-8" />
-                <ClearFormattingToolbarPlugin />
-                <Separator orientation="vertical" className="h-8" />
-                <FontColorToolbarPlugin />
-                <FontBackgroundToolbarPlugin />
-                <Separator orientation="vertical" className="h-8" />
-                <ElementFormatToolbarPlugin />
-                <Separator orientation="vertical" className="h-8" />
-                <BlockInsertPlugin>
-                  <InsertHorizontalRule />
-                  <InsertPageBreak />
-                  <InsertImage />
-                  <InsertInlineImage />
-                  <InsertCollapsibleContainer />
-                  <InsertExcalidraw />
-                  <InsertTable />
-                  <InsertPoll />
-                  <InsertColumnsLayout />
-                  <InsertEmbeds />
-                </BlockInsertPlugin>
-              </>
-            )}
-          </div>
-        )}
-      </ToolbarPlugin>
+      {!readOnly && (
+        <ToolbarPlugin>
+          {({ blockType }) => (
+            <div className="vertical-align-middle sticky top-0 z-10 flex gap-2 overflow-auto border-b p-1">
+              <HistoryToolbarPlugin />
+              <Separator orientation="vertical" className="h-8" />
+              <BlockFormatDropDown>
+                <FormatParagraph />
+                <FormatHeading levels={["h1", "h2", "h3"]} />
+                <FormatNumberedList />
+                <FormatBulletedList />
+                <FormatCheckList />
+                <FormatCodeBlock />
+                <FormatQuote />
+              </BlockFormatDropDown>
+              {blockType === "code" ? (
+                <CodeLanguageToolbarPlugin />
+              ) : (
+                <>
+                  <FontFamilyToolbarPlugin />
+                  <FontSizeToolbarPlugin />
+                  <Separator orientation="vertical" className="h-8" />
+                  <FontFormatToolbarPlugin format="bold" />
+                  <FontFormatToolbarPlugin format="italic" />
+                  <FontFormatToolbarPlugin format="underline" />
+                  <FontFormatToolbarPlugin format="strikethrough" />
+                  <Separator orientation="vertical" className="h-8" />
+                  <SubSuperToolbarPlugin />
+                  <LinkToolbarPlugin />
+                  <Separator orientation="vertical" className="h-8" />
+                  <ClearFormattingToolbarPlugin />
+                  <Separator orientation="vertical" className="h-8" />
+                  <FontColorToolbarPlugin />
+                  <FontBackgroundToolbarPlugin />
+                  <Separator orientation="vertical" className="h-8" />
+                  <ElementFormatToolbarPlugin />
+                  <Separator orientation="vertical" className="h-8" />
+                  <BlockInsertPlugin>
+                    <InsertHorizontalRule />
+                    <InsertPageBreak />
+                    <InsertImage />
+                    <InsertInlineImage />
+                    <InsertCollapsibleContainer />
+                    <InsertExcalidraw />
+                    <InsertTable />
+                    <InsertPoll />
+                    <InsertColumnsLayout />
+                    <InsertEmbeds />
+                  </BlockInsertPlugin>
+                </>
+              )}
+            </div>
+          )}
+        </ToolbarPlugin>
+      )}
       <div className="relative">
         <AutoFocusPlugin />
         <RichTextPlugin
@@ -235,29 +238,31 @@ export function Plugins({ maxLength = 500 }: PluginsProps) {
 
         <ListMaxIndentLevelPlugin />
       </div>
-      <ActionsPlugin>
-        <div className="clear-both flex items-center justify-between border-t p-1 overflow-auto gap-2">
-          <div className="flex justify-start flex-1">
-            <MaxLengthPlugin maxLength={maxLength} />
-            <CharacterLimitPlugin maxLength={maxLength} charset="UTF-16" />
+      {!readOnly && (
+        <ActionsPlugin>
+          <div className="clear-both flex items-center justify-between border-t p-1 overflow-auto gap-2">
+            <div className="flex justify-start flex-1">
+              <MaxLengthPlugin maxLength={maxLength} />
+              <CharacterLimitPlugin maxLength={maxLength} charset="UTF-16" />
+            </div>
+            <div>
+              <CounterCharacterPlugin charset="UTF-16" />
+            </div>
+            <div className="flex justify-end flex-1">
+              <SpeechToTextPlugin />
+              <ShareContentPlugin />
+              <ImportExportPlugin />
+              <MarkdownTogglePlugin shouldPreserveNewLinesInMarkdown={true} />
+              <EditModeTogglePlugin />
+              <>
+                <ClearEditorActionPlugin />
+                <ClearEditorPlugin />
+              </>
+              <TreeViewPlugin />
+            </div>
           </div>
-          <div>
-            <CounterCharacterPlugin charset="UTF-16" />
-          </div>
-          <div className="flex justify-end flex-1">
-            <SpeechToTextPlugin />
-            <ShareContentPlugin />
-            <ImportExportPlugin />
-            <MarkdownTogglePlugin shouldPreserveNewLinesInMarkdown={true} />
-            <EditModeTogglePlugin />
-            <>
-              <ClearEditorActionPlugin />
-              <ClearEditorPlugin />
-            </>
-            <TreeViewPlugin />
-          </div>
-        </div>
-      </ActionsPlugin>
+        </ActionsPlugin>
+      )}
     </div>
   );
 }

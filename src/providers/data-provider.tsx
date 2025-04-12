@@ -13,12 +13,15 @@ import { Product } from "@/hooks/use-cart-store";
 import { UseQueryResult } from "@tanstack/react-query";
 import { USER_KEY } from "@/app/key/user-key";
 import { CustomComboProduct } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
+import { BlogPost } from "@/types/blogs.types";
 
 export type DataContextType = {
   products: UseQueryResult<ProductTransformType, Error>;
 
   addresses: UseQueryResult<ApiResponse<PageResult<AddressTypes>>, Error>;
   customCombo: UseQueryResult<ApiResponse<CustomComboProduct[]>, Error>;
+
+  blogs: UseQueryResult<ApiResponse<PageResult<BlogPost>>, Error>;
 };
 
 export type ProductTransformType = Omit<PageResult<Product>, "items"> & {
@@ -41,6 +44,9 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   const products = useFetch<ProductTransformType>("/Products", [
     ProductKey.PRODUCTS,
+  ]);
+  const blogs = useFetch<ApiResponse<PageResult<BlogPost>>>("/Blogs", [
+    "blogs",
   ]);
 
   // console.log(productList);
@@ -69,6 +75,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         products,
         addresses,
         customCombo,
+        blogs,
       }}
     >
       {children}

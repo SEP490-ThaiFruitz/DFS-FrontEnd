@@ -349,7 +349,7 @@ export default function BlogForm() {
                   <TabsContent value="preview" className="mt-0">
                     <Card>
                       <CardContent className="p-6">
-                        {form.getValues("content") ? (
+                        {/* {form.getValues("content") ? (
                           <div
                             className="prose prose-slate max-w-none"
                             dangerouslySetInnerHTML={{
@@ -360,7 +360,14 @@ export default function BlogForm() {
                           <div className="text-slate-400 italic">
                             Your content preview will appear here...
                           </div>
-                        )}
+                        )} */}
+
+                        <Editor
+                          maxLength={5000}
+                          editorSerializedState={editorState}
+                          // onSerializedChange={(value) => setEditorState(value)}
+                          readOnly
+                        />
                       </CardContent>
                     </Card>
                   </TabsContent>

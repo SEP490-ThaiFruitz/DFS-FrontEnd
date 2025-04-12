@@ -9,5 +9,9 @@ export enum COMBO_KEY {
 export enum PRODUCT_BATCH_KEY {
   REQUESTS = "requests",
   PRODUCT_BATCHES = "product_batches",
-  PRODUCT_BATCH_DETAIL = "product_batch_detail"
+  PRODUCT_BATCH_DETAIL = "product_batch_detail",
+}
+
+export enum BLOG_KEY {
+  BLOGS = "blogs",
 }

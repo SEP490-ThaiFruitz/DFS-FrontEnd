@@ -73,7 +73,7 @@ export const AppleCardBlogsCarousel = () => {
         Get to know your iSad.
       </h2> */}
 
-      <h1 className="my-14 text-center text-4xl font-bold font-sans ">
+      <h1 className="my-7 text-center text-4xl font-bold font-sans ">
         Về Thaifruitz
       </h1>
       <Carousel items={cards} />

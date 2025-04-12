@@ -43,12 +43,7 @@ const ClientPage = () => {
 
         <AppleCardBlogsCarousel />
 
-        {/* <div className=" my-10 max-w-full rounded-3xl bg-gray-950/5 p-2 ring-1 ring-neutral-700/10 dark:bg-neutral-800"> 
-      
-      */}
-
         <MarqueeMarketing />
-        {/* </div> */}
 
         {/* <BestSellter /> */}
       </div>

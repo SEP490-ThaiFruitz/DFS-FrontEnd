@@ -51,6 +51,9 @@ import { API } from "@/app/key/url";
 
 import Cookies from "js-cookie";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
+import { BLOG_KEY } from "@/app/key/comm-key";
+import { CuisineSelector } from "@/components/custom/_custom_select/cuisine-selector";
 
 // Dynamically import the editor to reduce initial load time
 const Editor = dynamic(() => import("@/components/blocks/editor-x/editor"), {
@@ -70,8 +73,16 @@ const formSchema = z.object({
     message: "Nội dung phải có ít nhất 10 ký tự.",
   }),
   thumbnail: z.instanceof(File).optional(),
-  blogCategoryId: z.coerce.number().int().default(0),
-  tagNames: z.array(z.string()).default([]),
+  blogCategoryId: z.coerce.number().int({
+    message: "Vui lòng chọn loại bài viết.",
+  }),
+
+  tagNames: z
+    .array(z.string())
+    .min(1, {
+      message: "Vui lòng chọn ít nhất một tag.",
+    })
+    .default([]),
 });
 
 const CATEGORIES = [
@@ -119,6 +130,26 @@ export const initialValue = {
   },
 } as unknown as SerializedEditorState;
 
+const options = [
+  "Giàu chất xơ",
+  "Không chất bảo quản",
+  "Hỗ trợ tiêu hóa",
+  "Tốt cho làn da",
+  "Thân thiện với người ăn kiêng",
+  "Tăng cường sức đề kháng",
+  "Tự nhiên 100%",
+  "Không đường hóa học",
+
+  "Ăn vặt hàng ngày",
+  "Mang đi học",
+  "Ăn khi tập gym",
+  "Quà tặng sức khỏe",
+  "Đồ ăn cho bé",
+  "Snack văn phòng",
+  "Thực phẩm cho người ăn kiêng",
+  "Dùng trong salad/sữa chua",
+];
+
 export default function BlogForm() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [newTag, setNewTag] = useState("");
@@ -131,7 +162,7 @@ export default function BlogForm() {
     defaultValues: {
       title: "",
       content: "",
-      blogCategoryId: 0,
+      blogCategoryId: 2,
       tagNames: [],
     },
   });
@@ -171,6 +202,8 @@ export default function BlogForm() {
     maxFiles: 1,
   });
 
+  const queryClient = useQueryClient();
+
   const token = Cookies.get("accessToken");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -189,29 +222,20 @@ export default function BlogForm() {
       formData.append("Thumbnail", values.thumbnail);
     }
 
-    const transFormValues = {
-      Title: values.title,
-      Thumbnail: values.thumbnail,
-      Content: values.content,
-      BlogCategoryId: values.blogCategoryId,
-      TagNames: values.tagNames,
-    };
-
-    // console.log("Transformed values:", transFormValues);
-    // console.log("Transformed values:", formData);
-
     try {
       const response = await axios.post(`${API}/Blogs`, formData, {
         headers: {
           ...headers,
           "Content-Type": "multipart/form-data", //* important to set this header for file uploads
-          // "Content-Type": "multipart/form-data",
         },
       });
 
       // console.log({ response });
       if (response.status) {
         form.reset();
+        queryClient.invalidateQueries({
+          queryKey: [BLOG_KEY.BLOGS],
+        });
         setEditorState(initialValue);
         setThumbnailPreview(null);
         setUploadProgress(0);
@@ -231,7 +255,7 @@ export default function BlogForm() {
     }
   };
 
-  const handleAddTag = () => {
+  const handleAddTag = (tag: string) => {
     if (newTag.trim() && !form.getValues("tagNames").includes(newTag.trim())) {
       form.setValue("tagNames", [...form.getValues("tagNames"), newTag.trim()]);
       setNewTag("");
@@ -245,16 +269,29 @@ export default function BlogForm() {
     );
   };
 
-  const handleReset = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to reset the form? All your changes will be lost."
-      )
-    ) {
-      form.reset();
-      setThumbnailPreview(null);
-      setUploadProgress(0);
+  const handleToggleTags = (tag: string) => {
+    const tags = form.getValues("tagNames");
+    if (tags.includes(tag)) {
+      handleRemoveTag(tag);
+    } else {
+      form.setValue("tagNames", [...tags, tag]);
     }
+  };
+
+  const handleReset = () => {
+    // if (
+    //   window.confirm(
+    //     "Are you sure you want to reset the form? All your changes will be lost."
+    //   )
+    // ) {
+    //   form.reset();
+    //   setThumbnailPreview(null);
+    //   setUploadProgress(0);
+    // }
+    form.reset();
+    setThumbnailPreview(null);
+    setEditorState(initialValue);
+    setUploadProgress(0);
   };
 
   const handlePreview = () => {
@@ -267,6 +304,10 @@ export default function BlogForm() {
   useEffect(() => {
     form.setValue("content", JSON.stringify(editorState));
   }, [editorState]);
+
+  const tagWatch = form.watch("tagNames");
+
+  console.log({ tagWatch });
 
   return (
     <Form {...form}>
@@ -320,8 +361,8 @@ export default function BlogForm() {
                       className="text-slate-500 hover:text-slate-900"
                     >
                       {activeTab === "editor"
-                        ? "Show Preview"
-                        : "Back to Editor"}
+                        ? "Xem trước"
+                        : "Quay lại nội dung"}
                     </Button>
                   </div>
 
@@ -347,29 +388,12 @@ export default function BlogForm() {
                   </TabsContent>
 
                   <TabsContent value="preview" className="mt-0">
-                    <Card>
-                      <CardContent className="p-6">
-                        {/* {form.getValues("content") ? (
-                          <div
-                            className="prose prose-slate max-w-none"
-                            dangerouslySetInnerHTML={{
-                              __html: form.getValues("content"),
-                            }}
-                          />
-                        ) : (
-                          <div className="text-slate-400 italic">
-                            Your content preview will appear here...
-                          </div>
-                        )} */}
-
-                        <Editor
-                          maxLength={5000}
-                          editorSerializedState={editorState}
-                          // onSerializedChange={(value) => setEditorState(value)}
-                          readOnly
-                        />
-                      </CardContent>
-                    </Card>
+                    <Editor
+                      maxLength={5000}
+                      editorSerializedState={editorState}
+                      // onSerializedChange={(value) => setEditorState(value)}
+                      readOnly
+                    />
                   </TabsContent>
                 </Tabs>
               </div>
@@ -479,7 +503,7 @@ export default function BlogForm() {
                   <FormItem className="space-y-4">
                     <div>
                       <FormLabel
-                        className="text-sm font-semibold flex items-center gap-1 mb-1 mb-1
+                        className="text-sm font-semibold flex items-center gap-1 mb-1
                       "
                       >
                         <ChartBarStacked className="size-5" />
@@ -497,8 +521,8 @@ export default function BlogForm() {
                     >
                       <FormControl>
                         <SelectTrigger
-                          className={`bg-white border-slate-200 rounded-xl duration-200 focus:outline-none focus:ring-neutral-300 
-                            placeholder:text-slate-700  
+                          className={` bg-white border-slate-200 rounded-xl duration-200 focus:outline-none focus:ring-neutral-300 
+                            placeholder:text-slate-700 
                              `}
                         >
                           <SelectValue placeholder="Chọn loại bài viết" />
@@ -535,7 +559,15 @@ export default function BlogForm() {
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <div className="space-y-4">
+                      <CuisineSelector
+                        title="Tags"
+                        options={options}
+                        activeOptions={field.value}
+                        toggleCuisine={handleToggleTags}
+                        className="font-semibold text-sm italic"
+                      />
+
+                      {/* <div className="space-y-4">
                         <div className="flex items-center gap-2">
                           <Input
                             placeholder="Thêm Tags cho bài viết"
@@ -586,7 +618,7 @@ export default function BlogForm() {
                             </p>
                           )}
                         </div>
-                      </div>
+                      </div> */}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -604,9 +636,14 @@ export default function BlogForm() {
             onClick={handleReset}
             className="border-slate-300 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
           >
-            Reset
+            Làm mới
           </Button>
-          <Button type="submit" disabled={isSubmitting} className="px-6">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-6 bg-sky-600 hover:bg-sky-500 hoverAnimate transition duration-300 text-white hover:text-white"
+            variant="outline"
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

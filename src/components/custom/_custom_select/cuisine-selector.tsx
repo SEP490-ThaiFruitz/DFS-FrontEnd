@@ -62,6 +62,7 @@ export const CuisineSelector = memo(
               return (
                 <motion.button
                   key={cuisine}
+                  type="button"
                   onClick={() => toggleCuisine(cuisine)}
                   layout
                   initial={false}

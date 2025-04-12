@@ -7,7 +7,7 @@ import { createContext, useContext } from "react";
 
 import Cookies from "js-cookie";
 import { cookies } from "next/headers";
-import { CART_KEY } from "@/app/key/comm-key";
+import { BLOG_KEY, CART_KEY } from "@/app/key/comm-key";
 import { AddressTypes } from "@/types/address.types";
 import { Product } from "@/hooks/use-cart-store";
 import { UseQueryResult } from "@tanstack/react-query";
@@ -46,7 +46,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     ProductKey.PRODUCTS,
   ]);
   const blogs = useFetch<ApiResponse<PageResult<BlogPost>>>("/Blogs", [
-    "blogs",
+    BLOG_KEY.BLOGS,
   ]);
 
   // console.log(productList);

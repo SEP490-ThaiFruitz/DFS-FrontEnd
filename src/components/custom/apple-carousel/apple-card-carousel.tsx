@@ -105,8 +105,12 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
           <div
             className={cn(
               "flex flex-row justify-start gap-4 pl-4",
-              "max-w-7xl mx-auto" // remove max-w-4xl if you want the carousel to span the full width of its container
+              " mx-auto" // remove max-w-4xl if you want the carousel to span the full width of its container
             )}
+            // className={cn(
+            //   "flex flex-row justify-start gap-4 pl-4",
+            //   "max-w-7xl mx-auto" // remove max-w-4xl if you want the carousel to span the full width of its container
+            // )}
           >
             {items.map((item, index) => (
               <motion.div
@@ -219,7 +223,7 @@ export const Card = ({
               >
                 <XIcon className="h-6 w-6 text-neutral-100 dark:text-neutral-900" />
               </button>
-              <motion.p
+              <motion.div
                 layoutId={layout ? `category-${card.title}` : undefined}
                 className="text-base font-medium text-black dark:text-white"
               >
@@ -227,14 +231,34 @@ export const Card = ({
                 <AdvancedColorfulBadges color="violet" size="lg">
                   {card.category}
                 </AdvancedColorfulBadges>
-              </motion.p>
+              </motion.div>
               <motion.p
                 layoutId={layout ? `title-${card.title}` : undefined}
                 className="text-2xl md:text-5xl font-semibold text-neutral-700 mt-4 dark:text-white"
               >
                 {card.title}
               </motion.p>
-              <div className="py-10">{card.content}</div>
+
+              <motion.div
+                // key={`${tag}-${index}`}
+                layoutId={layout ? `tag` : undefined}
+                className="text-sm font-medium  flex flex-wrap mt-4"
+              >
+                {card?.tags?.map((tag, index) => {
+                  return (
+                    <AdvancedColorfulBadges
+                      key={`${tag}-${index}`}
+                      color="green"
+                      size="icon"
+                      className="rounded-full w-fit px-2 py-1 mr-2"
+                    >
+                      {tag}
+                    </AdvancedColorfulBadges>
+                  );
+                })}
+              </motion.div>
+
+              <div className="py-5">{card.content}</div>
             </motion.div>
           </div>
         )}

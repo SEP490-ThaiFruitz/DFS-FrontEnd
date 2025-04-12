@@ -50,7 +50,7 @@ export const ProductActions = memo(
         <div className="bg-gray-50 p-5 rounded-lg space-y-4 cardStyle">
           {selectedVariant?.promotion && (
             <div className="relative overflow-hidden rounded-md">
-              <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-100 p-4 text-sm">
+              <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-100 p-4 text-sm cardStyle">
                 <div className="flex items-start gap-3">
                   <Clock className="h-4 w-4 text-rose-500 mt-0.5 flex-shrink-0" />
                   <div className="space-y-1">

@@ -285,7 +285,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
 
         {/* Frequently Bought Together */}
-        <FrequentlyBoughtTogether
+        {/* <FrequentlyBoughtTogether
           product={product}
           selectedVariant={selectedVariant}
           quantity={quantity}
@@ -294,7 +294,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           calculateFrequentlyBoughtTotal={calculateFrequentlyBoughtTotal}
           calculateDiscountedPrice={calculateDiscountedPrice}
           frequentlyBoughtTogether={frequentlyBoughtTogether}
-        />
+        /> */}
 
         <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
           {/* vercel tab */}

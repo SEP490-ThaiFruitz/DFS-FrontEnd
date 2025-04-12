@@ -1,74 +1,71 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { formatVND } from "@/lib/format-currency";
-import { Star } from "lucide-react";
-import Image from "next/image";
+"use client";
+
+import { CarouselCustomized } from "@/components/custom/carousel-customized";
+import { CardProduct } from "@/components/global-components/card/card-product";
+import AnimatedLoadingSkeleton from "@/components/global-components/custom-skeleton/animated-loading-skeleton";
+import ProductSkeletonWithSidebar from "@/components/global-components/custom-skeleton/side-bar-skeleton";
+import { EmptyState } from "@/components/global-components/empty-state";
+import { CarouselItem } from "@/components/ui/carousel";
+import { useData } from "@/providers/data-provider";
+import { Star, StickyNote } from "lucide-react";
 import { memo } from "react";
-const relatedProducts = [
-  {
-    id: "1",
-    name: "Hạt điều rang muối",
-    price: 120000,
-    image: "/images/second-background.png",
-    rating: 4.5,
-  },
-  {
-    id: "2",
-    name: "Nho khô không hạt",
-    price: 85000,
-    image: "/images/second-background.png",
-    rating: 4.2,
-  },
-  {
-    id: "3",
-    name: "Hạnh nhân rang",
-    price: 150000,
-    image: "/images/second-background.png",
-    rating: 4.8,
-  },
-  {
-    id: "4",
-    name: "Táo sấy",
-    price: 95000,
-    image: "/images/second-background.png",
-    rating: 4.0,
-  },
-];
 
 export const RelatedProduct = memo(() => {
+  const { products } = useData();
+
+  if (products.data?.value?.items.length === 0) {
+    return (
+      <EmptyState
+        icons={[StickyNote]}
+        title="Chưa có sản phẩm"
+        description="Có vẻ như chưa có sản phảm nào hãy tải lại trang"
+        className="min-w-full flex flex-col"
+        action={{
+          label: "Tải lại",
+          onClick: () => products.refetch(),
+        }}
+      />
+    );
+  }
+
+  const safeProducts = products?.data?.value?.items ?? [];
+
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8 p-6 lg:p-8 cardStyle">
-      <h2 className="text-xl font-bold mb-6">Sản phẩm liên quan</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {relatedProducts.map((product) => (
-          <Card
-            key={product.id}
-            className="overflow-hidden shadow-sm hover:shadow-md transition-all hover:translate-y-[-2px] rounded-3xl"
-          >
-            <div className="aspect-square relative">
-              <Image
-                src={product?.image || "/images/second-background.png"}
-                alt={product.name}
-                fill
-                className="object-cover transition-transform hover:scale-105 duration-300 rounded-3xl"
-              />
-            </div>
-            <CardContent className="p-3">
-              <h3 className="font-medium truncate" title={product.name}>
-                {product.name}
-              </h3>
-              <div className="flex justify-between items-center mt-1">
-                <span className="font-bold text-sky-600">
-                  {formatVND(product?.price)}
-                </span>
-                <div className="flex items-center text-amber-500">
-                  <Star className="h-3 w-3 fill-amber-500" />
-                  <span className="text-xs ml-1">{product.rating}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8 p-6 lg:p-8 cardStyle w-full">
+      <CarouselCustomized
+        title="Sản phẩm liên quan"
+        delay={3000}
+        stopOnInteraction
+      >
+        {!products.isLoading ? (
+          safeProducts.map((product) => {
+            return product.variant.map((variantItem) => {
+              return (
+                <CarouselItem
+                  key={variantItem.productVariantId}
+                  className="md:basis-1/2 lg:basis-1/3 pl-4"
+                >
+                  <CardProduct
+                    categories={product.categories}
+                    description={product.description}
+                    productId={product.id}
+                    name={product.name}
+                    mainImageUrl={
+                      variantItem?.imageVariant || product.mainImageUrl
+                    }
+                    quantitySold={product.quantitySold}
+                    rating={product.rating}
+                    variant={variantItem}
+                    type="single"
+                  />
+                </CarouselItem>
+              );
+            });
+          })
+        ) : (
+          <AnimatedLoadingSkeleton className="w-full" />
+        )}
+      </CarouselCustomized>
     </div>
   );
 });

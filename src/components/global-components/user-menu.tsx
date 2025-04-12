@@ -114,7 +114,7 @@ export const UserMenu = memo(() => {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem className="hover:cursor-pointer">
+            <Button asChild variant="outline" className="w-full">
               <Link
                 href="/profile"
                 className="flex flex-row w-full items-center gap-2"
@@ -122,8 +122,9 @@ export const UserMenu = memo(() => {
                 <UserRoundPen size={16} />
                 <span>Hồ sơ</span>
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="hover:cursor-pointer">
+            </Button>
+            {/* <DropdownMenuItem className="hover:cursor-pointer"> */}
+            <Button asChild variant="outline" className="w-full">
               <Link
                 href="/profile?tab=address"
                 className="flex flex-row w-full items-center gap-2"
@@ -131,7 +132,7 @@ export const UserMenu = memo(() => {
                 <MapPinHouse size={16} />
                 <span>Địa chỉ</span>
               </Link>
-            </DropdownMenuItem>
+            </Button>
             {/* <DropdownMenuItem className="hover:cursor-pointer"> */}
             <Button asChild size="sm" className="w-full" variant="outline">
               <Link
@@ -147,26 +148,28 @@ export const UserMenu = memo(() => {
             <DropdownMenuSeparator />
 
             <WalletSheet user={user} isUserLoading={isUserLoading} />
+            <Button
+              // asChild
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                await logOut();
+                queryClient.removeQueries({ queryKey: ["authUser"] });
+                queryClient.removeQueries({ queryKey: [USER_KEY.PROFILE] });
+
+                queryClient.removeQueries({
+                  queryKey: [USER_KEY.ADDRESS],
+                });
+                router.push("/");
+                router.refresh();
+                loginDialog.onOpen();
+              }}
+            >
+              <LogOut />
+              <span>Đăng xuất</span>
+            </Button>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={async () => {
-              await logOut();
-              queryClient.removeQueries({ queryKey: ["authUser"] });
-              queryClient.removeQueries({ queryKey: [USER_KEY.PROFILE] });
-
-              queryClient.removeQueries({
-                queryKey: [USER_KEY.ADDRESS],
-              });
-              router.push("/");
-              router.refresh();
-              loginDialog.onOpen();
-            }}
-            className="hover:cursor-pointer"
-          >
-            <LogOut />
-            <span>Đăng xuất</span>
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       {user?.value?.isVerification === false && (

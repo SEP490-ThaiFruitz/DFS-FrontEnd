@@ -45,6 +45,11 @@ import { USER_KEY } from "@/app/key/user-key";
 import { getProfile } from "@/actions/user";
 import { toast } from "sonner";
 import { UserMenu } from "./user-menu";
+import { DeliveryPolicy } from "./footer/policy/delivery-policy";
+import { PaymentPolicy } from "./footer/policy/payment-policy";
+import { PrivacyPolicy } from "./footer/policy/privacy-policy";
+import { ReturnPolicy } from "./footer/policy/return-policy";
+import { ServicePolicy } from "./footer/policy/service-policy";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(
@@ -141,14 +146,15 @@ export const Navigate = () => {
             item="Chính sách"
             className={navItemClassName}
           >
-            <div className="flex flex-col space-y-4 text-sm">
-              <HoveredLink href="/hobby">Hobby</HoveredLink>
-              <HoveredLink href="/individual">Individual</HoveredLink>
-              <HoveredLink href="/team">Team</HoveredLink>
-              <HoveredLink href="/enterprise">Enterprise</HoveredLink>
+            <div className="flex flex-col space-y-4 text-sm pl-4">
+              <DeliveryPolicy />
+              <PaymentPolicy />
+              <PrivacyPolicy />
+              <ReturnPolicy />
+              <ServicePolicy />
             </div>
           </MenuItem>
-          <Link href="/blogs">
+          {/* <Link href="/blogs">
             <MenuItem
               setActive={setActive}
               active={active}
@@ -166,7 +172,7 @@ export const Navigate = () => {
                 ))}
               </div>
             </MenuItem>
-          </Link>
+          </Link> */}
         </div>
 
         {/* User Actions */}
@@ -215,13 +221,14 @@ export const Navigate = () => {
               className={navItemClassName}
             >
               <div className="flex flex-col space-y-4 text-sm pl-4">
-                <HoveredLink href="/hobby">Hobby</HoveredLink>
-                <HoveredLink href="/individual">Individual</HoveredLink>
-                <HoveredLink href="/team">Team</HoveredLink>
-                <HoveredLink href="/enterprise">Enterprise</HoveredLink>
+                <DeliveryPolicy />
+                <PaymentPolicy />
+                <PrivacyPolicy />
+                <ReturnPolicy />
+                <ServicePolicy />
               </div>
             </MenuItem>
-            <MenuItem
+            {/* <MenuItem
               setActive={setActive}
               active={active}
               item="Bài viết"
@@ -237,7 +244,7 @@ export const Navigate = () => {
                   </HoveredLink>
                 ))}
               </div>
-            </MenuItem>
+            </MenuItem> */}
           </div>
         </div>
       )}

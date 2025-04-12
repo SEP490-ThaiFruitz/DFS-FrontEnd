@@ -7,6 +7,8 @@ export type Certificate = {
   issueDate: string;
   expiryDate: string;
   details: string;
+
+  image: string;
 };
 
 export type Nutrition = {

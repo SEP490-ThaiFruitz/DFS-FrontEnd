@@ -16,7 +16,7 @@ import { CustomComboProduct } from "@/components/global-components/card/custom-c
 import { BlogPost } from "@/types/blogs.types";
 
 export type DataContextType = {
-  products: UseQueryResult<ProductTransformType, Error>;
+  products: UseQueryResult<ApiResponse<PageResult<Product>>, Error>;
 
   addresses: UseQueryResult<ApiResponse<PageResult<AddressTypes>>, Error>;
   customCombo: UseQueryResult<ApiResponse<CustomComboProduct[]>, Error>;
@@ -24,9 +24,9 @@ export type DataContextType = {
   blogs: UseQueryResult<ApiResponse<PageResult<BlogPost>>, Error>;
 };
 
-export type ProductTransformType = Omit<PageResult<Product>, "items"> & {
-  value: { items: Product[] };
-};
+// export type ProductTransformType = Omit<PageResult<Product>, "items"> & {
+//   value: { items: Product[] };
+// };
 
 export const DataContext = createContext<DataContextType | null>(null);
 
@@ -42,7 +42,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   // const { token } = useAuth();
   const cookieToken = Cookies.get("accessToken");
 
-  const products = useFetch<ProductTransformType>("/Products", [
+  const products = useFetch<ApiResponse<PageResult<Product>>>("/Products", [
     ProductKey.PRODUCTS,
   ]);
   const blogs = useFetch<ApiResponse<PageResult<BlogPost>>>("/Blogs", [

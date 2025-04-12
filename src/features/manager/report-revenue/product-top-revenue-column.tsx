@@ -104,7 +104,9 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
     cell: ({ row }) => {
       const product = row.original;
 
-      // console.log(product);
+      // const hasImages = product.image.length > 1 && product.image;
+
+      // console.log({ product });
       return (
         <div className="flex items-center gap-3 min-w-[300px]">
           <div className="h-12 w-12 overflow-hidden rounded-md border bg-background shadow-sm">

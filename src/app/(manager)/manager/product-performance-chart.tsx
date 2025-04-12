@@ -1,6 +1,15 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   Card,
@@ -40,8 +49,6 @@ const chartConfig = {
 export function ProductPerformance({
   productPerformance,
 }: ProductPerformanceProps) {
-  // console.log(productPerformance);
-
   return (
     <Card className="col-span-1 md:col-span-1 cardStyle">
       <CardHeader>
@@ -51,57 +58,28 @@ export function ProductPerformance({
         </CardDescription>
       </CardHeader>
       <CardContent className="w-full h-full overflow-hidden">
-        <ChartContainer
-          config={chartConfig}
-          className="w-full h-[800px]  overflow-hidden"
-        >
+        <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
             data={productPerformance}
-            // className="h-full"
+            height={300}
+            width={500}
+            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
           >
+            <CartesianGrid vertical={false} />
             <XAxis
               dataKey="productName"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => {
-                return truncate(value, { length: 20 });
-              }}
-            />
-
-            <YAxis dataKey="sold" tickLine={false} tickMargin={10} />
-
-            <CartesianGrid strokeDasharray="2 2" vertical={false} />
-
-            <Bar
-              dataKey="revenue"
-              stackId="revenue"
-              fill="var(--color-revenue)"
-              radius={[0, 0, 8, 8]}
-            />
-
-            <Bar
-              dataKey="sold"
-              stackId="revenue"
-              fill="var(--color-sold)"
-              radius={[16, 16, 0, 0]}
+              tickFormatter={(value) => value}
             />
             <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  // labelFormatter={(value) => {
-                  //   return new Date(value).toLocaleDateString("en-US", {
-                  //     weekday: "short",
-                  //   });
-                  // }}
-
-                  indicator="line"
-                />
-              }
               cursor={false}
-              defaultIndex={1}
+              content={<ChartTooltipContent indicator="dot" />}
             />
+            <Bar dataKey="revenue" fill="var(--color-revenue)" radius={6} />
+            <Bar dataKey="sold" fill="var(--color-sold)" radius={6} />
           </BarChart>
         </ChartContainer>
       </CardContent>

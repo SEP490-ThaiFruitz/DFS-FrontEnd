@@ -1,5 +1,6 @@
 import { ProfileClientPage } from "@/features/client/profile/profile-client";
 import { Suspense } from "react";
+import { SidebarContainer } from "../sidebar-container/sidebar-container";
 
 export async function generateMetadata() {
   return {
@@ -12,7 +13,9 @@ export async function generateMetadata() {
 const ProfilePage = () => {
   return (
     <Suspense>
-      <ProfileClientPage />
+      {/* <ProfileClientPage /> */}
+
+      <SidebarContainer />
     </Suspense>
   );
 };

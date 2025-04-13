@@ -34,7 +34,7 @@ function AddressTab() {
   return (
     <ResizablePanelGroup
       direction="horizontal"
-      className="min-h-[600px] rounded-lg border bg-card"
+      className="min-h-[600px] rounded-lg border bg-card motion-preset-slide-right motion-duration-500"
     >
       <ResizablePanel defaultSize={80} minSize={70} className="p-4">
         <div className="m-5 grid sm:grid-cols-3 gap-6">
@@ -45,15 +45,17 @@ function AddressTab() {
                 setIsCreate(false);
                 setAddress(item);
               }}
-              className={`relative group text-left border shadow-sm rounded-xl p-2 hover:cursor-pointer ${item.id == address?.id ? "border-purple-700" : ""
-                }`}
+              className={`relative group text-left border shadow-sm rounded-xl p-2 hover:cursor-pointer ${
+                item.id == address?.id ? "border-purple-700" : ""
+              }`}
             >
-
               <div className="flex justify-between items-center mb-3">
                 <h3 className="font-bold text-lg">{item.tagName}</h3>
                 {item.isDefault && (
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">Mặc định</span>
+                    <span className="text-xs font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">
+                      Mặc định
+                    </span>
                     <div className="h-3 w-3 bg-purple-500 rounded-full" />
                   </div>
                 )}
@@ -62,20 +64,25 @@ function AddressTab() {
               <div className="space-y-2 text-gray-700">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                  <span className="line-clamp-2 whitespace-pre-line">{item.receiverName}</span>
+                  <span className="line-clamp-2 whitespace-pre-line">
+                    {item.receiverName}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                  <span className="whitespace-pre-line">{item.receiverPhone}</span>
+                  <span className="whitespace-pre-line">
+                    {item.receiverPhone}
+                  </span>
                 </div>
 
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                  <span className="line-clamp-3 whitespace-pre-line">{item.receiverAddress}</span>
+                  <span className="line-clamp-3 whitespace-pre-line">
+                    {item.receiverAddress}
+                  </span>
                 </div>
               </div>
-
 
               <button
                 onClick={(e) => {

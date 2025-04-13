@@ -64,7 +64,6 @@ export const CreateWallet = memo(
     const firstSlotRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-      // focus when component mount
       if (inputOTPRef.current) {
         (inputOTPRef.current as any).focus();
       }
@@ -162,40 +161,6 @@ export const CreateWallet = memo(
             </p>
           </div>
         </div>
-
-        {/* <div className="bg-muted/30 rounded-lg p-4 space-y-3 border">
-          <div className="flex items-center justify-between">
-            <h4 className="font-medium text-sm flex items-center gap-2">
-              <Fingerprint className="h-4 w-4 text-primary" />
-              Tính Năng Bảo Mật
-            </h4>
-            <Badge variant="outline" className="text-xs">
-              Cao cấp
-            </Badge>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-background rounded p-3 border flex flex-col gap-1.5">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 p-1 rounded">
-                  <Fingerprint className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <span className="text-xs font-medium">
-                  Xác thực sinh trắc học
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-700">Mở khóa bằng vân tay</p>
-            </div>
-            <div className="bg-background rounded p-3 border flex flex-col gap-1.5">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 p-1 rounded">
-                  <CreditCard className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <span className="text-xs font-medium">Bảo vệ 2FA</span>
-              </div>
-              <p className="text-[10px] text-slate-700">Lớp bảo mật bổ sung</p>
-            </div>
-          </div>
-        </div> */}
 
         <div className="space-y-4">
           <div className="flex items-start space-x-2">

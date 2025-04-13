@@ -1,7 +1,7 @@
 import { OrderItem } from "@/app/(client)/payment/success/[[...slug]]/order-confirmation";
 import { ViewCardProduct } from "@/components/global-components/card/view-card-product";
 import { OrderItem as OrderItemTypes } from "../../payment/successful/payment-successful.types";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FeedbackDialog } from "@/components/custom/_custom-dialog/feedback-dialog";
 
 interface ProductListProps {
@@ -17,7 +17,7 @@ export const ProductList = ({
   return (
     <div className="space-y-4">
       {orderItems.map((item: OrderItemTypes) => (
-        <>
+        <React.Fragment key={item.id}>
           <OrderItem key={item.id} item={item} />
 
           <FeedbackDialog
@@ -27,7 +27,7 @@ export const ProductList = ({
             isOpen={feedback !== undefined}
             onClose={() => setFeedback(undefined)}
           />
-        </>
+        </React.Fragment>
 
         // <ViewCardProduct
         //   orderItemId={item.id}

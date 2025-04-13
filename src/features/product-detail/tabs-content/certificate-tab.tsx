@@ -51,6 +51,7 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LinkPreview } from "@/components/global-components/link-preview";
 
 interface ProductCertificationProps {
   certificates: Pick<ProductDetailTypes, "productCertification">;
@@ -408,10 +409,19 @@ export const CertificateTab = memo(
                   <Button
                     variant="default"
                     size="sm"
+                    asChild
                     className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                   >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Xác thực
+                    <LinkPreview
+                      url="https://dichvucong.gov.vn/p/home/dvc-chi-tiet-cau-hoi.html?id=15755&row_limit=1"
+                      target="_blank"
+                      height={250}
+                      width={200}
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Tra cứu chứng nhận
+                    </LinkPreview>
                   </Button>
                 </CardFooter>
               </Card>

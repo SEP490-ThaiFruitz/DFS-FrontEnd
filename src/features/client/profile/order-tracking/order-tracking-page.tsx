@@ -148,7 +148,7 @@ export const OrderTrackingPage = () => {
     <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} />
   ) : (
     <>
-      <div className="grid w-full grid-cols-8 h-auto py-4 mb-4 bg-white cardStyle px-5 gap-4">
+      <div className="grid w-full grid-cols-8 h-auto py-4 mb-4 bg-white cardStyle px-5 gap-4 motion-preset-slide-right motion-duration-500">
         {status.map((trigger) => (
           <Button
             variant={"outline"}

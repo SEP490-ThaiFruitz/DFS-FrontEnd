@@ -86,8 +86,6 @@ export const UserMenu = memo(() => {
           <DropdownMenuLabel className="font-normal">
             <div className="flex gap-1 items-start">
               <Avatar className="h-10 w-10">
-                {/* <AvatarImage src={user?.value?.avatar} alt={user?.value?.name} />
-                <AvatarFallback>{user?.value?.name}</AvatarFallback> */}
                 <AvatarImage
                   src={user?.value?.avatar ?? placeholderImage}
                   alt={user?.value?.name ?? "Tên"}

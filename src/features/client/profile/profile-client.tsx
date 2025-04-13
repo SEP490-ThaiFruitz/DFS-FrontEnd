@@ -17,6 +17,7 @@ import {
   Ticket,
   ChartPie,
   MessageSquareDiff,
+  LucideIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { OrderTrackingPage } from "./order-tracking/order-tracking-page";
@@ -37,7 +38,8 @@ const TAB_TRIGGER = [
   { value: "feedback", label: "Đánh giá", icon: MessageSquareDiff },
 ];
 
-const TAB_CONTENT: {
+export const TAB_CONTENT: {
+  icon?: LucideIcon;
   value: string;
   component: JSX.Element;
   title: string;

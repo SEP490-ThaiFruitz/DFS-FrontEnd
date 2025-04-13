@@ -28,7 +28,7 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const {data: user} = useQuery({
+  const { data: user } = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
       try {
@@ -53,7 +53,7 @@ export function NavUser() {
       case "Manager":
         return "Quản lí";
       default:
-        return "Nhân viên";
+        return "Khách hàng";
     }
   };
 

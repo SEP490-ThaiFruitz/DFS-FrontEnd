@@ -52,10 +52,11 @@ const VoucherTab = () => {
 
     return (
       <div
-        className={`px-2 py-1  w-fit rounded-md font-bold text-center ${remainingDays > 3
-          ? "bg-green-50 text-green-700 "
-          : "bg-yellow-50 text-yellow-700 "
-          }`}
+        className={`px-2 py-1  w-fit rounded-md font-bold text-center ${
+          remainingDays > 3
+            ? "bg-green-50 text-green-700 "
+            : "bg-yellow-50 text-yellow-700 "
+        }`}
       >
         {remainingDays} ngày
       </div>
@@ -65,7 +66,7 @@ const VoucherTab = () => {
     Array.from({ length: 3 }).map((_, index) => (
       <div
         key={index + 1}
-        className="p-4 grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 items-center gap-4 bg-white"
+        className="p-4 grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 items-center gap-4 bg-white motion-preset-slide-right motion-duration-500"
       >
         <Skeleton className="h-24" />
         <Skeleton className="h-10 w-full lg:col-span-2" />
@@ -75,7 +76,7 @@ const VoucherTab = () => {
       </div>
     ))
   ) : (
-    <div className="space-y-2">
+    <div className="space-y-2 motion-preset-slide-right motion-duration-500">
       <div className="hidden p-4 sm:grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 items-center gap-4 bg-white ">
         <div className="hidden md:block">Hình ảnh</div>
         <div className="lg:col-span-2">Nội dung</div>
@@ -136,7 +137,9 @@ const VoucherTab = () => {
                   ? " - Giảm tối đa " + formatVND(voucher.maximumDiscountAmount)
                   : "")}
             </p>
-            <div className="font-light text-xs sm:text-sm text-slate-600">Ngày kết thúc: {formatTimeVietNam(new Date(voucher.endDate))}</div>
+            <div className="font-light text-xs sm:text-sm text-slate-600">
+              Ngày kết thúc: {formatTimeVietNam(new Date(voucher.endDate))}
+            </div>
           </div>
 
           <div className="w-fit font-bold text-sm sm:text-base mx-auto md:mx-0">

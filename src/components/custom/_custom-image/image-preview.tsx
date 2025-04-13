@@ -11,8 +11,8 @@ interface ImagePreviewProps {
   initialWidth?: number;
   initialHeight?: number;
   className?: string;
-  iconButton?: React.ReactNode,
-  iconClassName?: string
+  iconButton?: React.ReactNode;
+  iconClassName?: string;
 }
 
 export default function ImagePreview({
@@ -24,8 +24,8 @@ export default function ImagePreview({
   initialWidth = 400,
   initialHeight = 400,
   iconButton,
-  iconClassName = "h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white",
-  className = "cursor-pointer rounded-lg hover:opacity-90 transition-opacity",
+  iconClassName = "h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white ",
+  className = "cursor-pointer  hover:opacity-90 transition-opacity rounded-3xl",
 }: Readonly<ImagePreviewProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -40,20 +40,25 @@ export default function ImagePreview({
 
   return (
     <>
-      {iconButton ?
-        <Button variant={"outline"} size={"sm"} className={iconClassName} onClick={() => setIsOpen(true)}>
+      {iconButton ? (
+        <Button
+          variant={"outline"}
+          size={"sm"}
+          className={iconClassName}
+          onClick={() => setIsOpen(true)}
+        >
           {iconButton}
         </Button>
-        : (
-          <Image
-            src={images[0]}
-            alt={"Image"}
-            width={initialWidth}
-            height={initialHeight}
-            className={className}
-            onClick={() => setIsOpen(true)}
-          />
-        )}
+      ) : (
+        <Image
+          src={images[0]}
+          alt={"Image"}
+          width={initialWidth}
+          height={initialHeight}
+          className={className}
+          onClick={() => setIsOpen(true)}
+        />
+      )}
 
       <DialogPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
         <DialogPrimitive.Portal>
@@ -76,15 +81,24 @@ export default function ImagePreview({
                     <ChevronLeft className="h-6 w-6" />
                   </button>
                 )}
-                <DialogPrimitive.Title>
-                </DialogPrimitive.Title>
-                <Image
+                <DialogPrimitive.Title></DialogPrimitive.Title>
+                {/* <Image
                   src={images[currentIndex]}
                   alt={`Image ${currentIndex + 1}`}
                   width={1000}
                   height={1000}
-                  className="object-contain max-h-screen py-16"
-                />
+                  className="object-cover max-h-screen py-16 rounded-3xl"
+                /> */}
+
+                <div className="relative w-[800px] h-[800px] py-16">
+                  <Image
+                    src={images[currentIndex]}
+                    alt={`Image ${currentIndex + 1}`}
+                    fill
+                    className="object-cover rounded-3xl"
+                    priority
+                  />
+                </div>
 
                 {images.length > 1 && (
                   <button

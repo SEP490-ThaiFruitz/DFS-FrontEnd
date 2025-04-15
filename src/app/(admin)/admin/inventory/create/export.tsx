@@ -80,11 +80,15 @@ const ExportTab = () => {
     const onSubmit = async (values: z.infer<typeof ExportWareSafeTypes>) => {
         try {
             const productBatchSelected = productBatch?.value?.productBatchItems?.find(
-                (item: ProductBatchItem) => item.id.toLocaleString() === values.productBatchId
+                (item: ProductBatchItem) => item.id.toString() === values.productBatchId
             );
-
-            if (productBatchSelected) {
-                form.setValue
+            
+            if (
+                productBatchSelected &&
+                (productBatchSelected.importQuantity - productBatchSelected.exportQuantity) < Number(values.quantity)
+            ) {
+                toast.error(`Số lượng xuất vượt quá số lượng còn lại trong lô hàng: còn lại ${productBatchSelected.importQuantity - productBatchSelected.exportQuantity}`);
+                return;
             }
 
             const response = await API.post("/ProductBatches/pickingitems", {

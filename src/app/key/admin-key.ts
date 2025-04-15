@@ -13,3 +13,7 @@ export enum WALLET_KEY {
   REQUEST_WITHDRAWAL = "request-withdrawal",
   WALLET_TRANSACTION = "wallet-transaction",
 }
+
+export enum PROMOTION_KEY {
+  PROMOTION = "product-promotion",
+}

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { ClassNameAttribute } from "@/types/className";
 import { type ClassValue } from "clsx";
 import { LucideIcon, LucideProps } from "lucide-react";
-import { JSX } from "react";
+import React, { JSX } from "react";
 
 interface TotalCardProps {
   icon: LucideIcon;
@@ -17,7 +17,7 @@ interface TotalCardProps {
   // classNameIcon?: React.ComponentProps<"div">["className"];
   classNameIcon?: string;
   // classNameIcon?: ClassNameAttribute<SVGElement>;
-  subtitle?: string;
+  subtitle?: string | JSX.Element | React.ReactNode;
 }
 export const TotalCard = ({
   icon: Icon,

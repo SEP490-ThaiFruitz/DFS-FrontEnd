@@ -22,6 +22,7 @@ import {
   returnExchangeColumns,
   ReturnExchangeOrders,
 } from "./return-exchange/return-exchange-columns";
+import { calculateGrowthRate } from "@/lib/calculate";
 
 const ORDER_STATUS_TAB = [
   {
@@ -61,7 +62,16 @@ const ORDER_STATUS_TAB = [
   },
 ];
 
-export const ReportOrdersListClient = () => {
+interface ReportOrdersListClientProps {
+  dateRange: {
+    from: Date | undefined;
+    to?: Date | undefined;
+  };
+}
+
+export const ReportOrdersListClient = ({
+  dateRange,
+}: ReportOrdersListClientProps) => {
   const [tab, setTab] = useState("all");
 
   const orderList = useFetch<ApiResponse<PageResult<OrderData>>>("/Orders", [
@@ -98,7 +108,7 @@ export const ReportOrdersListClient = () => {
 
   // Đếm số đơn hàng đã xác nhận
   const confirmedOrders = data?.items.filter(
-    (order) => order.status === "Recieved"
+    (order) => order?.status?.toLowerCase() === "received"
   ).length;
 
   // Nếu cần, đếm số đơn hàng Pending hoặc các trạng thái khác
@@ -115,7 +125,98 @@ export const ReportOrdersListClient = () => {
     };
   });
 
-  // console.log("data orders", data?.items);
+  // growth calculate
+
+  const filterOrdersByDateRange = (
+    orders: OrderData[],
+    startDate: Date,
+    endDate: Date
+  ) => {
+    return orders?.filter((order) => {
+      const orderDate = new Date(order.createdOnUtc);
+      return orderDate >= startDate && orderDate <= endDate;
+    });
+  };
+
+  // Extract the selected date range
+  const { from: currentFrom, to: currentTo } = dateRange as {
+    from: Date;
+    to: Date;
+  };
+
+  // Define the previous period date range
+  const previousFrom = new Date(currentFrom as Date);
+  previousFrom.setDate(
+    previousFrom.getDate() - (currentTo.getDate() - currentFrom.getDate() + 1)
+  );
+
+  const previousTo = new Date(currentFrom as Date);
+  previousTo.setDate(previousTo.getDate() - 1);
+
+  console.log("currentFrom", currentFrom);
+  console.log("previousFrom", previousFrom);
+
+  // Filter orders for current and previous periods
+  const currentPeriodOrders = filterOrdersByDateRange(
+    data?.items as OrderData[],
+    currentFrom as Date,
+    currentTo as Date
+  );
+  const previousPeriodOrders = filterOrdersByDateRange(
+    data?.items as OrderData[],
+    previousFrom,
+    previousTo
+  );
+
+  console.log("data hien tai", currentPeriodOrders);
+  console.log("data qua ky", previousPeriodOrders);
+
+  // Calculate metrics for current and previous periods
+  const calculateMetrics = (orders: OrderData[]) => {
+    const totalOrders = orders?.length;
+    const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+    const totalShipFee = orders.reduce((sum, order) => sum + order.shipFee, 0);
+    const confirmedOrders = data?.items.filter(
+      (order) => order?.status?.toLowerCase() === "received"
+    ).length;
+
+    return { totalOrders, totalSales, totalShipFee, confirmedOrders };
+  };
+
+  const currentMetrics = calculateMetrics(currentPeriodOrders);
+  const previousMetrics = calculateMetrics(previousPeriodOrders);
+
+  // Calculate growth rates
+  // const calculateGrowthRate = (current: number, previous: number) => {
+  //   if (previous === 0) return 0; // Avoid division by zero
+  //   return ((current - previous) / previous) * 100;
+  // };
+
+  const orderGrowthRate = calculateGrowthRate(
+    currentMetrics.totalOrders,
+    previousMetrics.totalOrders
+  );
+
+  const salesGrowthRate = calculateGrowthRate(
+    currentMetrics.totalSales,
+    previousMetrics.totalSales
+  );
+
+  const shipFeeGrowthRate = calculateGrowthRate(
+    currentMetrics.totalShipFee,
+    previousMetrics.totalShipFee
+  );
+
+  const confirmedOrdersGrowthRate = calculateGrowthRate(
+    confirmedOrders as number,
+    previousMetrics.confirmedOrders as number
+  );
+
+  console.log("tỉ lệ tăng trưởng đơn hàng", {
+    orderGrowthRate,
+    salesGrowthRate,
+    shipFeeGrowthRate,
+  });
 
   return (
     <div className="flex-1 space-y-6 p-6">
@@ -124,25 +225,29 @@ export const ReportOrdersListClient = () => {
           icon={ListOrderedIcon}
           title="Tổng số đơn hàng"
           value={totalOrders}
-          subtitle="--Đơn hàng"
+          // subtitle="--Đơn hàng"
+          subtitle={orderGrowthRate}
         />
         <TotalCard
           icon={Banknote}
           title="Tổng doanh thu"
           value={formatVND(totalSales ?? 0)}
-          subtitle="--VND"
+          // subtitle="--VND"
+          subtitle={salesGrowthRate}
         />
         <TotalCard
           icon={Banknote}
           title="Tổng phí ship"
           value={formatVND(totalShipFee ?? 0)}
-          subtitle="--VND"
+          // subtitle="--VND"
+          subtitle={shipFeeGrowthRate}
         />
         <TotalCard
           icon={ListCheckIcon}
           title="Đơn hàng xác nhận"
           value={confirmedOrders ?? 0}
-          subtitle="--Đơn hàng"
+          // subtitle="--Đơn hàng"
+          subtitle={confirmedOrdersGrowthRate}
         />
       </div>
 

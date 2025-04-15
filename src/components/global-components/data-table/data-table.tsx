@@ -140,7 +140,7 @@ export function DataTable<T>({
 
   const id = React.useId();
 
-  console.log({ dateRange });
+  // console.log({ dateRange });
 
   const table = useReactTable({
     data,

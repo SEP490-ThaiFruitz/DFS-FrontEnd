@@ -18,6 +18,7 @@ import { OrderItem } from "@/app/(client)/payment/success/[[...slug]]/order-conf
 import { FileUpload } from "@/components/global-components/aceternity/file-upload";
 import { ReasonContent } from "../order-action-content/reason-content";
 import { OrderItem as OrderItemTypes } from "@/features/client/payment/successful/payment-successful.types";
+import { GoogleDriveLinkInput } from "@/components/global-components/form/google-drive-link-input";
 
 interface FirstStepProps {
   orderId: string;
@@ -41,6 +42,9 @@ interface FirstStepProps {
   setPreferredAction: React.Dispatch<React.SetStateAction<string>>;
 
   toggleItemSelection: (itemId: string) => void;
+
+  setGoogleDriveLink?: React.Dispatch<React.SetStateAction<string>>;
+  googleDriveLink?: string;
 }
 
 const itemConditions = [
@@ -70,6 +74,9 @@ export const FistStep = memo(
     itemCondition,
     selectedReason,
     toggleItemSelection,
+
+    googleDriveLink,
+    setGoogleDriveLink,
   }: FirstStepProps) => {
     return (
       <div className="p-6 max-h-[60vh] overflow-y-auto motion-preset-focus">
@@ -89,9 +96,19 @@ export const FistStep = memo(
         </div>
 
         <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">
-            Chọn sản phẩm muốn trả
-          </h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              Chọn sản phẩm muốn trả
+            </h3>
+
+            {setGoogleDriveLink && (
+              <GoogleDriveLinkInput
+                label="Link Google Drive ảnh(video) chứng minh?"
+                linkGoogleDrive={googleDriveLink}
+                setLinkGoogleDrive={setGoogleDriveLink}
+              />
+            )}
+          </div>
           <div className="space-y-3">
             {orderDetail.data?.value?.orderItems.map((item: OrderItemTypes) => (
               <div

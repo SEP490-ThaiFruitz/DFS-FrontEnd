@@ -33,6 +33,7 @@ import { Progress } from "@/components/ui/progress";
 import { formatVND } from "@/lib/format-currency";
 import { orderTypeLabel } from "@/utils/label";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
+import { CustomComboThumbnail } from "@/app/(client)/payment/success/[[...slug]]/order-confirmation";
 
 export type ProductRevenue = {
   type: "Single" | "Combo" | "Custom";
@@ -43,6 +44,8 @@ export type ProductRevenue = {
   quantity: number;
   revenue: number;
   revenueDiscount: number;
+
+  customImages: string[] | null;
 };
 
 interface SortButtonProps<T> {
@@ -104,20 +107,23 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
     cell: ({ row }) => {
       const product = row.original;
 
-      // const hasImages = product.image.length > 1 && product.image;
+      const hasImages = product.customImages && product.customImages.length > 0;
 
-      // console.log({ product });
       return (
         <div className="flex items-center gap-3 min-w-[300px]">
-          <div className="h-12 w-12 overflow-hidden rounded-md border bg-background shadow-sm">
-            <Image
-              src={product.image || "/placeholder.svg?height=48&width=48"}
-              alt={product.name}
-              width={48}
-              height={48}
-              className="h-full w-full object-cover transition-all hover:scale-110"
-            />
-          </div>
+          {hasImages ? (
+            <CustomComboThumbnail images={product.customImages as string[]} />
+          ) : (
+            <div className="size-20 overflow-hidden rounded-md border bg-background shadow-sm">
+              <Image
+                src={product.image || "/placeholder.svg?height=48&width=48"}
+                alt={product.name}
+                width={48}
+                height={48}
+                className="h-full w-full object-cover transition-all hover:scale-110"
+              />
+            </div>
+          )}
           <div className="flex flex-col">
             <span className="font-bold line-clamp-1 text-base text-slate-700 max-w-[200px]">
               {product.name}
@@ -131,7 +137,7 @@ export const productTopRevenueColumn: ColumnDef<ProductRevenue>[] = [
     },
     enableSorting: false,
 
-    minSize: 200,
+    minSize: 300,
   },
   {
     accessorKey: "price",

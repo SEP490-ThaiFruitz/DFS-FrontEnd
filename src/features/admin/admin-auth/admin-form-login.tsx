@@ -87,7 +87,7 @@ export const AdminFormLogin = () => {
 
       const userRole = decode?.Role.toUpperCase() as string;
 
-      console.log(userRole);
+      // console.log(userRole);
 
       const admin = userRole === ROLES.Administrator.toUpperCase();
       const manager = userRole === ROLES.Manager.toUpperCase();

@@ -93,7 +93,7 @@ export function ChatDemo(props: ChatDemoProps) {
     },
   });
 
-  console.log(messages);
+  // console.log(messages);
 
   return (
     <div className={cn("flex", "flex-col", "h-[500px]", "w-full")}>

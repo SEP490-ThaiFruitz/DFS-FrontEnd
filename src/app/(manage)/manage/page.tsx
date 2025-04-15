@@ -8,7 +8,7 @@ export default async function ManageLogin() {
   const admin = await isAdmin();
   const manager = await isManager();
 
-  console.log(manager, admin);
+  // console.log(manager, admin);
 
   if (admin) {
     redirect("/admin/dashboard");

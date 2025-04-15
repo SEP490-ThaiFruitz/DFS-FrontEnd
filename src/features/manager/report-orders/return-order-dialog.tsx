@@ -77,7 +77,7 @@ const returnReasons = [
   {
     id: "changed-mind",
     reason: "Đổi ý",
-    description: "Không còn muốn sản phẩm này nữa",
+    description: "Không còn muốn sử dụng sản phẩm này nữa",
     icon: <RefreshCw className="h-4 w-4" />,
   },
   {
@@ -124,6 +124,8 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
 
   const [selectImages, setSelectImages] = useState<File[]>([]);
 
+  const [googleDriveLink, setGoogleDriveLink] = useState<string>("");
+
   // console.log({ selectImages });
 
   // const handleImageChange = (files: File[]) => {
@@ -145,9 +147,6 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
       return;
     }
 
-    // console.log(selectedItemsDetails);
-
-    // Kiểm tra tính hợp lệ của dữ liệu
     const isValid = Object.values(selectedItemsDetails).every(
       (detail) => detail?.productStatus && detail?.images?.length > 0
     );
@@ -163,11 +162,13 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
 
       formData.append("reason", selectedReason);
 
+      formData.append(`type`, preferredAction);
+      formData.append(`LinkDocument`, googleDriveLink);
+
       images.forEach((image, index) => {
         formData.append(`Images`, image);
       });
 
-      // const getImages = selectedItemsDetails[selectedItems[0]]?.images[0];
       selectedItems.forEach((itemId, index) => {
         const itemDetail = selectedItemsDetails[itemId];
 
@@ -182,8 +183,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
           itemDetail.productStatus
         );
 
-        // Append loại yêu cầu (refund hoặc return)
-        formData.append(`items[${index}][type]`, preferredAction);
+        // formData.append(`items[${index}][type]`, preferredAction);
       });
 
       // Gửi yêu cầu đến API
@@ -245,11 +245,16 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
   //   selectedItems.length > 0 &&
   //   itemCondition &&
   //   (isOtherSelected ? additionalComments.trim().length > 0 : true);
+
+  const proveCondition =
+    selectedItemsDetails[selectedItems[0]]?.images?.length > 0 ||
+    !googleDriveLink;
+
   const canProceed =
     selectedReason &&
     selectedItems.length > 0 &&
     selectedItemsDetails[selectedItems[0]]?.productStatus &&
-    selectedItemsDetails[selectedItems[0]]?.images?.length > 0 &&
+    proveCondition &&
     (isOtherSelected ? additionalComments.trim().length > 0 : true);
 
   const orderDetail = useFetch<ApiResponse<OrderDetailTypes>>(
@@ -257,41 +262,12 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     [ORDERS_KEY.ORDER_LIST_DETAIL, orderId]
   );
 
-  // useEffect(() => {
-  //   const selectedItemsDetails = orderDetail.data?.value?.orderItems.filter(
-  //     (item) => selectedItems.includes(item.id)
-  //   );
-  //   setSelectedOrderItem(selectedItemsDetails || []);
-  // }, [selectedItems, orderDetail.data?.value?.orderItems]);
-
   useEffect(() => {
     const selectedItemsDetails = orderDetail.data?.value?.orderItems.filter(
       (item) => selectedItems.includes(item.id)
     );
     setSelectedOrderItem(selectedItemsDetails || []);
   }, [selectedItems, orderDetail.data?.value?.orderItems]);
-
-  console.log(selectedItems);
-  console.log(selectedItemsDetails);
-  console.log(selectedOrderItem);
-  console.log(
-    Object.values(selectedItemsDetails).every(
-      (detail) => detail?.productStatus && detail?.images?.length > 0
-    )
-  );
-
-  // useEffect(() => {
-  //   if (step === 2 && selectedItems.length > 0) {
-  //     const isValid = Object.values(selectedItemsDetails).every(
-  //       (detail) => detail?.productStatus && detail?.images?.length > 0
-  //     );
-  //     if (!isValid) {
-  //       toast.info("Vui lòng điền đầy đủ thông tin cho tất cả sản phẩm.");
-  //     }
-  //   }
-  // }, [step, selectedItemsDetails]);
-
-  console.log("step", step);
 
   return (
     <Dialog
@@ -307,6 +283,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
             setSelectedItems([]);
             setItemCondition("");
             setPreferredAction("return");
+            setSelectedItemsDetails({});
           }, 300);
         }
       }}
@@ -320,7 +297,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
           Trả hàng
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden rounded-3xl border-0 shadow-xl">
+      <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden rounded-3xl border-0 shadow-xl">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100 overflow-hidden">
           <div
             className="h-full bg-sky-500 transition-all duration-500 ease-in-out"
@@ -376,6 +353,8 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
             preferredAction={preferredAction}
             setSelectedItemsDetails={setSelectedItemsDetails}
             returnReasons={returnReasons}
+            googleDriveLink={googleDriveLink}
+            setGoogleDriveLink={setGoogleDriveLink}
           />
         ) : (
           step === 2 && (

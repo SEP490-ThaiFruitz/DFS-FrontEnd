@@ -52,10 +52,10 @@ const ORDER_STATUS_FLOW = [
   "returned",
 ];
 
-const iconSize = "size-4";
+const iconSize = "size-6 hover:scale-110 transition duration-300";
 
 export const getStatusIcon = (status: string) => {
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return <Clock className={iconSize} />;
     // case OrderStatusEnum.CONFIRMED:
@@ -80,7 +80,7 @@ export const getStatusIcon = (status: string) => {
 };
 
 export const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300";
     // case OrderStatusEnum.CONFIRMED:
@@ -106,7 +106,7 @@ export const getStatusColor = (status: string) => {
 
 // Get status text
 export const getStatusText = (status: string) => {
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return OrderStatus.pending;
     // case OrderStatusEnum.CONFIRMED:
@@ -150,7 +150,7 @@ export function OrderStatusBadge({
       return ORDER_STATUS_FLOW[index + 1];
     }
 
-    toast.warning("Không tìm thấy trạng thái tiếp theo để cập nhật");
+    // toast.warning("Không tìm thấy trạng thái tiếp theo để cập nhật");
     return null; // Trạng thái cuối hoặc không tìm thấy
   };
 
@@ -210,6 +210,7 @@ export function OrderStatusBadge({
       setIsPending(false);
     }
   };
+
   return (
     <>
       <ConfirmDialog />
@@ -237,7 +238,7 @@ export function OrderStatusBadge({
   );
 }
 
-const UpdateStatusButton = ({
+export const UpdateStatusButton = ({
   status,
   onClick,
   className,
@@ -310,14 +311,14 @@ export const UpdateStatusButtonDropdown = ({
       return ORDER_STATUS_FLOW[index + 1];
     }
 
-    toast.warning("Không tìm thấy trạng thái tiếp theo để cập nhật");
+    // toast.warning("Không tìm thấy trạng thái tiếp theo để cập nhật");
     return null;
   };
 
   let nextStatus = "";
 
   if (!isCancelled && !isReturned) {
-    nextStatus = getNextStatus(status.toLowerCase()) ?? "";
+    nextStatus = getNextStatus(status?.toLowerCase()) ?? "";
   }
 
   const statusTextNext = getStatusText(nextStatus);
@@ -329,16 +330,13 @@ export const UpdateStatusButtonDropdown = ({
   const updateStatus = async () => {
     // const ok = await confirm();
 
+    console.log("submit auto");
+
     if (!isCancelled && !isReturned && !nextStatus) {
       return toast.error(
         "Không tìm thấy trạng thái tiếp theo để cập nhật cho đơn hàng"
       );
     }
-
-    // if (!ok) {
-    //   setIsPending(false);
-    //   return;
-    // }
 
     setIsPending(true);
 
@@ -375,7 +373,11 @@ export const UpdateStatusButtonDropdown = ({
     <>
       <Button
         className={`flex items-center gap-2 w-fit cursor-pointer ${statusColor} hover:${statusColor}`}
-        onClick={updateStatus}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          updateStatus();
+        }}
         disabled={isPending}
         variant="outline"
       >

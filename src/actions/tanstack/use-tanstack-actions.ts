@@ -39,7 +39,7 @@ const fetching = async (endpoint: string, params?: Record<string, any>) => {
     );
 
     if (!response.ok) {
-      console.log(response);
+      // console.log(response);
       return [];
     }
 

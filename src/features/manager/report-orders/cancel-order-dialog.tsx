@@ -307,7 +307,7 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
                     Đang xử lý
                   </Badge>
                   <span className="text-sm text-gray-500">
-                    Đơn hàng #VN12345
+                    Đơn hàng #{orderId}
                   </span>
                 </div>
 
@@ -391,7 +391,7 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
                   <h3 className="text-sm flex items-center gap-1 font-bold text-slate-700 mb-2">
                     <BookCheck className="size-6" /> Lý do hủy đơn
                   </h3>
-                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 cardStyle">
                     <p className="font-medium text-slate-800">
                       {selectedReason}
                     </p>
@@ -410,7 +410,7 @@ export function CancelOrderDialog({ orderId }: CancelOrderDialogProps) {
                     <AlignJustify className="size-6" /> Thông tin đơn hàng
                   </h3>
                   {!orderDetail.isLoading ? (
-                    <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 cardStyle">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm font-bold text-slate-700">
                           Đơn hàng{" "}

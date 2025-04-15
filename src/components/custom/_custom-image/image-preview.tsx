@@ -13,6 +13,7 @@ interface ImagePreviewProps {
   className?: string;
   iconButton?: React.ReactNode;
   iconClassName?: string;
+  alt?: string;
 }
 
 export default function ImagePreview({
@@ -26,6 +27,8 @@ export default function ImagePreview({
   iconButton,
   iconClassName = "h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white ",
   className = "cursor-pointer  hover:opacity-90 transition-opacity rounded-3xl",
+
+  alt,
 }: Readonly<ImagePreviewProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -52,7 +55,7 @@ export default function ImagePreview({
       ) : (
         <Image
           src={images[0]}
-          alt={"Image"}
+          alt={alt || "Image-of-preview"}
           width={initialWidth}
           height={initialHeight}
           className={className}

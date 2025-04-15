@@ -36,7 +36,7 @@ import {
 } from "@/types/report-orders.types";
 import {
   OrderStatusBadge,
-  StatusBar,
+  // StatusBar,
   UpdateStatusButtonDropdown,
 } from "./order-status-badge";
 import { formatVND } from "@/lib/format-currency";
@@ -47,11 +47,12 @@ import { toast } from "sonner";
 import { CancelOrderDialog } from "./cancel-order-dialog";
 import { ReturnOrderDialog } from "./return-order-dialog";
 import OrderDetails from "../order-detail-components/order-detail";
+import { StatusBar } from "./status-bar";
 
 // Update the getStatusStep function to reflect the new order flow
 // Get status step
 const getStatusStep = (status: string) => {
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case OrderStatusEnum.PENDING:
       return 0;
     // case OrderStatusEnum.CONFIRMED:
@@ -165,10 +166,11 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
       return (
         <div className="flex flex-col gap-2">
           <OrderStatusBadge
-            status={status.toLowerCase()}
+            status={status?.toLowerCase()}
             orderId={row.original.id}
           />
 
+          {/* <StatusBar statusStep={statusStep} /> */}
           <StatusBar statusStep={statusStep} />
         </div>
       );
@@ -275,7 +277,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
               className="w-fit font-thin"
               color={voucher !== null ? "indigo" : "blush"}
             >
-              {voucher.name}
+              {voucher?.name}
             </AdvancedColorfulBadges>
           )}
           {pointUsed > 0 && (
@@ -307,7 +309,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex items-center gap-2 max-w-[150px] hover:underline transition duration-300 cursor-pointer">
-                <Avatar className="h-8 w-8">
+                <Avatar className="size-14">
                   {user.avatar ? (
                     <AvatarImage src={user.avatar} alt={user.name} />
                   ) : null}
@@ -316,20 +318,24 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col items-start">
-                  <span className="truncate font-bold text-sm ">
+                  <span className="truncate font-bold text-base text-sky-500 ">
                     {user.name}
                   </span>
-                  <div className="flex items-center gap-1 text-xs text-violet-600">
-                    <ExternalLink className="h-3 w-3" />
-                    <span className="truncate">{user.email}</span>
+                  <div className="flex items-center gap-1  text-violet-600">
+                    <ExternalLink className="size-6" />
+                    <span className="truncate font-semibold text-sm">
+                      {user.email}
+                    </span>
                   </div>
                 </div>
               </div>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-1">
-                <p className="text-sm font-bold">{user.name}</p>
-                <p className="text-xs">{user.email}</p>
+                <p className="text-base font-bold">{user.name}</p>
+                <p className="text-sm font-semibold text-sky-500">
+                  {user.email}
+                </p>
                 {user.phone && (
                   <p className="text-xs">
                     SĐT: {formatVietnamesePhoneNumber(user.phone)}
@@ -344,6 +350,8 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
 
     meta: { align: "center", export: { pdf: { header: "Khách hàng" } } },
     filterFn: "filterRows",
+
+    minSize: 250,
   },
   {
     id: "createdOnUtc",
@@ -373,13 +381,15 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                   : "bg-slate-50 text-slate-600 dark:bg-slate-800/20"
               }`}
             >
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-6" />
             </div>
-            <span className="font-light">{formattedDate}</span>
+            <span className="font-semibold text-slate-700">
+              {formattedDate}
+            </span>
           </div>
           <span
-            className={`text-xs pl-9 mt-0.5 ${
-              isRecent ? "text-sky-600 font-medium" : "text-slate-700"
+            className={`text-xs pl-9 mt-0.5 underline ${
+              isRecent ? "text-sky-600 font-semibold" : "text-slate-700"
             }`}
           >
             {relativeTime}
@@ -401,7 +411,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     cell: ({ row }) => {
       const order = row.original;
 
-      const status = (row.getValue("status") as string).toLowerCase();
+      const status = (row.getValue("status") as string)?.toLowerCase();
       // const status = order.status.toLowerCase();
 
       const conditionalUpdate =
@@ -450,7 +460,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
               {conditionalUpdate && (
                 <UpdateStatusButtonDropdown
                   orderId={row.original.id}
-                  status={status.toLowerCase()}
+                  status={status?.toLowerCase()}
                 />
               )}
 
@@ -484,7 +494,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     },
 
     meta: {
-      align: "right",
+      align: "center",
       export: { pdf: false },
     },
     filterFn: "filterRows",

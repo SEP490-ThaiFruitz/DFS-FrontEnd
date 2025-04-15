@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 import { OrderStatus } from "@/types/report-orders.types";
 import { getOrderStatusStep } from "@/utils/content-line";
+import { omit } from "lodash";
 import React from "react";
 
 const statusColors = [
@@ -17,20 +18,23 @@ const statusColors = [
   "bg-indigo-500", // delivering
   "bg-[#a21caf]", // delivered
   "bg-green-500", // received
-  "bg-red-500", // cancelled
-  "bg-gray-500", // returned
+  // "bg-red-500", // cancelled
+  // "bg-gray-500", // returned
 ];
 
-export const statusTexts = Object.values(OrderStatus);
+const omittedStatuses = omit(OrderStatus, "cancelled", "returned");
+export const statusTexts = Object.values(omittedStatuses);
 export const StatusBar = ({ statusStep }: { statusStep: number }) => {
+  // console.log({ statusStep });
+
   return (
     <TooltipProvider delayDuration={100}>
-      <div className="flex items-center gap-1 w-full max-w-[180px]">
+      <div className="flex items-center gap-1 w-full max-w-[200px]">
         {statusColors.map((color, index) => (
           <Tooltip key={index}>
             <TooltipTrigger asChild className="cursor-pointer">
               <div
-                className={`h-1.5 w-1/4 cursor-pointer ${
+                className={`h-2 w-3/4 cursor-pointer ${
                   index === 0 ? "rounded-l-full" : ""
                 } ${index === statusColors.length - 1 ? "rounded-r-full" : ""}
                   ${
@@ -38,8 +42,10 @@ export const StatusBar = ({ statusStep }: { statusStep: number }) => {
                   }`}
               />
             </TooltipTrigger>
-            <TooltipContent>
-              <span className="text-xs">{statusTexts[index]}</span>
+            <TooltipContent side="bottom">
+              <span className="text-sm font-semibold ">
+                {statusTexts[index]}
+              </span>
             </TooltipContent>
           </Tooltip>
         ))}

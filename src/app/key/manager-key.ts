@@ -6,4 +6,6 @@ export enum ORDERS_KEY {
   ORDERS_LIST = "order_list",
 
   ORDER_LIST_DETAIL = "orderListDetail",
+
+  RETURN_EXCHANGE = "returnExchange",
 }

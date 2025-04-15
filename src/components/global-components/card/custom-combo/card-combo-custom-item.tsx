@@ -131,7 +131,7 @@ export const CustomComboProductCard = memo(
           onClick={async () => {
             const remove = await removeCustomComboProduct(combo.id);
 
-            console.log("remove custom combo", remove);
+            // console.log("remove custom combo", remove);
             if (remove) {
               queryClient.invalidateQueries({
                 queryKey: [USER_KEY.CUSTOM_COMBO],

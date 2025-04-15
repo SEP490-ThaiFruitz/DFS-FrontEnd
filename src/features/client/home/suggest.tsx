@@ -14,7 +14,7 @@ const Suggest = ({ favorites }: Readonly<SuggestProps>) => {
     ApiResponse<PageResult<Product>>
   >("/Products", ["products"]);
 
-  console.log({ products });
+  // console.log({ products });
   return (
     <div className="p-10 sm:p-20">
       <div className="font-bold text-2xl mb-5">Sản phẩm đề xuất</div>

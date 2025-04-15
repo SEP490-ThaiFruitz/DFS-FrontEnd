@@ -242,7 +242,7 @@ export default function BlogForm() {
         toast.success("Tải lên bài viết thành công!");
       }
 
-      console.log("Response:", response.data);
+      // console.log("Response:", response.data);
     } catch (error) {
       console.log({ error });
       toast.error(

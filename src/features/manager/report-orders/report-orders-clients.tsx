@@ -174,8 +174,14 @@ export const ReportOrdersListClient = ({
   // Calculate metrics for current and previous periods
   const calculateMetrics = (orders: OrderData[]) => {
     const totalOrders = orders?.length;
-    const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
-    const totalShipFee = orders.reduce((sum, order) => sum + order.shipFee, 0);
+    const totalSales = orders?.reduce(
+      (sum, order) => sum + order?.totalPrice,
+      0
+    );
+    const totalShipFee = orders?.reduce(
+      (sum, order) => sum + order?.shipFee,
+      0
+    );
     const confirmedOrders = data?.items.filter(
       (order) => order?.status?.toLowerCase() === "received"
     ).length;
@@ -224,28 +230,32 @@ export const ReportOrdersListClient = ({
         <TotalCard
           icon={ListOrderedIcon}
           title="Tổng số đơn hàng"
-          value={totalOrders}
+          // value={totalOrders}
+          value={currentMetrics?.totalOrders ?? 0}
           // subtitle="--Đơn hàng"
           subtitle={orderGrowthRate}
         />
         <TotalCard
           icon={Banknote}
           title="Tổng doanh thu"
-          value={formatVND(totalSales ?? 0)}
+          // value={formatVND(totalSales ?? 0)}
+          value={formatVND(currentMetrics?.totalSales ?? 0)}
           // subtitle="--VND"
           subtitle={salesGrowthRate}
         />
         <TotalCard
           icon={Banknote}
           title="Tổng phí ship"
-          value={formatVND(totalShipFee ?? 0)}
+          // value={formatVND(totalShipFee ?? 0)}
+          value={formatVND(currentMetrics?.totalShipFee ?? 0)}
           // subtitle="--VND"
           subtitle={shipFeeGrowthRate}
         />
         <TotalCard
           icon={ListCheckIcon}
           title="Đơn hàng xác nhận"
-          value={confirmedOrders ?? 0}
+          // value={confirmedOrders ?? 0}
+          value={currentMetrics?.confirmedOrders ?? 0}
           // subtitle="--Đơn hàng"
           subtitle={confirmedOrdersGrowthRate}
         />

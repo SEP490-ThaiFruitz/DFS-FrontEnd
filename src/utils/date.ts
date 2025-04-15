@@ -117,3 +117,41 @@ export const differenceDate = (date: string | Date) => {
 
   return daysLeft;
 };
+
+/**
+ * Filters data based on a date range and calculates metrics for the current and previous periods.
+ * @param {T[]} data - The array of data to filter.
+ * @param {(item: T) => Date} getDate - A function to extract the date field from each item.
+ * @param {Date} currentFrom - Start date of the current period.
+ * @param {Date} currentTo - End date of the current period.
+ * @returns {{ currentPeriodData: T[]; previousPeriodData: T[] }} - Filtered data for both periods.
+ */
+export const filterDataByDateRange = <T>(
+  data: T[],
+  getDate: (item: T) => Date,
+  currentFrom: Date,
+  currentTo: Date
+): { currentPeriodData: T[]; previousPeriodData: T[] } => {
+  // Helper function to filter data by date range
+  const filterByRange = (startDate: Date, endDate: Date): T[] => {
+    return data.filter((item) => {
+      const itemDate = getDate(item);
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  };
+
+  // Calculate the previous period date range
+  const previousFrom = new Date(currentFrom);
+  previousFrom.setDate(
+    previousFrom.getDate() - (currentTo.getDate() - currentFrom.getDate() + 1)
+  );
+
+  const previousTo = new Date(currentFrom);
+  previousTo.setDate(previousTo.getDate() - 1);
+
+  // Filter data for current and previous periods
+  const currentPeriodData = filterByRange(currentFrom, currentTo);
+  const previousPeriodData = filterByRange(previousFrom, previousTo);
+
+  return { currentPeriodData, previousPeriodData };
+};

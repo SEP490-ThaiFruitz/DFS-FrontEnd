@@ -2,8 +2,17 @@
 
 import { PrivacyPolicy } from "@/components/global-components/footer/policy/privacy-policy";
 import { ServicePolicy } from "@/components/global-components/footer/policy/service-policy";
+import { FormValues } from "@/components/global-components/form/form-values";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
@@ -11,8 +20,11 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 interface CreateWalletProps {
   pin: string;
@@ -23,6 +35,11 @@ interface CreateWalletProps {
   acceptTerms: boolean;
   setAcceptTerms: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+const formSchema = z.object({
+  pin: z.string(),
+});
+
 export const CreateWallet = memo(
   ({
     pin,
@@ -33,6 +50,14 @@ export const CreateWallet = memo(
     acceptTerms,
     setAcceptTerms,
   }: CreateWalletProps) => {
+    const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
+
+      defaultValues: {
+        pin: pin,
+      },
+    });
+
     const getPinStrengthColor = () => {
       switch (pinStrength) {
         case "weak":
@@ -73,6 +98,13 @@ export const CreateWallet = memo(
       }
     });
 
+    const watchPin = form.watch("pin");
+
+    console.log("watching pin", watchPin);
+    useEffect(() => {
+      setPin(watchPin);
+    }, [watchPin, setPin]);
+
     return (
       <div className="space-y-6">
         <div className="space-y-3">
@@ -91,7 +123,7 @@ export const CreateWallet = memo(
             )}
           </Label>
 
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <InputOTP
               maxLength={6}
               value={pin}
@@ -133,10 +165,71 @@ export const CreateWallet = memo(
                 />
               </InputOTPGroup>
             </InputOTP>
-          </div>
+          </div> */}
+
+          <FormValues
+            form={form}
+            onSubmit={() => {}}
+            classNameForm="flex item-center justify-center"
+          >
+            <FormField
+              control={form.control}
+              name="pin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nhập mã Pin</FormLabel>
+                  <FormControl>
+                    <InputOTP
+                      maxLength={6}
+                      {...field}
+                      pattern="^[0-9]+$"
+                      inputMode="numeric"
+                      containerClassName="gap-2"
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot
+                          className="h-14 w-14 text-center text-xl font-medium"
+                          index={0}
+                        />
+                        <InputOTPSlot
+                          className="h-14 w-14 text-center text-xl font-medium"
+                          index={1}
+                        />
+                        <InputOTPSlot
+                          className="h-14 w-14 text-center text-xl font-medium"
+                          index={2}
+                        />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot
+                          className="h-14 w-14 text-center text-xl font-medium"
+                          index={3}
+                        />
+                        <InputOTPSlot
+                          className="h-14 w-14 text-center text-xl font-medium"
+                          index={4}
+                        />
+                        <InputOTPSlot
+                          className="h-14 w-14 text-center text-xl font-medium"
+                          index={5}
+                        />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </FormControl>
+                  <FormDescription>
+                    Hãy nhập mã PIN của bạn. Mã PIN này sẽ được sử dụng để xác
+                    minh
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* <Button type="submit">Submit</Button> */}
+          </FormValues>
 
           {/* PIN Strength Indicator */}
-          {pin.length > 0 && (
+          {pin?.length > 0 && (
             <div className="mt-2">
               <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                 <div

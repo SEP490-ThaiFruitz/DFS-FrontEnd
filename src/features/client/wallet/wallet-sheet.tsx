@@ -57,6 +57,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
   );
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
+
   const [error, setError] = useState("");
   const [rememberDevice, setRememberDevice] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -67,7 +68,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (pin.length < 4) {
+    if (pin?.length < 4) {
       setPinStrength("");
       return;
     }
@@ -122,6 +123,8 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
     setStep("confirm");
   };
 
+  console.log({ pin });
+
   const handleConfirmPin = async () => {
     if (pin !== confirmPin) {
       setError("Mã PIN không khớp");
@@ -175,7 +178,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
       setStep("success");
     }
 
-    setPin("1");
+    setPin("");
     setConfirmPin("");
     setError("");
     setRememberDevice(false);
@@ -421,7 +424,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
                 <div className="space-y-3 w-full">
                   <Button
                     onClick={handleCreatePin}
-                    disabled={pin.length < 4 || !acceptTerms}
+                    disabled={pin?.length < 4 || !acceptTerms}
                     className="w-full h-12 text-base bg-sky-600 hover:bg-sky-500 hoverAnimate"
                   >
                     Tiếp tục
@@ -444,7 +447,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
                 <div className="space-y-3 w-full">
                   <Button
                     onClick={handleConfirmPin}
-                    disabled={confirmPin.length < 4}
+                    disabled={confirmPin?.length < 4}
                     className="w-full h-12 text-base bg-sky-600 hover:bg-sky-500 hoverAnimate"
                   >
                     Tạo Ví

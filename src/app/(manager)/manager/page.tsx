@@ -60,6 +60,8 @@ type TopProductRevenueStatistics = {
   revenue: number;
   revenueDiscount: number;
   lastBuyDate: string;
+
+  customImages: string[] | null;
 };
 
 type TopCustomerRevenueStatistics = {

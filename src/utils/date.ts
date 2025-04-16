@@ -155,3 +155,27 @@ export const filterDataByDateRange = <T>(
 
   return { currentPeriodData, previousPeriodData };
 };
+
+export const getPreviousDate = (dateRange: {
+  from: Date | undefined;
+  to?: Date | undefined;
+}) => {
+  const { from: currentFrom, to: currentTo } = dateRange as {
+    from: Date;
+    to: Date;
+  };
+
+  // Define the previous period date range
+  const previousFrom = new Date(currentFrom as Date);
+  previousFrom.setDate(
+    previousFrom.getDate() - (currentTo.getDate() - currentFrom.getDate() + 1)
+  );
+
+  const previousTo = new Date(currentFrom as Date);
+  previousTo.setDate(previousTo.getDate() - 1);
+
+  return {
+    previousFrom,
+    previousTo,
+  };
+};

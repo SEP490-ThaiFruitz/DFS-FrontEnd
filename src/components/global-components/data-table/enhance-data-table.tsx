@@ -250,8 +250,8 @@ export const EnhanceDataTableWithAllFeatures = <TData, TValue>({
   );
 
   return (
-    <div className=" py-10 px-4 space-y-8">
-      <div className="flex items-center justify-end space-x-2">
+    <div className="  px-0 space-y-8">
+      {/* <div className="flex items-center justify-end space-x-2">
         <Input
           type="number"
           value={dataCount}
@@ -269,11 +269,33 @@ export const EnhanceDataTableWithAllFeatures = <TData, TValue>({
         >
           {queryClient?.isFetching ? "Đang tải..." : "Làm mới"}
         </Button>
-      </div>
+      </div> */}
       <Card className="cardStyle">
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+        <CardHeader className="flex items-center gap-2 space-y-0  py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1 text-center sm:text-left">
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+
+          <div className="flex items-center justify-end space-x-2">
+            <Input
+              type="number"
+              value={dataCount}
+              onChange={(e) => setDataCount(Number(e.target.value))}
+              className="w-32"
+            />
+
+            <Button
+              onClick={() => {
+                queryClient?.refetch();
+
+                // fetchData()
+              }}
+              disabled={queryClient?.isFetching}
+            >
+              {queryClient?.isFetching ? "Đang tải..." : "Làm mới"}
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent>

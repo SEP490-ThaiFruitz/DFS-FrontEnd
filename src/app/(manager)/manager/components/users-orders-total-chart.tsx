@@ -30,11 +30,13 @@ import {
   createDateRange,
   currentDate,
   fillMissingDatesDynamics,
+  getPreviousDate,
   vietnameseDate,
 } from "@/utils/date";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import { map } from "lodash";
 import { format } from "date-fns";
+import { calculateGrowthRate } from "@/lib/calculate";
 // const chartData = [
 //   { date: "2024-04-01", orders: 222, customer: 150 },
 //   { date: "2024-04-02", orders: 97, customer: 180 },
@@ -57,10 +59,24 @@ const chartConfig = {
 
 interface UsersOrdersTotalChartProps {
   userReportData: CustomerType[] | [];
+  historyUserReportData: CustomerType[] | [];
+
+  dateRange: {
+    from: Date | undefined;
+    to?: Date | undefined;
+  };
+}
+
+interface ChartItem {
+  date: string;
+  totalSpend: number;
+  name: string[];
 }
 
 export function UsersOrdersTotalChart({
   userReportData,
+  historyUserReportData,
+  dateRange,
 }: UsersOrdersTotalChartProps) {
   const [timeRange, setTimeRange] = React.useState("90d");
 
@@ -80,7 +96,14 @@ export function UsersOrdersTotalChart({
 
   const fromDate = "2025-01-01";
 
-  const allDates = createDateRange(fromDate, currentDate);
+  const { previousFrom, previousTo } = getPreviousDate(dateRange);
+  // const allDates = createDateRange(fromDate, currentDate);
+  const allDates = createDateRange(
+    dateRange.from as Date,
+    dateRange.to as Date
+  );
+
+  const historyAllDates = createDateRange(previousFrom, previousTo);
 
   // console.log(allDates);
 
@@ -96,9 +119,10 @@ export function UsersOrdersTotalChart({
     ["totalSpend", "name"]
   );
 
+  // current data
   const groupedByDate: any = {};
 
-  userReportData.forEach((user) => {
+  userReportData?.forEach((user) => {
     const date = user.createdAt.split("T")[0];
 
     if (!groupedByDate[date]) {
@@ -113,12 +137,41 @@ export function UsersOrdersTotalChart({
     groupedByDate[date].name.push(user.name);
   });
 
-  const chartData = Object.values(groupedByDate);
+  const historyGroupedByDate: any = {};
 
-  // console.log({ chartData });
+  historyUserReportData?.forEach((user) => {
+    const date = user.createdAt.split("T")[0];
 
-  // console.log(userReportData);
-  // console.log(dataRangeDate);
+    if (!historyGroupedByDate[date]) {
+      historyGroupedByDate[date] = {
+        date,
+        totalSpend: 0,
+        name: [],
+      };
+    }
+
+    historyGroupedByDate[date].totalSpend += user.totalSpend;
+    historyGroupedByDate[date].name.push(user.name);
+  });
+
+  const chartData: ChartItem[] = Object.values(groupedByDate);
+  const historyChartData: ChartItem[] = Object.values(historyGroupedByDate);
+
+  const currTotalSpend = chartData.reduce(
+    (acc, curr) => acc + curr.totalSpend,
+    0
+  );
+
+  const prevTotalSpend = historyChartData.reduce(
+    (acc, curr) => acc + curr.totalSpend,
+    0
+  );
+
+  const growthRateComponent = calculateGrowthRate(
+    currTotalSpend,
+    prevTotalSpend
+  );
+
   return (
     <Card className="cardStyle">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
@@ -127,13 +180,15 @@ export function UsersOrdersTotalChart({
           <CardDescription>
             Biểu thị số lượng khách hàng và đơn hàng theo{" "}
             <span className="font-semibold text-sky-600">
-              {vietnameseDate(fromDate)}
-            </span>
-            -
+              {vietnameseDate(dateRange?.from as Date)}
+            </span>{" "}
+            -{" "}
             <span className="font-semibold text-sky-600">
-              {vietnameseDate(currentDate)}
+              {vietnameseDate(dateRange?.to as Date)}
             </span>
           </CardDescription>
+
+          {growthRateComponent}
         </div>
         {/* <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger

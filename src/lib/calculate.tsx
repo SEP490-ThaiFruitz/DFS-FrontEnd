@@ -9,7 +9,7 @@ export const calculateGrowthRate = (
   if (previous === 0)
     return (
       <span className="text-gray-500 font-semibold flex items-center">
-        <Minus className="size-5 mr-1" /> 0%
+        Biến động: <Minus className="size-5 mr-1" /> 0%
       </span>
     ); // Avoid division by zero
 
@@ -19,20 +19,20 @@ export const calculateGrowthRate = (
   if (growthRate > 0) {
     return (
       <span className="text-green-500 flex font-semibold items-center">
-        <ArrowUp className="size-5 mr-1" /> {formattedRate}%
+        Biến động: <ArrowUp className="size-5 mr-1" /> {formattedRate}%
       </span>
     );
   } else if (growthRate < 0) {
     return (
       <span className="text-rose-500 flex font-semibold items-center">
-        <ArrowDown className="size-5 mr-1" />{" "}
+        Giảm: <ArrowDown className="size-5 mr-1" />{" "}
         {Math.abs(Number.parseFloat(formattedRate))}%
       </span>
     );
   } else {
     return (
       <span className="text-gray-500 flex font-semibold items-center">
-        <Minus className="size-5 mr-1" /> 0%
+        Biến động: <Minus className="size-5 mr-1" /> 0%
       </span>
     );
   }

@@ -1,5 +1,7 @@
 export enum REPORT_KEY {
   REPORT_REVENUE = "report_revenue",
+
+  REPORT_CUSTOMER = "reportCustomer",
 }
 
 export enum ORDERS_KEY {

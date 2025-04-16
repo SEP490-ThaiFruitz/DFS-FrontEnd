@@ -23,21 +23,22 @@ export type ReportUserValue = {
 };
 
 const UserReportPage = async () => {
-  const token = await getToken();
+  // const token = await getToken();
 
-  const response = await fetch(`${API}/Statistics/report/customers`, {
-    headers: {
-      Authorization: `Bearer ${token?.accessToken}`,
-    },
-  });
+  // const response = await fetch(`${API}/Statistics/report/customers`, {
+  //   headers: {
+  //     Authorization: `Bearer ${token?.accessToken}`,
+  //   },
+  // });
 
-  if (!response.ok) {
-    return <NotData className="w-full h-full" />;
-  }
+  // if (!response.ok) {
+  //   return <NotData className="w-full h-full" />;
+  // }
 
-  const userReportData: ApiResponse<CustomerType[]> = await response.json();
+  // const userReportData: ApiResponse<CustomerType[]> = await response.json();
 
-  return <UserReportClient userReportData={userReportData.value || []} />;
+  // return <UserReportClient userReportDataSer={userReportData.value || []} />;
+  return <UserReportClient />;
 };
 
 export default UserReportPage;

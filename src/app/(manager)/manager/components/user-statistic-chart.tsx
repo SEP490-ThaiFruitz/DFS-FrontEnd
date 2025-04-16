@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/chart";
 import { formatVND } from "@/lib/format-currency";
 import { CustomerType } from "../users-report/user -report-column";
+import { calculateGrowthRate } from "@/lib/calculate";
+import { vietnameseDate } from "@/utils/date";
 
 const chartConfig = {
   totalSpend: {
@@ -51,11 +53,20 @@ const chartConfig = {
 
 export type UserStatisticChartProps = {
   userReportData: CustomerType[] | [];
+  historyUserReportData: CustomerType[] | [];
   className?: string;
+
+  dateRange: {
+    from: Date | undefined;
+    to?: Date | undefined;
+  };
 };
 
 export function UserStatisticChart({
   userReportData,
+  historyUserReportData,
+  dateRange,
+  className,
 }: UserStatisticChartProps) {
   const chartData = userReportData
     .sort((a, b) => {
@@ -73,11 +84,25 @@ export function UserStatisticChart({
   const totalSpendSum = React.useMemo(() => {
     return userReportData.reduce((acc, curr) => acc + curr.totalSpend, 0);
   }, [userReportData]);
+
+  const prevTotalSpendSum = React.useMemo(() => {
+    return historyUserReportData?.reduce(
+      (acc, curr) => acc + curr.totalSpend,
+      0
+    );
+  }, [historyUserReportData]);
+
+  const growthRate = calculateGrowthRate(totalSpendSum, prevTotalSpendSum);
+
   return (
     <Card className="flex flex-col cardStyle">
       <CardHeader className="items-center pb-0">
         <CardTitle>Top tổng chi tiêu khách hàng</CardTitle>
-        <CardDescription>Từ Top 5 - 2025</CardDescription>
+        <CardDescription className="font-semibold text-sky-500">
+          Từ Top 5 - 2025
+        </CardDescription>
+
+        {growthRate}
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -128,16 +153,21 @@ export function UserStatisticChart({
                 }}
               />
             </Pie>
-            <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+            <ChartLegend content={<ChartLegendContent />} />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Giảm 5.2% trong tháng này <TrendingUp className="h-4 w-4" />
-        </div>
+        {growthRate}
         <div className="leading-none text-muted-foreground">
-          Báo cáo số liệu tháng 3
+          Báo cáo số liệu{" "}
+          <span className="font-semibold text-sky-600">
+            {vietnameseDate(dateRange?.from as Date)}
+          </span>{" "}
+          -{" "}
+          <span className="font-semibold text-sky-600">
+            {vietnameseDate(dateRange?.to as Date)}
+          </span>
         </div>
       </CardFooter>
     </Card>

@@ -229,8 +229,33 @@ export default function RevenueDashboard() {
     dateRange.to as Date
   );
 
+  const historyAllDates = createDateRange(
+    previousFrom as Date,
+    previousTo as Date
+  );
+
   const enrichRevenue = reportRevenue.data?.value?.topProductRevenueStatistics
     ? reportRevenue.data.value.topProductRevenueStatistics.reduce(
+        (acc, report) => {
+          const date = report.lastBuyDate.split("T")[0];
+
+          const revenue = report.revenueDiscount ?? report.revenue;
+          if (acc[date]) {
+            acc[date] += revenue;
+          } else {
+            acc[date] = revenue;
+          }
+
+          return acc;
+        },
+        {} as Record<string, number>
+      )
+    : {};
+
+  // previous data
+  const historyEnrichRevenue = historyReportRevenue.data?.value
+    ?.topProductRevenueStatistics
+    ? historyReportRevenue.data.value.topProductRevenueStatistics.reduce(
         (acc, report) => {
           const date = report.lastBuyDate.split("T")[0];
 
@@ -254,9 +279,25 @@ export default function RevenueDashboard() {
     })
   );
 
+  // history data
+  const historyEnrichRevenueArray = Object.entries(historyEnrichRevenue).map(
+    ([date, revenue]) => ({
+      lastBuyDate: date,
+      revenue,
+    })
+  );
+
   const filledRevenueData = fillMissingDatesDynamics(
     enrichRevenueArray,
     allDates,
+    "lastBuyDate",
+    ["revenue"]
+  );
+
+  // history data
+  const historyFilledRevenueData = fillMissingDatesDynamics(
+    historyEnrichRevenueArray,
+    historyAllDates,
     "lastBuyDate",
     ["revenue"]
   );
@@ -274,6 +315,23 @@ export default function RevenueDashboard() {
         historyReportRevenue?.data?.value?.totalOrder
       ).toFixed(2)
     : 0;
+
+  // calculate growth rate chart data
+
+  const currentRevenue = filledRevenueData.reduce(
+    (acc, curr) => acc + Number(curr.revenue),
+    0
+  );
+
+  const previousRevenue = historyFilledRevenueData.reduce(
+    (acc, curr) => acc + Number(curr.revenue),
+    0
+  );
+
+  const revenueGrowthRate = calculateGrowthRate(
+    currentRevenue,
+    previousRevenue
+  );
 
   return (
     <div className="flex min-h-screen w-full flex-col ">
@@ -367,6 +425,7 @@ export default function RevenueDashboard() {
                   <span className="font-semibold text-sky-600">
                     {vietnameseDate(dateRange.to as Date)}
                   </span>
+                  {revenueGrowthRate}
                 </CardDescription>
 
                 {/* <Select value={timeRange} onValueChange={setTimeRange}>

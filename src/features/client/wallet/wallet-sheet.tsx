@@ -129,8 +129,6 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
     setStep("confirm");
   };
 
-  console.log({ pin });
-
   const handleConfirmPin = async () => {
     if (pin !== confirmPin) {
       setError("Mã PIN không khớp");
@@ -195,9 +193,9 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
     <TooltipProvider>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button size="sm" className="w-full" variant="outline">
+          <div className="relative inline-flex text-sm h-11 w-10 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer">
             <Wallet className="h-5 w-5" />
-          </Button>
+          </div>
         </SheetTrigger>
         <SheetContent
           side="left"
@@ -314,50 +312,6 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
                   setRememberDevice={setRememberDevice}
                   rememberDevice={rememberDevice}
                 />
-
-                // <div className="flex justify-center">
-                //   <InputOTP
-                //     maxLength={6}
-                //     value={pin}
-                //     onChange={setPin}
-                //     pattern="^[0-9]+$"
-                //     inputMode="numeric"
-                //     containerClassName="gap-2"
-                //     autoFocus
-                //   >
-                //     <InputOTPGroup>
-                //       <InputOTPSlot
-                //         index={0}
-                //         className="h-14 w-14 text-center text-xl font-medium"
-                //         // ref={firstSlotRef}
-                //         autoFocus={true}
-                //       />
-                //       <InputOTPSlot
-                //         index={1}
-                //         className="h-14 w-14 text-center text-xl font-medium"
-                //       />
-                //       <InputOTPSlot
-                //         index={2}
-                //         className="h-14 w-14 text-center text-xl font-medium"
-                //       />
-                //     </InputOTPGroup>
-                //     <InputOTPSeparator />
-                //     <InputOTPGroup>
-                //       <InputOTPSlot
-                //         index={3}
-                //         className="h-14 w-14 text-center text-xl font-medium"
-                //       />
-                //       <InputOTPSlot
-                //         index={4}
-                //         className="h-14 w-14 text-center text-xl font-medium"
-                //       />
-                //       <InputOTPSlot
-                //         index={5}
-                //         className="h-14 w-14 text-center text-xl font-medium"
-                //       />
-                //     </InputOTPGroup>
-                //   </InputOTP>
-                // </div>
               )}
 
               {step === "confirm" && (
@@ -367,106 +321,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
                 />
               )}
 
-              {step === "success" && (
-                <SuccessWallet user={user} />
-                // <div className="flex flex-col items-center justify-center py-8 space-y-6">
-                //   <div className="rounded-full bg-green-100 p-6">
-                //     <ShieldCheck className="h-12 w-12 text-green-600" />
-                //   </div>
-                //   <div className="text-center space-y-2">
-                //     <h3 className="font-semibold text-slate-700 text-lg">
-                //       Ví Đã Sẵn Sàng!
-                //     </h3>
-                //     <p className="text-slate-500">
-                //       Ví của bạn đã được tạo thành công và sẵn sàng để sử dụng.
-                //     </p>
-                //   </div>
-
-                //   {/* Wallet Overview */}
-                //   <div className="w-full bg-gradient-to-br from-sky-50 via-amber-50 to-slate-400 cardStyle p-5 text-slate-700">
-                //     <div className="flex justify-between items-start mb-6">
-                //       <div>
-                //         <h3 className="text-lg font-bold"> Ví Của Bạn</h3>
-                //       </div>
-                //       <CreditCard className="h-8 w-8 " />
-                //     </div>
-                //     <div className="mb-4">
-                //       <span className="text-sm font-semibold ">
-                //         Số Dư Khả Dụng
-                //       </span>
-                //       <h2 className="text-2xl font-bold text-sky-500">
-                //         {formatVND(user?.value?.balance ?? 0)}
-                //       </h2>
-                //     </div>
-                //     <div className="flex justify-between items-center">
-                //       <span className="text-sm font-semibold">
-                //         Mã Ví: <span className="text-base">•••• 4589</span>
-                //       </span>
-                //       <AdvancedColorfulBadges
-                //         color="green"
-                //         size="md"
-                //         className="rounded-full"
-                //       >
-                //         Sẵn sàng
-                //       </AdvancedColorfulBadges>
-                //     </div>
-                //   </div>
-
-                //   <Separator />
-
-                //   <div className="w-full space-y-4">
-                //     <h4 className="font-semibold text-base flex items-center gap-1">
-                //       <PlayIcon className="size-6" />
-                //       Bắt Đầu
-                //     </h4>
-
-                //     <div className="grid gap-3">
-                //       <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
-                //         <div className="bg-primary/10 p-2 rounded">
-                //           <BarChart3 className="h-5 w-5 text-primary" />
-                //         </div>
-                //         <div className="flex-1">
-                //           <h5 className="font-medium text-sm">Nạp Tiền</h5>
-                //           <p className="text-sm font-semibold text-muted-foreground">
-                //             Nạp tiền vào ví của bạn
-                //           </p>
-                //         </div>
-                //         <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                //       </div>
-
-                //       <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
-                //         <div className="bg-primary/10 p-2 rounded">
-                //           <CreditCard className="h-5 w-5 text-primary" />
-                //         </div>
-                //         <div className="flex-1">
-                //           <h5 className="font-medium text-sm">
-                //             Liên Kết Phương Thức Thanh Toán
-                //           </h5>
-                //           <p className="text-xs text-muted-foreground">
-                //             Kết nối ngân hàng hoặc thẻ của bạn
-                //           </p>
-                //         </div>
-                //         <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                //       </div>
-
-                //       <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
-                //         <div className="bg-primary/10 p-2 rounded">
-                //           <Fingerprint className="h-5 w-5 text-primary" />
-                //         </div>
-                //         <div className="flex-1">
-                //           <h5 className="font-medium text-sm">
-                //             Bật Tính Năng Bảo Mật
-                //           </h5>
-                //           <p className="text-xs text-muted-foreground">
-                //             Thiết lập bảo vệ bổ sung
-                //           </p>
-                //         </div>
-                //         <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                //       </div>
-                //     </div>
-                //   </div>
-                // </div>
-              )}
+              {step === "success" && <SuccessWallet user={user} />}
             </div>
 
             <SheetFooter className="border-t pt-6 pb-8 px-6 mt-auto">

@@ -72,19 +72,17 @@ export const UserMenu = memo(() => {
         <Heart className="size-4" />
       </Link>
 
+      <WalletSheet user={user} isUserLoading={isUserLoading} />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">
-          <>
-            <Avatar className="h-10 w-10">
-              <AvatarImage
-                src={user?.value?.avatar ?? placeholderImage}
-                alt={user?.value?.name}
-              />
-              <AvatarFallback>{user?.value?.name}</AvatarFallback>
-            </Avatar>
-
-            <WalletSheet user={user} isUserLoading={isUserLoading} />
-          </>
+          <Avatar className="h-10 w-10">
+            <AvatarImage
+              src={user?.value?.avatar ?? placeholderImage}
+              alt={user?.value?.name}
+            />
+            <AvatarFallback>{user?.value?.name}</AvatarFallback>
+          </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end">
           <DropdownMenuLabel className="font-normal">
@@ -149,7 +147,7 @@ export const UserMenu = memo(() => {
 
             <DropdownMenuSeparator />
 
-            <WalletSheet user={user} isUserLoading={isUserLoading} />
+            {/* <WalletSheet user={user} isUserLoading={isUserLoading} /> */}
             <Button
               // asChild
               variant="outline"

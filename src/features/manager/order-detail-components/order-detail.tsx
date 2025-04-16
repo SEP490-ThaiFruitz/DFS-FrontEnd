@@ -74,7 +74,7 @@ export default function OrderDetails({ orderId }: OrderDetailsProps) {
           Xem Chi Tiết Đơn Hàng
         </Button>
       </SheetTrigger>
-      <SheetContent className="min-w-full md:min-w-[85%] lg:min-w-[90%] rounded-3xl mr-2">
+      <SheetContent className="min-w-full md:min-w-[65%] lg:min-w-[70%] rounded-3xl mr-2 overflow-y-auto">
         <SheetHeader>
           <div className="flex items-center justify-between ">
             <Logo height={120} width={120} classNameLabel="text-4xl" />
@@ -93,7 +93,7 @@ export default function OrderDetails({ orderId }: OrderDetailsProps) {
           </div>
         </SheetHeader>
 
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl  mx-auto ">
           {/* <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
               <Button variant="ghost" size="icon" className="mr-2">
@@ -129,20 +129,6 @@ export default function OrderDetails({ orderId }: OrderDetailsProps) {
               <OrderTimeline timeline={orderDetail?.timeline} />
             </div>
           </div>
-
-          {/* Item details sheet */}
-          {/* <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent
-          className={selectedItem ? "sm:max-w-md" : "sm:max-w-xl"}
-          side="right"
-        >
-          {selectedItem ? (
-            <ItemDetailsSheet item={selectedItem} />
-          ) : (
-            <OrderDetailsSheet orderData={orderData} />
-          )}
-        </SheetContent>
-      </Sheet> */}
         </div>
       </SheetContent>
     </Sheet>

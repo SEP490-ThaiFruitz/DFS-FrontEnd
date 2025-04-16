@@ -568,8 +568,9 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                 onUpdate?.({ range, rangeCompare });
               }
             }}
+            className="hoverAnimate bg-sky-500 hover:bg-sky-600 font-semibold transition-colors duration-200 text-slate-700"
           >
-            Update
+            Cập nhật
           </Button>
         </div>
       </PopoverContent>

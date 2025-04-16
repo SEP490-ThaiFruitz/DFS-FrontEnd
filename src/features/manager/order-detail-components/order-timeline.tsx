@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate } from "@/utils/date";
+import { formatDate, vietnameseDate } from "@/utils/date";
 import { Clock } from "lucide-react";
 
 interface OrderTimelineProps {
@@ -42,11 +42,11 @@ export default function OrderTimeline({ timeline }: OrderTimelineProps) {
                     {event.details.map((detail: any, detailIndex: number) => (
                       <div
                         key={detailIndex}
-                        className="text-sm bg-amber-50 p-3 rounded-lg border border-amber-100"
+                        className="text-sm bg-amber-50 p-3 rounded-lg border border-amber-100 cardStyle"
                       >
-                        <p>{detail.content}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {formatDate(detail.statusTime)}
+                        <p className="font-semibold">{detail.content}</p>
+                        <p className="text-xs text-muted-foreground underline mt-1">
+                          {vietnameseDate(detail.statusTime, true)}
                         </p>
                       </div>
                     ))}

@@ -153,7 +153,18 @@ export function UserStatisticChart({
                 }}
               />
             </Pie>
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+            {/* <div className="flex justify-center gap-4 mt-4 flex-wrap">
+              {chartData.map((entry, index) => (
+                <div key={index} className="flex items-center gap-2 text-sm">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: `var(--color-top${index + 1})` }}
+                  ></div>
+                  <span>{entry.name}</span>
+                </div>
+              ))}
+            </div> */}
           </PieChart>
         </ChartContainer>
       </CardContent>

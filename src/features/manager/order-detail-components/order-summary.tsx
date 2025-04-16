@@ -16,7 +16,7 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
   );
 
   return (
-    <Card className="overflow-hidden cardStyle">
+    <Card className=" cardStyle">
       <CardHeader className="pb-3 border-b">
         <CardTitle className="text-lg flex items-center">
           <CreditCard className="h-5 w-5 mr-2 text-amber-600" />
@@ -36,7 +36,7 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
             <span className="text-muted-foreground">Phí vận chuyển</span>
             {/* <span className="text-base text-sky-500 font-semibold">{formatVND(subtotal)}</span> */}
             <span className="text-base text-sky-500 font-semibold">
-              {orderData?.delivery?.fee}
+              {formatVND(orderData?.delivery?.fee)}
             </span>
           </div>
 
@@ -47,7 +47,9 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
                 Voucher
               </span>
               <span>{formatVND(subtotal)}</span>
-              <span className="text-amber-600">-{orderData?.voucherPrice}</span>
+              <span className="text-amber-600">
+                -{formatVND(orderData?.voucherPrice)}
+              </span>
             </div>
           )}
 
@@ -66,11 +68,11 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
           <div className="flex justify-between font-semibold text-lg">
             <span>Tổng cộng</span>
             <span className="text-base text-sky-500 font-semibold">
-              {orderData?.totalPrice}
+              {formatVND(orderData?.totalPrice)}
             </span>
           </div>
 
-          <div className="flex items-center justify-between bg-amber-50 p-4 rounded-lg mt-4 border border-amber-100">
+          <div className="flex items-center justify-between bg-amber-50 p-4 rounded-lg mt-4 border border-amber-100 cardStyle">
             <div className="flex items-center">
               <CreditCard className="h-5 w-5 mr-2 text-amber-600" />
               <span className="font-semibold">Phương thức thanh toán</span>

@@ -33,7 +33,7 @@ import {
   XCircle,
   Activity,
 } from "lucide-react";
-import { getSexLabel, getUserInitials } from "@/utils/label";
+import { getSexLabel, getUserInitials, placeholderImage } from "@/utils/label";
 import { formatDate, formatRelativeTime } from "@/utils/date";
 import { formatVND } from "@/lib/format-currency";
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
@@ -124,12 +124,17 @@ export const userReportColumns: ColumnDef<CustomerType>[] = [
                 </div>
               </div>
             </TooltipTrigger>
-            <TooltipContent side="right" className="p-4 max-w-lg z-50">
-              <div className="space-y-2">
+
+            <TooltipContent
+              side="right"
+              className="p-4 max-w-lg z-[999px] relative bg-white"
+              style={{ zIndex: 999 }}
+            >
+              <div className="space-y-2 z-50">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-12 w-12">
                     <AvatarImage
-                      src={customer.avatar || undefined}
+                      src={customer.avatar || placeholderImage}
                       alt={customer.name}
                     />
                     <AvatarFallback className="bg-primary/10 text-lg font-semibold">
@@ -420,8 +425,9 @@ export const userReportColumns: ColumnDef<CustomerType>[] = [
                 )}
               </div>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="p-0 max-w-md z-30">
-              <div className="p-2 space-y-2 max-h-[300px] overflow-y-auto">
+
+            <TooltipContent side="bottom" className="p-0 max-w-md z-50">
+              <div className="p-2 space-y-2 max-h-[300px] overflow-y-auto relative bg-white z-50">
                 <h4 className="font-semibold px-2 pt-1">Địa chỉ khách hàng</h4>
                 {addresses.map((address, index) => (
                   <div

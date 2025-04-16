@@ -74,13 +74,17 @@ export const UserMenu = memo(() => {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">
-          <Avatar className="h-10 w-10">
-            <AvatarImage
-              src={user?.value?.avatar ?? placeholderImage}
-              alt={user?.value?.name}
-            />
-            <AvatarFallback>{user?.value?.name}</AvatarFallback>
-          </Avatar>
+          <>
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                src={user?.value?.avatar ?? placeholderImage}
+                alt={user?.value?.name}
+              />
+              <AvatarFallback>{user?.value?.name}</AvatarFallback>
+            </Avatar>
+
+            <WalletSheet user={user} isUserLoading={isUserLoading} />
+          </>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end">
           <DropdownMenuLabel className="font-normal">

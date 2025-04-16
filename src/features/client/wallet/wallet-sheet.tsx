@@ -305,59 +305,59 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
               )}
 
               {step === "create" && (
-                // <CreateWallet
-                //   acceptTerms={acceptTerms}
-                //   setAcceptTerms={setAcceptTerms}
-                //   pin={pin}
-                //   setPin={setPin}
-                //   pinStrength={pinStrength}
-                //   setRememberDevice={setRememberDevice}
-                //   rememberDevice={rememberDevice}
-                // />
+                <CreateWallet
+                  acceptTerms={acceptTerms}
+                  setAcceptTerms={setAcceptTerms}
+                  pin={pin}
+                  setPin={setPin}
+                  pinStrength={pinStrength}
+                  setRememberDevice={setRememberDevice}
+                  rememberDevice={rememberDevice}
+                />
 
-                <div className="flex justify-center">
-                  <InputOTP
-                    maxLength={6}
-                    value={pin}
-                    onChange={setPin}
-                    pattern="^[0-9]+$"
-                    inputMode="numeric"
-                    containerClassName="gap-2"
-                    autoFocus
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot
-                        index={0}
-                        className="h-14 w-14 text-center text-xl font-medium"
-                        // ref={firstSlotRef}
-                        autoFocus={true}
-                      />
-                      <InputOTPSlot
-                        index={1}
-                        className="h-14 w-14 text-center text-xl font-medium"
-                      />
-                      <InputOTPSlot
-                        index={2}
-                        className="h-14 w-14 text-center text-xl font-medium"
-                      />
-                    </InputOTPGroup>
-                    <InputOTPSeparator />
-                    <InputOTPGroup>
-                      <InputOTPSlot
-                        index={3}
-                        className="h-14 w-14 text-center text-xl font-medium"
-                      />
-                      <InputOTPSlot
-                        index={4}
-                        className="h-14 w-14 text-center text-xl font-medium"
-                      />
-                      <InputOTPSlot
-                        index={5}
-                        className="h-14 w-14 text-center text-xl font-medium"
-                      />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
+                // <div className="flex justify-center">
+                //   <InputOTP
+                //     maxLength={6}
+                //     value={pin}
+                //     onChange={setPin}
+                //     pattern="^[0-9]+$"
+                //     inputMode="numeric"
+                //     containerClassName="gap-2"
+                //     autoFocus
+                //   >
+                //     <InputOTPGroup>
+                //       <InputOTPSlot
+                //         index={0}
+                //         className="h-14 w-14 text-center text-xl font-medium"
+                //         // ref={firstSlotRef}
+                //         autoFocus={true}
+                //       />
+                //       <InputOTPSlot
+                //         index={1}
+                //         className="h-14 w-14 text-center text-xl font-medium"
+                //       />
+                //       <InputOTPSlot
+                //         index={2}
+                //         className="h-14 w-14 text-center text-xl font-medium"
+                //       />
+                //     </InputOTPGroup>
+                //     <InputOTPSeparator />
+                //     <InputOTPGroup>
+                //       <InputOTPSlot
+                //         index={3}
+                //         className="h-14 w-14 text-center text-xl font-medium"
+                //       />
+                //       <InputOTPSlot
+                //         index={4}
+                //         className="h-14 w-14 text-center text-xl font-medium"
+                //       />
+                //       <InputOTPSlot
+                //         index={5}
+                //         className="h-14 w-14 text-center text-xl font-medium"
+                //       />
+                //     </InputOTPGroup>
+                //   </InputOTP>
+                // </div>
               )}
 
               {step === "confirm" && (

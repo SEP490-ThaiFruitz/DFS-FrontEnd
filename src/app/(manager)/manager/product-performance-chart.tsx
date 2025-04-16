@@ -25,6 +25,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { truncate } from "lodash";
+import { calculateGrowthRate } from "@/lib/calculate";
 
 type ChartData = {
   productName: string;
@@ -33,6 +34,7 @@ type ChartData = {
 };
 interface ProductPerformanceProps {
   productPerformance: ChartData[];
+  historyProductPerformance: ChartData[];
 }
 
 const chartConfig = {
@@ -48,7 +50,17 @@ const chartConfig = {
 
 export function ProductPerformance({
   productPerformance,
+  historyProductPerformance,
 }: ProductPerformanceProps) {
+  const currentSumRevenue = productPerformance.reduce((acc, curr) => {
+    return acc + curr.revenue;
+  }, 0);
+  const historySumRevenue = historyProductPerformance.reduce((acc, curr) => {
+    return acc + curr.revenue;
+  }, 0);
+
+  const growth = calculateGrowthRate(currentSumRevenue, historySumRevenue);
+
   return (
     <Card className="col-span-1 md:col-span-1 cardStyle">
       <CardHeader>
@@ -56,6 +68,7 @@ export function ProductPerformance({
         <CardDescription>
           Thống kê hiệu suất của sản phẩm với thời gian
         </CardDescription>
+        {growth}
       </CardHeader>
       <CardContent className="w-full h-full overflow-hidden">
         <ChartContainer config={chartConfig}>

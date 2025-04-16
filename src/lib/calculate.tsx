@@ -8,8 +8,8 @@ export const calculateGrowthRate = (
 ): ReactNode => {
   if (previous === 0)
     return (
-      <span className="text-gray-500 flex items-center">
-        <Minus className="h-3 w-3 mr-1" /> 0%
+      <span className="text-gray-500 font-semibold flex items-center">
+        <Minus className="size-5 mr-1" /> 0%
       </span>
     ); // Avoid division by zero
 
@@ -18,21 +18,21 @@ export const calculateGrowthRate = (
 
   if (growthRate > 0) {
     return (
-      <span className="text-green-500 flex items-center">
-        <ArrowUp className="h-3 w-3 mr-1" /> {formattedRate}%
+      <span className="text-green-500 flex font-semibold items-center">
+        <ArrowUp className="size-5 mr-1" /> {formattedRate}%
       </span>
     );
   } else if (growthRate < 0) {
     return (
-      <span className="text-rose-500 flex items-center">
-        <ArrowDown className="h-3 w-3 mr-1" />{" "}
+      <span className="text-rose-500 flex font-semibold items-center">
+        <ArrowDown className="size-5 mr-1" />{" "}
         {Math.abs(Number.parseFloat(formattedRate))}%
       </span>
     );
   } else {
     return (
-      <span className="text-gray-500 flex items-center">
-        <Minus className="h-3 w-3 mr-1" /> 0%
+      <span className="text-gray-500 flex font-semibold items-center">
+        <Minus className="size-5 mr-1" /> 0%
       </span>
     );
   }

@@ -312,16 +312,18 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
               Copy ID Đơn hàng
             </Button>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link
-                href={request.linkDocument}
-                target="_blank"
-                className="flex items-center w-full"
-              >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Xem document
-              </Link>
-            </DropdownMenuItem>
+            {request.linkDocument && (
+              <DropdownMenuItem>
+                <Link
+                  href={request.linkDocument}
+                  target="_blank"
+                  className="flex items-center w-full"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Xem document
+                </Link>
+              </DropdownMenuItem>
+            )}
             {/* <DropdownMenuItem>View details</DropdownMenuItem> */}
 
             <OrderReturnExchangeDetail requestId={request.id} />

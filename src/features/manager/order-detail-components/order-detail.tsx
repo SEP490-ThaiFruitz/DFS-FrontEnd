@@ -114,9 +114,11 @@ export default function OrderDetails({ orderId }: OrderDetailsProps) {
             {/* Left column - Order info and items */}
             <div className="lg:col-span-2 space-y-6">
               <OrderHeaderCard orderData={orderDetail} />
-              <DeliveryAddressCard address={orderDetail.orderAddressDelivery} />
+              <DeliveryAddressCard
+                address={orderDetail?.orderAddressDelivery}
+              />
               <OrderItemsList
-                items={orderDetail.orderItems}
+                items={orderDetail?.orderItems}
                 onItemClick={openItemDetails}
               />
             </div>
@@ -124,7 +126,7 @@ export default function OrderDetails({ orderId }: OrderDetailsProps) {
             {/* Right column - Summary and Timeline */}
             <div className="space-y-6">
               <OrderSummary orderData={orderDetail} />
-              <OrderTimeline timeline={orderDetail.timeline} />
+              <OrderTimeline timeline={orderDetail?.timeline} />
             </div>
           </div>
 

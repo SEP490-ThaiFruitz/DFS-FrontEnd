@@ -78,6 +78,7 @@ export const ReportOrdersListClient = ({
     // ORDERS_KEY.ORDERS_LIST,
     "order_list",
   ]);
+
   const returnExchange = useFetch<ApiResponse<ReturnExchangeOrders[]>>(
     "/Orders/return-exchange",
     [ORDERS_KEY.RETURN_EXCHANGE]
@@ -91,39 +92,19 @@ export const ReportOrdersListClient = ({
 
   const returnExchangeData = returnExchange.data?.value;
 
-  // Tính toán tổng số đơn hàng
-  const totalOrders = data?.items.length ?? 0;
-
-  // Tính tổng doanh thu (giá trị đơn hàng)
-  const totalSales = data?.items.reduce(
-    (sum, order) => sum + order.totalPrice,
-    0
-  );
-
-  // Tính tổng phí ship
-  const totalShipFee = data?.items.reduce(
-    (sum, order) => sum + order.shipFee,
-    0
-  );
-
   // Đếm số đơn hàng đã xác nhận
   const confirmedOrders = data?.items.filter(
     (order) => order?.status?.toLowerCase() === "received"
   ).length;
 
-  // Nếu cần, đếm số đơn hàng Pending hoặc các trạng thái khác
-  const pendingOrders = data?.items.filter(
-    (order) => order.status === "Pending"
-  ).length;
-
-  const chartData = data?.items.map((order) => {
-    return {
-      userName: `${order.user.name}`,
-      totalPrice: formatVND(order.totalPrice || 0),
-      shipFee: formatVND(order.shipFee || 0),
-      priceAfterShip: formatVND(order.totalPrice - order.shipFee || 0),
-    };
-  });
+  // const chartData = data?.items.map((order) => {
+  //   return {
+  //     userName: `${order.user.name}`,
+  //     totalPrice: formatVND(order.totalPrice || 0),
+  //     shipFee: formatVND(order.shipFee || 0),
+  //     priceAfterShip: formatVND(order.totalPrice - order.shipFee || 0),
+  //   };
+  // });
 
   // growth calculate
 
@@ -153,9 +134,6 @@ export const ReportOrdersListClient = ({
   const previousTo = new Date(currentFrom as Date);
   previousTo.setDate(previousTo.getDate() - 1);
 
-  console.log("currentFrom", currentFrom);
-  console.log("previousFrom", previousFrom);
-
   // Filter orders for current and previous periods
   const currentPeriodOrders = filterOrdersByDateRange(
     data?.items as OrderData[],
@@ -167,9 +145,6 @@ export const ReportOrdersListClient = ({
     previousFrom,
     previousTo
   );
-
-  console.log("data hien tai", currentPeriodOrders);
-  console.log("data qua ky", previousPeriodOrders);
 
   // Calculate metrics for current and previous periods
   const calculateMetrics = (orders: OrderData[]) => {
@@ -214,14 +189,71 @@ export const ReportOrdersListClient = ({
   );
 
   const confirmedOrdersGrowthRate = calculateGrowthRate(
-    confirmedOrders as number,
-    previousMetrics.confirmedOrders as number
+    confirmedOrders ?? 0,
+    previousMetrics.confirmedOrders ?? 0
   );
 
-  console.log("tỉ lệ tăng trưởng đơn hàng", {
-    orderGrowthRate,
-    salesGrowthRate,
-    shipFeeGrowthRate,
+  // Hàm lọc dữ liệu biểu đồ theo ngày
+  const filterChartDataByDateRange = (
+    items: OrderData[],
+    startDate: Date,
+    endDate: Date
+  ) => {
+    return items
+      ?.filter((order) => {
+        const orderDate = new Date(order.createdOnUtc);
+        return orderDate >= startDate && orderDate <= endDate;
+      })
+      .map((order) => {
+        return {
+          userName: `${order.user.name}`,
+          totalPrice: order.totalPrice || 0,
+          shipFee: order.shipFee || 0,
+          priceAfterShip: order.totalPrice - order.shipFee || 0,
+        };
+      });
+  };
+
+  // Hàm tính tổng các giá trị
+  const calculateTotal = (data: any[]) => {
+    return data?.reduce((acc, item) => {
+      const totalPrice = parseFloat(item.totalPrice) || 0;
+      const shipFee = parseFloat(item.shipFee) || 0;
+      const priceAfterShip = parseFloat(item.priceAfterShip) || 0;
+
+      return acc + totalPrice + shipFee + priceAfterShip;
+    }, 0);
+  };
+
+  // Lọc dữ liệu biểu đồ cho khoảng thời gian hiện tại
+  const chartDataFiltered = filterChartDataByDateRange(
+    data?.items as OrderData[],
+    currentFrom as Date,
+    currentTo as Date
+  );
+
+  const historyChartDataFiltered = filterChartDataByDateRange(
+    data?.items as OrderData[],
+    previousFrom as Date,
+    previousTo as Date
+  );
+
+  const currentSumAll = calculateTotal(chartDataFiltered || []);
+  const historySumAll = calculateTotal(historyChartDataFiltered || []);
+
+  const growthChartData = calculateGrowthRate(
+    currentSumAll as number,
+    historySumAll as number
+  );
+
+  const enrichChartData = chartDataFiltered?.map((value) => {
+    return {
+      ...value,
+
+      totalPrice: formatVND(value.totalPrice),
+      shipFee: formatVND(value.shipFee),
+      priceAfterShip: formatVND(value.priceAfterShip),
+    };
   });
 
   return (
@@ -262,7 +294,10 @@ export const ReportOrdersListClient = ({
       </div>
 
       <div>
-        <OrderAreaChart chartData={chartData || []} />
+        <OrderAreaChart
+          chartData={enrichChartData || []}
+          growthChartData={growthChartData}
+        />
       </div>
 
       <VercelTab tabs={ORDER_STATUS_TAB} activeTab={tab} onTabChange={setTab} />

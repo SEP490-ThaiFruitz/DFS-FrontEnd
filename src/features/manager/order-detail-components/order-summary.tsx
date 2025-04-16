@@ -36,18 +36,18 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
             <span className="text-muted-foreground">Phí vận chuyển</span>
             {/* <span className="text-base text-sky-500 font-semibold">{formatVND(subtotal)}</span> */}
             <span className="text-base text-sky-500 font-semibold">
-              {orderData.delivery.fee}
+              {orderData?.delivery?.fee}
             </span>
           </div>
 
-          {orderData.voucherPrice && (
+          {orderData?.voucherPrice && (
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground flex items-center">
                 <Gift className="h-4 w-4 mr-1" />
                 Voucher
               </span>
               <span>{formatVND(subtotal)}</span>
-              <span className="text-amber-600">-{orderData.voucherPrice}</span>
+              <span className="text-amber-600">-{orderData?.voucherPrice}</span>
             </div>
           )}
 
@@ -66,7 +66,7 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
           <div className="flex justify-between font-semibold text-lg">
             <span>Tổng cộng</span>
             <span className="text-base text-sky-500 font-semibold">
-              {orderData.totalPrice}
+              {orderData?.totalPrice}
             </span>
           </div>
 
@@ -76,7 +76,7 @@ export default function OrderSummary({ orderData }: OrderSummaryProps) {
               <span className="font-semibold">Phương thức thanh toán</span>
             </div>
             <AdvancedColorfulBadges color="violet" className="font-semibold">
-              {orderData.paymentMethod}
+              {orderData?.paymentMethod}
             </AdvancedColorfulBadges>
           </div>
         </div>

@@ -1,14 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  DollarSign,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
+import { DollarSign, ShoppingCart, Users } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -45,10 +38,16 @@ import { TotalCard } from "./components/total-card";
 import {
   createDateRange,
   fillMissingDatesDynamics,
+  formatDateString,
+  getPreviousDate,
   vietnameseDate,
+  YYYY_MM_DD,
 } from "@/utils/date";
 import { customerRevenueColumns } from "@/features/manager/report-revenue/user-top-revenue-column";
-import { formatTimeVietNam } from "@/lib/format-time-vietnam";
+
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
+import { calculateGrowthRate } from "@/lib/calculate";
 
 type TopProductRevenueStatistics = {
   type: "Single" | "Combo" | "Custom";
@@ -84,14 +83,34 @@ type RevenueData = {
 };
 
 export default function RevenueDashboard() {
-  const [timeRange, setTimeRange] = useState("month");
+  const [timeRange, setTimeRange] = useState("14d");
+
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to?: Date | undefined;
+  }>({
+    from: new Date("2025-01-01"),
+    to: new Date("2025-04-10"),
+  });
+
+  const handleDateRangeChange = (values: { range: DateRange }) => {
+    setDateRange(values.range);
+  };
 
   const HeaderTitle = () => {
     return (
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
         <h1 className="text-xl font-semibold">Báo Cáo Doanh Thu</h1>
         <div className="ml-auto flex items-center gap-4">
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <DateRangePicker
+            align="start"
+            onUpdate={handleDateRangeChange}
+            showCompare={false}
+            initialDateFrom={dateRange.from}
+            initialDateTo={dateRange.to}
+            locale="vi"
+          />
+          {/* <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select time range" />
             </SelectTrigger>
@@ -102,24 +121,40 @@ export default function RevenueDashboard() {
               <SelectItem value="quarter">Quý này</SelectItem>
               <SelectItem value="year">Năm này</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> */}
+
           <Button>Xuất báo cáo</Button>
         </div>
       </header>
     );
   };
 
+  console.log("dateRange hien tai", dateRange);
+
+  const { previousFrom, previousTo } = getPreviousDate(dateRange);
+
+  console.log("thoi gian qua khu", previousFrom, previousTo);
   const fromDate = "2025-01-22";
 
   const currentDate = format(new Date(), "yyyy-MM-dd");
 
   const reportRevenue = useFetch<ApiResponse<RevenueData>>(
-    `/Statistics/manager/report-revenue?fromDate=${fromDate}&toDate=${currentDate}`,
-    [REPORT_KEY.REPORT_REVENUE]
+    `/Statistics/manager/report-revenue`,
+    [REPORT_KEY.REPORT_REVENUE],
+    {
+      fromDate: formatDateString(dateRange.from as Date),
+      toDate: formatDateString(dateRange.to as Date),
+    }
   );
-  // console.log(currentDate);
 
-  console.log(reportRevenue.data);
+  const historyReportRevenue = useFetch<ApiResponse<RevenueData>>(
+    `/Statistics/manager/report-revenue`,
+    [REPORT_KEY.REPORT_REVENUE],
+    {
+      fromDate: format(previousFrom, YYYY_MM_DD),
+      toDate: format(previousTo, YYYY_MM_DD),
+    }
+  );
 
   const chartConfig = {
     revenue: {
@@ -136,6 +171,11 @@ export default function RevenueDashboard() {
   const sumOrder = reportRevenue.data?.value
     ? reportRevenue.data.value.totalRevenue /
       reportRevenue.data?.value.totalOrder
+    : 0;
+
+  const historySumOrder = historyReportRevenue.data?.value
+    ? historyReportRevenue.data.value.totalRevenue /
+      historyReportRevenue.data?.value.totalOrder
     : 0;
 
   // product performance chart data
@@ -162,7 +202,32 @@ export default function RevenueDashboard() {
     }
   }, [reportRevenue.data?.value?.topProductRevenueStatistics]);
 
-  const allDates = createDateRange(fromDate, currentDate);
+  const historyProductPerformance = useMemo(() => {
+    if (historyReportRevenue?.data?.value?.topProductRevenueStatistics) {
+      return historyReportRevenue.data.value.topProductRevenueStatistics.map(
+        (product) => {
+          return {
+            productName: product.name,
+            revenue: product.revenue,
+            sold: product.quantity,
+          };
+        }
+      );
+    } else {
+      return [
+        {
+          productName: "No data",
+          revenue: 0,
+          sold: 0,
+        },
+      ];
+    }
+  }, [historyReportRevenue.data?.value?.topProductRevenueStatistics]);
+
+  const allDates = createDateRange(
+    dateRange.from as Date,
+    dateRange.to as Date
+  );
 
   const enrichRevenue = reportRevenue.data?.value?.topProductRevenueStatistics
     ? reportRevenue.data.value.topProductRevenueStatistics.reduce(
@@ -196,42 +261,72 @@ export default function RevenueDashboard() {
     ["revenue"]
   );
 
+  const averagePerOrder = reportRevenue?.data?.value
+    ? (
+        reportRevenue?.data?.value?.numberOfProductSold /
+        reportRevenue?.data?.value?.totalOrder
+      ).toFixed(2)
+    : 0;
+
+  const historyAveragePerOrder = historyReportRevenue?.data?.value
+    ? (
+        historyReportRevenue?.data?.value?.numberOfProductSold /
+        historyReportRevenue?.data?.value?.totalOrder
+      ).toFixed(2)
+    : 0;
+
   return (
     <div className="flex min-h-screen w-full flex-col ">
       <div className="flex flex-col">
         <HeaderTitle />
         <main className="flex-1 space-y-6 p-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
-            <Card className="cardStyle">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Tổng doanh thu
-                </CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatVND(reportRevenue.data?.value?.totalRevenue ?? 0)}
-                </div>
-              </CardContent>
-            </Card>
+            <TotalCard
+              title=" Tổng doanh thu "
+              value={formatVND(reportRevenue.data?.value?.totalRevenue ?? 0)}
+              icon={DollarSign}
+              subtitle={calculateGrowthRate(
+                reportRevenue?.data?.value?.totalRevenue ?? 0,
+                historyReportRevenue.data?.value?.totalRevenue ?? 0
+              )}
+            />
+
             <TotalCard
               title="Tổng đơn hàng"
               value={reportRevenue?.data?.value?.totalOrder ?? 0}
               icon={ShoppingCart}
+              subtitle={calculateGrowthRate(
+                reportRevenue?.data?.value?.totalOrder ?? 0,
+                historyReportRevenue.data?.value?.totalOrder ?? 0
+              )}
             />
 
             <TotalCard
               title="Số lượng sản phẩm đã bán"
               value={reportRevenue?.data?.value?.numberOfProductSold ?? 0}
               icon={ShoppingCart}
+              subtitle={calculateGrowthRate(
+                reportRevenue?.data?.value?.numberOfProductSold ?? 0,
+                historyReportRevenue.data?.value?.numberOfProductSold ?? 0
+              )}
             />
 
             <TotalCard
               title="Trung bình mỗi đơn hàng"
               value={formatVND(sumOrder)}
               icon={ShoppingCart}
+              subtitle={calculateGrowthRate(sumOrder, historySumOrder)}
             />
+
+            {/* <TotalCard
+              title="Tỷ lệ đơn hàng trung bình"
+              value={averagePerOrder}
+              icon={PercentIcon}
+              subtitle={calculateGrowthRate(
+                Number(averagePerOrder),
+                Number(historyAveragePerOrder)
+              )}
+            /> */}
 
             <Card className="cardStyle">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -250,23 +345,11 @@ export default function RevenueDashboard() {
                     : 0}
                   %
                 </div>
-                {/* <p className="text-xs text-muted-foreground">
-                  <span
-                    className={`inline-flex items-center ${
-                      stats.conversionChange.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {stats.conversionChange.startsWith("+") ? (
-                      <ArrowUp className="mr-1 h-3 w-3" />
-                    ) : (
-                      <ArrowDown className="mr-1 h-3 w-3" />
-                    )}
-                    {stats.conversionChange}
-                  </span>
-                  from last period
-                </p> */}
+
+                {calculateGrowthRate(
+                  Number(averagePerOrder),
+                  Number(historyAveragePerOrder)
+                )}
               </CardContent>
             </Card>
           </div>
@@ -278,13 +361,33 @@ export default function RevenueDashboard() {
                 <CardDescription>
                   Doanh thu trong thời gian{" "}
                   <span className="font-semibold text-sky-600">
-                    {vietnameseDate(fromDate)}
+                    {vietnameseDate(dateRange.from as Date)}
                   </span>
                   -
                   <span className="font-semibold text-sky-600">
-                    {vietnameseDate(currentDate)}
+                    {vietnameseDate(dateRange.to as Date)}
                   </span>
                 </CardDescription>
+
+                {/* <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger
+                    className="w-[160px] rounded-lg sm:ml-auto"
+                    aria-label="Select a value"
+                  >
+                    <SelectValue placeholder="14 ngày trước" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    <SelectItem value="3d" className="rounded-lg">
+                      3 ngày trước
+                    </SelectItem>
+                    <SelectItem value="7d" className="rounded-lg">
+                      7 ngày trước
+                    </SelectItem>
+                    <SelectItem value="14d" className="rounded-lg">
+                      14 ngày trước
+                    </SelectItem>
+                  </SelectContent>
+                </Select> */}
               </CardHeader>
               <CardContent>
                 {/* <div className="h-[300px]"> */}
@@ -295,6 +398,7 @@ export default function RevenueDashboard() {
                   <AreaChart
                     accessibilityLayer
                     data={filledRevenueData}
+                    // data={filteredData}
                     margin={{
                       top: 10,
                       right: 30,
@@ -328,7 +432,7 @@ export default function RevenueDashboard() {
                     </defs>
                     {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
                     <CartesianGrid vertical={false} />
-                    <XAxis dataKey="lastBuyDate" />
+                    <XAxis dataKey="date" />
                     <YAxis
                       tickFormatter={formatVND}
                       width={80}
@@ -394,7 +498,10 @@ export default function RevenueDashboard() {
                   </CardContent>
                 </Card>
 
-                <ProductPerformance productPerformance={productPerformance} />
+                <ProductPerformance
+                  productPerformance={productPerformance}
+                  historyProductPerformance={historyProductPerformance}
+                />
               </div>
             </TabsContent>
             <TabsContent value="customers" className="space-y-4">

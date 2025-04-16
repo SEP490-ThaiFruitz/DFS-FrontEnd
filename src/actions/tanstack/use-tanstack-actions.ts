@@ -30,9 +30,11 @@ const fetching = async (endpoint: string, params?: Record<string, any>) => {
     ? { Authorization: `Bearer ${token}` }
     : {};
 
+  const query = params ? "?" + new URLSearchParams(params).toString() : "";
+
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}`,
+      `${process.env.NEXT_PUBLIC_URL_API}${endpoint}${query}`,
       {
         headers,
       }

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { truncate } from "lodash";
 import { formatVND } from "@/lib/format-currency";
+import React from "react";
 
 const defaultData = [
   {
@@ -46,6 +47,7 @@ const chartConfig = {
 
 export function OrderAreaChart({
   chartData,
+  growthChartData,
 }: {
   chartData: {
     userName: string;
@@ -53,6 +55,7 @@ export function OrderAreaChart({
     shipFee: string;
     priceAfterShip: string;
   }[];
+  growthChartData: React.ReactNode;
 }) {
   // console.log(chartData);
 
@@ -82,6 +85,8 @@ export function OrderAreaChart({
           Biểu đồ này biểu thị tổng doanh thu từ các đơn hàng theo từng khách
           hàng
         </CardDescription>
+
+        {growthChartData}
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[600px] w-full p-4">

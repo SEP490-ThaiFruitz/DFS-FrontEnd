@@ -75,16 +75,16 @@ interface Preset {
 
 // Define presets
 const PRESETS: Preset[] = [
-  { name: "today", label: "Today" },
-  { name: "yesterday", label: "Yesterday" },
-  { name: "last3", label: "Last 3 days" },
-  { name: "last7", label: "Last 7 days" },
-  { name: "last14", label: "Last 14 days" },
-  { name: "last30", label: "Last 30 days" },
-  { name: "thisWeek", label: "This Week" },
-  { name: "lastWeek", label: "Last Week" },
-  { name: "thisMonth", label: "This Month" },
-  { name: "lastMonth", label: "Last Month" },
+  { name: "today", label: "Hôm nay" },
+  { name: "yesterday", label: "Hôm qua" },
+  { name: "last3", label: "3 ngày trước" },
+  { name: "last7", label: "7 ngày trước" },
+  { name: "last14", label: "14 ngày trước" },
+  { name: "last30", label: "30 ngày trước" },
+  { name: "thisWeek", label: "Tuần này" },
+  { name: "lastWeek", label: "Tuần trước" },
+  { name: "thisMonth", label: "Tháng này" },
+  { name: "lastMonth", label: "Tháng trước" },
 ];
 
 /** The DateRangePicker component allows a user to select a range of dates */

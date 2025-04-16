@@ -8,7 +8,14 @@ import { vi } from "date-fns/locale";
 
 export const YYYY_MM_DD = "yyyy-MM-dd";
 
-export const createDateRange = (fromDate: string, toDate: string) => {
+export const formatDateString = (date: Date) => {
+  return format(date, YYYY_MM_DD);
+};
+
+export const createDateRange = (
+  fromDate: string | Date,
+  toDate: string | Date
+) => {
   return eachDayOfInterval({
     start: new Date(fromDate),
     end: new Date(toDate),

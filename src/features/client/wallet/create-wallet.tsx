@@ -95,17 +95,17 @@ export const CreateWallet = memo(
             <InputOTP
               maxLength={6}
               value={pin}
-              // ref={inputOTPRef}
               onChange={setPin}
               pattern="^[0-9]+$"
               inputMode="numeric"
               containerClassName="gap-2"
+              autoFocus
             >
               <InputOTPGroup>
                 <InputOTPSlot
                   index={0}
                   className="h-14 w-14 text-center text-xl font-medium"
-                  ref={firstSlotRef}
+                  // ref={firstSlotRef}
                 />
                 <InputOTPSlot
                   index={1}

@@ -11,7 +11,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
-import { CreditCard, Fingerprint, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
 
 interface CreateWalletProps {
@@ -106,6 +106,7 @@ export const CreateWallet = memo(
                   index={0}
                   className="h-14 w-14 text-center text-xl font-medium"
                   // ref={firstSlotRef}
+                  autoFocus={true}
                 />
                 <InputOTPSlot
                   index={1}

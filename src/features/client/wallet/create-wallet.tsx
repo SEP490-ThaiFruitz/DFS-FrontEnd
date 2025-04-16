@@ -185,6 +185,7 @@ export const CreateWallet = memo(
                       pattern="^[0-9]+$"
                       inputMode="numeric"
                       containerClassName="gap-2"
+                      autoFocus
                     >
                       <InputOTPGroup>
                         <InputOTPSlot

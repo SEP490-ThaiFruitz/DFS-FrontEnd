@@ -34,6 +34,7 @@ import { getProfile } from "@/actions/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { placeholderImage } from "@/utils/label";
 import Link from "next/link";
+import { HistoryTransactionProfile } from "@/features/client/profile/history/history-transaction-profile";
 
 // name: string;
 //     tag: string;
@@ -144,11 +145,7 @@ export const TAB_CONTENT: TabContentTypes[] = [
   {
     icon: ChartAreaIcon,
     value: "statistic",
-    component: (
-      <div className="motion-preset-slide-right motion-duration-100 ">
-        <div>Statistic</div>
-      </div>
-    ),
+    component: <HistoryTransactionProfile />,
     title: "Báo cáo chi tiêu",
     description:
       "Theo dõi tổng số tiền bạn đã chi tiêu để quản lý tài chính hiệu quả hơn.",
@@ -246,7 +243,7 @@ export const SidebarContainer = () => {
               </div>
             </header>
 
-            <div className="flex flex-col pt-10 motion-preset-slide-right ">
+            <div className=" pt-10 motion-preset-slide-right ">
               {/* <div> */}
               {TAB_CONTENT.find((item) => item.value === tab)?.component}
               {/* </div> */}

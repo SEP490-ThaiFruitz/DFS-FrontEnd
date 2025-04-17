@@ -186,3 +186,49 @@ export const getPreviousDate = (dateRange: {
     previousTo,
   };
 };
+
+export function groupOrdersByMonth(orders: any[]) {
+  const monthlyData: Record<string, number> = {};
+
+  orders.forEach((order) => {
+    const date = new Date(order.buyDate);
+    const monthYear = `${date.toLocaleString("default", {
+      month: "short",
+    })} ${date.getFullYear()}`;
+
+    if (!monthlyData[monthYear]) {
+      monthlyData[monthYear] = 0;
+    }
+
+    monthlyData[monthYear] += order.totalPrice;
+  });
+
+  // Convert to array format for charts
+  return Object.entries(monthlyData)
+    .map(([month, total]) => ({ month, total }))
+    .sort((a, b) => {
+      // Sort by date
+      const [aMonth, aYear] = a.month.split(" ");
+      const [bMonth, bYear] = b.month.split(" ");
+
+      if (aYear !== bYear) {
+        return Number.parseInt(aYear) - Number.parseInt(bYear);
+      }
+
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      return months.indexOf(aMonth) - months.indexOf(bMonth);
+    });
+}

@@ -102,6 +102,15 @@ interface ReturnOrderDialogProps {
   orderId: string;
 }
 
+export interface SelectedItemsDetailsType {
+  [key: string]: {
+    reason: string;
+    productStatus: string;
+    images: File[];
+    quantity?: number;
+  };
+}
+
 export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedReason, setSelectedReason] = useState("");
@@ -118,9 +127,8 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     []
   );
 
-  const [selectedItemsDetails, setSelectedItemsDetails] = useState<
-    Record<string, { reason: string; productStatus: string; images: File[] }>
-  >({});
+  const [selectedItemsDetails, setSelectedItemsDetails] =
+    useState<SelectedItemsDetailsType>({});
 
   const [selectImages, setSelectImages] = useState<File[]>([]);
 
@@ -175,7 +183,11 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
         formData.append(`items[${index}][orderItemId]`, itemId);
 
         // Append quantity
-        formData.append(`items[${index}][quantity]`, "1");
+        // formData.append(`items[${index}][quantity]`, "1");
+        formData.append(
+          `items[${index}][quantity]`,
+          String(itemDetail.quantity)
+        );
 
         // Append tình trạng sản phẩm
         formData.append(
@@ -227,7 +239,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     if (!selectedItemsDetails[itemId]) {
       setSelectedItemsDetails((prev) => ({
         ...prev,
-        [itemId]: { productStatus: "", images: [], reason: "" },
+        [itemId]: { productStatus: "", images: [], reason: "", quantity: 1 },
       }));
     } else {
       // Nếu bỏ chọn, xóa khỏi selectedItemsDetails
@@ -297,7 +309,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
           Trả hàng
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden rounded-3xl border-0 shadow-xl">
+      <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden rounded-3xl border-0 shadow-xl cardStyle">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100 overflow-hidden">
           <div
             className="h-full bg-sky-500 transition-all duration-500 ease-in-out"

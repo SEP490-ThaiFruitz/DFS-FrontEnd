@@ -8,7 +8,7 @@ export type OrderItem = {
   unitPrice: number;
   percentage: number;
   discountPrice: number;
-  isCanFeedback: boolean;
+  isCanFeedback?: boolean;
 
   customImages: string[] | null; // Assuming this is an array of image URLs
 };

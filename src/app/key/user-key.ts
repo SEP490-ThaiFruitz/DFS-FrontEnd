@@ -4,4 +4,6 @@ export enum USER_KEY {
   CUSTOM_COMBO = "customCombo",
 
   PROFILE = "profile",
+
+  HISTORY_TRANSACTION = "historyTransaction",
 }

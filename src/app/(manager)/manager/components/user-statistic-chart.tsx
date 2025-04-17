@@ -153,7 +153,21 @@ export function UserStatisticChart({
                 }}
               />
             </Pie>
-            <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+            <ChartLegend
+              content={<ChartLegendContent nameKey="name" />}
+              formatter={(value) => {
+                return (
+                  <span
+                    style={{
+                      color: `var(--color-${value})`,
+                      fontSize: "14px",
+                    }}
+                  >
+                    {chartConfig[value as keyof typeof chartConfig].label}
+                  </span>
+                );
+              }}
+            />
             {/* <div className="flex justify-center gap-4 mt-4 flex-wrap">
               {chartData.map((entry, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">

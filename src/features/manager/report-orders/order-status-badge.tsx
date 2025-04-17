@@ -263,7 +263,7 @@ export const UpdateStatusButton = ({
   );
 };
 
-const statusColors = [
+export const statusColors = [
   "bg-amber-500",
   "bg-sky-500",
   "bg-sky-900",

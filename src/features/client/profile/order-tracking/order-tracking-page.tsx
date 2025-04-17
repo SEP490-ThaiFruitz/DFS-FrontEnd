@@ -148,7 +148,8 @@ export const OrderTrackingPage = () => {
     <OrderDetailPage onBack={() => setOrderId(undefined)} orderId={orderId} />
   ) : (
     <>
-      <div className="grid w-full grid-cols-8 h-auto py-4 mb-4 bg-white cardStyle px-5 gap-4 motion-preset-slide-right motion-duration-500">
+      {/* <div className="grid w-full grid-cols-8 h-auto py-4 mb-4 bg-white cardStyle px-5 gap-4 motion-preset-slide-right motion-duration-500"> */}
+      <div className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-4 py-4 mb-4 bg-white cardStyle px-3 sm:px-5  motion-preset-slide-right motion-duration-500">
         {status.map((trigger) => (
           <Button
             variant={"outline"}
@@ -173,7 +174,8 @@ export const OrderTrackingPage = () => {
           </Button>
         ))}
       </div>
-      <div className="py-2 flex items-center space-x-2 mb-4 w-full">
+      {/* <div className="py-2 flex items-center space-x-2 mb-4 w-full"> */}
+      <div className="py-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 mb-4 w-full">
         <div className="relative w-full">
           <Input
             placeholder="Tìm kiếm mã đơn hàng"
@@ -188,7 +190,8 @@ export const OrderTrackingPage = () => {
           Tìm kiếm
         </Button>
       </div>
-      <div className="min-h-screen grid lg:grid-cols-2 gap-10">
+      {/* <div className="min-h-screen grid lg:grid-cols-2 gap-10"> */}
+      <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
         {/* <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 p-4 flex items-center justify-center"> */}
         {orderFilter?.map((order: Order) => (
           <MotionCard
@@ -206,7 +209,7 @@ export const OrderTrackingPage = () => {
               onClickDetail={() => setOrderId(order.orderId)}
             />
 
-            <div className="px-6 pb-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+            {/* <div className="px-6 pb-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
               <div className="flex items-center justify-between h-14">
                 <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-3">
                   <span className="font-medium">Trạng thái thanh toán:</span>
@@ -256,45 +259,68 @@ export const OrderTrackingPage = () => {
                   </Button>
                 )}
               </div>
+            </div> */}
 
-              {/* <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-3">
-                <span className="font-medium">Trạng thái thanh toán:</span>
-
-                {(() => {
-                  const paymentStatusMap: {
-                    [key: string]: {
-                      label: string;
-                      className: string;
+            <div className="px-6 pb-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+              <div className="flex items-center justify-between h-14">
+                <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-3">
+                  <span className="font-medium">Trạng thái thanh toán:</span>
+                  {(() => {
+                    const paymentStatusMap: Record<
+                      string,
+                      { label: string; className: string }
+                    > = {
+                      Paid: {
+                        label: "Đã thanh toán",
+                        className:
+                          "bg-green-100 text-green-700 border-green-200",
+                      },
+                      Fail: {
+                        label: "Thanh toán thất bại",
+                        className: "bg-red-100 text-red-700 border-red-200",
+                      },
+                      Default: {
+                        label: "Chưa thanh toán",
+                        className:
+                          "bg-amber-100 text-amber-700 border-amber-200",
+                      },
                     };
-                  } = {
-                    Paid: {
-                      label: "Đã thanh toán",
-                      className: "bg-green-100 text-green-700 border-green-200",
-                    },
-                    Fail: {
-                      label: "Thanh toán thất bại",
-                      className: "bg-red-100 text-red-700 border-red-200",
-                    },
-                    Default: {
-                      label: "Chưa thanh toán",
-                      className: "bg-amber-100 text-amber-700 border-amber-200",
-                    },
-                  };
 
-                  const { label, className } =
-                    paymentStatusMap[order.paymentStatus] ||
-                    paymentStatusMap.Default;
+                    const { label, className } =
+                      paymentStatusMap[order.paymentStatus] ||
+                      paymentStatusMap.Default;
 
-                  return (
-                    <Badge
-                      variant="outline"
-                      className={`w-fit font-medium ${className}`}
+                    return (
+                      <Badge
+                        variant="outline"
+                        className={`w-fit font-medium ${className}`}
+                      >
+                        {label}
+                      </Badge>
+                    );
+                  })()}
+                </div>
+
+                {order.status === "Pending" &&
+                  order.paymentStatus !== "Paid" &&
+                  order.paymentMethod !== "ShipCode" && (
+                    <Button
+                      onClick={() => setOrderIdPayment(order.orderId)}
+                      className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm"
                     >
-                      {label}
-                    </Badge>
-                  );
-                })()}
-              </div> */}
+                      Thanh toán ngay
+                    </Button>
+                  )}
+
+                {order.status === "Delivered" && (
+                  <Button
+                    onClick={() => handleReceivedOrder(order.orderId)}
+                    className="w-fit px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-medium transition-colors text-sm"
+                  >
+                    Đã nhận hàng
+                  </Button>
+                )}
+              </div>
             </div>
 
             <CardContent className="p-6 space-y-6">

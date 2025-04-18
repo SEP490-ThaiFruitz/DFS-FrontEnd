@@ -135,7 +135,7 @@ export const ApplyVoucher = memo(({ setVoucher }: ApplyVoucherProps) => {
                 </span>
               </span>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent sideOffset={20}>
               <VouchersEvents voucher={voucherData} />
             </TooltipContent>
           </Tooltip>

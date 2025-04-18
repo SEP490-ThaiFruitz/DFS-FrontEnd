@@ -53,7 +53,7 @@ import { useCartStore } from "@/hooks/use-cart-store";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { omit } from "lodash";
 import { API } from "@/app/key/url";
-import { ApiResponse, PageResult } from "@/types/types";
+import { ApiResponse, PageResult, Profile } from "@/types/types";
 import { AddressTypes } from "@/types/address.types";
 import { USER_KEY } from "@/app/key/user-key";
 import { interactApiClient } from "@/actions/client/interact-api-client";
@@ -61,6 +61,9 @@ import { useQuery } from "@tanstack/react-query";
 import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { ApplyVoucher, VoucherData } from "./vouchers-events";
+import { getProfile } from "@/actions/user";
+import { ToolTipCustomized } from "@/components/custom/tool-tip-customized";
+import { WalletSheet } from "../wallet/wallet-sheet";
 
 interface Product {
   id: number;
@@ -88,6 +91,11 @@ const paymentMethods: { value: string; label: string }[] = [
     value: PaymentMethod.PAYOS,
     label: "PayOS",
   },
+
+  {
+    value: PaymentMethod.WALLET,
+    label: "Ví Của Tôi",
+  },
 ];
 
 function PaymentClientPage() {
@@ -108,6 +116,25 @@ function PaymentClientPage() {
 
   const router = useRouter();
 
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isSuccess,
+    status,
+  } = useQuery<ApiResponse<Profile>>({
+    // queryKey: ["authUser"],
+    queryKey: [USER_KEY.PROFILE],
+    queryFn: async () => {
+      const response = await getProfile();
+
+      if (!response || !response.isSuccess || !response.data) {
+        toast.error("Lỗi hệ thống");
+        return undefined;
+      }
+      return response.data;
+    },
+  });
+
   const form = useForm<z.infer<typeof PaymentSafeTypes>>({
     resolver: zodResolver(PaymentSafeTypes),
     defaultValues: {
@@ -122,6 +149,8 @@ function PaymentClientPage() {
     "/Addresses",
     [USER_KEY.ADDRESS]
   );
+
+  const balance = user?.value?.balance;
 
   // this work
   // const test2 = useQuery({
@@ -337,7 +366,7 @@ function PaymentClientPage() {
         <div className="flex items-center  justify-center gap-x-2 mt-4 mb-16">
           <h1 className="text-4xl font-bold text-slate-700">Thanh Toán</h1>
           <Separator className="h-16 text-gray-800" orientation="vertical" />
-          <Logo height={70} width={70} />
+          <Logo height={100} width={100} classNameLabel="text-2xl" />
         </div>
 
         <FormValues
@@ -361,7 +390,7 @@ function PaymentClientPage() {
             <Card className="cardStyle">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Truck className="w-5 h-5" />
+                  <Truck className="size-8" />
                   Phương thức giao hàng
                 </CardTitle>
               </CardHeader>
@@ -411,13 +440,53 @@ function PaymentClientPage() {
             {/* Payment Method */}
             <Card className="cardStyle">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
-                  Phương thức thanh toán
+                <CardTitle className="flex justify-between">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="size-8" />
+                    Phương thức thanh toán
+                  </div>
+                  <ToolTipCustomized
+                    trigger={
+                      <div className="motion-preset-seesaw rounded-full  bg-slate-50 hover:bg-slate-100/20 cursor-pointer">
+                        <WalletSheet
+                          user={user}
+                          isUserLoading={isUserLoading}
+                        />
+                      </div>
+                    }
+                    content={
+                      <div className="">
+                        {!(balance != null) ? (
+                          <div className="flex flex-col gap-2">
+                            <h2 className="font-semibold text-slate-700">
+                              Bạn đã có ví chưa?
+                            </h2>
+                            <span className="font-sans italic font-semibold">
+                              Hãy tạo ví và thanh toán để được hưởng ưu đãi
+                              Vouchers!{" "}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            <h2 className="font-semibold text-slate-700">
+                              Bạn đã có VÍ
+                            </h2>
+
+                            <span className="font-sans italic font-semibold">
+                              Hãy thanh toán bằng ví để tiện lợi và nhận ưu đãi
+                              Vouchers!
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    }
+                    delayDuration={100}
+                    sideOffset={10}
+                  />
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <FormRadioControl
+                {/* <FormRadioControl
                   form={form}
                   name="paymentMethod"
                   label="Chọn Phương Thức Thanh Toán"
@@ -450,6 +519,62 @@ function PaymentClientPage() {
                       </RadioItem>
                     );
                   })}
+                </FormRadioControl> */}
+
+                <FormRadioControl
+                  form={form}
+                  name="paymentMethod"
+                  label="Chọn Phương Thức Thanh Toán"
+                  disabled={form.formState.isSubmitting}
+                  className="space-y-2"
+                >
+                  {paymentMethods.map((method) => {
+                    const isWallet = method.value === PaymentMethod.WALLET;
+                    const isWalletDisabled =
+                      isWallet &&
+                      balance != null &&
+                      balance !== undefined &&
+                      balance < finalTotal;
+
+                    return (
+                      <RadioItem
+                        key={method.value}
+                        className="flex justify-between"
+                        disabled={
+                          form.formState.isSubmitting || isWalletDisabled
+                        }
+                      >
+                        <div className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem
+                              value={method.value}
+                              disabled={isWalletDisabled}
+                            />
+                          </FormControl>
+                          <FormLabel
+                            className={`font-semibold hover:underline transition cursor-pointer ${
+                              paymentMethodWatch === method.value && "underline"
+                            } ${
+                              isWalletDisabled &&
+                              "text-gray-400 line-through cursor-not-allowed"
+                            }`}
+                          >
+                            {method.label}
+                            {isWalletDisabled && (
+                              <span className="ml-2 text-xs text-rose-500">
+                                (Không đủ số dư)
+                              </span>
+                            )}
+                          </FormLabel>
+                        </div>
+
+                        {paymentMethodWatch === method.value &&
+                          !isWalletDisabled && (
+                            <Check className="text-green-500 mr-2" />
+                          )}
+                      </RadioItem>
+                    );
+                  })}
                 </FormRadioControl>
               </CardContent>
             </Card>
@@ -460,7 +585,7 @@ function PaymentClientPage() {
             <Card className="sticky top-8 cardStyle">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingCart className="size-8" />
                   Tổng quan đơn hàng của bạn
                 </CardTitle>
               </CardHeader>

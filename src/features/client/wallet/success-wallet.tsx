@@ -103,6 +103,10 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
       );
 
       if (response.status === 200) {
+        queryClient.invalidateQueries({
+          queryKey: [USER_KEY.WALLET_TRANSACTION],
+        });
+        queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
         setAmount("");
         setSelectedMethod(null);
         toast.success("Yêu cầu nạp thành công!");

@@ -117,3 +117,7 @@ export const statusColorMap: Record<ReturnExchangeRequestStatus, string> = {
   [ReturnExchangeRequestStatus.Rejected]: "bg-red-100 text-red-700",
   [ReturnExchangeRequestStatus.Cancelled]: "bg-neutral-200 text-neutral-600",
 };
+
+// Returned,          // Đơn hàng đã được trả lại
+//     Exchanged,
+//     Completed

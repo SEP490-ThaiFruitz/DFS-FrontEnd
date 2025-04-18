@@ -9,6 +9,8 @@ export enum DeliveryMethod {
 export enum PaymentMethod {
   VNPAY = "vnpay",
   PAYOS = "payos",
+
+  WALLET = "wallet",
 }
 
 export const PaymentSafeTypes = z.object({

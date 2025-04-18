@@ -4,16 +4,12 @@ import type React from "react";
 
 import { JSX, useEffect, useState } from "react";
 import {
-  User,
   MapPin,
-  Home,
-  Building2,
   Edit,
   Trash2,
   PlusCircle,
-  ChevronRight,
-  ArrowLeft,
   FileUser,
+  HouseIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,16 +18,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
 import { AddressTypes } from "@/types/address.types";
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 import { useAuth } from "@/providers/auth-provider";
@@ -42,7 +33,6 @@ import {
   RadioItem,
 } from "@/components/global-components/form/form-radio-control";
 import { FormControl, FormLabel } from "@/components/ui/form";
-import { set, truncate } from "lodash";
 import { cn } from "@/lib/utils";
 import AddressTab from "../profile/address/address-tab";
 import { DialogReused } from "@/components/global-components/dialog-reused";
@@ -77,7 +67,7 @@ export default function AddressChoices<T extends FieldValues>({
 
   const token = Cookies.get("accessToken");
 
-  console.log({ token });
+  // console.log({ token });
 
   const { isAddressPending, addresses: addressApi } = addressData;
 
@@ -157,12 +147,18 @@ export default function AddressChoices<T extends FieldValues>({
           className="w-full "
         >
           <TabsList className="grid grid-cols-2 mb-4 rounded-xl text-center">
-            <TabsTrigger value="base-info" className="flex items-center gap-2 ">
-              <FileUser className="h-4 w-4" />
+            <TabsTrigger
+              value="base-info"
+              className="flex items-center gap-1 font-semibold"
+            >
+              <FileUser className="size-6" />
               Thông tin cơ bản
             </TabsTrigger>
-            <TabsTrigger value="address" className="flex items-center gap-2 ">
-              <MapPin className="h-4 w-4" />
+            <TabsTrigger
+              value="address"
+              className="flex items-center gap-1 font-semibold"
+            >
+              <MapPin className="size-6" />
               Địa chỉ giao hàng
             </TabsTrigger>
           </TabsList>
@@ -170,14 +166,26 @@ export default function AddressChoices<T extends FieldValues>({
           <TabsContent value="base-info">
             <Card className="cardStyle">
               <CardHeader>
-                <CardTitle>Thông tin cơ bản của bạn</CardTitle>
+                {/* <CardTitle> */}
+
+                <CardTitle className="flex items-center gap-2">
+                  <HouseIcon className="size-8" />
+                  Thông tin cơ bản của bạn
+                </CardTitle>
                 <CardDescription>
                   Hãy đảm bảo thông tin cơ bản của bạn chính xác
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <InfoRow label="Tên người nhận" value={value?.Name} />
+                  <InfoRow
+                    label="Tên người nhận"
+                    value={
+                      !addressReceive.receiverName
+                        ? value?.Name
+                        : addressReceive.receiverName
+                    }
+                  />
 
                   <InfoRow label="Email" value={value?.Email} />
                   <InfoRow
@@ -199,7 +207,10 @@ export default function AddressChoices<T extends FieldValues>({
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle>Địa chỉ giao hàng</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="size-8" />
+                      Địa chỉ giao hàng
+                    </CardTitle>
                     <CardDescription>
                       Chọn địa chỉ giao hàng hoặc tạo địa chỉ mới
                     </CardDescription>
@@ -244,7 +255,7 @@ export default function AddressChoices<T extends FieldValues>({
                         {addressApi?.map((address: AddressTypes) => {
                           return (
                             <div
-                              className={`relative flex flex-col p-4 border  rounded-md transition-all ${
+                              className={`relative flex flex-col p-4 border  rounded-md transition-all cardStyle ${
                                 addressIdWatch === address.id
                                   ? "border-primary bg-primary/5"
                                   : "hover:border-muted-foreground/20"
@@ -295,7 +306,7 @@ export default function AddressChoices<T extends FieldValues>({
                                   <div className="flex items-center  gap-2 mb-1">
                                     <FormLabel
                                       // htmlFor={`address-${address.id}`}
-                                      className="font-medium text-base cursor-pointer"
+                                      className="font-semibold text-base cursor-pointer text-sky-600"
                                     >
                                       {address.receiverName}
                                     </FormLabel>
@@ -309,12 +320,12 @@ export default function AddressChoices<T extends FieldValues>({
                                       </Badge>
                                     )}
                                   </div>
-                                  <FormLabel className="text-sm text-muted-foreground mb-1 cursor-pointer">
+                                  <FormLabel className="text-sm text-slate-600 mb-1 cursor-pointer">
                                     {address.receiverAddress}
                                     {/* {address.city} {address.postalCode} */}
                                   </FormLabel>
 
-                                  <FormLabel className="text-sm text-muted-foreground cursor-pointer">
+                                  <FormLabel className="text-sm text-slate-700 cursor-pointer underline">
                                     SĐT:{" "}
                                     {formatVietnamesePhoneNumber(
                                       address.receiverPhone

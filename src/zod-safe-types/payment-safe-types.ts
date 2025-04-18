@@ -22,7 +22,11 @@ export const PaymentSafeTypes = z.object({
     })
   ),
 
-  paymentMethod: z.enum([PaymentMethod.VNPAY, PaymentMethod.PAYOS]),
+  paymentMethod: z.enum([
+    PaymentMethod.VNPAY,
+    PaymentMethod.PAYOS,
+    PaymentMethod.WALLET,
+  ]),
 
   voucherId: z.string().optional().nullable(),
 

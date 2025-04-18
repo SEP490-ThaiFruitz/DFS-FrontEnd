@@ -6,4 +6,6 @@ export enum USER_KEY {
   PROFILE = "profile",
 
   HISTORY_TRANSACTION = "historyTransaction",
+
+  WALLET_TRANSACTION = "walletTransaction",
 }

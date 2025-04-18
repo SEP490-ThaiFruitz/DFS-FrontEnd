@@ -3,7 +3,6 @@
 import { API } from "@/actions/client/api-config"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import { WALLET_KEY } from "@/app/key/admin-key"
-import { DataTable } from "@/components/global-components/data-table/data-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,6 +19,8 @@ import { toast } from "sonner"
 import DialogRequestWithDrawal from "./update-dialog"
 import ImagePreview from "@/components/custom/_custom-image/image-preview"
 import DialogRejectRequestWithDrawal from "./reject-dialog"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 
 interface User {
   id: string
@@ -46,7 +47,7 @@ export interface RequestWithDrawal {
 }
 
 const WithdrawalsPage = () => {
-  const { data: requestWithDrawalData } = useFetch<ApiResponse<PageResult<RequestWithDrawal>>>(
+  const { data: requestWithDrawalData, isLoading } = useFetch<ApiResponse<PageResult<RequestWithDrawal>>>(
     `/Wallets/request-withdrawal?pageIndex=1&pageSize=10000`,
     [WALLET_KEY.REQUEST_WITHDRAWAL],
   )
@@ -228,7 +229,13 @@ const WithdrawalsPage = () => {
     <div className="m-10">
       <div className="text-2xl font-semibold leading-none tracking-tight mb-6">Danh sách yêu cầu rút tiền</div>
 
-      <DataTable data={requestWithDrawalData?.value?.items ?? []} columns={columns} searchFiled="note" />
+      <div className="mt-8">
+        <div className="bg-white rounded-lg shadow border">
+          {isLoading ? <DataTableSkeleton /> :
+            <DataTableCustom data={requestWithDrawalData?.value?.items ?? []} columns={columns} placeholder="nội dung" searchFiled="note" />}
+        </div>
+      </div>
+
       {requestWithDrawalUpdate && (
         <DialogRequestWithDrawal
           isOpen={!!requestWithDrawalUpdate}

@@ -118,7 +118,7 @@ function SliderPage() {
 
                                     <ButtonCustomized
                                         type="submit"
-                                        className="max-w-32 bg-green-500 hover:bg-green-700"
+                                        className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
                                         variant="secondary"
                                         disabled={form.formState.isSubmitting}
                                         label={

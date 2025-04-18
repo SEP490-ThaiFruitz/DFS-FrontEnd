@@ -114,7 +114,7 @@ function BlogPage() {
       <div className="flex justify-between items-center">
         <p className="text-2xl font-semibold leading-none tracking-tight">Bài viết</p>
         <Link href="/admin/blog/create">
-          <Button size="sm" className="text-white bg-green-500 hover:bg-green-600">
+          <Button size="sm" className="text-white bg-sky-600 hover:bg-sky-700">
             <CirclePlus className="mr-1" />
             Tạo bài viết
           </Button>

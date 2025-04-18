@@ -151,7 +151,7 @@ function BlogCategoryPage() {
           }}
         >
           <DialogTrigger asChild>
-            <Button size="sm" className="text-white bg-green-500 hover:bg-green-600">
+            <Button size="sm" className="text-white bg-sky-600 hover:bg-sky-700">
               <CirclePlus className="mr-1" />
               Tạo loại bài viết
             </Button>
@@ -181,7 +181,7 @@ function BlogCategoryPage() {
 
                   <ButtonCustomized
                     type="submit"
-                    className="max-w-32 bg-green-500 hover:bg-green-700"
+                    className="px-2 min-w-32 max-w-fit bg-sky-600 hover:bg-sky-700"
                     variant="secondary"
                     disabled={isPending}
                     label={

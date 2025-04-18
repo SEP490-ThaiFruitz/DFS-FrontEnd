@@ -83,7 +83,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
             Object.entries(values).forEach(([key, value]) => {
                 if (key === "image") {
                     formData.append("image", value[0])
-                } 
+                }
                 else if (key !== "image") {
                     formData.append(key, String(value))
                 }
@@ -99,7 +99,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                     toast.success("Cập nhật thành công")
                     queryClient.invalidateQueries({ queryKey: ["detail-mange", productId] })
                     handlerClose()
-                } 
+                }
             }
             else {
                 formData.append("productId", productId)
@@ -422,7 +422,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                             </Button>
                             <ButtonCustomized
                                 type="submit"
-                                className="mb-5 sm:mb-0 sm:max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
+                                className="min-w-32 mb-5 sm:mb-0 sm:max-w-fit px-2 !h-10 !rounded-md bg-sky-600 hover:bg-sky-700"
                                 variant="secondary"
                                 onClick={form.handleSubmit(onSubmit)}
                                 disabled={form.formState.isSubmitting}

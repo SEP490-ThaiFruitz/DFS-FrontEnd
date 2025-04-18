@@ -80,7 +80,7 @@ const VnPayCard = () => {
                             label="Link trả về"
                             require
                         />
-                         <FormInputControl
+                        <FormInputControl
                             form={form}
                             name="returnUrlForWalletTopUp"
                             disabled={form.formState.isSubmitting}
@@ -118,7 +118,7 @@ const VnPayCard = () => {
                     </div>
                     <ButtonCustomized
                         type="submit"
-                        className="max-w-fit px-2 bg-green-500 hover:bg-green-700 ml-auto"
+                        className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
                         variant="secondary"
                         disabled={form.formState.isSubmitting}
                         label={

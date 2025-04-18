@@ -48,7 +48,7 @@ const DialogRejectRequestWithDrawal = ({ onClose, isOpen, requestWithdrawal }: R
             console.log({ error });
         }
     };
-    
+
     const title = "Từ chối hoàn tiền"
     const buttonText = "Từ chối"
     const loadingLabel = "Đang từ chối..."
@@ -108,7 +108,7 @@ const DialogRejectRequestWithDrawal = ({ onClose, isOpen, requestWithdrawal }: R
                         </Button>
                         <ButtonCustomized
                             type="submit"
-                            className="max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
+                            className="min-w-32 max-w-fit px-2 !h-10 !rounded-md bg-sky-600 hover:bg-sky-700"
                             variant="secondary"
                             disabled={form.formState.isSubmitting}
                             label={

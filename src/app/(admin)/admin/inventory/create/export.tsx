@@ -82,7 +82,7 @@ const ExportTab = () => {
             const productBatchSelected = productBatch?.value?.productBatchItems?.find(
                 (item: ProductBatchItem) => item.id.toString() === values.productBatchId
             );
-            
+
             if (
                 productBatchSelected &&
                 (productBatchSelected.importQuantity - productBatchSelected.exportQuantity) < Number(values.quantity)
@@ -201,7 +201,7 @@ const ExportTab = () => {
                     <CardFooter className="flex justify-between">
                         <ButtonCustomized
                             type="submit"
-                            className="max-w-32 bg-green-500 hover:bg-green-700"
+                            className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
                             variant="secondary"
                             disabled={
                                 form.formState.isSubmitting

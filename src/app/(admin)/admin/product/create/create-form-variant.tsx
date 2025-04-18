@@ -74,7 +74,7 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
     const onSubmit = async (values: z.infer<typeof ProductVariantSafeTypes>) => {
         if (selectedVariant) {
             const newProductVariants = [...formProduct.getValues("productVariants")]
-            newProductVariants[selectedVariant.id] = { ...values}
+            newProductVariants[selectedVariant.id] = { ...values }
             formProduct.setValue("productVariants", newProductVariants)
         } else {
             formProduct.setValue("productVariants", [...formProduct.getValues("productVariants"), { ...values }])
@@ -391,7 +391,7 @@ function FormVariant({ isOpen, onClose, selectedVariant, formProduct }: Readonly
                             </Button>
                             <ButtonCustomized
                                 type="submit"
-                                className="mb-5 sm:mb-0 sm:max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
+                                className="min-w-32  mb-5 sm:mb-0 sm:max-w-fit px-2 !h-10 !rounded-md bg-sky-600 hover:bg-sky-700"
                                 variant="secondary"
                                 onClick={form.handleSubmit(onSubmit)}
                                 disabled={form.formState.isSubmitting}

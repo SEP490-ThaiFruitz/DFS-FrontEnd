@@ -1,8 +1,7 @@
 "use client";
-import { deleteCategory } from "@/actions/category";
+
 import { CreateCategoryDialog } from "@/components/custom/_custom-dialog/create-category-dialog";
 import { UpdateCategoryDialog } from "@/components/custom/_custom-dialog/update-category-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageResult, ApiResponse } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
@@ -10,8 +9,11 @@ import { Pencil, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import Image from "next/image";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
-import { DataTable } from "@/components/global-components/data-table/data-table";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom";
+import { CATEGORY_KEY } from "@/app/key/admin-key";
+import { API } from "@/actions/client/api-config";
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton";
 
 type Category = {
   id: string;
@@ -30,7 +32,8 @@ const CategoryPage = () => {
 
   const {
     data: categories,
-  } = useFetch<ApiResponse<PageResult<Category>>>("/Categories?pageIndex=1&pageSize=1000", ["categories"]);
+    isLoading
+  } = useFetch<ApiResponse<PageResult<Category>>>("/Categories?pageIndex=1&pageSize=1000", [CATEGORY_KEY.CATEGORY]);
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -65,28 +68,9 @@ const CategoryPage = () => {
         );
       },
     },
-    // {
-    //   accessorKey: "isActive",
-    //   header: "Trạng thái",
-    //   cell: ({ row }) => {
-    //     const isActive = row.getValue("isActive");
-    //     return (
-    //       <Badge
-    //         className={`border ${isActive
-    //            "border-green-400 text-green-700"
-    //           : "border-red-400 text-red-700"
-    //           }`}
-    //         variant="outline"
-    //       >
-    //         {isActive ? "Hoạt động" : "Đã ngưng"}
-    //       </Badge>
-    //     );
-    //   },
-    //   enableSorting: true,
-    // },
     {
       accessorKey: "action",
-      header: "",
+      header: "Hành động",
       cell: ({ row }) => {
         const category = row.original;
         return (
@@ -119,18 +103,26 @@ const CategoryPage = () => {
     setSelectedCategoryDelete(category);
     setOpenDelete(true);
   };
+
+  const deleteCategory = async (id: string) => {
+    return await API.remove(`/Categories/${id}`)
+  }
+
   return (
     <div className="m-10">
       <div className='flex justify-between items-center'>
         <p className='text-2xl font-semibold leading-none tracking-tight'>Loại sản phẩm</p>
         <CreateCategoryDialog />
       </div>
-      <div className="py-4">
-        <DataTable
-          data={categories?.value?.items || []}
-          columns={columns}
-          searchFiled="name"
-        />
+      <div className="mt-8 bg-white rounded-lg shadow border">
+        {isLoading ? <DataTableSkeleton /> :
+          <DataTableCustom
+            data={categories?.value?.items || []}
+            columns={columns}
+            placeholder="tên loại"
+            searchFiled="name"
+          />
+        }
       </div>
       {selectedCategoryUpdate && (
         <UpdateCategoryDialog
@@ -151,7 +143,7 @@ const CategoryPage = () => {
             setOpenDelete(false);
             setSelectedCategoryDelete(undefined);
           }}
-          refreshKey={[["categories"]]}
+          refreshKey={[[CATEGORY_KEY.CATEGORY]]}
           id={selectedCategoryDelete.id}
         />
       )}

@@ -2,7 +2,6 @@
 import { deleteProduct } from '@/actions/product'
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
 import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog'
-import { DataTable } from '@/components/global-components/data-table/data-table'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -13,6 +12,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
+import { DataTableSkeleton } from '@/components/global-components/custom-skeleton/data-table-skeleton'
+import { DataTableCustom } from '@/components/global-components/data-table/data-table-custom'
+import { PRODUCT_KEY } from '@/app/key/admin-key'
 
 interface ProductVariant {
     id: string;
@@ -30,12 +32,12 @@ interface Product {
     mainImageUrl: string;
     categoriesName: string;
     isDeleted: boolean;
-    productVarians: ProductVariant[];
+    productVariants: ProductVariant[];
 }
 
 function ProductPage() {
     const [product, setProduct] = useState<Product | undefined>(undefined);
-    const { data: products, refetch } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/manage?pageIndex=1&pageSize=1000`, ["products", "manage"])
+    const { data: products, isLoading } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/manage?pageIndex=1&pageSize=1000`, [PRODUCT_KEY.PRODUCT])
     const [productVariants, setProductVariants] = useState<ProductVariant[] | undefined>(undefined)
 
     const StockIndicator = ({ stockQuantity, reOrderPoint }: { stockQuantity: number; reOrderPoint: number }) => {
@@ -133,18 +135,18 @@ function ProductPage() {
             accessorKey: "variants",
             header: "Tổng biến thể",
             cell: ({ row }) => <div className='text-center'>
-                {row.original.productVarians.length}
+                {row.original.productVariants.length}
             </div>
         },
         {
-            accessorKey: "productVarians",
+            accessorKey: "productVariants",
             header: "Tổng số lượng",
             cell: ({ row }) => (
                 <button
                     className='hover:underline hover:text-blue-400'
-                    onClick={() => setProductVariants(row.original.productVarians)}
+                    onClick={() => setProductVariants(row.original.productVariants)}
                 >
-                    <TotalStockIndicator variants={row.original.productVarians} />
+                    <TotalStockIndicator variants={row.original.productVariants} />
                 </button>
             ),
             size: 150,
@@ -192,18 +194,23 @@ function ProductPage() {
             <div className='flex justify-between items-center mb-4'>
                 <div className='text-2xl font-semibold leading-none tracking-tight'>Sản phẩm</div>
                 <Link href="/admin/product/create">
-                    <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+                    <Button size={"sm"} className='text-white bg-sky-600 hover:bg-sky-700'>
                         <CirclePlus className="mr-1 h-4 w-4" />
                         Tạo sản phẩm
                     </Button>
                 </Link>
             </div>
 
-            <DataTable
-                data={products?.value?.items ?? []}
-                columns={columns}
-                searchFiled='name'
-            />
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom
+                        data={products?.value?.items ?? []}
+                        columns={columns}
+                        searchFiled='name'
+                        placeholder="tên sản phẩm"
+                    />
+                }
+            </div>
 
             {productVariants && (
                 <Dialog open={productVariants !== undefined} onOpenChange={() => setProductVariants(undefined)}>
@@ -254,8 +261,8 @@ function ProductPage() {
                     onClose={() => setProduct(undefined)}
                     name={product?.name}
                     deleteFunction={deleteProduct}
-                    refreshKey={[["products", "manage"]]}
-                    content={product.productVarians.length > 0
+                    refreshKey={[[PRODUCT_KEY.PRODUCT]]}
+                    content={product.productVariants.length > 0
                         ? `${product.name} đã có sản phẩm phụ. Bạn có muốn ẩn đi không?`
                         : `Thao tác này không thể hoàn lại. Bạn có muốn xóa ${product.name}`
                     }

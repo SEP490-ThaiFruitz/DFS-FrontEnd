@@ -16,6 +16,7 @@ import { FormFileControl } from '@/components/global-components/form/form-file-c
 import { FormDateControl } from '@/components/global-components/form/form-date-control'
 import { FormInputControl } from '@/components/global-components/form/form-input-control'
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
+import { EVENT_KEY } from '@/app/key/admin-key'
 
 interface DialogEventProps {
     isOpen: boolean,
@@ -59,7 +60,7 @@ const DialogEvent = ({ onClose, isOpen, event }: Readonly<DialogEventProps>) => 
                 toast.success(event !== undefined ? "Cập nhật sự kiện thành công" : "Thêm sự kiện thành công")
                 onClose()
                 form.reset()
-                queryClient.invalidateQueries({ queryKey: ["events"] })
+                queryClient.invalidateQueries({ queryKey: [EVENT_KEY.EVENT] })
             } else {
                 toast.error(event !== undefined ? "Cập nhật sự kiện thất bại" : "Thêm sự kiện thất bại")
             }
@@ -127,7 +128,7 @@ const DialogEvent = ({ onClose, isOpen, event }: Readonly<DialogEventProps>) => 
                         </Button>
                         <ButtonCustomized
                             type="submit"
-                            className="max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
+                            className="min-w-32  max-w-fit px-2 !h-10 !rounded-md bg-sky-600 hover:bg-sky-700"
                             variant="secondary"
                             disabled={form.formState.isSubmitting}
                             label={

@@ -1,5 +1,6 @@
 "use client"
-import { createUser, updateUser } from '@/actions/user';
+import { API } from '@/actions/client/api-config';
+import { USER_KEY } from '@/app/key/admin-key';
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
 import { FormPassword } from '@/components/global-components/form/form-password';
@@ -48,15 +49,15 @@ const FormUser = ({
     });
     const queryClient = useQueryClient();
 
-
     const onSubmit = async (values: z.infer<typeof FormUserSafeTypes>) => {
         try {
             const { id, confirmPassword, role, ...resetValue } = values
-            const response = user ? await updateUser({ userId: id, role, ...resetValue }) : await createUser({ role, ...resetValue })
+            const response = user ? await API.update("/Users/update-account", { userId: id, role, ...resetValue })
+                : await API.post("/Users/create-account", { role, ...resetValue })
             if (response) {
                 toast.success(user ? "Cập nhật tài khoản thành công" : "Thêm tài khoản thành công")
                 onClose()
-                queryClient.invalidateQueries({ queryKey: ["Users"] })
+                queryClient.invalidateQueries({ queryKey: [USER_KEY.USER] })
             }
         } catch (error) {
             console.log(error)
@@ -147,7 +148,7 @@ const FormUser = ({
                     <SheetFooter className='mt-5'>
                         <ButtonCustomized
                             type="submit"
-                            className="w-fit h-10 bg-green-700 hover:bg-green-800 text-white hover:font-semibold duration-300 transition mr-auto"
+                            className="min-w-32  w-fit h-10 bg-sky-600 hover:bg-sky-700 text-white hover:font-semibold duration-300 transition mr-auto"
                             variant="secondary"
                             disabled={form.formState.isSubmitting}
                             label={

@@ -24,6 +24,7 @@ import {
   History,
   CircleArrowOutDownRight,
   Import,
+  ChartPie,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -132,6 +133,11 @@ const data = {
     },
   ],
   projects: [
+    {
+      name: "Báo cáo biến thể",
+      url: "/admin/dashboard",
+      icon: ChartPie,
+    },
     {
       name: "Loại sản phẩm",
       url: "/admin/category",

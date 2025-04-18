@@ -113,11 +113,11 @@ const Variant = ({ combo }: Readonly<VariantProps>) => {
                                     {combo?.comboItems?.map((comboItem) => (
                                         <TableRow key={comboItem.id}>
                                             <TableCell>
-                                                <div className="relative h-12 w-12 overflow-hidden rounded-md">
+                                                <div className="relative h-32 w-3h-32 overflow-hidden rounded-md">
                                                     <ImagePreview
                                                         images={[comboItem.image]}
-                                                        initialWidth={40}
-                                                        initialHeight={40}
+                                                        initialWidth={130}
+                                                        initialHeight={130}
                                                     />
                                                 </div>
                                             </TableCell>

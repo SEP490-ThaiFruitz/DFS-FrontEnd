@@ -12,6 +12,8 @@ import Link from "next/link"
 import { useState } from "react"
 import DialogProductBatchDetail from "./dialog-product-batch-detail"
 import { PRODUCT_BATCH_KEY } from "@/app/key/comm-key"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 
 export interface User {
   id: string
@@ -33,7 +35,7 @@ export interface ProductBatch {
 }
 
 const ProductBatchPage = () => {
-  const { data: productBatchs } = useFetch<ApiResponse<ProductBatch[]>>("/ProductBatches", [PRODUCT_BATCH_KEY.PRODUCT_BATCHES])
+  const { data: productBatchs, isLoading } = useFetch<ApiResponse<ProductBatch[]>>("/ProductBatches", [PRODUCT_BATCH_KEY.PRODUCT_BATCHES])
   const [productBatch, setProductBatch] = useState<ProductBatch | null>(null);
   const columns: ColumnDef<ProductBatch>[] = [
     {
@@ -103,13 +105,19 @@ const ProductBatchPage = () => {
       <div className="flex justify-between items-center mb-6">
         <div className="text-2xl font-semibold leading-none tracking-tight">Danh sách nhập hàng</div>
         <Link href={"/admin/product-batch/create"}>
-          <Button size={"sm"} className="text-white bg-green-500 hover:bg-green-600">
+          <Button size={"sm"} className="text-white bg-sky-600 hover:bg-sky-700">
             <CirclePlus className="mr-2 h-4 w-4" />
             Tạo nhập hàng
           </Button>
         </Link>
       </div>
-      <DataTable data={productBatchs?.value ?? []} columns={columns} searchFiled="requestName" />
+      <div className="mt-8 bg-white rounded-lg shadow border">
+        {isLoading ? <DataTableSkeleton /> :
+          <DataTableCustom
+            data={productBatchs?.value ?? []} columns={columns} searchFiled="requestName" placeholder="tên yêu cầu"
+          />
+        }
+      </div>
       {productBatch && <DialogProductBatchDetail
         id={productBatch.id}
         isOpen={productBatch !== null}

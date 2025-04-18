@@ -1,6 +1,5 @@
 "use client"
 
-import { banUser } from "@/actions/user"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
 import { Button } from "@/components/ui/button"
 import type { ApiResponse, PageResult } from "@/types/types"
@@ -12,6 +11,9 @@ import { DataTable } from '@/components/global-components/data-table/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number"
 import { API } from "@/actions/client/api-config"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { USER_KEY } from "@/app/key/admin-key"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 
 interface User {
     id: string
@@ -31,8 +33,8 @@ function UserPage() {
     const [isFormUser, setIsFormUser] = useState<boolean>(false)
     const [user, setUser] = useState<User>()
 
-    const { data: users } = useFetch<ApiResponse<PageResult<User>>>("/Users?pageIndex=1&pageSize=1000", ["Users"])
-    console.log(users?.value?.items)
+    const { data: users, isLoading } = useFetch<ApiResponse<PageResult<User>>>("/Users?pageIndex=1&pageSize=10000", [USER_KEY.USER])
+
     const getGenderDisplay = (gender: string) => {
         switch (gender) {
             case "Male":
@@ -164,14 +166,15 @@ function UserPage() {
         <div className="m-10">
             <div className="flex justify-between items-center">
                 <p className="text-2xl font-semibold leading-none tracking-tight">Tài khoản</p>
-                <Button onClick={() => setIsFormUser(true)} size="sm" className="text-white bg-green-500 hover:bg-green-600">
+                <Button onClick={() => setIsFormUser(true)} size="sm" className="text-white bg-sky-600 hover:bg-sky-700">
                     <CirclePlus className="mr-1" />
                     Tạo mới
                 </Button>
             </div>
 
-            <div className="mt-3">
-                <DataTable<User> data={users?.value?.items || []} columns={columns} searchFiled="name" />
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom<User> data={users?.value?.items || []} placeholder="tên" columns={columns} searchFiled="name" />}
             </div>
 
             <DeleteDialog
@@ -179,7 +182,7 @@ function UserPage() {
                 isOpen={isBanPopup}
                 onClose={() => setIsBanPopup(false)}
                 deleteFunction={banUser}
-                refreshKey={[["Users"]]}
+                refreshKey={[[USER_KEY.USER]]}
                 name={user?.name}
                 content={`Bạn có chắc chắn muốn ${user?.isActive ? "khóa tài khoản" : "mở khóa tài khoản"} ${user?.name} không?`}
                 message={user?.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}

@@ -1,8 +1,6 @@
 "use client"
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
-import { deleteVoucher } from '@/actions/voucher'
 import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog'
-import { DataTable } from '@/components/global-components/data-table/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { formatNumberWithUnit, formatVND } from '@/lib/format-currency'
@@ -10,6 +8,10 @@ import { ApiResponse, PageResult } from '@/types/types'
 import { CirclePlus, Eye, Pencil, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
+import { VOUCHER_KEY } from '@/app/key/admin-key'
+import { DataTableCustom } from '@/components/global-components/data-table/data-table-custom'
+import { API } from '@/actions/client/api-config'
+import { DataTableSkeleton } from '@/components/global-components/custom-skeleton/data-table-skeleton'
 
 export interface Voucher {
     id: string;
@@ -26,7 +28,7 @@ export interface Voucher {
 
 
 function VoucherPage() {
-    const { data: vouchers } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers?pageIndex=${1}&pageSize=${1000}`, ["vouchers"])
+    const { data: vouchers, isLoading } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers?pageIndex=${1}&pageSize=${1000}`, [VOUCHER_KEY.VOUCHER])
     const [voucher, setVoucher] = useState<Voucher | undefined>(undefined);
 
     const getCouponStatus = (quantity: number, startDate: string, endDate: string) => {
@@ -110,23 +112,29 @@ function VoucherPage() {
         }
     ];
 
+    const deleteVoucher = async (id: string) => {
+        return await API.remove(`/Vouchers/${id}`)
+    }
+
     return (
         <div className='m-10'>
             <div className='flex justify-between items-center'>
                 <p className='text-2xl font-semibold leading-none tracking-tight'>Mã giảm giá</p>
                 <Link href="/admin/voucher/create">
-                    <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+                    <Button size={"sm"} className='text-white bg-sky-600 hover:bg-sky-700'>
                         <CirclePlus />
                         Tạo mã giảm giá
                     </Button>
                 </Link>
             </div>
-            <div className="py-4">
-                <DataTable
-                    data={vouchers?.value?.items || []}
-                    columns={columns}
-                    searchFiled="name"
-                />
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom
+                        data={vouchers?.value?.items || []}
+                        columns={columns}
+                        placeholder='tên mã giả giá'
+                        searchFiled="name"
+                    />}
             </div>
             <DeleteDialog
                 id={voucher?.id ?? ""}
@@ -134,7 +142,7 @@ function VoucherPage() {
                 onClose={() => setVoucher(undefined)}
                 name={voucher?.name}
                 deleteFunction={deleteVoucher}
-                refreshKey={[["vouchers"]]} />
+                refreshKey={[[VOUCHER_KEY.VOUCHER]]} />
         </div>
     )
 }

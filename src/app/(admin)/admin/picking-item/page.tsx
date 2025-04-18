@@ -1,13 +1,14 @@
 "use client"
 
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
-import { DataTable } from "@/components/global-components/data-table/data-table"
 import type { ApiResponse } from "@/types/types"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { format } from "date-fns"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
+import Image from "next/image"
+import ImagePreview from "@/components/custom/_custom-image/image-preview"
 
 interface User {
   id: string
@@ -41,7 +42,7 @@ interface ProductItem {
 }
 
 const PickingItemPage = () => {
-  const { data: pickingitems } = useFetch<ApiResponse<ProductItem[]>>("/ProductBatches/pickingitems")
+  const { data: pickingitems, isLoading } = useFetch<ApiResponse<ProductItem[]>>("/ProductBatches/pickingitems")
   const exportTypeColors: Record<string, { color: string; text: string }> = {
     Import: {
       color: "bg-green-100 text-green-800",
@@ -81,10 +82,10 @@ const PickingItemPage = () => {
         const firstProduct = details[0]
         return (
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={firstProduct.image || "/placeholder.svg"} alt={firstProduct.productName} />
-              <AvatarFallback>{firstProduct.productName.substring(0, 2)}</AvatarFallback>
-            </Avatar>
+            <ImagePreview
+              className="w-14 h-14 hover:cursor-pointer"
+              images={[firstProduct.image]}
+            />
             <div className="flex flex-col">
               <span className="font-medium">{firstProduct.productName} - {firstProduct.packagingType} - {firstProduct.netWeight}g</span>
               <span className="text-xs text-muted-foreground">{firstProduct.productBatchNumber}</span>
@@ -96,6 +97,7 @@ const PickingItemPage = () => {
     {
       accessorKey: "quantity",
       header: "Số lượng",
+      size: 80
     },
     {
       accessorKey: "user",
@@ -155,8 +157,12 @@ const PickingItemPage = () => {
       <div className="flex justify-between items-center mb-6">
         <div className="text-2xl font-semibold leading-none tracking-tight">Lịch sử sản phẩm trong kho</div>
       </div>
-
-      <DataTable data={pickingitems?.value ?? []} columns={columns} searchFiled="orderId" />
+      <div className="mt-8">
+        <div className="bg-white rounded-lg shadow border">
+          {isLoading ? <DataTableSkeleton /> :
+            <DataTableCustom data={pickingitems?.value ?? []} columns={columns} placeholder="ghi chú" searchFiled="note" />}
+        </div>
+      </div>
     </div>
   )
 }

@@ -10,46 +10,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ApiResponse } from '@/types/types';
 import { UpdateVoucherSafeTypes } from '@/zod-safe-types/voucher-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Voucher } from '../../page';
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
-import { updateVoucher } from '@/actions/voucher';
 import { useEffect } from 'react';
 import { FormDateControl } from '@/components/global-components/form/form-date-control';
 import { QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
 import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FancySelect } from '@/components/custom/_custom_select/select';
 import { format } from 'date-fns';
+import { API } from '@/actions/client/api-config';
 
 function UpdateVoucherPage() {
   const { id } = useParams();
   const { data: voucher } = useFetch<ApiResponse<Voucher>>(`/Vouchers/${id}`)
-
-  const { isPending, mutate: updateVoucherMutation } = useMutation({
-    mutationFn: async (values: FormData) => {
-      const response = await updateVoucher(values.get("id")?.toString() ?? '', values);
-      try {
-        if (!response?.isSuccess) {
-          if (response?.status === 409) {
-            throw new Error("Tên mã giảm giá đã tồn tại")
-          }
-          throw new Error("Lỗi hệ thống")
-        }
-      } catch (error: unknown) {
-        throw new Error(error instanceof Error ? error?.message : "Lỗi hệ thống");
-      }
-    },
-    onSuccess: () => {
-      toast.success("Cập nhật mã giảm giá thành công")
-    },
-    onError: (value) => {
-      toast.error(value.message)
-    }
-  })
 
   const form = useForm<z.infer<typeof UpdateVoucherSafeTypes>>({
     resolver: zodResolver(UpdateVoucherSafeTypes),
@@ -113,16 +90,20 @@ function UpdateVoucherPage() {
     formData.append("maximumDiscountAmount", values.maximumDiscount)
     formData.append("quantity", values.quantity)
 
-    updateVoucherMutation(formData)
+    const response = await API.update(`/Vouchers/${id}`, formData);
+    if (response) {
+      toast.success("Cập nhật mã giảm giá thành công")
+    }
+
   };
 
-    useEffect(() => {
-      if (form.watch("discountType") === 'Amount') {
-        form.setValue("percentDiscount", undefined); 
-      } else {
-        form.setValue("moneyDiscount", undefined); 
-      }
-    }, [form.watch("discountType")]);
+  useEffect(() => {
+    if (form.watch("discountType") === 'Amount') {
+      form.setValue("percentDiscount", undefined);
+    } else {
+      form.setValue("moneyDiscount", undefined);
+    }
+  }, [form.watch("discountType")]);
 
   return (
     <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
@@ -136,14 +117,14 @@ function UpdateVoucherPage() {
               <FormInputControl
                 form={form}
                 name="name"
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Tên mã giảm giá"
                 require
               />
               <FormInputControl
                 form={form}
                 name="code"
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Mã giảm giá"
               />
               <FormSelectControl
@@ -155,7 +136,7 @@ function UpdateVoucherPage() {
                   { id: 'Amount', name: 'Cố định' },
                   { id: 'Percentage', name: 'Phần trăm' },
                 ]}
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Chọn loại giảm giá"
                 require
               />
@@ -163,7 +144,7 @@ function UpdateVoucherPage() {
                 form={form}
                 name="moneyDiscount"
                 isMoney
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Số tiền giảm"
                 require
               /> :
@@ -199,7 +180,7 @@ function UpdateVoucherPage() {
                   minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="startDate"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   label="Ngày bắt đầu"
                   require
                 />
@@ -207,14 +188,14 @@ function UpdateVoucherPage() {
                   minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="endDate"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   label="Ngày kết thúc"
                   require
                 />
                 <FormNumberInputControl
                   form={form}
                   name="minimumOrderAmount"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   isMoney
                   label="Đơn hàng tối thiểu"
                   require
@@ -222,7 +203,7 @@ function UpdateVoucherPage() {
                 <FormNumberInputControl
                   form={form}
                   name="maximumDiscount"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   isMoney
                   label="Giảm tối đa"
                   require
@@ -264,7 +245,7 @@ function UpdateVoucherPage() {
                 classNameInput="h-30 w-full"
                 mutiple={false}
                 type={"image/jpeg, image/jpg, image/png, image/webp"}
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Ảnh mã giảm giá"
               />
             </div>
@@ -274,11 +255,11 @@ function UpdateVoucherPage() {
 
       <ButtonCustomized
         type="submit"
-        className="max-w-32 bg-green-500 hover:bg-green-700"
+        className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
         variant="secondary"
-        disabled={isPending}
+        disabled={form.formState.isSubmitting}
         label={
-          isPending ? (
+          form.formState.isSubmitting ? (
             <WaitingSpinner
               variant="pinwheel"
               label="Đang cập nhật..."

@@ -1,5 +1,4 @@
 // components/order/StatusBar.tsx
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -7,7 +6,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { OrderStatus } from "@/types/report-orders.types";
-import { getOrderStatusStep } from "@/utils/content-line";
 import { omit } from "lodash";
 import React from "react";
 
@@ -18,11 +16,18 @@ const statusColors = [
   "bg-indigo-500", // delivering
   "bg-[#a21caf]", // delivered
   "bg-green-500", // received
+  "bg-[#14532d]", // completed
   // "bg-red-500", // cancelled
   // "bg-gray-500", // returned
 ];
 
-const omittedStatuses = omit(OrderStatus, "cancelled", "returned");
+const omittedStatuses = omit(
+  OrderStatus,
+  "cancelled",
+  "returned",
+  "exchanged",
+  "requesting"
+);
 export const statusTexts = Object.values(omittedStatuses);
 export const StatusBar = ({ statusStep }: { statusStep: number }) => {
   // console.log({ statusStep });
@@ -34,7 +39,7 @@ export const StatusBar = ({ statusStep }: { statusStep: number }) => {
           <Tooltip key={index}>
             <TooltipTrigger asChild className="cursor-pointer">
               <div
-                className={`h-2 w-3/4 cursor-pointer ${
+                className={`h-3 w-14 cursor-pointer ${
                   index === 0 ? "rounded-l-full" : ""
                 } ${index === statusColors.length - 1 ? "rounded-r-full" : ""}
                   ${

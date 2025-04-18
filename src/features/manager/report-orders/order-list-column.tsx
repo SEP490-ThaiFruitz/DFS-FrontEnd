@@ -11,6 +11,7 @@ import {
   XCircle,
   Receipt,
   ExternalLink,
+  SendToBackIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -58,19 +59,25 @@ const getStatusStep = (status: string) => {
     // case OrderStatusEnum.CONFIRMED:
     //   return 1;
     case OrderStatusEnum.PACKAGING:
-      return 2;
+      return 1;
     case OrderStatusEnum.SHIPPING:
-      return 3;
+      return 2;
     case OrderStatusEnum.DELIVERING:
-      return 4;
+      return 3;
     case OrderStatusEnum.DELIVERED:
-      return 5;
+      return 4;
     case OrderStatusEnum.RECEIVED:
+      return 5;
+    case OrderStatusEnum.COMPLETED:
       return 6;
     case OrderStatusEnum.CANCELLED:
       return -1;
     case OrderStatusEnum.RETURNED: // Old status name
       return 7;
+    case OrderStatusEnum.EXCHANGED: // Old status name
+      return 8;
+    case OrderStatusEnum.REQUESTING: // Old status name
+      return 9;
     default:
       return 0;
   }
@@ -121,6 +128,8 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
     meta: { align: "center", export: { pdf: { header: "Mã đơn hàng" } } },
     filterFn: "filterRows",
   },
+
+  // hading order status
   {
     id: "status",
     accessorKey: "status",
@@ -139,7 +148,7 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
               className="flex items-center gap-1 w-fit"
               color="red"
             >
-              <XCircle className="h-3.5 w-3.5" />
+              <XCircle className="size-6 hover:scale-110 transition duration-300" />
               <span>Đã hủy</span>
             </AdvancedColorfulBadges>
 
@@ -157,8 +166,28 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             className="flex items-center gap-1 w-fit"
             color="rose"
           >
-            <XCircle className="h-3.5 w-3.5" />
+            <XCircle className="size-6 hover:scale-110 transition duration-300" />
             <span>Đã trả hàng</span>
+          </AdvancedColorfulBadges>
+        );
+      } else if (statusStep === 8) {
+        return (
+          <AdvancedColorfulBadges
+            className="flex items-center gap-1 w-fit"
+            color="amber"
+          >
+            <XCircle className="size-6 hover:scale-110 transition duration-300" />
+            <span>Đã đổi sản phẩm</span>
+          </AdvancedColorfulBadges>
+        );
+      } else if (statusStep === 9) {
+        return (
+          <AdvancedColorfulBadges
+            className="flex items-center gap-1 w-fit"
+            color="amber"
+          >
+            <SendToBackIcon className="size-6 hover:scale-110 transition duration-300" />
+            <span>Đơn hàng yêu cầu đổi/trả</span>
           </AdvancedColorfulBadges>
         );
       }

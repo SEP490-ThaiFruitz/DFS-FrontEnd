@@ -71,8 +71,14 @@ export enum OrderStatusEnum {
   DELIVERING = "delivering",
   DELIVERED = "delivered",
   RECEIVED = "received",
+
+  COMPLETED = "completed",
+
   CANCELLED = "cancelled",
   RETURNED = "returned",
+
+  EXCHANGED = "exchanged",
+  REQUESTING = "requesting",
 }
 export const OrderStatus = {
   pending: "Đơn hàng đang chờ xử lý",
@@ -82,8 +88,13 @@ export const OrderStatus = {
   delivering: "Đơn hàng đang trên đường giao tới khách hàng",
   delivered: "Đơn hàng đã được giao đến khách hàng",
   received: "Đơn hàng đã được nhận bởi khách hàng",
+  completed: "Đơn hàng đã hoàn tất",
+
+  // exceptions status
   cancelled: "Đơn hàng bị hủy",
   returned: "Đơn hàng được trả lại",
+  exchanged: "Đơn hàng đã được đổi",
+  requesting: "Đơn hàng đang yêu cầu đổi trả",
 } as const;
 
 export type OrderStatusType = keyof typeof OrderStatus;
@@ -92,9 +103,11 @@ export const OrderStatusKey = Object.keys(OrderStatus) as OrderStatusType[];
 
 export type OrderDetailTypes = {
   orderId: string;
-  orderStatus: "Received" | "Processing" | "Completed" | "Cancelled" | string;
+  // orderStatus: "Received" | "Processing" | "Completed" | "Cancelled" | string;
+  orderStatus: string;
   paymentStatus: "Pending" | "Paid" | "Failed" | string;
-  paymentMethod: "VnPay" | "Cash" | "Momo" | string;
+  // paymentMethod: "VnPay" | "Cash" | "Momo" | string;
+  paymentMethod: string;
   buyDate: string; // ISO 8601 date string
   orderItems: OrderItem[];
   delivery: {

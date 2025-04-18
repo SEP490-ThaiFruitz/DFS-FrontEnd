@@ -10,16 +10,12 @@ import {
   PackageIcon,
   Undo2,
   CircleChevronRight,
+  BadgeCheckIcon,
+  SendToBackIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrderStatus, OrderStatusEnum } from "@/types/report-orders.types";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ToolTipCustomized } from "@/components/custom/tool-tip-customized";
 import axios from "axios";
 
@@ -48,8 +44,10 @@ const ORDER_STATUS_FLOW = [
   "delivering",
   "delivered",
   "received",
+  "completed",
   "cancelled",
   "returned",
+  "exchanged",
 ];
 
 const iconSize = "size-6 hover:scale-110 transition duration-300";
@@ -70,10 +68,15 @@ export const getStatusIcon = (status: string) => {
       return <PackageOpen className={iconSize} />;
     case OrderStatusEnum.RECEIVED:
       return <PackageOpen className={iconSize} />;
+
+    case OrderStatusEnum.COMPLETED:
+      return <BadgeCheckIcon className={`motion-preset-seesaw ${iconSize}`} />;
     case OrderStatusEnum.CANCELLED:
       return <XCircle className={iconSize} />;
     case OrderStatusEnum.RETURNED:
       return <Undo2 className={iconSize} />;
+    case OrderStatusEnum.EXCHANGED:
+      return <SendToBackIcon className={iconSize} />;
     default:
       return <AlertCircle className={iconSize} />;
   }
@@ -95,10 +98,21 @@ export const getStatusColor = (status: string) => {
       return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300";
     case OrderStatusEnum.RECEIVED:
       return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300";
+    case OrderStatusEnum.COMPLETED:
+      return "bg-green-300 text-green-900 ";
+
+    // exception status
     case OrderStatusEnum.CANCELLED:
       return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300";
     case OrderStatusEnum.RETURNED:
       return "bg-gray-100 text-gray-700 dark:bg-gray-800/30 dark:text-gray-300";
+
+    case OrderStatusEnum.EXCHANGED:
+      return "bg-amber-100 text-amber-700 dark:bg-gray-800/30 dark:text-gray-300";
+
+    case OrderStatusEnum.REQUESTING:
+      return "bg-amber-100 text-amber-700 dark:bg-gray-800/30 dark:text-gray-300";
+
     default:
       return "bg-gray-100 text-gray-700 dark:bg-gray-800/30 dark:text-gray-300";
   }
@@ -123,10 +137,19 @@ export const getStatusText = (status: string) => {
     case OrderStatusEnum.RECEIVED:
       return OrderStatus.received;
 
+    case OrderStatusEnum.COMPLETED:
+      return OrderStatus.completed;
+
     case OrderStatusEnum.CANCELLED:
       return OrderStatus.cancelled;
     case OrderStatusEnum.RETURNED:
       return OrderStatus.returned;
+
+    case OrderStatusEnum.EXCHANGED:
+      return OrderStatus.exchanged;
+
+    case OrderStatusEnum.REQUESTING:
+      return OrderStatus.requesting;
 
     default:
       return status;
@@ -226,7 +249,7 @@ export function OrderStatusBadge({
 
         {status === OrderStatusEnum.RETURNED ||
         status === OrderStatusEnum.CANCELLED ||
-        status === OrderStatusEnum.RECEIVED ? null : (
+        status === OrderStatusEnum.COMPLETED ? null : (
           <UpdateStatusButton
             status={statusTextNext as string}
             onClick={updateStatus}
@@ -252,7 +275,7 @@ export const UpdateStatusButton = ({
       <ToolTipCustomized
         trigger={
           <CircleChevronRight
-            className="size-5 hover:scale-110 transition duration-300"
+            className="size-8 hover:scale-110 transition duration-300"
             onClick={onClick}
           />
         }
@@ -273,20 +296,20 @@ export const statusColors = [
   "bg-[#065f46]",
 ];
 
-export const StatusBar = ({ statusStep }: { statusStep: number }) => {
-  return (
-    <div className="flex items-center gap-1 w-full max-w-[180px]">
-      {statusColors.map((color, index) => (
-        <div
-          key={index}
-          className={`h-1.5 w-1/4 ${index === 0 ? "rounded-l-full" : ""} ${
-            index === statusColors.length - 1 ? "rounded-r-full" : ""
-          } ${statusStep >= index ? color : "bg-gray-200 dark:bg-gray-700"}`}
-        ></div>
-      ))}
-    </div>
-  );
-};
+// export const StatusBar = ({ statusStep }: { statusStep: number }) => {
+//   return (
+//     <div className="flex items-center gap-1 w-full max-w-[180px]">
+//       {statusColors.map((color, index) => (
+//         <div
+//           key={index}
+//           className={`h-1.5 w-1/4 ${index === 0 ? "rounded-l-full" : ""} ${
+//             index === statusColors.length - 1 ? "rounded-r-full" : ""
+//           } ${statusStep >= index ? color : "bg-gray-200 dark:bg-gray-700"}`}
+//         ></div>
+//       ))}
+//     </div>
+//   );
+// };
 
 export const UpdateStatusButtonDropdown = ({
   orderId,
@@ -330,7 +353,7 @@ export const UpdateStatusButtonDropdown = ({
   const updateStatus = async () => {
     // const ok = await confirm();
 
-    console.log("submit auto");
+    // console.log("submit auto");
 
     if (!isCancelled && !isReturned && !nextStatus) {
       return toast.error(

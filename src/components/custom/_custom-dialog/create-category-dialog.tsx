@@ -1,5 +1,5 @@
 "use client";
-import { createCategory } from "@/actions/category";
+
 import { DialogReused } from "@/components/global-components/dialog-reused";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
@@ -17,6 +17,8 @@ import { FormTextareaControl } from "@/components/global-components/form/form-te
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { API } from "@/actions/client/api-config";
+import { CATEGORY_KEY } from "@/app/key/admin-key";
 
 export const CreateCategoryDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,18 +36,14 @@ export const CreateCategoryDialog = () => {
       if (values.image) {
         formData.append("thumbnail", values.image[0]);
       }
-      const response = await createCategory(formData);
-
-      if (response?.isSuccess) {
+      const response = await API.post("/Categories", formData);
+      if (response) {
         form.reset();
         setIsOpen(false);
         toast.success("Tạo loại sản phẩm thành công")
-        queryClient.invalidateQueries({ queryKey: ["categories"] })
-      } else {
-        toast.error(response?.status == 409 ? "Tên loại sản phẩm đã tồn tại" : "Lỗi hệ thống")
+        queryClient.invalidateQueries({ queryKey: [CATEGORY_KEY.CATEGORY] })
       }
 
-      console.log({ response });
     } catch (error) {
       console.log({ error });
     }
@@ -54,7 +52,7 @@ export const CreateCategoryDialog = () => {
   const title = <div className="text-center">Tạo mới loại sản phẩm</div>;
 
   const trigger = (
-    <Button onClick={() => setIsOpen(true)} variant="outline">
+    <Button className="bg-sky-600 hover:bg-sky-700 text-white hover:text-white/85" onClick={() => setIsOpen(true)} variant="outline">
       <CirclePlus />
       Tạo mới
     </Button>
@@ -88,17 +86,16 @@ export const CreateCategoryDialog = () => {
           label="Ảnh loại sản phẩm"
         />
         <DialogFooter>
-          <DialogClose asChild>
-            <ButtonCustomized
-              className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-              variant="outline"
-              label="Hủy"
-            />
-          </DialogClose>
+          <ButtonCustomized
+            onClick={() => setIsOpen(false)}
+            className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
+            variant="outline"
+            label="Hủy"
+          />
 
           <ButtonCustomized
             type="submit"
-            className="max-w-32 bg-green-500 hover:bg-green-700"
+            className="px-2 min-w-32 max-w-fit bg-sky-600 hover:bg-sky-700"
             variant="secondary"
             disabled={form.formState.isSubmitting}
             label={

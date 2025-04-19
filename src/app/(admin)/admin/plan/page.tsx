@@ -16,6 +16,9 @@ import { API } from "@/actions/client/api-config"
 import DialogProductDetail from "./dialog-product-detail"
 import { useState } from "react"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
+import { REQUEST_KEY } from "@/app/key/admin-key"
 
 export interface Request {
     id: string
@@ -50,8 +53,8 @@ export interface ProductVariant {
 }
 
 const PlanPage = () => {
-    const { data: requests, refetch } = useFetch<ApiResponse<PageResult<Request>>>("/Requests?pageIndex=1&pageSize=20000", [
-        "requests",
+    const { data: requests, refetch, isLoading } = useFetch<ApiResponse<PageResult<Request>>>("/Requests?pageIndex=1&pageSize=20000", [
+        REQUEST_KEY.REQUEST,
     ])
 
     const getStatusBadge = (status: string) => {
@@ -98,8 +101,6 @@ const PlanPage = () => {
             if (response) {
                 toast.success("Phê duyệt thành công")
                 refetch();
-            } else {
-                toast.success("Phê duyệt thất bại")
             }
         } catch (error) {
             console.log({ error })
@@ -231,8 +232,14 @@ const PlanPage = () => {
                     </Button>
                 </Link>
             </div>
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom
+                        data={requests?.value?.items ?? []} columns={columns} searchFiled="name" placeholder="tên"
+                    />
+                }
+            </div>
 
-            <DataTable data={requests?.value?.items ?? []} columns={columns} searchFiled="name" />
             {request !== undefined && <DialogProductDetail
                 isOpen={request !== undefined}
                 onClose={() => setRequest(undefined)}
@@ -246,7 +253,7 @@ const PlanPage = () => {
                     onClose={() => {
                         setRequestRemove(undefined);
                     }}
-                    refreshKey={[["requests"]]}
+                    refreshKey={[[REQUEST_KEY.REQUEST]]}
                     id={requestRemove.id}
                 />
             )}

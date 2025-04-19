@@ -3,14 +3,13 @@
 import { Button } from "@/components/ui/button"
 import { CirclePlus } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@/components/global-components/data-table/data-table"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import Image from "next/image"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import type { ApiResponse } from "@/types/types"
 import Link from "next/link"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useState } from "react"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
 
 interface ProductBatchItem {
     number: number
@@ -21,13 +20,16 @@ interface ProductBatchItem {
     packagingType: string
     quantity: number
     netWeight: number
+    importQuantity: number,
+    exportQuantity: number,
+    remainingQuantity: number,
     preservationMethod: string
     productionDate: string
     expirationDate: string
 }
 
 const InventoryPage = () => {
-    const { data: products } = useFetch<ApiResponse<ProductBatchItem[]>>("/ProductBatches/items")
+    const { data: products, isLoading } = useFetch<ApiResponse<ProductBatchItem[]>>("/ProductBatches/items")
 
     const columns: ColumnDef<ProductBatchItem>[] = [
         {
@@ -63,7 +65,7 @@ const InventoryPage = () => {
             cell: ({ row }) => <div className="text-center">{row.getValue("number")}</div>,
         },
         {
-            accessorKey: "quantity",
+            accessorKey: "remainingQuantity",
             header: "Số lượng",
         },
         {
@@ -101,10 +103,10 @@ const InventoryPage = () => {
         return (
             <div
                 className={`px-2 py-1 w-fit rounded-md font-bold text-center ${remainingDays > 30
-                        ? "bg-green-50 text-green-700"
-                        : remainingDays > 15
-                            ? "bg-yellow-50 text-yellow-700"
-                            : "bg-orange-50 text-orange-700"
+                    ? "bg-green-50 text-green-700"
+                    : remainingDays > 15
+                        ? "bg-yellow-50 text-yellow-700"
+                        : "bg-orange-50 text-orange-700"
                     }`}
             >
                 {remainingDays} ngày
@@ -118,26 +120,25 @@ const InventoryPage = () => {
                 <div className="text-2xl font-semibold leading-none tracking-tight">Danh sách sản phẩm trong kho</div>
                 <div className="grid sm:grid-cols-2 gap-5">
                     <Link href={"/admin/promotion/create"}>
-                        <Button size={"sm"} className="text-white bg-green-500 hover:bg-green-600">
+                        <Button size={"sm"} className="text-white bg-sky-600 hover:bg-sky-700">
                             <CirclePlus className="mr-2 h-4 w-4" />
                             Tạo chương trình khuyến mãi
                         </Button>
                     </Link>
                     <Link href={"/admin/inventory/create"}>
-                        <Button size={"sm"} className="text-white bg-green-500 hover:bg-green-600">
+                        <Button size={"sm"} className="text-white bg-sky-600 hover:bg-sky-700">
                             <CirclePlus className="mr-2 h-4 w-4" />
                             Tạo xuất nhập kho
                         </Button>
                     </Link>
                 </div>
             </div>
-
-
-            <DataTable
-                data={products?.value ?? []}
-                columns={columns}
-                searchFiled="productName"
-            />
+            <div className="mt-8">
+                <div className="bg-white rounded-lg shadow border">
+                    {isLoading ? <DataTableSkeleton /> :
+                        <DataTableCustom data={products?.value ?? []} columns={columns} placeholder="tên sản phẩm" searchFiled="productName" />}
+                </div>
+            </div>
         </div>
     )
 }

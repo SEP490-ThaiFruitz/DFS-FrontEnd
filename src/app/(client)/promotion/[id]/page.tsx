@@ -7,12 +7,14 @@ import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatVND } from "@/lib/format-currency";
-import { Calendar, Clock, Percent, Tag } from "lucide-react";
+import { Calendar, Clock, Percent, ShoppingCart, Tag } from "lucide-react";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import Image from "next/image";
 import { formatDistance } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
+import { useCartStore } from "@/hooks/use-cart-store";
 
 interface ProductVariant {
     productId: string;
@@ -39,7 +41,9 @@ interface Promotion {
 }
 
 const PromotionPage = () => {
+    const cartActions = useCartStore((state) => state);
     const { id }: { id: string } = useParams();
+
     const { data: promotion } = useFetch<ApiResponse<Promotion>>(
         `/Promotions/${id}`,
         ["Promotion", id]
@@ -54,6 +58,38 @@ const PromotionPage = () => {
     const timeRemaining = isActive
         ? formatDistance(endDate, now, { locale: vi, addSuffix: false })
         : "Đã kết thúc";
+
+    const handleAddToCart = (productVariant: ProductVariant) => {
+        cartActions.addOrder({
+            id: productVariant.productId,
+            variant: {
+                productVariantId: productVariant.productVariantId,
+                netWeight: productVariant.netWeight,
+                price: productVariant.price,
+                packageType: productVariant.packagingType,
+                discountPrice: productVariant.discountPrice,
+                stockQuantity: productVariant.quantity - productVariant.quantitySold,
+                promotion: {
+                    startDate: promotion.value?.startDate as string,
+                    endDate: promotion.value?.endDate as string,
+                    percentage: promotion.value?.percentage as number,
+                    price: productVariant.discountPrice
+                },
+                imageVariant: productVariant.image,
+            },
+            categories: [],
+            description: "",
+            quantitySold: 0,
+            rating: 0,
+            type: "single",
+            mainImageUrl: productVariant.image,
+            name: productVariant.productName,
+        });
+
+        toast.success(
+            `Đã thêm vào giỏ hàng ${1} ${productVariant.productName} - ${productVariant.packagingType}`
+        );
+    };
 
     return (
         <div className="md:p-32">
@@ -169,8 +205,15 @@ const PromotionPage = () => {
                                         </div>
 
                                         {isActive && (
-                                            <Button className="w-full" disabled={remaining <= 0 || !isActive}>
-                                                {remaining > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}
+                                            <Button
+                                                className="w-full h-12 text-lg gap-2 bg-sky-600 hover:bg-sky-700 shadow-md hover:shadow-lg transition-all"
+                                                onClick={() => handleAddToCart(variant)}
+                                            >
+                                                {remaining > 0 ? <>
+                                                    <ShoppingCart className="size-8" />
+                                                    Thêm vào giỏ hàng
+                                                </> : "Hết hàng"}
+
                                             </Button>
                                         )}
                                     </CardContent>
@@ -180,7 +223,7 @@ const PromotionPage = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

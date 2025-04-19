@@ -3,14 +3,19 @@
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import ImagePreview from "@/components/custom/_custom-image/image-preview"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import { Checkbox } from "@/components/ui/checkbox"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { formatVND } from "@/lib/format-currency"
+import { cn } from "@/lib/utils"
 import type { ApiResponse } from "@/types/types"
-import { AlertTriangle, ChevronDown, ChevronRight, MinusCircle, PlusCircle, Search } from "lucide-react"
+import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays, subMonths, subWeeks, subYears } from "date-fns"
+import { AlertTriangle, CalendarIcon, ChevronDown, ChevronRight, MinusCircle, PlusCircle, Search } from "lucide-react"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 
 interface ProductVariant {
@@ -21,6 +26,8 @@ interface ProductVariant {
   price: number,
   lowQuantity: number,
   warningPercentage: number,
+  soldQuantity: number,
+  revenue: number,
 }
 
 interface Product {
@@ -35,11 +42,132 @@ interface ProductSelectionProps {
   isUpdate: boolean
 }
 
+type DateRange = {
+  from: Date | undefined
+  to: Date | undefined
+}
+
+type DateRangeOption = {
+  label: string
+  getValue: () => DateRange
+  getValueOld: () => DateRange
+}
+
+
 const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
-  const { data: apiResponse } = useFetch<ApiResponse<Product[]>>(
-    '/Products/select-products',
+  const today = new Date()
+  const [date, setDate] = useState<DateRange>({
+    from: new Date(),
+    to: new Date(),
+  })
+
+  const [dateOld, setDateOld] = useState<DateRange>({
+    from: new Date(),
+    to: new Date(),
+  })
+
+  const [isCustomRange, setIsCustomRange] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+  const [selectedOption, setSelectedOption] = useState("3days")
+
+  const dateRangeOptions: Record<string, DateRangeOption> = {
+    "3days": {
+      label: "3 ngày",
+      getValue: () => ({
+        from: subDays(today, 2),
+        to: today,
+      }),
+      getValueOld: () => ({
+        from: subDays(today, 5),
+        to: subDays(today, 3),
+      }),
+    },
+    thisWeek: {
+      label: "Tuần này",
+      getValue: () => ({
+        from: startOfWeek(today, { weekStartsOn: 1 }),
+        to: endOfWeek(today, { weekStartsOn: 1 }),
+      }),
+      getValueOld: () => ({
+        from: startOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }),
+        to: endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }),
+      }),
+
+    },
+    thisMonth: {
+      label: "Tháng này",
+      getValue: () => ({
+        from: startOfMonth(today),
+        to: endOfMonth(today),
+      }),
+      getValueOld: () => ({
+        from: startOfMonth(subMonths(today, 1)),
+        to: endOfMonth(subMonths(today, 1)),
+      }),
+    },
+    custom: {
+      label: "Từ ngày đến ngày",
+      getValue: () => date,
+      getValueOld: () => ({
+        from: subYears(startOfMonth(subMonths(today, 1)), 1),
+        to: subYears(endOfMonth(subMonths(today, 1)), 1),
+      }),
+    },
+  }
+
+  useEffect(() => {
+    if (selectedOption !== "custom") {
+      setDate(dateRangeOptions[selectedOption].getValue())
+      setDateOld(dateRangeOptions[selectedOption].getValueOld())
+    }
+  }, [selectedOption])
+
+  const handleOptionSelect = (option: string) => {
+    setSelectedOption(option)
+    setIsCustomRange(option === "custom")
+    if (option === "custom") {
+      setCalendarOpen(true)
+    } else {
+      setCalendarOpen(false)
+    }
+  }
+
+  const formatDateRange = () => {
+    if (!date.from) return "Chọn ngày"
+    if (!date.to) return format(date.from, "dd/MM/yyyy")
+    return `${format(date.from, "dd/MM/yyyy")} - ${format(date.to, "dd/MM/yyyy")}`
+  }
+
+  const formattedUrl = useMemo(() => {
+    if (!date?.from || !date?.to) return '/Products/select-products';
+    const from = format(date.from, "yyyy-MM-dd");
+    const to = format(date.to, "yyyy-MM-dd");
+    return `/Products/select-products?startDate=${from}&endDate=${to}`;
+  }, [date]);
+
+  const { data: apiResponse, refetch } = useFetch<ApiResponse<Product[]>>(
+    formattedUrl,
     ["Combos", "Products"],
-  )
+    { enabled: !!formattedUrl }
+  );
+
+  const formattedOldUrl = useMemo(() => {
+    if (!dateOld?.from || !dateOld?.to) return '/Products/select-products';
+    const from = format(dateOld.from, "yyyy-MM-dd");
+    const to = format(dateOld.to, "yyyy-MM-dd");
+    return `/Products/select-products?startDate=${from}&endDate=${to}`;
+  }, [dateOld]);
+
+  const { data: apiOldResponse, refetch: refreshOld } = useFetch<ApiResponse<Product[]>>(
+    formattedOldUrl,
+    ["Combos", "Products-Old"],
+    { enabled: !!formattedOldUrl }
+  );
+
+  useEffect(() => {
+    refreshOld()
+    refetch()
+  }, [date])
 
   const products = apiResponse?.value || []
   const defaultProducrs = form.getValues("requestItems")
@@ -231,6 +359,51 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
           Xóa bộ lọc
         </Button>
       </div>
+      <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full justify-between sm:w-auto">
+              {dateRangeOptions[selectedOption].label}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={() => handleOptionSelect("3days")}>3 ngày</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOptionSelect("thisWeek")}>Tuần này</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOptionSelect("thisMonth")}>Tháng này</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOptionSelect("custom")}>Từ ngày đến ngày</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Popover open={isCustomRange && calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn("w-full justify-start text-left sm:w-auto", !date.from && "text-muted-foreground")}
+              onClick={() => isCustomRange && setCalendarOpen(true)}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {formatDateRange()}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date.from}
+              selected={date}
+              onSelect={(newDate) => {
+                setDate(newDate as DateRange)
+                if (newDate?.to) {
+                  setCalendarOpen(false)
+                }
+              }}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+
       {form.formState.errors.requestItems && (
         <div className="text-sm text-red-500 mt-1">{form.formState.errors.requestItems.message as string}</div>
       )}
@@ -249,9 +422,12 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                   aria-label="Chọn tất cả"
                 />
               </TableHead>
-              <TableHead className="w-12">Ảnh</TableHead>
+              <TableHead className="w-24">Ảnh</TableHead>
               <TableHead>Tên sản phẩm / Biến thể</TableHead>
               <TableHead className="text-right">Giá gốc</TableHead>
+              <TableHead className="text-right">Đã bán</TableHead>
+              <TableHead className="text-right">Số tiền</TableHead>
+              <TableHead className="text-right">Tăng trưởng</TableHead>
               <TableHead className="text-center">Số lượng</TableHead>
               <TableHead className="text-center">Cảnh báo</TableHead>
             </TableRow>
@@ -283,7 +459,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 p-0 mr-1"
+                          className="h-20 w-20 p-0 mr-1"
                           onClick={() => toggleProductExpansion(product.productId)}
                         >
                           {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -299,11 +475,14 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                     <TableCell>
                       <ImagePreview
                         images={[product.image]}
-                        initialWidth={40}
-                        initialHeight={40}
+                        initialWidth={80}
+                        initialHeight={80}
                       />
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="text-right">-</TableCell>
+                    <TableCell className="text-right">-</TableCell>
+                    <TableCell className="text-right">-</TableCell>
                     <TableCell className="text-right">-</TableCell>
                     <TableCell className="text-right">-</TableCell>
                     <TableCell className="text-right">
@@ -339,17 +518,44 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                           {variant.image ? (
                             <ImagePreview
                               images={[variant.image]}
-                              initialWidth={40}
-                              initialHeight={40}
+                              initialWidth={80}
+                              initialHeight={80}
                             />
                           ) : (
-                            <div className="w-10 h-10 bg-muted rounded-md"></div>
+                            <div className="h-20 w-20  bg-muted rounded-md"></div>
                           )}
                         </TableCell>
                         <TableCell className="pl-8 text-sm">
                           {variant.packageType} - {variant.netWeight}g
                         </TableCell>
                         <TableCell className="text-right">{formatVND(variant.price)}</TableCell>
+                        <TableCell className="text-center">{variant.soldQuantity}</TableCell>
+                        <TableCell className="text-center">{formatVND(variant.revenue)}</TableCell>
+                        <TableCell className="text-center">
+                          {(() => {
+                            const oldVariant = apiOldResponse?.value
+                              ?.find((p) => p.productId === product.productId)
+                              ?.productVariants.find((v) => v.productVariantId === variant.productVariantId)
+
+                            if (!oldVariant || oldVariant.revenue === 0) {
+                              return <span className={`font-medium ${variant.revenue > 0 ? "text-green-500" : "text-red-500"}`}>
+                                {variant.revenue > 0 ? "+100%" : "0%"}
+                              </span>
+                            }
+                            console.log(oldVariant.revenue)
+                            console.log(variant.revenue)
+
+                            const growthRate = ((variant.revenue - oldVariant.revenue) / oldVariant.revenue) * 100
+                            const formattedGrowth = growthRate.toFixed(1)
+
+                            return (
+                              <span className={`font-medium ${growthRate >= 0 ? "text-green-500" : "text-red-500"}`}>
+                                {growthRate >= 0 ? "+" : ""}
+                                {formattedGrowth}%
+                              </span>
+                            )
+                          })()}
+                        </TableCell>
                         <TableCell className="text-center">
                           {isSelected && (
                             <div className="flex items-center justify-center gap-2">

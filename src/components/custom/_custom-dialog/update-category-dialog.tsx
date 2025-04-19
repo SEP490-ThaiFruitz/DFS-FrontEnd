@@ -1,5 +1,4 @@
 "use client";
-import { updateCategory } from "@/actions/category";
 import { DialogReused } from "@/components/global-components/dialog-reused";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
@@ -18,6 +17,8 @@ import { FormFileControl } from "@/components/global-components/form/form-file-c
 import { Category } from "@/features/admin/category/column";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { API } from "@/actions/client/api-config";
+import { CATEGORY_KEY } from "@/app/key/admin-key";
 
 interface UpdateCategoryDialogProps {
   category: Category;
@@ -44,14 +45,12 @@ export const UpdateCategoryDialog = ({
         formData.append("thumbnail", values.image[0]);
       }
 
-      const response = await updateCategory(formData);
-      if (response?.isSuccess) {
+      const response = await API.update("/Categories", formData);;
+      if (response) {
         form.reset();
         onClose();
-        queryClient.invalidateQueries({ queryKey: ["categories"] })
+        queryClient.invalidateQueries({ queryKey: [CATEGORY_KEY.CATEGORY] })
         toast.success("Cập nhập loại sản phẩm thành công")
-      } else {
-        toast.error(response?.status == 409 ? "Tên loại sản phẩm đã tồn tại" : "Lỗi hệ thống")
       }
 
       console.log({ response });
@@ -100,24 +99,23 @@ export const UpdateCategoryDialog = ({
           label="Ảnh loại sản phẩm"
         />
         <DialogFooter>
-          <DialogClose asChild>
-            <ButtonCustomized
-              className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-              variant="outline"
-              label="Hủy"
-            />
-          </DialogClose>
+          <ButtonCustomized
+            onClick={onClose}
+            className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
+            variant="outline"
+            label="Hủy"
+          />
 
           <ButtonCustomized
             type="submit"
-            className="max-w-32 bg-green-500 hover:bg-green-700"
+            className="px-2 min-w-32 max-w-fit bg-sky-600 hover:bg-sky-700"
             variant="secondary"
             disabled={form.formState.isSubmitting}
             label={
               form.formState.isSubmitting ? (
                 <WaitingSpinner
                   variant="pinwheel"
-                  label="Đang tạo..."
+                  label="Đang cập nhật..."
                   className="font-semibold "
                   classNameLabel="font-semibold text-sm"
                 />

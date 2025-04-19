@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { CardContent } from '@/components/ui/card'
 import { FormItem, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { NUTRITIONS_SELECT, QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
+import { QUANTITY_SELECT } from '@/features/admin/admin-lib/admin-lib';
 import { formatNumberWithUnit } from '@/lib/format-currency';
 import { ApiResponse } from '@/types/types';
 import { FromNutrionFact } from '@/zod-safe-types/nutrition-safe-types'
@@ -76,6 +76,7 @@ const NutritionFactTab = ({ nutritionFacts: intialNutritionFacts, productId, pro
         form.setValue("nutritionFactId", fact.id?.toString())
         form.setValue("amount", fact?.amount.toString())
         form.setValue("nutrientId", fact?.nutrient?.id.toString() ?? "1")
+        handleUnit();
     }
     const queryClient = useQueryClient();
 

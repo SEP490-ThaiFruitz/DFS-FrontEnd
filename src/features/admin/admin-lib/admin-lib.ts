@@ -205,16 +205,11 @@ export const QUANTITY_SELECT: { label: string, value: string }[] = Array.from({ 
     value: `${index * 10}`
 }));
 
-export const NUTRITIONS_SELECT = [
-    { Id: 1, Name: "Tổng chất béo", Unit: "g" },
-    { Id: 2, Name: "Chất béo bão hòa", Unit: "g" },
-    { Id: 3, Name: "Chất béo chuyển hóa", Unit: "g" },
-    { Id: 4, Name: "Cholesterol", Unit: "mg" },
-    { Id: 5, Name: "Natri", Unit: "mg" },
-    { Id: 6, Name: "Tổng carbohydrate", Unit: "g" },
-    { Id: 7, Name: "Chất xơ", Unit: "g" },
-    { Id: 8, Name: "Tổng đường", Unit: "g" },
-    { Id: 9, Name: "Đường bổ sung", Unit: "g" },
-    { Id: 10, Name: "Chất đạm", Unit: "g" },
+export const EXPORTTYPE_SELECT = [
+    { Id: "Sale", Name: "Lấy hàng để bán cho khách" },
+    { Id: "ReturnToSupplier", Name: "Trả hàng về cho nhà cung cấp" },
+    { Id: "Damaged", Name: "Hàng bị hỏng cần xuất khỏi kho" },
+    { Id: "Expired", Name: "Hàng hết hạn sử dụng" },
+    { Id: "Other", Name: "Lý do khác" }
 ];
 

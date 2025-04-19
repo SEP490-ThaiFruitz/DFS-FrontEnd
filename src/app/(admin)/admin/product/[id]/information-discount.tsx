@@ -1,6 +1,5 @@
 "use client"
 
-import { DataTable } from "@/components/global-components/data-table/data-table"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -26,6 +25,7 @@ import { WaitingSpinner } from "@/components/global-components/waiting-spinner"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 
 
 interface DiscountProps {
@@ -213,7 +213,11 @@ const InformationDiscount = ({ productVariantId, discounts, productId }: Readonl
                             Tạo giảm giá
                         </Button>
                     </div>
-                    <DataTable searchFiled="description" columns={columns} data={discounts} />
+
+                    <div className="bg-white rounded-lg shadow border">
+                        <DataTableCustom data={discounts} columns={columns} placeholder="mô tả" searchFiled="description" />
+                    </div>
+
                     {discountRemove && <DeleteDialog
                         id={discountRemove.id}
                         name=""
@@ -317,7 +321,7 @@ const InformationDiscount = ({ productVariantId, discounts, productId }: Readonl
                                     </div>
                                     <ButtonCustomized
                                         type="submit"
-                                        className="mb-5 sm:mb-0 sm:max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
+                                        className="min-w-32  mb-5 sm:mb-0 sm:max-w-fit px-2 !h-10 !rounded-md bg-sky-600 hover:bg-sky-700"
                                         variant="secondary"
                                         onClick={form.handleSubmit(onSubmit)}
                                         disabled={form.formState.isSubmitting}

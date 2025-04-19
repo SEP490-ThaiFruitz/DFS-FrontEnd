@@ -1,8 +1,7 @@
 "use client"
 
-import { CirclePlus, Edit, Pencil, Trash2, } from 'lucide-react'
+import { CirclePlus, Pencil, Trash2, } from 'lucide-react'
 import React, { useState } from 'react'
-import { DataTable } from '@/components/global-components/data-table/data-table';
 import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
@@ -12,6 +11,9 @@ import { DeleteDialog } from '@/components/custom/_custom-dialog/delete-dialog';
 import { API } from '@/actions/client/api-config';
 import ImagePreview from '@/components/custom/_custom-image/image-preview';
 import DialogEvent from './event-dialog';
+import { DataTableSkeleton } from '@/components/global-components/custom-skeleton/data-table-skeleton';
+import { DataTableCustom } from '@/components/global-components/data-table/data-table-custom';
+import { EVENT_KEY } from '@/app/key/admin-key';
 
 export interface Event {
     id: string,
@@ -24,7 +26,7 @@ export interface Event {
 
 
 const EventPage = () => {
-    const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", ["events"])
+    const { data: events, isLoading } = useFetch<ApiResponse<Event[]>>("/Events", [EVENT_KEY.EVENT])
     const [eventRemove, setEventRemove] = useState<Event | undefined>(undefined)
     const [eventEdit, setEventEdit] = useState<Event | undefined>(undefined)
     const [formEvent, setFormEvent] = useState<boolean>(false)
@@ -116,14 +118,20 @@ const EventPage = () => {
                         setFormEvent(true)
                     }}
                     size={"sm"}
-                    className='text-white bg-green-500 hover:bg-green-600'>
+                    className='text-white bg-sky-600 hover:bg-sky-700'>
                     <CirclePlus />
                     Tạo mới
                 </Button>
 
             </div>
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom
+                        data={events?.value ?? []} columns={columns} searchFiled="name" placeholder='tên'
+                    />
+                }
+            </div>
 
-            <DataTable data={events?.value ?? []} columns={columns} searchFiled="name" />
             {eventRemove && (
                 <DeleteDialog
                     deleteFunction={handleDelete}
@@ -132,7 +140,7 @@ const EventPage = () => {
                     onClose={() => {
                         setEventRemove(undefined);
                     }}
-                    refreshKey={[["events"]]}
+                    refreshKey={[[EVENT_KEY.EVENT]]}
                     id={eventRemove.id}
                 />
             )}

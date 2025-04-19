@@ -1,8 +1,7 @@
 "use client"
+
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
-import { DataTable } from "@/components/global-components/data-table/data-table"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import type { ApiResponse } from "@/types/types"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Eye, CirclePlus, Trash2, RotateCw } from "lucide-react"
@@ -11,6 +10,9 @@ import Link from "next/link"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
 import { useState } from "react"
 import { API } from "@/actions/client/api-config"
+import { PROMOTION_KEY } from "@/app/key/admin-key"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 
 interface Promotion {
     id: string
@@ -29,7 +31,7 @@ interface Promotion {
 }
 
 const PromotionPage = () => {
-    const { data: promotions } = useFetch<ApiResponse<Promotion[]>>("/Promotions/manage", ["promotions"])
+    const { data: promotions, isLoading } = useFetch<ApiResponse<Promotion[]>>("/Promotions/manage", [PROMOTION_KEY.LIST_PROMOTION])
     const [promotion, setPromotion] = useState<Promotion | undefined>(undefined)
 
     const columns: ColumnDef<Promotion>[] = [
@@ -78,7 +80,11 @@ const PromotionPage = () => {
             header: "Trạng thái",
             cell: ({ row }) => {
                 const isActive = !row.original.isDeleted
-                return <Badge variant={isActive ? "default" : "destructive"}>{isActive ? "Hoạt động" : "Đã xóa"}</Badge>
+                return isActive ? (
+                    <div className="bg-green-50 text-green-600 w-fit py-1 px-2 rounded-lg">Hoạt động</div>
+                ) : (
+                    <div className="bg-red-50 text-red-600 w-fit py-1 px-2 rounded-lg">Đã ẩn</div>
+                )
             },
         },
         {
@@ -124,14 +130,23 @@ const PromotionPage = () => {
             <div className='flex justify-between items-center'>
                 <div className='text-2xl font-semibold leading-none tracking-tight'>Chương trình khuyến mãi</div>
                 <Link href="/admin/promotion/create">
-                    <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+                    <Button size={"sm"} className='text-white bg-sky-600 hover:bg-sky-700'>
                         <CirclePlus />
                         Tạo mới
                     </Button>
                 </Link>
             </div>
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom
+                        data={promotions?.value ?? []}
+                        columns={columns}
+                        placeholder="tên chương trình"
+                        searchFiled="name"
+                    />
+                }
+            </div>
 
-            <DataTable<Promotion> data={promotions?.value ?? []} columns={columns} searchFiled="name" />
             <DeleteDialog
                 id={promotion?.id ?? ""}
                 isOpen={promotion !== undefined}
@@ -139,7 +154,7 @@ const PromotionPage = () => {
                 name={promotion?.name}
                 message={promotion?.isDeleted === false ? "Ẩn" : "Hiện"}
                 deleteFunction={removePromotion}
-                refreshKey={[["promotions"]]}
+                refreshKey={[[PROMOTION_KEY.LIST_PROMOTION]]}
             />
         </div>
     )

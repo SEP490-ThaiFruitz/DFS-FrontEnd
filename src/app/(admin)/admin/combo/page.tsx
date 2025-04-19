@@ -4,7 +4,9 @@ import { API } from "@/actions/client/api-config"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
 import ImagePreview from "@/components/custom/_custom-image/image-preview"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
 import { DataTable } from "@/components/global-components/data-table/data-table"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatVND } from "@/lib/format-currency"
@@ -22,7 +24,7 @@ interface Combo {
     capacity: number,
     quantity: number,
     price: number,
-    origin: number,
+    save: number,
     comboType: string,
     event: string,
     isLocked: boolean,
@@ -32,7 +34,7 @@ interface Combo {
 }
 
 function ComboPage() {
-    const { data: combos } = useFetch<ApiResponse<Combo[]>>("/Combos/manage", ["combos"])
+    const { data: combos, isLoading } = useFetch<ApiResponse<Combo[]>>("/Combos/manage", ["combos"])
     const [comboRemove, setComboRemove] = useState<Combo | undefined>(undefined)
 
     const columns: ColumnDef<Combo>[] = [
@@ -78,22 +80,27 @@ function ComboPage() {
             accessorKey: "price",
             size: 200,
             header: "Giá",
-            cell: ({ row }) => (
-                <div className="flex flex-col space-y-3">
-                    {row.original.origin > row.original.price ? (
-                        <>
-                            <div>
-                                <span>Giá niêm yết:</span> <span className="font-bold">{formatVND(row.original.price)}</span>
-                            </div>
-                            <div>
-                                <span>Giá gốc:</span> <span className="font-bold">{formatVND(row.original.origin)}</span>
-                            </div>
-                        </>
-                    ) : (
-                        <span className="font-bold">{formatVND(row.original.price)}</span>
-                    )}
-                </div>
-            )
+            cell: ({ row }) => {
+
+                const originPrice = row.original.price + row.original.save;
+
+                return (
+                    <div className="flex flex-col space-y-3">
+                        {originPrice > row.original.price ? (
+                            <>
+                                <div>
+                                    <span>Giá niêm yết:</span> <span className="font-bold">{formatVND(row.original.price)}</span>
+                                </div>
+                                <div>
+                                    <span>Giá gốc:</span> <span className="font-bold">{formatVND(originPrice)}</span>
+                                </div>
+                            </>
+                        ) : (
+                            <span className="font-bold">{formatVND(row.original.price)}</span>
+                        )}
+                    </div>
+                )
+            }
         },
         {
             accessorKey: "comboType",
@@ -142,7 +149,7 @@ function ComboPage() {
                         </Button>
                     </Link>
 
-                    {row.original.isDeleted ? <Button
+                    {!row.original.isCustomer ? row.original.isDeleted ? <Button
                         variant="outline"
                         onClick={() => setComboRemove(row.original)}
                         className="h-6 w-6 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
@@ -157,7 +164,7 @@ function ComboPage() {
                         >
                             <Trash2 />
                         </Button>
-                    }
+                        : <></>}
                 </div>
             ),
         },
@@ -172,14 +179,22 @@ function ComboPage() {
             <div className='flex justify-between items-center'>
                 <div className='text-2xl font-semibold leading-none tracking-tight'>Danh sách gói quà</div>
                 <Link href="/admin/combo/create">
-                    <Button size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+                    <Button size={"sm"} className='text-white bg-sky-600 hover:bg-sky-700'>
                         <CirclePlus />
                         Tạo mới
                     </Button>
                 </Link>
             </div>
-
-            <DataTable data={combos?.value ?? []} columns={columns} searchFiled="name" />
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom
+                        data={combos?.value ?? []}
+                        columns={columns}
+                        placeholder="tên gói quà"
+                        searchFiled="name"
+                    />
+                }
+            </div>
             {comboRemove && (
                 <DeleteDialog
                     deleteFunction={handleDelete}

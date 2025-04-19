@@ -24,6 +24,7 @@ import {
   History,
   CircleArrowOutDownRight,
   Import,
+  ChartPie,
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -57,20 +58,37 @@ const data = {
         },
       ],
     },
+    // {
+    //   title: "Bài viết",
+    //   url: "/admin/blog",
+    //   icon: BookOpen,
+    //   items: [
+    //     {
+    //       title: "Loại bài viết",
+    //       url: "/admin/blog/category",
+    //       icon: BookKey,
+    //     },
+    //     {
+    //       title: "Bài viết",
+    //       url: "/admin/blog",
+    //       icon: BookOpenText,
+    //     },
+    //   ],
+    // },
     {
-      title: "Bài viết",
-      url: "/admin/blog",
-      icon: BookOpen,
+      title: "Kho",
+      url: "/admin/inventory",
+      icon: Warehouse,
       items: [
         {
-          title: "Loại bài viết",
-          url: "/admin/blog/category",
-          icon: BookKey,
+          title: "Sản phẩm",
+          url: "/admin/inventory",
+          icon: Warehouse,
         },
         {
-          title: "Bài viết",
-          url: "/admin/blog",
-          icon: BookOpenText,
+          title: "Lịch sử kho",
+          url: "/admin/picking-item",
+          icon: History,
         },
       ],
     },
@@ -96,11 +114,11 @@ const data = {
       url: "/admin/settings",
       icon: Settings,
       items: [
-        {
-          title: "Thanh trượt",
-          url: "/admin/settings/sliders",
-          icon: GalleryHorizontal,
-        },
+        // {
+        //   title: "Thanh trượt",
+        //   url: "/admin/settings/sliders",
+        //   icon: GalleryHorizontal,
+        // },
         {
           title: "Thanh toán",
           url: "/admin/settings/payments",
@@ -115,6 +133,11 @@ const data = {
     },
   ],
   projects: [
+    {
+      name: "Báo cáo biến thể",
+      url: "/admin/dashboard",
+      icon: ChartPie,
+    },
     {
       name: "Loại sản phẩm",
       url: "/admin/category",
@@ -149,11 +172,6 @@ const data = {
       name: "Sự kiện",
       url: "/admin/event",
       icon: CalendarRange,
-    },
-    {
-      name: "Kho",
-      url: "/admin/inventory",
-      icon: Warehouse,
     },
     {
       name: "Kế hoạch",

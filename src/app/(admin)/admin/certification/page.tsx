@@ -1,10 +1,8 @@
 "use client"
 
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
-import { DataTable } from "@/components/global-components/data-table/data-table"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import { Button } from "@/components/ui/button"
 import { CirclePlus, Eye, Pencil, Trash2 } from "lucide-react"
@@ -14,6 +12,8 @@ import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
 import { API } from "@/actions/client/api-config"
 import FormCertification from "./form-certifcation"
 import { CertificationDialog } from "./dialog-view-detail"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 
 export interface Certification {
     id: number
@@ -108,20 +108,6 @@ const CertificationPage = () => {
         },
     ]
 
-    if (isLoading) {
-        return (
-            <div className="m-10 space-y-4">
-                <Skeleton className="h-8 w-64" />
-                <div className="space-y-2">
-                    {Array(5)
-                        .fill(0)
-                        .map((_, i) => (
-                            <Skeleton key={i} className="h-16 w-full" />
-                        ))}
-                </div>
-            </div>
-        )
-    }
 
     const handleDelete = async (id: string) => {
         return await API.remove(`/Certifications/${id}`)
@@ -131,13 +117,18 @@ const CertificationPage = () => {
         <div className="m-10">
             <div className="mb-6 flex items-center justify-between">
                 <div className="text-2xl font-semibold leading-none tracking-tight">Danh sách chứng chỉ</div>
-                <Button onClick={() => setIsCreate(true)} size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+                <Button onClick={() => setIsCreate(true)} size={"sm"} className='text-white bg-sky-600 hover:bg-sky-700'>
                     <CirclePlus />
                     Tạo chứng chỉ
                 </Button>
             </div>
-            <DataTable data={certifications ?? []} columns={columns} searchFiled="name" />
-
+            <div className="mt-8 bg-white rounded-lg shadow border">
+                {isLoading ? <DataTableSkeleton /> :
+                    <DataTableCustom
+                        data={certifications ?? []} columns={columns} searchFiled="name" placeholder="tên chứng chỉ"
+                    />
+                }
+            </div>
             {certificationRemove && (
                 <DeleteDialog
                     deleteFunction={handleDelete}

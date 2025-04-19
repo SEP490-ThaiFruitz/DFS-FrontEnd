@@ -2,7 +2,8 @@
 
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
 import { WALLET_KEY } from '@/app/key/admin-key'
-import { DataTable } from '@/components/global-components/data-table/data-table'
+import { DataTableSkeleton } from '@/components/global-components/custom-skeleton/data-table-skeleton'
+import { DataTableCustom } from '@/components/global-components/data-table/data-table-custom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatVND } from '@/lib/format-currency'
 import { formatVietnamesePhoneNumber } from '@/lib/format-phone-number'
@@ -32,6 +33,7 @@ interface WallletTransaction {
 const WalletPage = () => {
     const {
         data: wallletTransactions,
+        isLoading
     } = useFetch<ApiResponse<PageResult<WallletTransaction>>>(`/Wallets?pageIndex=1&pageSize=10000`, [WALLET_KEY.WALLET_TRANSACTION])
 
     const transactionTypeColors: Record<string, { color: string; text: string }> = {
@@ -83,10 +85,11 @@ const WalletPage = () => {
             accessorKey: "amount",
             header: "Số tiền",
             cell: ({ row }) => {
+                const type = row.original.transactionType
                 const amount = row.original.amount
                 return (
-                    <span className={`font-medium ${amount < 0 ? "text-red-500" : "text-green-500"}`}>
-                        {formatVND(amount)}
+                    <span className={`font-medium ${(type === "Buy" || type === "Withdrawals") ? "text-red-500" : "text-green-500"}`}>
+                        {(type === "Buy" || type === "Withdrawals") ? "-" : "+"}   {formatVND(amount)}
                     </span>
                 )
             },
@@ -122,8 +125,12 @@ const WalletPage = () => {
     return (
         <div className="m-10">
             <div className="text-2xl font-semibold leading-none tracking-tight mb-6">Danh sách giao dịch ví</div>
-
-            <DataTable data={wallletTransactions?.value?.items ?? []} columns={columns} searchFiled="content" />
+            <div className="mt-8">
+                <div className="bg-white rounded-lg shadow border">
+                    {isLoading ? <DataTableSkeleton /> :
+                        <DataTableCustom data={wallletTransactions?.value?.items ?? []} columns={columns} placeholder="nội dung" searchFiled="content" />}
+                </div>
+            </div>
         </div>
     )
 }

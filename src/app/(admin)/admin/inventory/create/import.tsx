@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { FormValues } from "@/components/global-components/form/form-values"
 import { FormSelectControl } from "@/components/global-components/form/form-select-control"
 import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control"
-import { Button } from "@/components/ui/button"
 import { useEffect } from "react"
 import { FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { FancySelect } from "@/components/custom/_custom_select/select"
@@ -31,7 +30,8 @@ interface ProductBatchItem {
     packagingType: string
     netWeight: number
     quantity: number
-    remaining: number
+    importQuantity: number,
+    exportQuantity: number,
     preservationMethod: string
     productionDate: string
     expirationDate: string
@@ -80,8 +80,19 @@ const ImportTab = () => {
         })) || []
     const onSubmit = async (values: z.infer<typeof ImportWareSafeTypes>) => {
         try {
+            const productBatchSelected = productBatch?.value?.productBatchItems?.find(
+                (item: ProductBatchItem) => item.id.toString() === values.productBatchItemId
+            );
+
+            if (
+                productBatchSelected &&
+                (productBatchSelected.importQuantity + Number(values.quantity)) > Number(productBatchSelected.quantity)
+            ) {
+                toast.error(`Tổng số lượng nhập đã vượt quá giới hạn cho lô hàng (${productBatchSelected.importQuantity} / ${productBatchSelected.quantity})`);
+                return;
+            }
             const response = await API.post("/ProductBatches/pickingitems", {
-                productBatchItemId: values.productBatchId,
+                productBatchItemId: values.productBatchItemId,
                 orderId: values.orderId?.trim() === "" ? null : values.orderId,
                 quantity: values.quantity,
                 type: "IMPORT",
@@ -176,7 +187,7 @@ const ImportTab = () => {
                     <CardFooter className="flex justify-between">
                         <ButtonCustomized
                             type="submit"
-                            className="max-w-32 bg-green-500 hover:bg-green-700"
+                            className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
                             variant="secondary"
                             disabled={
                                 form.formState.isSubmitting

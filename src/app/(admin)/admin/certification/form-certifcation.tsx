@@ -148,7 +148,7 @@ const FormCertification = ({ certification, onClose, isOpen }: Readonly<FormCert
                         />
                         <ButtonCustomized
                             type="submit"
-                            className="max-w-fit bg-green-700 hover:bg-green-800"
+                            className="px-2 min-w-32 max-w-fit bg-sky-600 hover:bg-sky-700"
                             variant="secondary"
                             disabled={form.formState.isSubmitting}
                             label={

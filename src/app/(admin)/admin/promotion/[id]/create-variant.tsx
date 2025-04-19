@@ -523,7 +523,7 @@ const CreateVariant = ({ onClose, promotionId, percentage, startDate, endDate, p
                 </Button>
                 <ButtonCustomized
                     type="submit"
-                    className="max-w-fit px-2 !h-10 !rounded-md bg-green-500 hover:bg-green-700"
+                    className="min-w-32 max-w-fit px-2 !h-10 !rounded-md bg-sky-600 hover:bg-sky-700"
                     variant="secondary"
                     onClick={form.handleSubmit(onSubmit)}
                     disabled={form.formState.isSubmitting}

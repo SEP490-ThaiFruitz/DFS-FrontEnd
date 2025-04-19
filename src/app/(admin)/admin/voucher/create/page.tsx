@@ -1,5 +1,5 @@
 "use client";
-import { createVoucher } from "@/actions/voucher";
+import { API } from "@/actions/client/api-config";
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { FancySelect } from "@/components/custom/_custom_select/select";
 import { FormDateControl } from "@/components/global-components/form/form-date-control";
@@ -14,7 +14,6 @@ import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { QUANTITY_SELECT } from "@/features/admin/admin-lib/admin-lib";
 import { CreateVoucherSafeTypes } from "@/zod-safe-types/voucher-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -22,30 +21,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 function CreateVoucherPage() {
-  const { isPending, mutate: createVoucherMutation } = useMutation({
-    mutationFn: async (values: FormData) => {
-      try {
-        const response = await createVoucher(values);
-        if (!response?.isSuccess) {
-          if (response?.status === 409) {
-            throw new Error("Tên mã giảm giá đã tồn tại");
-          }
-          throw new Error("Tạo mã giảm giá thất bại");
-        }
-      } catch (error: unknown) {
-        throw new Error(
-          error instanceof Error ? error?.message : "Lỗi hệ thống"
-        );
-      }
-    },
-    onSuccess: () => {
-      form.reset();
-      toast.success("Tạo mã giảm giá thành công");
-    },
-    onError: (value) => {
-      toast.error(value.message);
-    },
-  });
 
   const form = useForm<z.infer<typeof CreateVoucherSafeTypes>>({
     resolver: zodResolver(CreateVoucherSafeTypes),
@@ -72,11 +47,11 @@ function CreateVoucherPage() {
     formData.append("maximumDiscountAmount", values.maximumDiscount);
     formData.append("quantity", values.quantity);
 
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(`${key}:`, value);
-    // }
-
-    createVoucherMutation(formData);
+    const response = await API.post("/Vouchers", formData);
+    if (response) {
+      form.reset();
+      toast.success("Tạo mã giảm giá thành công");
+    }
   };
 
   useEffect(() => {
@@ -99,14 +74,14 @@ function CreateVoucherPage() {
               <FormInputControl
                 form={form}
                 name="name"
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Tên mã giảm giá"
                 require
               />
               <FormInputControl
                 form={form}
                 name="code"
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Mã giảm giá"
               />
               <FormSelectControl
@@ -118,7 +93,7 @@ function CreateVoucherPage() {
                   { id: "Amount", name: "Cố định" },
                   { id: "Percentage", name: "Phần trăm" },
                 ]}
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Chọn loại giảm giá"
                 require
               />
@@ -127,7 +102,7 @@ function CreateVoucherPage() {
                   form={form}
                   name="moneyDiscount"
                   isMoney
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   label="Số tiền giảm"
                   require
                 />
@@ -165,7 +140,7 @@ function CreateVoucherPage() {
                   minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="startDate"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   label="Ngày bắt đầu"
                   require
                 />
@@ -173,14 +148,14 @@ function CreateVoucherPage() {
                   minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   form={form}
                   name="endDate"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   label="Ngày kết thúc"
                   require
                 />
                 <FormNumberInputControl
                   form={form}
                   name="minimumOrderAmount"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   isMoney
                   label="Đơn hàng tối thiểu"
                   require
@@ -188,7 +163,7 @@ function CreateVoucherPage() {
                 <FormNumberInputControl
                   form={form}
                   name="maximumDiscount"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   isMoney
                   label="Giảm tối đa"
                   require
@@ -228,7 +203,7 @@ function CreateVoucherPage() {
                 classNameInput="h-30 w-full"
                 mutiple={false}
                 type={"image/jpeg, image/jpg, image/png, image/webp"}
-                disabled={isPending}
+                disabled={form.formState.isSubmitting}
                 label="Ảnh mã giảm giá"
               />
             </div>
@@ -238,11 +213,11 @@ function CreateVoucherPage() {
 
       <ButtonCustomized
         type="submit"
-        className="max-w-32 bg-green-500 hover:bg-green-700"
+        className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
         variant="secondary"
-        disabled={isPending}
+        disabled={form.formState.isSubmitting}
         label={
-          isPending ? (
+          form.formState.isSubmitting ? (
             <WaitingSpinner
               variant="pinwheel"
               label="Đang tạo..."

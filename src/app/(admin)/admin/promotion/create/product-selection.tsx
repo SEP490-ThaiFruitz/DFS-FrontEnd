@@ -1,6 +1,7 @@
 "use client"
 
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
+import { PROMOTION_KEY } from "@/app/key/admin-key"
 import ImagePreview from "@/components/custom/_custom-image/image-preview"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -9,10 +10,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatVND } from "@/lib/format-currency"
 import { cn } from "@/lib/utils"
 import type { ApiResponse } from "@/types/types"
-import { ChevronDown, ChevronRight, MinusCircle, PlusCircle, Search } from "lucide-react"
+import { AlertTriangle, ChevronDown, ChevronRight, MinusCircle, PlusCircle, Search } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
+import ProductBatchCell from "./product-batch-warning"
 
 interface ProductVariant {
   productVariantId: string
@@ -20,7 +22,8 @@ interface ProductVariant {
   netWeight: number
   packageType: string
   price: number
-  isCanDiscount: boolean
+  isCanDiscount: boolean,
+  productBatches: ProductBatch[]
 }
 
 interface Product {
@@ -28,6 +31,12 @@ interface Product {
   name: string
   image: string
   productVariants: ProductVariant[]
+}
+
+interface ProductBatch {
+  productBatchNumber: string,
+  quantity: number,
+  expirationDate: string
 }
 
 interface ProductSelectionProps {
@@ -39,7 +48,7 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
   const endDate = form.getValues("endDate")?.toISOString().split("T")[0];
   const { data: apiResponse } = useFetch<ApiResponse<Product[]>>(
     `/Promotions/product?StartDate=${startDate}&EndDate=${endDate}`,
-    ["Products", "Promtions"],
+    [PROMOTION_KEY.PROMOTION],
   )
 
   const products = apiResponse?.value || []
@@ -259,11 +268,12 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                   aria-label="Chọn tất cả"
                 />
               </TableHead>
-              <TableHead className="w-12">Ảnh</TableHead>
+              <TableHead className="w-24">Ảnh</TableHead>
               <TableHead>Tên sản phẩm / Biến thể</TableHead>
               <TableHead className="text-right">Giá gốc</TableHead>
               <TableHead className="text-right">Giá sau KM</TableHead>
               <TableHead className="text-center">Số lượng</TableHead>
+              <TableHead className="text-center">Cảnh báo</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -279,6 +289,17 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                 const isFullySelected = isProductFullySelected(product)
                 const isPartiallySelected = isProductPartiallySelected(product)
 
+                const today = new Date();
+
+                const allBatches = product.productVariants.flatMap(variant => variant.productBatches);
+
+                const nearExpirationBatches = allBatches.filter((batch) => {
+                  const expirationDate = new Date(batch.expirationDate);
+                  const diffDays = (expirationDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+                  return diffDays >= 0 && diffDays <= 60;
+                });
+
+                const hasWarning = nearExpirationBatches.length > 0;
                 // Product row
                 const productRow = (
                   <TableRow
@@ -308,14 +329,23 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                     <TableCell>
                       <ImagePreview
                         images={[product.image]}
-                        initialWidth={40}
-                        initialHeight={40}
+                        initialWidth={200}
+                        initialHeight={200}
+                        className="h-20"
                       />
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell className="text-right">-</TableCell>
                     <TableCell className="text-right">-</TableCell>
                     <TableCell className="text-center">-</TableCell>
+                    <TableHead className="text-center">
+                      {hasWarning ? <div className="flex items-center justify-center ">
+                        <span className="text-base text-red-500 w-5 h-5 flex items-center justify-center">
+                          {nearExpirationBatches.length}
+                        </span>
+                        <AlertTriangle className="w-4 h-4 text-red-500" />
+                      </div> : "-"}
+                    </TableHead>
                   </TableRow>
                 )
 
@@ -343,21 +373,17 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {variant.image ? (
-                            <ImagePreview
-                              images={[variant.image]}
-                              initialWidth={40}
-                              initialHeight={40}
-                            />
-                          ) : (
-                            <div className="w-10 h-10 bg-muted rounded-md"></div>
-                          )}
+                          <ImagePreview
+                            images={[variant.image]}
+                            initialWidth={80}
+                            initialHeight={80}
+                          />
                         </TableCell>
                         <TableCell className="pl-8 text-sm">
                           {variant.packageType} - {variant.netWeight}g
                         </TableCell>
-                        <TableCell className="text-right">{formatVND(variant.price)}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right text-lg">{formatVND(variant.price)}</TableCell>
+                        <TableCell className="text-right text-lg">
                           <span className={isSelected ? "text-green-600 font-medium" : "text-muted-foreground"}>
                             {formatVND(discountedPrice)}
                           </span>
@@ -404,6 +430,11 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                               </Button>
                             </div>
                           )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-center ">
+                            <ProductBatchCell batches={variant.productBatches || []} />
+                          </div>
                         </TableCell>
                       </TableRow>
                     )

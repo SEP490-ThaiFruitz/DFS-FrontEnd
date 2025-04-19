@@ -10,6 +10,9 @@ import {
   Package,
   LucideIcon,
   Loader2,
+  CopyXIcon,
+  FileWarningIcon,
+  InfoIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -126,6 +129,21 @@ export const OrderReturnExchangeDetail = memo(
     const safeOrderReturnData = orderReturnExchangeDetailData.data
       ?.value as OrderReturnData;
 
+    // console.log("safeOrderReturnData", safeOrderReturnData);
+
+    // if (!safeOrderReturnData) {
+    //   return (
+    //     <NotData
+    //       action={{
+    //         label: "Thử tải lại",
+    //         onClick: () => orderReturnExchangeDetailData.refetch(),
+    //       }}
+    //       icons={[CopyXIcon, FileWarningIcon, InfoIcon]}
+    //       className="min-w-full h-full"
+    //     />
+    //   );
+    // }
+
     return (
       <div>
         <Button
@@ -143,67 +161,86 @@ export const OrderReturnExchangeDetail = memo(
 
           <SheetContent className="min-w-full md:min-w-[60%] lg:min-w-[70%] rounded-3xl mr-2">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-white border-b p-6 pb-4 shadow-sm cardStyle">
-              <SheetHeader className="text-left">
-                <div className="flex items-center justify-between">
-                  <SheetTitle className="text-xl font-bold flex items-center gap-2">
-                    <ClipboardList className="h-5 w-5 text-emerald-600" />
-                    Chi tiết yêu cầu trả hàng
-                  </SheetTitle>
-                  {/* <StatusBadge status={safeOrderReturnData.requestStatus} /> */}
-                  <Badge
-                    className={`font-semibold text-sm ${
-                      statusColorMap[
-                        getStatusReturnExchangeStep(
-                          safeOrderReturnData.requestStatus
-                        ) as ReturnExchangeRequestStatus
-                      ]
-                    } px-3 py-1 rounded-full`}
-                  >
-                    {returnExchangeLabel(safeOrderReturnData.requestStatus)}
-                  </Badge>
+            {safeOrderReturnData !== undefined &&
+            safeOrderReturnData != null ? (
+              <>
+                <div className="sticky top-0 z-10 bg-white border-b p-6 pb-4 shadow-sm cardStyle">
+                  <SheetHeader className="text-left">
+                    <div className="flex items-center justify-between">
+                      <SheetTitle className="text-xl font-bold flex items-center gap-2">
+                        <ClipboardList className="h-5 w-5 text-emerald-600" />
+                        Chi tiết yêu cầu trả hàng
+                      </SheetTitle>
+                      {/* <StatusBadge status={safeOrderReturnData.requestStatus} /> */}
+                      <Badge
+                        className={`font-semibold text-sm ${
+                          statusColorMap[
+                            getStatusReturnExchangeStep(
+                              safeOrderReturnData?.requestStatus
+                            ) as ReturnExchangeRequestStatus
+                          ]
+                        } px-3 py-1 rounded-full`}
+                      >
+                        {returnExchangeLabel(
+                          safeOrderReturnData?.requestStatus
+                        )}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2 text-sm text-slate-700">
+                      <Receipt className="h-4 w-4" />
+                      Mã đơn hàng:{" "}
+                      <span className="font-bold underline text-slate-700 ">
+                        {safeOrderReturnData?.orderId}
+                      </span>
+                    </div>
+                  </SheetHeader>
                 </div>
-                <div className="flex items-center gap-2 mt-2 text-sm text-slate-700">
-                  <Receipt className="h-4 w-4" />
-                  Mã đơn hàng:{" "}
-                  <span className="font-bold underline text-slate-700 ">
-                    {safeOrderReturnData.orderId}
-                  </span>
+
+                {/* Content */}
+                <div className="p-6 pt-4 space-y-8">
+                  {/* Customer Information */}
+                  <CustomerInfoCard user={safeOrderReturnData?.user} />
+
+                  {/* Request Information */}
+                  <div>
+                    <SectionHeader
+                      icon={ShieldCheck}
+                      title="Thông tin yêu cầu"
+                    />
+                    <RequestInfoCard
+                      requestData={{
+                        requestDate: safeOrderReturnData?.requestDate,
+                        processedDate: safeOrderReturnData?.processedDate,
+                        reason: safeOrderReturnData?.reason,
+                        reasonReject: safeOrderReturnData?.reasonReject,
+                        reasonCancel: safeOrderReturnData?.reasonCancel,
+                        note: safeOrderReturnData?.note,
+                        linkDocument: safeOrderReturnData?.linkDocument,
+                        shippingFeeResponsibility:
+                          safeOrderReturnData?.shippingFeeResponsibility,
+                      }}
+                    />
+                  </div>
+
+                  {/* Items */}
+                  <div>
+                    <SectionHeader icon={Package} title="Sản phẩm trả lại" />
+                    {safeOrderReturnData?.items?.map((item, index) => (
+                      <ReturnItemCard key={index} item={item} />
+                    ))}
+                  </div>
                 </div>
-              </SheetHeader>
-            </div>
-
-            {/* Content */}
-            <div className="p-6 pt-4 space-y-8">
-              {/* Customer Information */}
-              <CustomerInfoCard user={safeOrderReturnData.user} />
-
-              {/* Request Information */}
-              <div>
-                <SectionHeader icon={ShieldCheck} title="Thông tin yêu cầu" />
-                <RequestInfoCard
-                  requestData={{
-                    requestDate: safeOrderReturnData.requestDate,
-                    processedDate: safeOrderReturnData.processedDate,
-                    reason: safeOrderReturnData.reason,
-                    reasonReject: safeOrderReturnData.reasonReject,
-                    reasonCancel: safeOrderReturnData.reasonCancel,
-                    note: safeOrderReturnData.note,
-                    linkDocument: safeOrderReturnData.linkDocument,
-                    shippingFeeResponsibility:
-                      safeOrderReturnData.shippingFeeResponsibility,
-                  }}
-                />
-              </div>
-
-              {/* Items */}
-              <div>
-                <SectionHeader icon={Package} title="Sản phẩm trả lại" />
-                {safeOrderReturnData.items.map((item, index) => (
-                  <ReturnItemCard key={index} item={item} />
-                ))}
-              </div>
-            </div>
+              </>
+            ) : (
+              <NotData
+                action={{
+                  label: "Thử tải lại",
+                  onClick: () => orderReturnExchangeDetailData.refetch(),
+                }}
+                icons={[CopyXIcon, FileWarningIcon, InfoIcon]}
+                className="min-w-full h-full"
+              />
+            )}
           </SheetContent>
         </Sheet>
       </div>

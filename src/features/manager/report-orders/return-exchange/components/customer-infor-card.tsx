@@ -13,29 +13,29 @@ export function CustomerInfoCard({ user }: CustomerInfoCardProps) {
       <div className="flex items-center gap-4">
         <div className="relative h-16 w-16 overflow-hidden rounded-full border bg-white shadow-sm">
           <Image
-            src={user.avatar || placeholderImage}
-            alt={user.name}
+            src={user?.avatar || placeholderImage}
+            alt={user?.name}
             fill
             className="object-cover"
           />
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">{user.name}</h3>
+            <h3 className="text-lg font-semibold">{user?.name}</h3>
             <span className="text-sm text-slate-700 bg-white px-2 py-1 rounded-md border shadow-sm">
-              {/* {user.role} */}
+              {/* {user?.role} */}
               Khách hàng
             </span>
           </div>
           <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-x-4 text-sm">
             <div className="flex items-center gap-1">
               <User className="size-5 text-green-600 font-semibold underline" />
-              {user.email}
+              {user?.email}
             </div>
-            {user.phone && (
+            {user?.phone && (
               <div className="flex items-center gap-1">
                 <User className="size-5 text-green-600" />
-                {user.phone}
+                {user?.phone}
               </div>
             )}
           </div>

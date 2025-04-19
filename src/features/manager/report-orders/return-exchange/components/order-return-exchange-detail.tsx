@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, memo, useState } from "react";
+import { JSX, memo, useEffect, useState } from "react";
 import {
   ClipboardList,
   ChevronRight,
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import { CustomerInfoCard } from "./customer-infor-card";
 import { Badge } from "@/components/ui/badge";
-import { OrderReturnData } from "@/types/order-detail.types";
+import { OrderReturnData, OrderReturnItem } from "@/types/order-detail.types";
 import { RequestInfoCard } from "./requested-info-card";
 import { ReturnItemCard } from "./return-exchange-item-card";
 import { ORDERS_KEY } from "@/app/key/manager-key";
@@ -37,6 +37,10 @@ import {
   ReturnExchangeRequestStatus,
   statusColorMap,
 } from "../return-exchange-status/status";
+import { ApprovalDialog } from "./approval/approval-dialog";
+import { toast } from "sonner";
+import { ApprovalActions } from "./approval/approval-acitons";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface StatusBadgeProps {
   status: string;
@@ -87,7 +91,7 @@ export function SectionHeader({
     <h3
       className={`text-base font-semibold mb-4 flex items-center gap-2 pl-1 ${className}`}
     >
-      <Icon className="h-4 w-4 text-emerald-600" />
+      <Icon className="size-8 text-green-600" />
       {title}
     </h3>
   );
@@ -101,11 +105,65 @@ export const OrderReturnExchangeDetail = memo(
   ({ requestId }: OrderReturnDetailProps) => {
     const [open, setOpen] = useState(false);
 
+    const [returnRequestData, setReturnRequestData] = useState<
+      OrderReturnItem[]
+    >([]);
+    const [orderData] = useState<OrderReturnData>();
+    const [selectedTab, setSelectedTab] = useState("all");
+    const [selectedItem, setSelectedItem] = useState<string | null>(null);
+    const [adminNote, setAdminNote] = useState("");
+    const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [shippingFeeResponsibility, setShippingFeeResponsibility] =
+      useState("");
+    const [receiveImages, setReceiveImages] = useState<string[]>([]);
+    const [itemsData, setItemsData] = useState(
+      returnRequestData.map((item) => ({
+        returnExchangeRequestItemId: item.returnExchangeRequestItemId,
+        receiveQuantity: item.customerQuantity,
+        note: "",
+        acceptQuantity: item.customerQuantity,
+      }))
+    );
+
+    const [images, setImages] = useState<File[]>([]);
+
+    console.log("hinh anh nhan duoc: ", images.length);
+
+    const handleImageChange = (files: File[]) => {
+      setImages(files);
+      const imageUrls = files.map((file) => URL.createObjectURL(file));
+      // setReceiveImages(imageUrls);
+    };
+
     const orderReturnExchangeDetailData = useFetch<
       ApiResponse<OrderReturnData>
-    >(`/Orders/${requestId}/return-exchange/details`, [
-      `${ORDERS_KEY.RETURN_EXCHANGE}/${requestId}`,
-    ]);
+    >(
+      `/Orders/${requestId}/return-exchange/details`,
+      [`${ORDERS_KEY.RETURN_EXCHANGE}/${requestId}`],
+
+      {},
+      {
+        meta: {},
+      }
+    );
+
+    const safeOrderReturnData = orderReturnExchangeDetailData.data
+      ?.value as OrderReturnData;
+
+    useEffect(() => {
+      if (safeOrderReturnData) {
+        setReturnRequestData(safeOrderReturnData.items);
+        setItemsData(
+          safeOrderReturnData.items.map((item) => ({
+            returnExchangeRequestItemId: item.returnExchangeRequestItemId,
+            receiveQuantity: item.customerQuantity,
+            note: "",
+            acceptQuantity: item.customerQuantity,
+          }))
+        );
+      }
+    }, [safeOrderReturnData]);
 
     if (orderReturnExchangeDetailData.isLoading) {
       return (
@@ -126,9 +184,6 @@ export const OrderReturnExchangeDetail = memo(
       );
     }
 
-    const safeOrderReturnData = orderReturnExchangeDetailData.data
-      ?.value as OrderReturnData;
-
     // console.log("safeOrderReturnData", safeOrderReturnData);
 
     // if (!safeOrderReturnData) {
@@ -143,6 +198,83 @@ export const OrderReturnExchangeDetail = memo(
     //     />
     //   );
     // }
+
+    // Calculate total refund amount
+    const totalRefundAmount = returnRequestData.reduce((total, item) => {
+      return total + item.orderItem.discountPrice * item.customerQuantity;
+    }, 0);
+
+    const handleApproveClick = () => {
+      setIsApprovalDialogOpen(true);
+    };
+
+    const handleItemReceiveQuantityChange = (id: string, value: number) => {
+      setItemsData(
+        itemsData.map((item) =>
+          item.returnExchangeRequestItemId === id
+            ? { ...item, receiveQuantity: value }
+            : item
+        )
+      );
+    };
+
+    const handleItemAcceptQuantityChange = (id: string, value: number) => {
+      setItemsData(
+        itemsData.map((item) =>
+          item.returnExchangeRequestItemId === id
+            ? { ...item, acceptQuantity: value }
+            : item
+        )
+      );
+    };
+
+    const handleItemNoteChange = (id: string, value: string) => {
+      setItemsData(
+        itemsData.map((item) =>
+          item.returnExchangeRequestItemId === id
+            ? { ...item, note: value }
+            : item
+        )
+      );
+    };
+
+    const handleApproveSubmit = async () => {
+      setIsLoading(true);
+
+      try {
+        // Prepare request body
+        const requestBody = {
+          id: requestId,
+          note: adminNote,
+          shippingFeeResponsibility: shippingFeeResponsibility,
+          items: itemsData,
+          receiveImages: images,
+        };
+
+        console.log("Sending approval request:", requestBody);
+
+        // In a real application, you would make an API call here
+        // const response = await fetch(`/api/v1/Orders/${requestId}/return-exchange`, {
+        //   method: 'PATCH',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify(requestBody),
+        // });
+
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        toast.success("Yêu cầu trả hàng đã được phê duyệt thành công.");
+
+        setIsApprovalDialogOpen(false);
+      } catch (error) {
+        console.error("Error approving return request:", error);
+        toast("Đã xảy ra lỗi khi phê duyệt yêu cầu trả hàng.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
     return (
       <div>
@@ -164,11 +296,36 @@ export const OrderReturnExchangeDetail = memo(
             {safeOrderReturnData !== undefined &&
             safeOrderReturnData != null ? (
               <>
+                <ApprovalDialog
+                  isOpen={isApprovalDialogOpen}
+                  setIsOpen={setIsApprovalDialogOpen}
+                  requestId={requestId}
+                  adminNote={adminNote}
+                  setAdminNote={setAdminNote}
+                  shippingFeeResponsibility={shippingFeeResponsibility}
+                  setShippingFeeResponsibility={setShippingFeeResponsibility}
+                  itemsData={itemsData}
+                  returnRequestData={returnRequestData}
+                  handleItemReceiveQuantityChange={
+                    handleItemReceiveQuantityChange
+                  }
+                  handleItemAcceptQuantityChange={
+                    handleItemAcceptQuantityChange
+                  }
+                  handleItemNoteChange={handleItemNoteChange}
+                  receiveImages={receiveImages}
+                  setImages={setImages}
+                  images={images}
+                  // removeImage={removeImage}
+                  isLoading={isLoading}
+                  onSubmit={handleApproveSubmit}
+                />
+
                 <div className="sticky top-0 z-10 bg-white border-b p-6 pb-4 shadow-sm cardStyle">
                   <SheetHeader className="text-left">
                     <div className="flex items-center justify-between">
                       <SheetTitle className="text-xl font-bold flex items-center gap-2">
-                        <ClipboardList className="h-5 w-5 text-emerald-600" />
+                        <ClipboardList className="size-8 text-emerald-600" />
                         Chi tiết yêu cầu trả hàng
                       </SheetTitle>
                       {/* <StatusBadge status={safeOrderReturnData.requestStatus} /> */}
@@ -223,12 +380,17 @@ export const OrderReturnExchangeDetail = memo(
                   </div>
 
                   {/* Items */}
-                  <div>
+                  <ScrollArea className="h-[500px] w-full ">
                     <SectionHeader icon={Package} title="Sản phẩm trả lại" />
                     {safeOrderReturnData?.items?.map((item, index) => (
                       <ReturnItemCard key={index} item={item} />
                     ))}
-                  </div>
+                  </ScrollArea>
+
+                  <ApprovalActions
+                    totalRefundAmount={totalRefundAmount}
+                    onApproveClick={handleApproveClick}
+                  />
                 </div>
               </>
             ) : (

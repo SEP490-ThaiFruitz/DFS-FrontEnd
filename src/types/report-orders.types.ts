@@ -94,7 +94,7 @@ export const OrderStatus = {
   cancelled: "Đơn hàng bị hủy",
   returned: "Đơn hàng được trả lại",
   exchanged: "Đơn hàng đã được đổi",
-  requesting: "Đơn hàng đang yêu cầu đổi trả",
+  requesting: "Đơn hàng đang được yêu cầu đổi trả",
 } as const;
 
 export type OrderStatusType = keyof typeof OrderStatus;

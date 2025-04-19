@@ -23,6 +23,7 @@ export interface OrderReturnData {
 }
 
 export interface OrderReturnItem {
+  returnExchangeRequestItemId: string;
   orderItem: {
     id: string;
     referenceId: string;

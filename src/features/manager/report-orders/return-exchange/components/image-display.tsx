@@ -13,7 +13,7 @@ export function ImageDisplay({ src, alt, title }: ImageDisplayProps) {
   return (
     <div className="mt-6 pt-4 border-t">
       <h4 className="text-sm font-semibold mb-3 flex items-center gap-1.5">
-        <FileText className="size-5 text-green-600" />
+        <FileText className="size-8 text-green-600" />
         {title}
       </h4>
 

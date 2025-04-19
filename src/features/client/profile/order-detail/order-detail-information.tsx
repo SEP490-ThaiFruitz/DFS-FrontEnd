@@ -214,6 +214,8 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             </>
           )}
         </CardContent>
+
+        {/* Actions for orders */}
         <CardFooter className="space-x-5">
           {orderStatus === "Pending" &&
             paymentStatus !== "Paid" &&

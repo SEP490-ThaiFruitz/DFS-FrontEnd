@@ -3,7 +3,9 @@ import { AdvancedColorfulBadges } from "@/components/global-components/badge/adv
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
+import { OrderStatus } from "@/types/report-orders.types";
 import { ScrollTextIcon, Plane, Package, Boxes, Wallet } from "lucide-react";
+import React from "react";
 
 interface OrderHeaderProps {
   status: string;
@@ -20,24 +22,28 @@ export const OrderHeader = ({
   timeEstimateDelivery,
   onClickDetail,
 }: Readonly<OrderHeaderProps>) => {
-  const orderStatusMap: Record<string, string> = {
-    Pending: "Đang chờ xử lý",
-    Packaging: "Đang đóng gói",
-    Shipping: "Đang vận chuyển",
-    Delivering: "Đang giao",
-    Delivered: "Đã giao hàng",
-    Received: "Đã nhận hàng",
-    Cancelled: "Đã hủy",
-    Returned: "Đã trả hàng",
-  };
-  
-  return (
+  // const orderStatusMap: Record<string, string> = {
+  //   Pending: "Đang chờ xử lý",
+  //   Packaging: "Đang đóng gói",
+  //   Shipping: "Đang vận chuyển",
+  //   Delivering: "Đang giao",
+  //   Delivered: "Đã giao hàng",
+  //   Received: "Đã nhận hàng",
+  //   Completed: "Đơn hàng đã hoàn tất",
 
-    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 space-y-4">
+  //   // exception status
+  //   Cancelled: "Đã hủy",
+  //   Returned: "Đã trả hàng",
+  //   Exchanged: "Đã đổi hàng",
+  //   Requesting: "Đang được yêu cầu đổi/trả",
+  // };
+
+  return (
+    <div className="bg-gradient-to-br from-amber-100 via-orange-300 to-green-100 text-white p-6 space-y-4">
       <div className="flex justify-between items-start">
         <div>
           <AdvancedColorfulBadges color="violet" className="mb-2 bg-white">
-            {orderStatusMap[status]}
+            {OrderStatus[status.toLowerCase() as keyof typeof OrderStatus]}
           </AdvancedColorfulBadges>
           <h2 className="hidden xl:flex text-2xl font-bold items-center gap-2">
             <Package className="w-12 h-12 shrink-0" />
@@ -85,9 +91,7 @@ export const OrderHeader = ({
             </svg>
             Ngày mua:
           </div>
-          <div>
-            {formatTimeVietNam(new Date(buyDate), true)}
-          </div>
+          <div>{formatTimeVietNam(new Date(buyDate), true)}</div>
         </div>
         {timeEstimateDelivery && (
           <>
@@ -96,9 +100,7 @@ export const OrderHeader = ({
               <div className="flex items-center gap-1">
                 <Plane className="w-4 h-4 shrink-0" /> Ước tính vận chuyển:
               </div>
-              <div>
-                {formatTimeVietNam(new Date(timeEstimateDelivery))}
-              </div>
+              <div>{formatTimeVietNam(new Date(timeEstimateDelivery))}</div>
             </div>
           </>
         )}

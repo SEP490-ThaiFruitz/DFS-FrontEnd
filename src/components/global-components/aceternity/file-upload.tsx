@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
 import { CloudUpload, TrashIcon, Upload } from "lucide-react";
@@ -30,27 +30,63 @@ export const FileUpload = ({
   onChange,
 
   multiple = false,
+  value,
+  isImages,
 }: {
   onChange?: (files: File[]) => void;
+  setImages?: (files: File[]) => void;
+  value?: File[];
+
   multiple?: boolean;
+
+  isImages?: boolean;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  console.log({ isImages });
+  console.log({ value });
+
   const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange(newFiles);
+    if (isImages) {
+      setFiles((prevFiles) => {
+        const uniqueFiles = newFiles.filter(
+          (file) => !prevFiles.some((f) => f.name === file.name)
+        );
+        const updatedFiles = [...prevFiles, ...uniqueFiles];
+        onChange?.(updatedFiles);
+        return updatedFiles;
+      });
+    } else {
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      onChange && onChange(newFiles);
+    }
   };
 
   const handleRemoveFile = (index: number) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    if (isImages) {
+      setFiles((prevFiles) => {
+        const updatedFiles = prevFiles.filter((_, i) => i !== index);
+        onChange?.(updatedFiles);
+        return updatedFiles;
+      });
+    } else {
+      setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
 
-    onChange && onChange(files.filter((_, i) => i !== index));
+      onChange && onChange(files.filter((_, i) => i !== index));
+    }
   };
 
   const handleClick = () => {
     fileInputRef.current?.click();
   };
+
+  // useEffect(() => {
+  //   if (isImages && value) {
+  //     // onChange?.(files); // đồng bộ nếu là ảnh
+  //     setFiles(value);
+  //   }
+  // }, [value, isImages, onChange, files]);
 
   const { getRootProps, isDragActive } = useDropzone({
     multiple: multiple,

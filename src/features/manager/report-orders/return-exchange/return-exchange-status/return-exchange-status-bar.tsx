@@ -1,5 +1,4 @@
 // components/order/StatusBar.tsx
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,

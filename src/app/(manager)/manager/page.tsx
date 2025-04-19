@@ -129,11 +129,11 @@ export default function RevenueDashboard() {
     );
   };
 
-  console.log("dateRange hien tai", dateRange);
+  // console.log("dateRange hien tai", dateRange);
 
   const { previousFrom, previousTo } = getPreviousDate(dateRange);
 
-  console.log("thoi gian qua khu", previousFrom, previousTo);
+  // console.log("thoi gian qua khu", previousFrom, previousTo);
   const fromDate = "2025-01-22";
 
   const currentDate = format(new Date(), "yyyy-MM-dd");

@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { vietnameseDate } from "@/utils/date";
 import { OrderReturnData } from "@/types/order-detail.types";
 import { LinkPreview } from "@/components/global-components/link-preview";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface RequestInfoCardProps {
   requestData: Pick<
@@ -37,27 +38,27 @@ export function RequestInfoCard({ requestData }: RequestInfoCardProps) {
   } = requestData;
 
   return (
-    <>
-      <Card className="overflow-hidden shadow-sm cardStyle">
+    <ScrollArea className="max-h-[210px] overflow-y-auto">
+      <Card className="overflow-hidden shadow-sm cardStyle ">
         <CardContent className="p-5 grid gap-4 sm:grid-cols-2">
           <div className="space-y-3">
             <div>
-              <span className="text-base text-slate-700 font-semibold">
+              <span className="text-base flex items-center text-slate-700 font-semibold">
+                <Calendar className="size-6 mr-1 text-emerald-600 " />
                 Ngày yêu cầu
               </span>
-              <p className="font-semibold flex items-center gap-1.5">
-                <Calendar className="size-8 text-emerald-600" />
+              <div className="font-semibold underline gap-1.5">
                 {vietnameseDate(requestDate, true)}
-              </p>
+              </div>
             </div>
 
             {processedDate && (
               <div>
-                <p className="text-sm text-slate-700 font-semibold">
+                <p className="text-sm text-slate-700 flex items-center font-semibold">
+                  <Calendar className="size-6 mr-1 text-emerald-600" />
                   Ngày xử lý
                 </p>
-                <p className="font-medium flex items-center gap-1.5">
-                  <Calendar className="size-8 text-emerald-600" />
+                <p className="font-semibold underline flex items-center gap-1.5">
                   {vietnameseDate(processedDate)}
                 </p>
               </div>
@@ -69,7 +70,7 @@ export function RequestInfoCard({ requestData }: RequestInfoCardProps) {
                   Trách nhiệm phí vận chuyển
                 </p>
                 <p className="font-medium flex items-center gap-1.5">
-                  <Package className="size-8 text-emerald-600" />
+                  <Package className="size-6 mr-1 text-emerald-600" />
                   {shippingFeeResponsibility}
                 </p>
               </div>
@@ -78,9 +79,11 @@ export function RequestInfoCard({ requestData }: RequestInfoCardProps) {
 
           <div className="space-y-3">
             <div>
-              <p className="text-sm font-semibold text-slate-700">Lý do</p>
-              <p className="font-semibold flex items-start gap-1.5 text-violet-600 text-wrap">
-                <FileText className="size-8 text-emerald-600 mt-0.5" />
+              <div className="text-base font-semibold flex items-center text-slate-700">
+                <FileText className="size-6 mr-1 text-emerald-600 mt-0.5" />
+                Lý do
+              </div>
+              <p className="font-semibold flex items-start underline gap-1.5 text-violet-600 text-wrap">
                 {reason || "Không có"}
               </p>
             </div>
@@ -89,7 +92,7 @@ export function RequestInfoCard({ requestData }: RequestInfoCardProps) {
               <div>
                 <p className="text-sm text-muted-foreground">Lý do từ chối</p>
                 <p className="font-medium flex items-start gap-1.5">
-                  <FileText className="size-8 text-red-600 mt-0.5" />
+                  <FileText className="size-6 mr-1 text-red-600 mt-0.5" />
                   {reasonReject}
                 </p>
               </div>
@@ -101,7 +104,7 @@ export function RequestInfoCard({ requestData }: RequestInfoCardProps) {
                   Lý do hủy
                 </p>
                 <p className="font-medium flex items-start gap-1.5">
-                  <FileText className="size-8 text-slate-600 mt-0.5" />
+                  <FileText className="size-6 mr-1 text-slate-600 mt-0.5" />
                   {reasonCancel}
                 </p>
               </div>
@@ -134,7 +137,7 @@ export function RequestInfoCard({ requestData }: RequestInfoCardProps) {
                   target="_blank"
                   className="text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-1 text-sm font-medium group"
                 >
-                  <ExternalLink className="size-8" />
+                  <ExternalLink className="size-6 mr-1" />
                   Xem tài liệu
                   <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </LinkPreview>
@@ -143,6 +146,6 @@ export function RequestInfoCard({ requestData }: RequestInfoCardProps) {
           )}
         </div>
       )}
-    </>
+    </ScrollArea>
   );
 }

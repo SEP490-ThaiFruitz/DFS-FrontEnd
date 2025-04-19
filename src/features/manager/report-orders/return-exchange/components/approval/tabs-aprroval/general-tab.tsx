@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { formatVND } from "@/lib/format-currency";
-import { FileTextIcon, InfoIcon } from "lucide-react";
+import {
+  BarcodeIcon,
+  FileTextIcon,
+  InfoIcon,
+  PenIcon,
+  SquareMenuIcon,
+} from "lucide-react";
 import { memo } from "react";
 
 interface GeneralTabProps {
@@ -42,7 +48,11 @@ export const GeneralTab = memo(
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="request-id" className="text-sm font-medium">
+              <Label
+                htmlFor="request-id"
+                className="text-sm font-semibold flex items-center gap-1"
+              >
+                <BarcodeIcon className="size-6" />
                 ID yêu cầu
               </Label>
               <div className="flex mt-1.5">
@@ -67,7 +77,11 @@ export const GeneralTab = memo(
             </div>
 
             <div>
-              <Label htmlFor="shipping-fee" className="text-sm font-medium">
+              <Label
+                htmlFor="shipping-fee"
+                className="text-sm font-semibold flex items-center gap-1"
+              >
+                <SquareMenuIcon className="size-6" />
                 Trách nhiệm phí vận chuyển
               </Label>
               <Select
@@ -90,15 +104,18 @@ export const GeneralTab = memo(
           </div>
 
           <div>
-            <Label htmlFor="admin-note" className="text-sm font-medium">
-              Ghi chú của quản lý
+            <Label
+              htmlFor="admin-note"
+              className="text-sm font-semibold flex items-center gap-1"
+            >
+              <PenIcon className="size-6" /> Ghi chú của quản lý
             </Label>
             <Textarea
               id="admin-note"
               placeholder="Nhập ghi chú cho yêu cầu trả hàng này"
               value={adminNote}
               onChange={(e) => setAdminNote(e.target.value)}
-              className="min-h-[150px] mt-1.5 resize-none"
+              className="min-h-[150px] mt-1.5 resize-none cardStyle"
             />
             <p className="text-xs text-slate-500 mt-1.5">
               Ghi chú này sẽ được lưu trong hệ thống và không hiển thị cho khách
@@ -107,16 +124,16 @@ export const GeneralTab = memo(
           </div>
         </div>
 
-        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+        <div className="bg-amber-50/ p-4 cardStyle">
           <div className="flex items-start gap-3">
             <div className="bg-amber-100 text-amber-800 p-2 rounded-full">
               <InfoIcon className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="font-medium text-sm">
-                Tổng quan yêu cầu trả hàng
+              <h4 className="font-semibold text-slate-700 text-sm">
+                Tổng quan yêu cầu
               </h4>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-sm text-slate-600 mt-1 underline">
                 Yêu cầu này bao gồm {itemsData.length} sản phẩm với tổng giá trị
                 hoàn tiền là {formatVND(totalRefundAmount)}. Vui lòng xem lại
                 thông tin sản phẩm trong tab Sản phẩm trước khi phê duyệt.

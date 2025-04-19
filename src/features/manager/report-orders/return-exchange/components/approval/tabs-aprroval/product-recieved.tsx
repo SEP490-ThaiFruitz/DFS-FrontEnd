@@ -52,7 +52,7 @@ export const ProductReceived = memo(
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <PackageIcon className="size-8 text-slate-500" />
-                    <CardTitle className="text-sm font-medium">
+                    <CardTitle className="text-sm font-semibold">
                       {originalItem?.orderItem.name}
                     </CardTitle>
                   </div>
@@ -224,23 +224,25 @@ export const ProductReceived = memo(
                             e.target.value
                           )
                         }
-                        className="mt-1.5 resize-none"
+                        className="mt-1.5 resize-none cardStyle"
                       />
                     </div>
 
-                    <div className="bg-slate-50 p-3 rounded-md border border-slate-200">
+                    <div className="bg-slate-50 p-3 cardStyle">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-slate-600">Đơn giá:</span>
+                        <span className="text-sm font-semibold text-slate-600">
+                          Đơn giá:
+                        </span>
                         <span className="font-medium">
                           {formatVND(originalItem?.orderItem.unitPrice || 0)}
                         </span>
                       </div>
                       {(originalItem?.orderItem.percentage || 0) > 0 && (
                         <div className="flex justify-between items-center mt-1">
-                          <span className="text-sm text-slate-600">
+                          <span className="text-sm font-semibold text-slate-600">
                             Giảm giá:
                           </span>
-                          <span className="text-red-500">
+                          <span className="text-rose-500">
                             -{originalItem?.orderItem.percentage}%
                           </span>
                         </div>

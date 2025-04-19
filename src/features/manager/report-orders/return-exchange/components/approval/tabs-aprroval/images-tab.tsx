@@ -14,10 +14,10 @@ export const ImagesTab = memo(
       <div className="m-0 p-0 motion-preset-slide-right motion-duration-300">
         <div className="space-y-4">
           <div className="flex flex-col items-start gap-2 mb-4">
-            <h3 className="text-sm font-medium">
+            <h3 className="text-sm font-semibold text-slate-700">
               Hình ảnh nhận hàng ({receiveImages.length})
             </h3>
-            <p className="text-sm text-slate-500 mt-1 max-w-md">
+            <p className="text-sm text-slate-700 mt-1 max-w-md italic">
               Tải lên hình ảnh để lưu trữ bằng chứng về tình trạng sản phẩm khi
               nhận lại từ khách hàng.
             </p>

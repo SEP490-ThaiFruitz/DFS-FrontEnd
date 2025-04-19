@@ -5,10 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ArrowUpRight,
+  BarcodeIcon,
   Calendar,
   ExternalLink,
+  LinkIcon,
+  ListCheckIcon,
   MoreHorizontal,
+  TextIcon,
   User,
+  UserIcon,
+  UserRoundCogIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,7 +27,7 @@ import {
 import Link from "next/link";
 import { vietnameseDate } from "@/utils/date";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserInitials } from "@/utils/label";
+import { getUserInitials, placeholderImage } from "@/utils/label";
 import { LinkPreview } from "@/components/global-components/link-preview";
 import { OrderReturnExchangeDetail } from "./components/order-return-exchange-detail";
 import {
@@ -36,6 +42,7 @@ import {
 } from "./return-exchange-status/update-status";
 import { ReturnExchangeStatusBar } from "./return-exchange-status/return-exchange-status-bar";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export type ReturnExchangeOrders = {
   id: string;
@@ -62,11 +69,20 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Mã đơn hàng",
     accessorKey: "orderId",
-    header: "Order ID",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <BarcodeIcon className="size-6" />
+            Mã đơn hàng
+          </div>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const orderId = row.original.orderId;
 
-      return <div className="font-medium">{orderId}</div>;
+      return <div className="font-semibold">{orderId}</div>;
     },
 
     meta: {
@@ -77,26 +93,37 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Khách hàng",
     accessorKey: "user",
-    header: "Customer",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <UserIcon className="size-6" />
+            Khách hàng
+          </div>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const user = row.original.user;
 
       if (!user) return <div>—</div>;
 
       return (
-        <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
+        <div className="flex  gap-3">
+          <Avatar className="size-14">
             <AvatarImage
-              src={user.avatar || "/placeholder.svg"}
+              src={user.avatar || placeholderImage}
               alt={user.name}
             />
             <AvatarFallback>{getUserInitials(user.name)}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
+          <div className="flex flex-col items-start">
             <span className="font-semibold text-sky-500 text-base">
               {user.name}
             </span>
-            <span className="text-xs text-slate-700">{user.email}</span>
+            <span className="text-xs text-slate-700 font-semibold">
+              {user.email}
+            </span>
           </div>
         </div>
       );
@@ -111,7 +138,16 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Loại yêu cầu",
     accessorKey: "requestStatus",
-    header: "Status",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <ListCheckIcon className="size-6" />
+            Loại yêu cầu
+          </div>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const rowData = row.original;
 
@@ -180,12 +216,22 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Lý do",
     accessorKey: "reason",
-    header: "Lý do",
+    header: ({}) => {
+      return (
+        <div className="flex items-center gap-2 font-semibold">
+          <TextIcon className="size-6" />
+          Lý do
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const reason = row.original.reason as string;
 
       return (
-        <div className="max-w-[200px] truncate" title={reason}>
+        <div
+          className="max-w-[200px] font-semibold truncate underline"
+          title={reason}
+        >
           {reason}
         </div>
       );
@@ -199,7 +245,16 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Tài liệu chứng minh",
     accessorKey: "linkDocument",
-    header: "Reason",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <LinkIcon className="size-6" />
+            Tài liệu chứng minh
+          </div>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const linkDocument = row.original.linkDocument as string;
 
@@ -223,13 +278,22 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Ngày yêu cầu",
     accessorKey: "requestDate",
-    header: "Request Date",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <Calendar className="size-6" />
+            Ngày yêu cầu
+          </div>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const requestDate = row.original.requestDate as string;
 
       return (
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Calendar className="h-4 w-4" />
+        <div className="flex items-center gap-2 text-slate-700">
+          <Calendar className="size-6" />
           {vietnameseDate(requestDate, true)}
         </div>
       );
@@ -242,17 +306,26 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Ngày xử lý",
     accessorKey: "processedDate",
-    header: "Processed Date",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <Calendar className="size-6" />
+            Ngày xử lý
+          </div>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const processedDate = row.original.processedDate as string | null;
 
       return (
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Calendar className="h-4 w-4" />
+        <div className="flex items-center gap-2 text-slate-700">
+          <Calendar className="size-6" />
           {processedDate ? (
             vietnameseDate(processedDate, true)
           ) : (
-            <span className="text-muted-foreground">Chưa được xử lý</span>
+            <span className="text-slate-700">Chưa được xử lý</span>
           )}
         </div>
       );
@@ -266,7 +339,16 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   {
     id: "Người xử lý",
     accessorKey: "handler",
-    header: "Handler",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <UserRoundCogIcon className="size-6" />
+            Người xử lý
+          </div>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const handler = row.original.handler as string | null;
 
@@ -275,7 +357,7 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
           {handler ? (
             <span>----</span>
           ) : (
-            <span className="text-muted-foreground flex items-center gap-1">
+            <span className="text-slate-700 flex items-center gap-1">
               <User className="h-4 w-4" />
               Chưa được xử lý
             </span>
@@ -307,7 +389,11 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
             <Button
               className="w-full"
               variant="link"
-              onClick={() => navigator.clipboard.writeText(request.id)}
+              onClick={() => {
+                navigator.clipboard.writeText(request.id);
+
+                toast.success("ID đơn hàng đã được sao chép vào clipboard");
+              }}
             >
               Copy ID Đơn hàng
             </Button>
@@ -327,14 +413,14 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
             {/* <DropdownMenuItem>View details</DropdownMenuItem> */}
 
             <OrderReturnExchangeDetail requestId={request.id} />
-            {request.requestStatus === "Pending" && (
+            {/* {request.requestStatus === "Pending" && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Assign to me</DropdownMenuItem>
                 <DropdownMenuItem>Approve request</DropdownMenuItem>
                 <DropdownMenuItem>Reject request</DropdownMenuItem>
               </>
-            )}
+            )} */}
           </DropdownMenuContent>
         </DropdownMenu>
       );

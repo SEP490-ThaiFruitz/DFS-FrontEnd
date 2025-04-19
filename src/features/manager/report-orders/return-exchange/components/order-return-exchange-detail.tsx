@@ -41,6 +41,16 @@ import { ApprovalDialog } from "./approval/approval-dialog";
 import { toast } from "sonner";
 import { ApprovalActions } from "./approval/approval-acitons";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import axios from "axios";
+import { API } from "@/app/key/url";
+
+import Cookies from "js-cookie";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface StatusBadgeProps {
   status: string;
@@ -125,6 +135,7 @@ export const OrderReturnExchangeDetail = memo(
         acceptQuantity: item.customerQuantity,
       }))
     );
+    const token = Cookies.get("accessToken");
 
     const [images, setImages] = useState<File[]>([]);
 
@@ -138,15 +149,11 @@ export const OrderReturnExchangeDetail = memo(
 
     const orderReturnExchangeDetailData = useFetch<
       ApiResponse<OrderReturnData>
-    >(
-      `/Orders/${requestId}/return-exchange/details`,
-      [`${ORDERS_KEY.RETURN_EXCHANGE}/${requestId}`],
+    >(`/Orders/${requestId}/return-exchange/details`, [
+      `${ORDERS_KEY.RETURN_EXCHANGE}/${requestId}`,
+    ]);
 
-      {},
-      {
-        meta: {},
-      }
-    );
+    const queryClient = useQueryClient();
 
     const safeOrderReturnData = orderReturnExchangeDetailData.data
       ?.value as OrderReturnData;
@@ -244,14 +251,57 @@ export const OrderReturnExchangeDetail = memo(
       try {
         // Prepare request body
         const requestBody = {
-          id: requestId,
+          requestId: requestId,
           note: adminNote,
           shippingFeeResponsibility: shippingFeeResponsibility,
           items: itemsData,
           receiveImages: images,
         };
 
+        const formData = new FormData();
+
+        images.forEach((image) => {
+          formData.append("receiveImages", image);
+        });
+
+        formData.append("requestId", requestId);
+        formData.append("note", adminNote);
+        formData.append("shippingFeeResponsibility", shippingFeeResponsibility);
+
+        itemsData.forEach((item, index) => {
+          formData.append(`items[${index}]`, JSON.stringify(item));
+        });
+
         console.log("Sending approval request:", requestBody);
+
+        const response = await axios.patch(
+          `${API}/Orders/${requestId}/return-exchange`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log({ response });
+
+        if (response.status === 200) {
+          queryClient.invalidateQueries({
+            queryKey: [ORDERS_KEY.RETURN_EXCHANGE],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [ORDERS_KEY.ORDERS_LIST],
+          });
+          toast.success("Yêu cầu đã được phê duyệt thành công.");
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          toast.success("Yêu cầu trả hàng đã được phê duyệt thành công.");
+
+          setIsApprovalDialogOpen(false);
+        }
 
         // In a real application, you would make an API call here
         // const response = await fetch(`/api/v1/Orders/${requestId}/return-exchange`, {
@@ -263,11 +313,6 @@ export const OrderReturnExchangeDetail = memo(
         // });
 
         // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        toast.success("Yêu cầu trả hàng đã được phê duyệt thành công.");
-
-        setIsApprovalDialogOpen(false);
       } catch (error) {
         console.error("Error approving return request:", error);
         toast("Đã xảy ra lỗi khi phê duyệt yêu cầu trả hàng.");
@@ -329,19 +374,40 @@ export const OrderReturnExchangeDetail = memo(
                         Chi tiết yêu cầu trả hàng
                       </SheetTitle>
                       {/* <StatusBadge status={safeOrderReturnData.requestStatus} /> */}
-                      <Badge
-                        className={`font-semibold text-sm ${
-                          statusColorMap[
-                            getStatusReturnExchangeStep(
-                              safeOrderReturnData?.requestStatus
-                            ) as ReturnExchangeRequestStatus
-                          ]
-                        } px-3 py-1 rounded-full`}
-                      >
-                        {returnExchangeLabel(
-                          safeOrderReturnData?.requestStatus
-                        )}
-                      </Badge>
+
+                      <div className="flex items-center gap-2">
+                        <Popover>
+                          <PopoverTrigger>
+                            <Button
+                              variant="outline"
+                              className="bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-800 h-8 rounded-lg font-semibold"
+                            >
+                              <ShieldCheck className="size-6 text-green-500 " />
+                              Phê duyệt yêu cầu
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full cardStyle">
+                            <ApprovalActions
+                              totalRefundAmount={totalRefundAmount}
+                              onApproveClick={handleApproveClick}
+                            />
+                          </PopoverContent>
+                        </Popover>
+
+                        <Badge
+                          className={`font-semibold text-sm ${
+                            statusColorMap[
+                              getStatusReturnExchangeStep(
+                                safeOrderReturnData?.requestStatus
+                              ) as ReturnExchangeRequestStatus
+                            ]
+                          } px-3 py-1 rounded-full`}
+                        >
+                          {returnExchangeLabel(
+                            safeOrderReturnData?.requestStatus
+                          )}
+                        </Badge>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 mt-2 text-sm text-slate-700">
                       <Receipt className="h-4 w-4" />
@@ -386,11 +452,6 @@ export const OrderReturnExchangeDetail = memo(
                       <ReturnItemCard key={index} item={item} />
                     ))}
                   </ScrollArea>
-
-                  <ApprovalActions
-                    totalRefundAmount={totalRefundAmount}
-                    onApproveClick={handleApproveClick}
-                  />
                 </div>
               </>
             ) : (

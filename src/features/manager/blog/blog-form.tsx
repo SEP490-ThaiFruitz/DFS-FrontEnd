@@ -54,6 +54,9 @@ import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { BLOG_KEY } from "@/app/key/comm-key";
 import { CuisineSelector } from "@/components/custom/_custom_select/cuisine-selector";
+import { useData } from "@/providers/data-provider";
+import { AsyncSelect } from "@/components/custom/_custom_select/select-async";
+import { BlogPost } from "@/types/blogs.types";
 
 // Dynamically import the editor to reduce initial load time
 const Editor = dynamic(() => import("@/components/blocks/editor-x/editor"), {
@@ -166,6 +169,8 @@ export default function BlogForm() {
       tagNames: [],
     },
   });
+
+  const { blogs } = useData();
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -305,9 +310,7 @@ export default function BlogForm() {
     form.setValue("content", JSON.stringify(editorState));
   }, [editorState]);
 
-  const tagWatch = form.watch("tagNames");
-
-  console.log({ tagWatch });
+  // const tagWatch = form.watch("tagNames");
 
   return (
     <Form {...form}>
@@ -566,59 +569,6 @@ export default function BlogForm() {
                         toggleCuisine={handleToggleTags}
                         className="font-semibold text-sm italic"
                       />
-
-                      {/* <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <Input
-                            placeholder="Thêm Tags cho bài viết"
-                            value={newTag}
-                            onChange={(e) => setNewTag(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                handleAddTag();
-                              }
-                            }}
-                            className={`bg-white border-slate-200 ${styleInput}`}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={handleAddTag}
-                            className="shrink-0"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <div className="flex flex-wrap gap-2 min-h-[60px] p-3 bg-white cardStyle rounded-md border border-slate-200">
-                          {field.value.length > 0 ? (
-                            field.value.map((tag) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className="px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-800"
-                              >
-                                {tag}
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-4 w-4 ml-1 rounded-full p-0 text-slate-500 hover:text-slate-700 hover:bg-transparent"
-                                  onClick={() => handleRemoveTag(tag)}
-                                >
-                                  <X className="h-3 w-3" />
-                                  <span className="sr-only">Xóa Tag</span>
-                                </Button>
-                              </Badge>
-                            ))
-                          ) : (
-                            <p className="text-sm  italic">
-                              Chưa có tag nào được thêm vào!
-                            </p>
-                          )}
-                        </div>
-                      </div> */}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -658,3 +608,82 @@ export default function BlogForm() {
     </Form>
   );
 }
+
+interface BlogOptionsProps {
+  selectPostId: string;
+
+  blogs: BlogPost[];
+  setSelectPostId: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const BlogsOptions = ({
+  blogs,
+  selectPostId,
+  setSelectPostId,
+}: BlogOptionsProps) => {
+  const searchBlogs = async (blog: string) => {
+    return await blogs;
+  };
+
+  return (
+    // <AsyncSelect<BlogPost>
+    //   fetcher={searchBlogs}
+    //   renderOption={(blog) => (
+    //     <div className="flex items-center gap-2">
+    //       <Image
+    //         src={blog.thumbnail}
+    //         alt={blog.title}
+    //         width={24}
+    //         height={24}
+    //         className="rounded-full"
+    //       />
+    //       <div className="flex flex-col">
+    //         <div className="font-semibold">{blog.title}</div>
+    //         {blog.tagNames.map((tag) => {
+    //           return (
+    //             <div
+    //               key={tag}
+    //               className="text-sm font-semibold rounded-full bg-slate-100 px-2 py-1 text-slate-600"
+    //             >
+    //               {tag}
+    //             </div>
+    //           );
+    //         })}
+    //       </div>
+    //     </div>
+    //   )}
+    //   getOptionValue={(blog) => blog.id}
+    //   getDisplayValue={(blog) => (
+    //     <div className="flex items-center gap-2 text-left">
+    //       <Image
+    //         src={blog.thumbnail}
+    //         alt={blog.title}
+    //         width={24}
+    //         height={24}
+    //         className="rounded-full"
+    //       />
+    //       <div className="flex flex-col leading-tight">
+    //         <div className="font-semibold">{blog.title}</div>
+    //         {blog.tagNames.map((tag) => {
+    //           return (
+    //             <div
+    //               key={tag}
+    //               className="text-sm font-semibold rounded-full bg-slate-100 px-2 py-1 text-slate-600"
+    //             >
+    //               {tag}
+    //             </div>
+    //           );
+    //         })}
+    //       </div>
+    //     </div>
+    //   )}
+    //   notFound={<div className="py-6 text-center text-sm">No blogs found</div>}
+    //   label="blog"
+    //   placeholder="Search users..."
+    //   value={selectPostId}
+    //   onChange={setSelectPostId}
+    //   width="375px"
+    // />
+    <div></div>
+  );
+};

@@ -174,7 +174,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
   const currentStepIndex = step === "create" ? 0 : step === "confirm" ? 1 : 2;
 
   useEffect(() => {
-    const balance = user?.value?.balance;
+    const balance = user?.value?.wallet?.balance;
 
     if (balance == null || balance === undefined) {
       setStep("create");
@@ -187,7 +187,7 @@ export const WalletSheet = ({ user, isUserLoading }: WalletSheetProps) => {
     setError("");
     setRememberDevice(false);
     setAcceptTerms(false);
-  }, [user?.value?.balance]);
+  }, [user?.value?.wallet?.balance]);
 
   return (
     <TooltipProvider>

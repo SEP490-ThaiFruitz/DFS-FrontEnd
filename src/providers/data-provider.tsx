@@ -6,8 +6,7 @@ import { ApiResponse, PageResult } from "@/types/types";
 import { createContext, useContext } from "react";
 
 import Cookies from "js-cookie";
-import { cookies } from "next/headers";
-import { BLOG_KEY, CART_KEY } from "@/app/key/comm-key";
+import { BLOG_KEY } from "@/app/key/comm-key";
 import { AddressTypes } from "@/types/address.types";
 import { Product } from "@/hooks/use-cart-store";
 import { UseQueryResult } from "@tanstack/react-query";

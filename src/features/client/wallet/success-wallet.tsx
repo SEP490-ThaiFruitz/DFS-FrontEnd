@@ -17,6 +17,7 @@ import {
   PlayIcon,
   QrCode,
   Wallet2Icon,
+  LucideBanknote,
 } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
@@ -48,6 +49,7 @@ import { VercelTab } from "@/components/custom/_custom_tabs/vercel-tabs";
 import { TransactionHistoryWallet } from "./wallet-history/history-transaction-wallet";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { WalletTransactionTypes } from "./wallet-lib/transaction";
+import { WithdrawForm } from "./withdraw-form";
 
 interface SuccessWalletProps {
   user: ApiResponse<Profile> | undefined;
@@ -65,6 +67,11 @@ const TABS = [
     id: "wallet-transaction-history",
     label: "Lịch sử giao dịch",
     icon: BarChart3,
+  },
+  {
+    id: "withdraw",
+    label: "Yêu cầu rút tiền",
+    icon: LucideBanknote,
   },
 ];
 export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
@@ -149,12 +156,15 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
             <div className="mb-4">
               <span className="text-sm font-semibold ">Số Dư Khả Dụng</span>
               <h2 className="text-2xl font-bold text-sky-500">
-                {formatVND(user?.value?.balance ?? 0)}
+                {formatVND(user?.value?.wallet?.balance ?? 0)}
               </h2>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-semibold">
-                Mã Ví: <span className="text-base">•••• 4589</span>
+                Mã Ví:{" "}
+                <span className="text-base">
+                  •••• {user?.value?.wallet?.walletId?.slice(-4)}
+                </span>
               </span>
               <AdvancedColorfulBadges
                 color="green"
@@ -317,10 +327,12 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
             </div>
           </div>
         </div>
-      ) : (
+      ) : tab === "wallet-transaction-history" ? (
         <TransactionHistoryWallet
           walletTransactions={transactionData.data?.value?.items ?? []}
         />
+      ) : (
+        tab === "withdraw" && <WithdrawForm wallet={user?.value?.wallet} />
       )}
     </>
   );

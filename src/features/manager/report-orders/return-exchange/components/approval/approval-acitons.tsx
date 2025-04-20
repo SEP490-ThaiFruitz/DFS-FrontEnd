@@ -1,37 +1,49 @@
 "use client";
 
 import { CheckCircle2, X } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatVND } from "@/lib/format-currency";
 
 interface ApprovalActionsProps {
   totalRefundAmount: number;
   onApproveClick: () => void;
+
+  disabled?: boolean;
 }
 
 export function ApprovalActions({
   totalRefundAmount,
   onApproveClick,
+  disabled = false,
 }: ApprovalActionsProps) {
   return (
-    <Card className="bg-slate-50  cardStyle">
-      <CardHeader>
+    // <div className="flex items-center gap-1">
+    //   <Button
+    //     className="w-full bg-emerald-600 hover:bg-emerald-700 h-8"
+    //     onClick={onApproveClick}
+    //   >
+    //     Phê duyệt trả hàng
+    //   </Button>
+
+    //   <Button
+    //     variant="outline"
+    //     className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 h-8"
+    //   >
+    //     Từ chối trả hàng
+    //   </Button>
+    // </div>
+    <Card className="bg-slate-50 cardStyle">
+      {/* <CardHeader>
         <CardTitle className="text-lg">
           Quyết định yêu cầu trả (đổi) hàng
         </CardTitle>
         <CardDescription>
           Phê duyệt hoặc từ chối yêu cầu trả hàng này
         </CardDescription>
-      </CardHeader>
+      </CardHeader> */}
       <CardContent>
-        <div className="space-y-4 ">
+        <div className="space-y-2 pt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 bg-white rounded-lg border border-slate-200 cardStyle">
               <div className="flex items-center mb-4">
@@ -46,6 +58,7 @@ export function ApprovalActions({
               <Button
                 className="w-full bg-emerald-600 hover:bg-emerald-700"
                 onClick={onApproveClick}
+                // disabled={disabled}
               >
                 Phê duyệt trả hàng
               </Button>

@@ -2,8 +2,13 @@
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  getStatusColor,
+  getStatusIcon,
+} from "@/features/manager/report-orders/order-status-badge";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import { OrderStatus } from "@/types/report-orders.types";
+import { formatRelativeTime, vietnameseDate } from "@/utils/date";
 import { ScrollTextIcon, Plane, Package, Boxes, Wallet } from "lucide-react";
 import React from "react";
 
@@ -39,10 +44,16 @@ export const OrderHeader = ({
   // };
 
   return (
-    <div className="bg-gradient-to-br from-amber-100 via-orange-300 to-green-100 text-white p-6 space-y-4">
+    <div className="bg-gradient-to-br from-slate-400 via-neutral-400 to-zinc-500 text-white p-6 space-y-4">
       <div className="flex justify-between items-start">
         <div>
-          <AdvancedColorfulBadges color="violet" className="mb-2 bg-white">
+          <AdvancedColorfulBadges
+            // color="violet"
+            className={`mb-2 bg-white p-2 font-semibold text-base ${getStatusColor(
+              status
+            )}`}
+          >
+            {getStatusIcon(status)}
             {OrderStatus[status.toLowerCase() as keyof typeof OrderStatus]}
           </AdvancedColorfulBadges>
           <h2 className="hidden xl:flex text-2xl font-bold items-center gap-2">
@@ -72,7 +83,7 @@ export const OrderHeader = ({
         <Package className="w-6 h-6" />
         Mã đơn hàng: {orderId}
       </h2>
-      <div className="flex flex-row sm:flex-row sm:items-center text-sm gap-2 sm:gap-4 text-indigo-100 cardStyle p-4">
+      <div className="flex flex-row sm:flex-row sm:items-center text-sm gap-2 sm:gap-4 text-white cardStyle p-4">
         <div>
           <div className="flex items-center gap-1">
             <svg
@@ -91,8 +102,16 @@ export const OrderHeader = ({
             </svg>
             Ngày mua:
           </div>
-          <div>{formatTimeVietNam(new Date(buyDate), true)}</div>
+          <div className="flex flex-col gap-y-1">
+            <span className="font-semibold text-base underline">
+              {vietnameseDate(buyDate, true)}
+            </span>
+            <span className="font-semibold text-base underline">
+              {formatRelativeTime(buyDate)}
+            </span>
+          </div>
         </div>
+
         {timeEstimateDelivery && (
           <>
             <span className="hidden sm:inline">•</span>
@@ -100,7 +119,7 @@ export const OrderHeader = ({
               <div className="flex items-center gap-1">
                 <Plane className="w-4 h-4 shrink-0" /> Ước tính vận chuyển:
               </div>
-              <div>{formatTimeVietNam(new Date(timeEstimateDelivery))}</div>
+              <div>{vietnameseDate(timeEstimateDelivery, true)}</div>
             </div>
           </>
         )}

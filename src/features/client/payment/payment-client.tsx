@@ -150,7 +150,7 @@ function PaymentClientPage() {
     [USER_KEY.ADDRESS]
   );
 
-  const balance = user?.value?.balance;
+  const balance = user?.value?.wallet?.balance;
 
   // this work
   // const test2 = useQuery({

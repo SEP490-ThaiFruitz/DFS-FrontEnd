@@ -47,8 +47,15 @@ import { toast } from "sonner";
 export type ReturnExchangeOrders = {
   id: string;
   orderId: string;
-  handler: string | null;
   user: {
+    name: string;
+    role: string;
+    email: string;
+    phone: string | null;
+    avatar: string;
+  } | null;
+
+  handler: {
     name: string;
     role: string;
     email: string;
@@ -350,12 +357,28 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
       );
     },
     cell: ({ row }) => {
-      const handler = row.original.handler as string | null;
+      const handler = row.original.handler;
 
       return (
         <div className="flex items-center gap-2">
           {handler ? (
-            <span>----</span>
+            <div className="flex  gap-3">
+              <Avatar className="size-14">
+                <AvatarImage
+                  src={handler.avatar || placeholderImage}
+                  alt={handler.name}
+                />
+                <AvatarFallback>{getUserInitials(handler.name)}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start">
+                <span className="font-semibold text-sky-500 text-base">
+                  {handler.name}
+                </span>
+                <span className="text-xs text-slate-700 font-semibold">
+                  {handler.email}
+                </span>
+              </div>
+            </div>
           ) : (
             <span className="text-slate-700 flex items-center gap-1">
               <User className="h-4 w-4" />

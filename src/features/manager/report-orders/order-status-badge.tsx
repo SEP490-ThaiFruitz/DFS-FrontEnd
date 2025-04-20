@@ -50,6 +50,16 @@ const ORDER_STATUS_FLOW = [
   "exchanged",
 ];
 
+export const isExceptionStatus = (status: string) => {
+  const statusLower = status?.toLowerCase();
+  return (
+    statusLower === OrderStatusEnum.CANCELLED ||
+    statusLower === OrderStatusEnum.RETURNED ||
+    statusLower === OrderStatusEnum.EXCHANGED ||
+    statusLower === OrderStatusEnum.REQUESTING
+  );
+};
+
 const iconSize = "size-6 hover:scale-110 transition duration-300";
 
 export const getStatusIcon = (status: string) => {

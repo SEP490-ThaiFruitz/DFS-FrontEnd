@@ -17,6 +17,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { RePaymentDialog } from "@/components/custom/_custom-dialog/re-payment-dialog";
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 import { ReturnOrderDialog } from "@/features/manager/report-orders/return-order-dialog";
+import {
+  getStatusColor,
+  getStatusIcon,
+  getStatusText,
+  isExceptionStatus,
+} from "@/features/manager/report-orders/order-status-badge";
+import { vietnameseDate } from "@/utils/date";
 
 interface OrderDetailsProps {
   orderId?: string;
@@ -77,6 +84,14 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
     Received: { color: "bg-green-100 text-green-800", text: "Đã nhận hàng" },
     Cancelled: { color: "bg-red-100 text-red-800", text: "Đã hủy" },
     Returned: { color: "bg-gray-100 text-gray-800", text: "Đã trả hàng" },
+    Exchanged: {
+      color: "bg-fuchsia-100 text-fuchsia-800",
+      text: "Đã đổi hàng",
+    },
+    Requesting: {
+      color: "bg-yellow-100 text-yellow-800",
+      text: "Đang yêu cầu",
+    },
   };
 
   const paymentStatusColors: Record<string, { color: string; text: string }> = {
@@ -88,7 +103,7 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
   const paymentMethodColors: Record<string, { color: string; text: string }> = {
     PayOs: { color: "bg-purple-100 text-purple-800", text: "Chờ thanh toán" },
     VnPay: { color: "bg-blue-100 text-blue-700", text: "Thanh toán thất bại" },
-    ShipCode: { color: "bg-yellow-100 text-yellow-800", text: "Đã thanh toán" },
+    Wallet: { color: "bg-yellow-100 text-yellow-800", text: "Đã thanh toán" },
   };
 
   const steps: TimelineEvent[] = timeline.map((item) => ({
@@ -127,8 +142,8 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
 
           <div className="flex justify-between items-center">
             <span className="text-gray-700 font-semibold">Ngày đặt:</span>
-            <span className="text-gray-900">
-              {formatTimeVietNam(new Date(orderDate), true)}
+            <span className="text-gray-900 underline">
+              {vietnameseDate(orderDate, true)}
             </span>
           </div>
 
@@ -136,14 +151,15 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             <span className="text-gray-700 font-semibold">
               Trạng thái đơn hàng:
             </span>
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                orderStatusColors[orderStatus]?.color ||
-                "bg-gray-100 text-gray-800"
-              }`}
+            <div
+              className={`px-3 flex items-center gap-x-1 w-fit py-1 rounded-full text-sm font-semibold ${getStatusColor(
+                orderStatus
+              )}`}
             >
-              {orderStatusColors[orderStatus]?.text || "Không xác định"}
-            </span>
+              {getStatusIcon(orderStatus)}
+              {/* {orderStatusColors[orderStatus]?.text || "Không xác định"} */}
+              {getStatusText(orderStatus) || "Không xác định"}
+            </div>
           </div>
 
           <div className="flex justify-between items-center">
@@ -307,7 +323,11 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
       </Card>
 
       {/* actions to re-status */}
-      <ReturnOrderDialog orderId={orderId} />
+
+      {!isExceptionStatus(orderStatus) && (
+        <ReturnOrderDialog orderId={orderId} />
+      )}
+
       {isCancel && (
         <CancelDialog
           isOpen={isCancel}

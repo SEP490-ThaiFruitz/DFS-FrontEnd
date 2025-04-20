@@ -3,6 +3,7 @@ import { memo } from "react";
 import { getTransactionBadgeColor } from "../history-transaction-wallet";
 import { vietnameseDate } from "@/utils/date";
 import { formatVND } from "@/lib/format-currency";
+import { transactionTypeText } from "../../wallet-lib/transaction";
 
 interface SelectedTransaction {
   id: string;
@@ -17,6 +18,8 @@ interface TransactionDetailProps {
 }
 export const TransactionDetail = memo(
   ({ selectedTransaction }: TransactionDetailProps) => {
+    // console.log("content: ", selectedTransaction?.content);
+
     return (
       selectedTransaction && (
         <div className="mt-6 cardStyle p-6 bg-muted/20">
@@ -41,13 +44,14 @@ export const TransactionDetail = memo(
                     selectedTransaction.transactionType
                   )}`}
                 >
-                  {selectedTransaction.transactionType === "Buy"
+                  {transactionTypeText(selectedTransaction.transactionType)}
+                  {/* {selectedTransaction.transactionType === "Buy"
                     ? "Mua"
                     : selectedTransaction.transactionType === "Deposite"
                     ? "Nạp tiền"
                     : selectedTransaction.transactionType === "Withdrawals"
                     ? "Rút tiền"
-                    : "Hoàn tiền"}
+                    : "Hoàn tiền"} */}
                 </Badge>
               </div>
               <div className="flex justify-between items-center py-2 border-b">
@@ -64,7 +68,7 @@ export const TransactionDetail = memo(
                 <span className="text-slate-700 font-semibold text-sm">
                   Nội dung
                 </span>
-                <span className="font-medium text-right">
+                <span className="text-right font-semibold text-violet-500">
                   {selectedTransaction.content}
                 </span>
               </div>

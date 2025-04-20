@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Loader2 } from "lucide-react";
+import { Eye, Loader2, ViewIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -69,8 +69,8 @@ export default function OrderDetails({ orderId }: OrderDetailsProps) {
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-1">
-          <Eye className="size-4" />
+        <Button variant="outline" className="flex items-center gap-1 w-full">
+          <ViewIcon className="size-4" />
           Xem Chi Tiết Đơn Hàng
         </Button>
       </SheetTrigger>

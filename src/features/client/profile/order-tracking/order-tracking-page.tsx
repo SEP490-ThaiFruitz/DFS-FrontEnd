@@ -261,7 +261,7 @@ export const OrderTrackingPage = () => {
               </div>
             </div> */}
 
-            <div className="px-6 pb-4 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+            <div className="px-6 pb-4 border-b bg-gradient-to-bl from-slate-400 rounded-b-3xl via-neutral-400 to-zinc-500 text-white">
               <div className="flex items-center justify-between h-14">
                 <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-3">
                   <span className="font-medium">Trạng thái thanh toán:</span>
@@ -273,16 +273,17 @@ export const OrderTrackingPage = () => {
                       Paid: {
                         label: "Đã thanh toán",
                         className:
-                          "bg-green-100 text-green-700 border-green-200",
+                          "bg-green-100 text-green-700 border-green-200 font-semibold",
                       },
                       Fail: {
                         label: "Thanh toán thất bại",
-                        className: "bg-red-100 text-red-700 border-red-200",
+                        className:
+                          "bg-red-100 text-red-700 border-red-200 font-semibold",
                       },
                       Default: {
                         label: "Chưa thanh toán",
                         className:
-                          "bg-amber-100 text-amber-700 border-amber-200",
+                          "bg-amber-100 text-amber-700 border-amber-200 font-semibold",
                       },
                     };
 

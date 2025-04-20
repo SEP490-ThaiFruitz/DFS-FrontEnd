@@ -52,7 +52,7 @@ export interface ClassNameType<T> extends AriaAttributes, DOMAttributes<T> {
 }
 
 export type ApiResponse<T = undefined> = {
-  value?: T
+  value?: T;
   isSuccess: boolean;
   error: {
     code: string;
@@ -69,13 +69,19 @@ export interface Profile {
   birthday: Date;
   avatar: string;
   point: number;
-  balance: number | null;
+  // balance: number | null;
+
+  wallet: {
+    walletId: string;
+    balance: number;
+  } | null;
   role: string;
+  isActive: boolean;
   isVerification: boolean;
 }
 
 export interface Favorite {
-  productId: string,
-  name: string,
-  imageUrl: string,
+  productId: string;
+  name: string;
+  imageUrl: string;
 }

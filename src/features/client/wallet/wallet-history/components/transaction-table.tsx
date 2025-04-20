@@ -8,12 +8,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatVND } from "@/lib/format-currency";
-import { vietnameseDate } from "@/utils/date";
+import { formatRelativeTime, vietnameseDate } from "@/utils/date";
 import { memo } from "react";
 import {
   getTransactionBadgeColor,
   getTransactionIcon,
 } from "../history-transaction-wallet";
+import { transactionTypeText } from "../../wallet-lib/transaction";
 
 interface TransactionTableProps {
   filteredTransactions: Array<{
@@ -33,11 +34,15 @@ export const TransactionTable = memo(
         <Table className="w-full table-auto ">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Loại</TableHead>
-              <TableHead>Nội dung</TableHead>
-              <TableHead>Số tiền</TableHead>
-              <TableHead className="hidden lg:table-cell">Số dư</TableHead>
-              <TableHead className="hidden sm:table-cell">Thời gian</TableHead>
+              <TableHead className="w-[100px] font-semibold">Loại</TableHead>
+              <TableHead className="font-semibold">Nội dung</TableHead>
+              <TableHead className="font-semibold">Số tiền</TableHead>
+              <TableHead className="hidden lg:table-cell font-semibold">
+                Số dư
+              </TableHead>
+              <TableHead className="hidden sm:table-cell font-semibold">
+                Thời gian
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="h-[350px] overflow-y-auto">
@@ -57,17 +62,18 @@ export const TransactionTable = memo(
                     >
                       {getTransactionIcon(transaction.transactionType)}
                       <span className="hidden sm:inline">
-                        {transaction.transactionType === "Buy"
+                        {transactionTypeText(transaction.transactionType)}
+                        {/* {transaction.transactionType === "Buy"
                           ? "Mua"
                           : transaction.transactionType === "Deposite"
                           ? "Nạp tiền"
                           : transaction.transactionType === "Withdrawals"
                           ? "Rút tiền"
-                          : "Hoàn tiền"}
+                          : "Hoàn tiền"} */}
                       </span>
                     </Badge>
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate">
+                  <TableCell className="max-w-[200px] text-wrap font-semibold text-violet-500">
                     {transaction.content}
                   </TableCell>
                   <TableCell
@@ -83,8 +89,16 @@ export const TransactionTable = memo(
                   <TableCell className="hidden lg:table-cell font-semibold text-sky-500">
                     {formatVND(transaction.balance)}
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-muted-foreground">
-                    {vietnameseDate(transaction.createdOnUtc, true)}
+                  <TableCell className="hidden sm:table-cell ">
+                    <div className="flex flex-col gap-y-1">
+                      <span className="text-slate-700 font-semibold text-base ">
+                        {vietnameseDate(transaction.createdOnUtc, true)}
+                      </span>
+
+                      <span className="text-sm font-semibold text-sky-400 underline">
+                        {formatRelativeTime(transaction.createdOnUtc)}
+                      </span>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

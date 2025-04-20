@@ -12,6 +12,7 @@ import {
   Receipt,
   ExternalLink,
   SendToBackIcon,
+  ReplaceIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,8 @@ import { CancelOrderDialog } from "./cancel-order-dialog";
 import { ReturnOrderDialog } from "./return-order-dialog";
 import OrderDetails from "../order-detail-components/order-detail";
 import { StatusBar } from "./status-bar";
+import Image from "next/image";
+import { placeholderImage } from "@/utils/label";
 
 // Update the getStatusStep function to reflect the new order flow
 // Get status step
@@ -158,6 +161,28 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                 {cancelled.reason}
               </span>
             </div>
+            <div className="flex items-center gap-2 mt-1">
+              {cancelled.image ? (
+                <Image
+                  src={cancelled.image ?? placeholderImage}
+                  alt={cancelled.name}
+                  className="w-8 h-8 rounded-full border object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs">
+                  ?
+                </div>
+              )}
+              <div className="flex flex-col text-xs text-slate-600">
+                <span className="font-semibold">{cancelled.name}</span>
+                <span className="text-muted-foreground capitalize">
+                  {cancelled.role}
+                </span>
+              </div>
+              <span className="text-xs text-slate-400 ml-auto">
+                {new Date(cancelled.date).toLocaleString("vi-VN")}
+              </span>
+            </div>
           </div>
         );
       } else if (statusStep === 7) {
@@ -166,18 +191,18 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             className="flex items-center gap-1 w-fit"
             color="rose"
           >
-            <XCircle className="size-6 hover:scale-110 transition duration-300" />
-            <span>Đã trả hàng</span>
+            <XCircle className="size-8 hover:scale-110 transition duration-300" />
+            <span className="font-semibold text-base">Đã trả hàng</span>
           </AdvancedColorfulBadges>
         );
       } else if (statusStep === 8) {
         return (
           <AdvancedColorfulBadges
             className="flex items-center gap-1 w-fit"
-            color="amber"
+            color="fuchsia"
           >
-            <XCircle className="size-6 hover:scale-110 transition duration-300" />
-            <span>Đã đổi sản phẩm</span>
+            <ReplaceIcon className="size-8 hover:scale-110 transition duration-300" />
+            <span className="font-semibold text-base">Đã đổi sản phẩm</span>
           </AdvancedColorfulBadges>
         );
       } else if (statusStep === 9) {
@@ -186,8 +211,10 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
             className="flex items-center gap-1 w-fit"
             color="amber"
           >
-            <SendToBackIcon className="size-6 hover:scale-110 transition duration-300" />
-            <span>Đơn hàng yêu cầu đổi/trả</span>
+            <SendToBackIcon className="size-8 hover:scale-110 transition duration-300" />
+            <span className="font-semibold text-base">
+              Đơn hàng yêu cầu đổi/trả
+            </span>
           </AdvancedColorfulBadges>
         );
       }
@@ -450,19 +477,6 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
 
       return (
         <div className="flex items-center justify-end gap-2">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                  <Eye className="h-4 w-4 text-slate-700" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <span>Xem chi tiết</span>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
@@ -484,14 +498,14 @@ export const orderListColumns: ColumnDef<OrderData>[] = [
                 <span>Sao chép mã</span>
               </Button>
               <OrderDetails orderId={row.original.id} />
-              <DropdownMenuSeparator />
+              {/* <DropdownMenuSeparator /> */}
 
-              {conditionalUpdate && (
+              {/* {conditionalUpdate && (
                 <UpdateStatusButtonDropdown
                   orderId={row.original.id}
                   status={status?.toLowerCase()}
                 />
-              )}
+              )} */}
 
               <DropdownMenuSeparator />
 

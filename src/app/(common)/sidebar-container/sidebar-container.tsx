@@ -35,6 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { placeholderImage } from "@/utils/label";
 import Link from "next/link";
 import { HistoryTransactionProfile } from "@/features/client/profile/history/history-transaction-profile";
+import { WalletSheet } from "@/features/client/wallet/wallet-sheet";
 
 // name: string;
 //     tag: string;
@@ -222,7 +223,16 @@ export const SidebarContainer = () => {
                 </div>
               </div>
 
-              <Link href="/">Trang chủ</Link>
+              <div className="flex items-center gap-2 w-fit">
+                <Link
+                  href="/"
+                  className="relative inline-flex text-sm h-11 tracking-tight items-center justify-center text-neutral-800 dark:text-neutral-300 before:absolute before:inset-0  before:bg-neutral-500/20 hover:before:scale-100 before:scale-50 before:opacity-0 hover:before:opacity-100 before:transition before:rounded-[14px] cursor-pointer w-fit font-semibold px-1"
+                >
+                  Trang chủ
+                </Link>
+
+                <WalletSheet isUserLoading={isUserLoading} user={user} />
+              </div>
 
               <p className="text-sm text-slate-500">
                 {TAB_CONTENT.find((item) => item.value === tab)?.description}

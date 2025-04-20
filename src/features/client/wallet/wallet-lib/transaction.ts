@@ -5,20 +5,35 @@ export enum TransactionTypeEnum {
   Refund = 3,
 }
 
-export function getTransactionTypeLabel(type: TransactionTypeEnum): string {
-  switch (type) {
-    case TransactionTypeEnum.Buy:
+// export function getTransactionTypeLabel(type: TransactionTypeEnum): string {
+//   switch (type) {
+//     case TransactionTypeEnum.Buy:
+//       return "Mua";
+//     case TransactionTypeEnum.Deposite:
+//       return "Nạp tiền";
+//     case TransactionTypeEnum.Withdrawals:
+//       return "Rút tiền";
+//     case TransactionTypeEnum.Refund:
+//       return "Hoàn tiền";
+//     default:
+//       return "Unknown";
+//   }
+// }
+
+export const transactionTypeText = (type: string) => {
+  switch (type.toLowerCase()) {
+    case "buy":
       return "Mua";
-    case TransactionTypeEnum.Deposite:
+    case "deposite":
       return "Nạp tiền";
-    case TransactionTypeEnum.Withdrawals:
+    case "withdrawals":
       return "Rút tiền";
-    case TransactionTypeEnum.Refund:
+    case "refund":
       return "Hoàn tiền";
     default:
-      return "Unknown";
+      return "Không xác định";
   }
-}
+};
 
 export type TransactionType = "Buy" | "Deposite" | "Withdrawals" | "Refund";
 

@@ -74,6 +74,8 @@ interface ApprovalDialogProps {
   isLoading: boolean;
   images: File[];
   onSubmit: () => Promise<void>;
+
+  disabledCondition?: boolean;
 }
 
 export function ApprovalDialog({
@@ -96,6 +98,8 @@ export function ApprovalDialog({
   // removeImage,
   isLoading,
   onSubmit,
+
+  disabledCondition = false,
 }: ApprovalDialogProps) {
   const [activeTab, setActiveTab] = useState("general");
 
@@ -216,7 +220,7 @@ export function ApprovalDialog({
               </Button>
               <Button
                 onClick={onSubmit}
-                disabled={isLoading}
+                disabled={disabledCondition || isLoading}
                 className="bg-emerald-600 hover:bg-emerald-700 min-w-[120px]"
               >
                 {isLoading ? "Đang xử lý..." : "Xác nhận phê duyệt"}

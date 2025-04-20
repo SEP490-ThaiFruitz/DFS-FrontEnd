@@ -272,7 +272,7 @@ export const OrderReturnExchangeDetail = memo(
           formData.append(`items[${index}]`, JSON.stringify(item));
         });
 
-        console.log("Sending approval request:", requestBody);
+        // console.log("Sending approval request:", requestBody);
 
         const response = await axios.patch(
           `${API}/Orders/${requestId}/return-exchange`,
@@ -285,7 +285,7 @@ export const OrderReturnExchangeDetail = memo(
           }
         );
 
-        console.log({ response });
+        // console.log({ response });
 
         if (response.status === 200) {
           queryClient.invalidateQueries({
@@ -302,17 +302,6 @@ export const OrderReturnExchangeDetail = memo(
 
           setIsApprovalDialogOpen(false);
         }
-
-        // In a real application, you would make an API call here
-        // const response = await fetch(`/api/v1/Orders/${requestId}/return-exchange`, {
-        //   method: 'PATCH',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify(requestBody),
-        // });
-
-        // Simulate API call
       } catch (error) {
         console.error("Error approving return request:", error);
         toast("Đã xảy ra lỗi khi phê duyệt yêu cầu trả hàng.");
@@ -320,6 +309,18 @@ export const OrderReturnExchangeDetail = memo(
         setIsLoading(false);
       }
     };
+
+    const isApproveDisabled =
+      !shippingFeeResponsibility || // chưa chọn người chịu phí
+      images.length === 0 || // chưa có hình ảnh nhận hàng
+      itemsData.some(
+        (item) =>
+          item.receiveQuantity === undefined ||
+          item.acceptQuantity === undefined ||
+          item.acceptQuantity > item.receiveQuantity || // accept không được lớn hơn nhận
+          item.acceptQuantity < 0 ||
+          item.receiveQuantity < 0
+      );
 
     return (
       <div>
@@ -364,6 +365,7 @@ export const OrderReturnExchangeDetail = memo(
                   // removeImage={removeImage}
                   isLoading={isLoading}
                   onSubmit={handleApproveSubmit}
+                  disabledCondition={isApproveDisabled}
                 />
 
                 <div className="sticky top-0 z-10 bg-white border-b p-6 pb-4 shadow-sm cardStyle">
@@ -376,7 +378,7 @@ export const OrderReturnExchangeDetail = memo(
                       {/* <StatusBadge status={safeOrderReturnData.requestStatus} /> */}
 
                       <div className="flex items-center gap-2">
-                        <Popover>
+                        {/* <Popover>
                           <PopoverTrigger>
                             <Button
                               variant="outline"
@@ -392,7 +394,7 @@ export const OrderReturnExchangeDetail = memo(
                               onApproveClick={handleApproveClick}
                             />
                           </PopoverContent>
-                        </Popover>
+                        </Popover> */}
 
                         <Badge
                           className={`font-semibold text-sm ${
@@ -453,6 +455,11 @@ export const OrderReturnExchangeDetail = memo(
                     ))}
                   </ScrollArea>
                 </div>
+
+                <ApprovalActions
+                  totalRefundAmount={totalRefundAmount}
+                  onApproveClick={handleApproveClick}
+                />
               </>
             ) : (
               <NotData

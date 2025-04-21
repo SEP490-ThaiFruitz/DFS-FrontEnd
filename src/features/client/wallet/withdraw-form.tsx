@@ -329,6 +329,13 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
     { label: "5.000.000 ₫", value: "5000000" },
   ];
 
+  const disabledWithdraw = Object.keys(errors).length > 0 || !validateForm();
+  // const disabledWithdraw =
+  //   Object.keys(errors).length > 0 ||
+  //   Object.values(withdrawalData).some((value) => {
+  //     return value === "" || value === undefined;
+  //   });
+
   return (
     <div className="w-full mx-auto p-4">
       <Card className=" overflow-hidden cardStyle w-full relative">
@@ -390,7 +397,7 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
                   }}
                   required
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 font-medium">
                   VND
                 </div>
               </div>
@@ -402,7 +409,7 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
                   {errors.amount}
                 </div>
               ) : withdrawalData.amount ? (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-slate-700">
                   {formatVND(withdrawalData.amount.replace(/\D/g, ""))}
                 </div>
               ) : null}
@@ -624,7 +631,7 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
                 <Button
                   type="submit"
                   className="w-full mt-4 bg-sky-600 hover:bg-sky-700 text-white"
-                  disabled={isSubmitting || Object.keys(errors).length > 0}
+                  disabled={isSubmitting || disabledWithdraw}
                 >
                   {isSubmitting ? (
                     <>
@@ -732,20 +739,20 @@ function WithdrawalConfirmation({
   return (
     <div className="rounded-lg border bg-card p-5 space-y-5">
       <div className="flex justify-between items-center pb-4 border-b">
-        <div className="text-sm text-muted-foreground">Mã Giao Dịch</div>
+        <div className="text-sm text-slate-700 font-semibold">Mã Giao Dịch</div>
         <div className="text-sm font-mono">{transactionId}</div>
       </div>
 
       <div className="flex flex-col space-y-4">
         <div className="flex justify-between items-center">
-          <div className="text-sm text-muted-foreground">Số Tiền</div>
+          <div className="text-sm text-slate-700 font-semibold">Số Tiền</div>
           <span className="text-xl font-semibold text-sky-500">
             {formatVND(amount)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Ngân Hàng</div>
+          <div className="text-sm text-slate-700 font-semibold">Ngân Hàng</div>
           <div className="flex items-center gap-2">
             <Image
               src={bank.logo || "/placeholder.svg"}
@@ -759,29 +766,35 @@ function WithdrawalConfirmation({
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Mã Ngân Hàng</div>
+          <div className="text-sm text-slate-700 font-semibold">
+            Mã Ngân Hàng
+          </div>
           <div className="font-mono">{bank.bin}</div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Số Tài Khoản</div>
+          <div className="text-sm text-slate-700 font-semibold">
+            Số Tài Khoản
+          </div>
           <div className="font-mono">
             {maskAccountNumber(bankAccountNumber)}
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Người Nhận</div>
+          <div className="text-sm text-slate-700 font-semibold">Người Nhận</div>
           <div>{recipientName}</div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Thời Gian</div>
+          <div className="text-sm text-slate-700 font-semibold">Thời Gian</div>
           <div className="text-sm">{formatDate()}</div>
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t">
-          <div className="text-sm text-muted-foreground">Phí Giao Dịch</div>
+          <div className="text-sm text-slate-700 font-semibold">
+            Phí Giao Dịch
+          </div>
           <div>0 ₫</div>
         </div>
 

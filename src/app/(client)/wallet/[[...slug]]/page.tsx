@@ -179,7 +179,9 @@ const WalletPage = () => {
                   </span>
                 </div>
                 <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
-                  {data?.payment?.status}
+                  {data?.payment?.status === "Paid"
+                    ? "Đã Thanh Toán"
+                    : data?.payment?.status}
                 </span>
               </div>
 
@@ -194,7 +196,7 @@ const WalletPage = () => {
                   <div className="font-semibold">
                     {vietnameseDate(data?.payment?.createdOnUtc, true)}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-sky-500 font-semibold">
                     {formatRelativeTime(data?.payment?.createdOnUtc)}
                   </div>
                 </div>
@@ -211,7 +213,7 @@ const WalletPage = () => {
                   <div className="font-semibold">
                     {vietnameseDate(data?.payment?.createdOnUtc, true)}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-sky-500 font-semibold">
                     {formatRelativeTime(data?.payment?.createdOnUtc)}
                   </div>
                 </div>
@@ -229,7 +231,7 @@ const WalletPage = () => {
                 Số Dư Hiện Tại
               </span>
               <span className="text-xl font-bold text-green-600">
-                {formatVND(data?.balance + data?.payment?.amount)}
+                {formatVND(data?.payment?.amount)}
               </span>
             </div>
           </CardContent>

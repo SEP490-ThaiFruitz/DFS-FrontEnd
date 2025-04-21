@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
-import { ChevronDownIcon, X } from "lucide-react";
+import { BadgeXIcon, ChevronDownIcon, ListRestartIcon, X } from "lucide-react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 type TSelectData = {
   id: string;
@@ -10,15 +13,31 @@ type TSelectData = {
   icon?: string;
   disabled?: boolean;
   custom?: React.ReactNode;
+  tags?: string[];
+
+  image?: string;
 };
 
 type SelectProps = {
   data?: TSelectData[];
   onChange?: (value: string) => void;
   defaultValue?: string;
+
+  title?: string;
+
+  className?: string;
+
+  onAction?: (value: string) => Promise<void>;
 };
 
-const AnimatedSelect = ({ data, defaultValue }: SelectProps) => {
+const AnimatedSelect = ({
+  data,
+  defaultValue,
+  title,
+  className,
+  onChange,
+  onAction,
+}: SelectProps) => {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<TSelectData | undefined>(undefined);
@@ -37,6 +56,12 @@ const AnimatedSelect = ({ data, defaultValue }: SelectProps) => {
   const onSelect = (value: string) => {
     const item = data?.find((i) => i.value === value);
     setSelected(item as TSelectData);
+    onChange?.(item?.id as string);
+    setOpen(false);
+  };
+
+  const onReset = () => {
+    setSelected(undefined);
     setOpen(false);
   };
 
@@ -71,10 +96,13 @@ const AnimatedSelect = ({ data, defaultValue }: SelectProps) => {
                 borderRadius: 20,
               }}
               layoutId="dropdown"
-              className="overflow-hidden rounded-[20px] w-[400px] border border-input bg-background py-2 shadow-md"
+              className={cn(
+                "overflow-hidden rounded-[20px] w-[400px] border border-input bg-background py-2 shadow-md",
+                className
+              )}
               ref={ref}
             >
-              <Head setOpen={setOpen} />
+              <Head setOpen={setOpen} title={title} reset={onReset} />
               <div className="w-full overflow-y-auto">
                 {data?.map((item) => (
                   <SelectItem
@@ -83,6 +111,8 @@ const AnimatedSelect = ({ data, defaultValue }: SelectProps) => {
                     key={item.id}
                     item={item}
                     onChange={onSelect}
+                    tags={item?.tags}
+                    onAction={onAction}
                   />
                 ))}
               </div>
@@ -96,7 +126,15 @@ const AnimatedSelect = ({ data, defaultValue }: SelectProps) => {
 
 export default AnimatedSelect;
 
-const Head = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
+const Head = ({
+  setOpen,
+  title = "Các lựa chọn",
+  reset,
+}: {
+  setOpen: (open: boolean) => void;
+  title?: string;
+  reset?: () => void;
+}) => {
   return (
     <motion.div
       initial={{
@@ -114,8 +152,18 @@ const Head = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
       layout
       className="flex items-center justify-between p-4"
     >
-      <motion.strong layout className="text-foreground">
-        Choose Model
+      <motion.strong layout className="text-foreground flex items-center ">
+        {title}
+
+        <Separator
+          className="h-5 mx-2 w-[1px] bg-slate-500"
+          orientation="vertical"
+        />
+
+        <ListRestartIcon
+          className="text-foreground size-6 cursor-pointer hover:text-secondary-foreground transition-colors"
+          onClick={reset}
+        />
       </motion.strong>
       <button
         onClick={() => setOpen(false)}
@@ -131,7 +179,11 @@ type SelectItemProps = {
   item?: TSelectData;
   noDescription?: boolean;
   order?: string;
+  tags?: string[];
   onChange?: (index: string) => void;
+  onAction?: (value: string) => Promise<void>;
+
+  image?: string;
 };
 
 const animation = {
@@ -161,10 +213,11 @@ const SelectItem = ({
   noDescription = true,
   order,
   onChange,
+  onAction,
 }: SelectItemProps) => {
   return (
     <motion.div
-      className={`group flex cursor-pointer items-center justify-between gap-2 p-4 py-2 hover:bg-accent hover:text-accent-foreground ${
+      className={`group flex cursor-pointer items-center justify-between gap-2 p-4 py-2 hover:bg-accent hover:text-accent-foreground  w-full ${
         noDescription && "!p-2"
       }`}
       variants={animation}
@@ -175,18 +228,42 @@ const SelectItem = ({
       custom={order}
       onClick={() => onChange?.(order as string)}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 w-full">
+        {item?.icon && (
+          <motion.div
+            layout
+            layoutId={`icon-${item?.id}`}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-input"
+          >
+            {item?.icon}
+          </motion.div>
+        )}
+
+        {item?.image && (
+          <motion.div
+            layout
+            layoutId={`image-${item?.id}`}
+            className="flex size-14 items-center justify-center rounded-full border border-input overflow-hidden"
+          >
+            <Image
+              src={item?.image}
+              height={56}
+              width={56}
+              alt={item.label}
+              className="h-full w-full object-cover "
+            />
+          </motion.div>
+        )}
+
         <motion.div
           layout
-          layoutId={`icon-${item?.id}`}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-input"
+          className={`flex min-w-56 flex-col w-full ${
+            onAction ? "relative" : ""
+          }`}
         >
-          {item?.icon}
-        </motion.div>
-        <motion.div layout className="flex w-56 flex-col">
           <motion.strong
             layoutId={`label-${item?.id}`}
-            className="text-sm font-semibold text-foreground"
+            className="text-sm font-semibold text-foreground line-clamp-2"
           >
             {item?.label}
           </motion.strong>
@@ -194,6 +271,35 @@ const SelectItem = ({
             <span className="truncate text-xs text-muted-foreground">
               {item?.description}
             </span>
+          )}
+
+          {item?.tags?.length && (
+            <div className="flex items-center gap-1 mt-2 flex-wrap">
+              {item?.tags?.slice(0, 3)?.map((tag, index) => (
+                // <div className="flex items-center gap-1" key={index}>
+                <span
+                  key={index}
+                  className="rounded-full bg-secondary px-2 py-1 text-xs text-secondary-foreground font-semibold"
+                >
+                  {tag}
+                </span>
+                // </div>
+              ))}
+              <span className="rounded-full bg-secondary px-2 py-1 text-xs text-secondary-foreground font-semibold">
+                +{item?.tags?.length - 2}
+              </span>
+            </div>
+          )}
+
+          {onAction && (
+            <BadgeXIcon
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onAction(item?.id as string);
+              }}
+              className="cursor-pointer absolute top-0 right-0 text-slate-700 hover:text-rose-600 transition-all duration-300 hover:rotate-12"
+            />
           )}
         </motion.div>
       </div>

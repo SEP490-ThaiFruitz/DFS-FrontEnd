@@ -45,7 +45,6 @@ import { SerializedEditorState } from "lexical";
 import { cn } from "@/lib/utils";
 import { styleInput } from "@/lib/common-style";
 import { toast } from "sonner";
-import { interactApiClient } from "@/actions/client/interact-api-client";
 import axios from "axios";
 import { API } from "@/app/key/url";
 
@@ -55,8 +54,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { BLOG_KEY } from "@/app/key/comm-key";
 import { CuisineSelector } from "@/components/custom/_custom_select/cuisine-selector";
 import { useData } from "@/providers/data-provider";
-import { AsyncSelect } from "@/components/custom/_custom_select/select-async";
 import { BlogPost } from "@/types/blogs.types";
+import AnimatedSelect from "@/components/custom/_custom_select/animated-select";
+
+import { useConfirm } from "@/hooks/use-confirm";
 
 // Dynamically import the editor to reduce initial load time
 const Editor = dynamic(() => import("@/components/blocks/editor-x/editor"), {
@@ -160,6 +161,8 @@ export default function BlogForm() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [activeTab, setActiveTab] = useState("editor");
 
+  const [selectPostId, setSelectPostId] = useState<string>("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -212,6 +215,88 @@ export default function BlogForm() {
   const token = Cookies.get("accessToken");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Bạn có chắc chắn muốn xóa không?",
+    "Nếu đồng ý xóa, bạn sẽ không thể khôi phục lại bài viết này."
+  );
+
+  // const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  //   setIsSubmitting(true);
+  //   const formData = new FormData();
+  //   formData.append("Title", values.title);
+  //   formData.append("Content", values.content);
+  //   formData.append("BlogCategoryId", values.blogCategoryId.toString());
+
+  //   values.tagNames.forEach((tag) => {
+  //     formData.append("TagNames", tag);
+  //   });
+
+  //   if (values.thumbnail) {
+  //     formData.append("Thumbnail", values.thumbnail);
+  //   }
+
+  //   try {
+  //     const response = await axios.post(`${API}/Blogs`, formData, {
+  //       headers: {
+  //         ...headers,
+  //         "Content-Type": "multipart/form-data", //* important to set this header for file uploads
+  //       },
+  //     });
+
+  //     // console.log({ response });
+  //     if (response.status) {
+  //       form.reset();
+  //       queryClient.invalidateQueries({
+  //         queryKey: [BLOG_KEY.BLOGS],
+  //       });
+  //       setEditorState(initialValue);
+  //       setThumbnailPreview(null);
+  //       setUploadProgress(0);
+  //       toast.success("Tải lên bài viết thành công!");
+  //     }
+
+  //     // console.log("Response:", response.data);
+  //   } catch (error) {
+  //     console.log({ error });
+  //     toast.error(
+  //       "Có lỗi xảy ra trong quá trình tải lên bài viết của bạn. Vui lòng thử lại sau."
+  //     );
+  //   } finally {
+  //     setIsSubmitting(false);
+
+  //     setUploadProgress(0);
+  //   }
+  // };
+
+  const onDelete = async (blogId: string) => {
+    setIsSubmitting(true);
+
+    const ok = await confirm();
+
+    if (!ok) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`${API}/Blogs/${blogId}`, {
+        headers: {
+          ...headers,
+        },
+      });
+
+      if (response.status) {
+        queryClient.invalidateQueries({ queryKey: [BLOG_KEY.BLOGS] });
+        toast.success("Xóa bài viết thành công!");
+      }
+    } catch (error) {
+      console.log({ error });
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     const formData = new FormData();
@@ -228,34 +313,47 @@ export default function BlogForm() {
     }
 
     try {
-      const response = await axios.post(`${API}/Blogs`, formData, {
-        headers: {
-          ...headers,
-          "Content-Type": "multipart/form-data", //* important to set this header for file uploads
-        },
-      });
+      let response;
 
-      // console.log({ response });
+      if (selectPostId) {
+        formData.append("Id", selectPostId);
+
+        // Chỉnh sửa
+        response = await axios.put(`${API}/Blogs`, formData, {
+          headers: {
+            ...headers,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        // Tạo mới
+        response = await axios.post(`${API}/Blogs`, formData, {
+          headers: {
+            ...headers,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
       if (response.status) {
         form.reset();
-        queryClient.invalidateQueries({
-          queryKey: [BLOG_KEY.BLOGS],
-        });
+        queryClient.invalidateQueries({ queryKey: [BLOG_KEY.BLOGS] });
         setEditorState(initialValue);
         setThumbnailPreview(null);
         setUploadProgress(0);
-        toast.success("Tải lên bài viết thành công!");
-      }
+        setSelectPostId(""); // Reset lại mode edit
 
-      // console.log("Response:", response.data);
+        toast.success(
+          selectPostId
+            ? "Cập nhật bài viết thành công!"
+            : "Tạo bài viết thành công!"
+        );
+      }
     } catch (error) {
       console.log({ error });
-      toast.error(
-        "Có lỗi xảy ra trong quá trình tải lên bài viết của bạn. Vui lòng thử lại sau."
-      );
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
     } finally {
       setIsSubmitting(false);
-
       setUploadProgress(0);
     }
   };
@@ -306,133 +404,210 @@ export default function BlogForm() {
   const [editorState, setEditorState] =
     useState<SerializedEditorState>(initialValue);
 
+  // useEffect(() => {
+  //   if (!selectPostId || !blogs.data?.value?.items) return;
+
+  //   const findBlog = blogs.data?.value?.items.find(
+  //     (blog) => blog.id === selectPostId
+  //   );
+
+  //   if (findBlog) {
+  //     form.setValue("title", findBlog.title);
+  //     form.setValue("content", findBlog.content);
+  //     form.setValue("blogCategoryId", findBlog.blogCategory.id);
+  //     form.setValue("tagNames", findBlog.tagNames);
+  //     setThumbnailPreview(findBlog.thumbnail);
+  //     setEditorState(JSON.parse(findBlog.content));
+  //   } else {
+  //     form.setValue("content", JSON.stringify(editorState));
+  //   }
+  // }, [editorState, selectPostId, blogs.data?.value?.items]);
+
+  // const tagWatch = form.watch("tagNames");
+  useEffect(() => {
+    const findBlog = blogs.data?.value?.items.find(
+      (blog) => blog.id === selectPostId
+    );
+
+    if (findBlog) {
+      if (form.getValues("title") !== findBlog.title) {
+        form.setValue("title", findBlog.title);
+      }
+
+      const currentContent = form.getValues("content");
+      if (currentContent !== findBlog.content) {
+        form.setValue("content", findBlog.content, {
+          shouldDirty: true,
+        });
+        // form.setValue("content", JSON.stringify(editorState), {
+        //   shouldDirty: true,
+        // });
+
+        const parsed = JSON.parse(findBlog.content);
+        setEditorState(parsed);
+      }
+
+      form.setValue("blogCategoryId", findBlog.blogCategory.id);
+      form.setValue("tagNames", findBlog.tagNames);
+      setThumbnailPreview(findBlog.thumbnail);
+    } else {
+      // Chỉ gọi khi chưa có content
+      if (!form.getValues("content")) {
+        // form.setValue("content", JSON.stringify(editorState));
+        form.setValue("content", JSON.stringify(editorState), {
+          shouldDirty: true,
+        });
+      }
+    }
+  }, [
+    blogs.data?.value?.items,
+    selectPostId,
+    editorState,
+    setEditorState,
+    form,
+  ]);
+
   useEffect(() => {
     form.setValue("content", JSON.stringify(editorState));
   }, [editorState]);
 
-  // const tagWatch = form.watch("tagNames");
+  const watchContent = form.watch("content");
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-6">
-          {/* Main content area - 2/3 width on large screens */}
-          <div className="lg:col-span-2 p-6 lg:p-8">
-            <div className="space-y-8">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base font-semibold flex items-center gap-1 mb-1">
-                      <Heading1 className="size-6" /> Tiêu đề
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Hãy nhập tiêu đề hấp dẫn"
-                        className={cn(
-                          `text-lg py-6 px-4 border-slate-200 focus-visible:ring-slate-400 ${styleInput}`
-                        )}
-                        {...field}
+    <>
+      <ConfirmDialog />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-6">
+            {/* Main content area - 2/3 width on large screens */}
+            <div className="lg:col-span-2 p-6 lg:p-8">
+              <div className="space-y-8">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-semibold flex items-center gap-1 mb-1">
+                        <Heading1 className="size-6" /> Tiêu đề
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Hãy nhập tiêu đề hấp dẫn"
+                          className={cn(
+                            `text-lg py-6 px-4 border-slate-200 focus-visible:ring-slate-400 ${styleInput}`
+                          )}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="space-y-3">
+                  <FormLabel className="text-base font-semibold flex items-center gap-1 mb-1">
+                    <Captions className="size-6" /> Nội dung
+                  </FormLabel>
+                  <Tabs
+                    defaultValue="editor"
+                    value={activeTab}
+                    onValueChange={setActiveTab}
+                    className="w-full"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <TabsList className="grid w-[200px] grid-cols-2">
+                        <TabsTrigger value="editor">Nội dung</TabsTrigger>
+                        <TabsTrigger value="preview">Xem trước</TabsTrigger>
+                      </TabsList>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handlePreview}
+                        className="text-slate-500 hover:text-slate-900"
+                      >
+                        {activeTab === "editor"
+                          ? "Xem trước"
+                          : "Quay lại nội dung"}
+                      </Button>
+                    </div>
+
+                    <TabsContent value="editor" className="mt-0">
+                      <FormField
+                        control={form.control}
+                        name="content"
+                        render={({ field }) => {
+                          return (
+                            <FormItem>
+                              <FormControl>
+                                <Editor
+                                  maxLength={5000}
+                                  editorSerializedState={editorState}
+                                  onSerializedChange={(value) =>
+                                    setEditorState(value)
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                    </TabsContent>
 
-              <div className="space-y-3">
-                <FormLabel className="text-base font-semibold flex items-center gap-1 mb-1">
-                  <Captions className="size-6" /> Nội dung
-                </FormLabel>
-                <Tabs
-                  defaultValue="editor"
-                  value={activeTab}
-                  onValueChange={setActiveTab}
-                  className="w-full"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <TabsList className="grid w-[200px] grid-cols-2">
-                      <TabsTrigger value="editor">Nội dung</TabsTrigger>
-                      <TabsTrigger value="preview">Xem trước</TabsTrigger>
-                    </TabsList>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handlePreview}
-                      className="text-slate-500 hover:text-slate-900"
-                    >
-                      {activeTab === "editor"
-                        ? "Xem trước"
-                        : "Quay lại nội dung"}
-                    </Button>
-                  </div>
-
-                  <TabsContent value="editor" className="mt-0">
-                    <FormField
-                      control={form.control}
-                      name="content"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Editor
-                              maxLength={5000}
-                              editorSerializedState={editorState}
-                              onSerializedChange={(value) =>
-                                setEditorState(value)
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="preview" className="mt-0">
-                    <Editor
-                      maxLength={5000}
-                      editorSerializedState={editorState}
-                      // onSerializedChange={(value) => setEditorState(value)}
-                      readOnly
-                    />
-                  </TabsContent>
-                </Tabs>
+                    <TabsContent value="preview" className="mt-0">
+                      <Editor
+                        maxLength={5000}
+                        editorSerializedState={editorState}
+                        // onSerializedChange={(value) => setEditorState(value)}
+                        readOnly
+                      />
+                    </TabsContent>
+                  </Tabs>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Sidebar - 1/3 width on large screens */}
-          <div className="lg:col-span-1 bg-slate-50 p-6 lg:p-8 border-t lg:border-t-0 lg:border-l border-slate-200 cardStyle">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg flex items-center gap-1">
-                  <BookUp className="size-6" />
-                  Xuất bản bài viết
-                </h3>
-                <Separator className="bg-slate-200" />
-              </div>
+            {/* Sidebar - 1/3 width on large screens */}
+            <div className="lg:col-span-1 bg-slate-50 p-6 lg:p-8 border-t lg:border-t-0 lg:border-l border-slate-200 cardStyle">
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-lg flex items-center gap-1">
+                      <BookUp className="size-6" />
+                      Xuất bản bài viết
+                    </h3>
 
-              <FormField
-                control={form.control}
-                name="thumbnail"
-                render={() => (
-                  <FormItem className="space-y-4">
-                    <div>
-                      <FormLabel className="text-base font-semibold flex items-center gap-1">
-                        <ImageIcon className="size-5" />
-                        Hình tiêu đề
-                      </FormLabel>
-                      <FormDescription>
-                        Hãy chọn ảnh chất lượng cao để thu hút người đọc
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <div className="space-y-4">
-                        <div
-                          {...getRootProps()}
-                          className={`
+                    <BlogsOptions
+                      blogs={blogs.data?.value?.items ?? []}
+                      setSelectPostId={setSelectPostId}
+                      selectPostId={selectPostId}
+                      onDelete={onDelete}
+                      // selectPostId={form.getValues("blogId")}
+                    />
+                  </div>
+                  <Separator className="bg-slate-200" />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="thumbnail"
+                  render={() => (
+                    <FormItem className="space-y-4">
+                      <div>
+                        <FormLabel className="text-base font-semibold flex items-center gap-1">
+                          <ImageIcon className="size-5" />
+                          Hình tiêu đề
+                        </FormLabel>
+                        <FormDescription>
+                          Hãy chọn ảnh chất lượng cao để thu hút người đọc
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <div className="space-y-4">
+                          <div
+                            {...getRootProps()}
+                            className={`
                             border-2 border-dashed rounded-lg p-4 transition-colors duration-200 ease-in-out cursor-pointer
                             ${
                               isDragActive
@@ -441,249 +616,212 @@ export default function BlogForm() {
                             }
                             ${thumbnailPreview ? "bg-slate-50" : "bg-white"}
                           `}
-                        >
-                          <input {...getInputProps()} />
-                          {thumbnailPreview ? (
-                            <div className="relative">
-                              <Image
-                                src={thumbnailPreview || "/placeholder.jpg"}
-                                alt="Thumbnail preview"
-                                width={500}
-                                height={200}
-                                className="w-full h-48 object-cover rounded-md"
-                              />
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon"
-                                className="absolute -top-2 -right-2 h-7 w-7 rounded-full shadow-lg"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  form.setValue("thumbnail", undefined);
-                                  setThumbnailPreview(null);
-                                  setUploadProgress(0);
-                                }}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                              {uploadProgress < 100 && (
-                                <div className="mt-2">
-                                  <Progress
-                                    value={uploadProgress}
-                                    className="h-1"
-                                  />
-                                  <p className="text-xs text-slate-500 mt-1 text-right">
-                                    {uploadProgress}% uploaded
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center justify-center py-4 text-slate-500">
-                              <ImageIcon className="h-10 w-10 mb-2 text-slate-400" />
-                              <p className="text-sm font-medium mb-1">
-                                {isDragActive
-                                  ? "Drop the image here"
-                                  : "Drag & drop an image here"}
-                              </p>
-                              <p className="text-xs text-slate-400">
-                                hoặc nhấn vào đây để chọn ảnh
-                              </p>
-                            </div>
-                          )}
+                          >
+                            <input {...getInputProps()} />
+                            {thumbnailPreview ? (
+                              <div className="relative">
+                                <Image
+                                  src={thumbnailPreview || "/placeholder.jpg"}
+                                  alt="Thumbnail preview"
+                                  width={500}
+                                  height={200}
+                                  className="w-full h-48 object-cover rounded-md"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="icon"
+                                  className="absolute -top-2 -right-2 h-7 w-7 rounded-full shadow-lg"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    form.setValue("thumbnail", undefined);
+                                    setThumbnailPreview(null);
+                                    setUploadProgress(0);
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                                {uploadProgress < 100 && (
+                                  <div className="mt-2">
+                                    <Progress
+                                      value={uploadProgress}
+                                      className="h-1"
+                                    />
+                                    <p className="text-xs text-slate-500 mt-1 text-right">
+                                      {uploadProgress}% uploaded
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center py-4 text-slate-500">
+                                <ImageIcon className="h-10 w-10 mb-2 text-slate-400" />
+                                <p className="text-sm font-medium mb-1">
+                                  {isDragActive
+                                    ? "Drop the image here"
+                                    : "Drag & drop an image here"}
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                  hoặc nhấn vào đây để chọn ảnh
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="blogCategoryId"
-                render={({ field }) => (
-                  <FormItem className="space-y-4">
-                    <div>
-                      <FormLabel
-                        className="text-sm font-semibold flex items-center gap-1 mb-1
+                <FormField
+                  control={form.control}
+                  name="blogCategoryId"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <div>
+                        <FormLabel
+                          className="text-sm font-semibold flex items-center gap-1 mb-1
                       "
+                        >
+                          <ChartBarStacked className="size-5" />
+                          Loại bài viết
+                        </FormLabel>
+                        <FormDescription>
+                          Hãy chọn loại bài viết phù hợp với nội dung của bạn
+                        </FormDescription>
+                      </div>
+                      <Select
+                        onValueChange={(value) =>
+                          field.onChange(Number.parseInt(value))
+                        }
+                        defaultValue={field.value.toString()}
                       >
-                        <ChartBarStacked className="size-5" />
-                        Loại bài viết
-                      </FormLabel>
-                      <FormDescription>
-                        Hãy chọn loại bài viết phù hợp với nội dung của bạn
-                      </FormDescription>
-                    </div>
-                    <Select
-                      onValueChange={(value) =>
-                        field.onChange(Number.parseInt(value))
-                      }
-                      defaultValue={field.value.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger
-                          className={` bg-white border-slate-200 rounded-xl duration-200 focus:outline-none focus:ring-neutral-300 
+                        <FormControl>
+                          <SelectTrigger
+                            className={` bg-white border-slate-200 rounded-xl duration-200 focus:outline-none focus:ring-neutral-300 
                             placeholder:text-slate-700 
                              `}
-                        >
-                          <SelectValue placeholder="Chọn loại bài viết" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {CATEGORIES.map((category) => (
-                          <SelectItem
-                            key={category.id}
-                            value={category.id.toString()}
                           >
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                            <SelectValue placeholder="Chọn loại bài viết" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {CATEGORIES.map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={category.id.toString()}
+                            >
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="tagNames"
-                render={({ field }) => (
-                  <FormItem className="space-y-4">
-                    <div>
-                      <FormLabel className="text-sm font-semibold flex items-center gap-1 mb-1">
-                        <Tag className="size-5" /> Tags
-                      </FormLabel>
-                      <FormDescription>
-                        Hãy thêm các thẻ để giúp người đọc tìm thấy bài viết của
-                        bạn dễ dàng hơn
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <CuisineSelector
-                        title="Tags"
-                        options={options}
-                        activeOptions={field.value}
-                        toggleCuisine={handleToggleTags}
-                        className="font-semibold text-sm italic"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="tagNames"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <div>
+                        <FormLabel className="text-sm font-semibold flex items-center gap-1 mb-1">
+                          <Tag className="size-5" /> Tags
+                        </FormLabel>
+                        <FormDescription>
+                          Hãy thêm các thẻ để giúp người đọc tìm thấy bài viết
+                          của bạn dễ dàng hơn
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <CuisineSelector
+                          title="Tags"
+                          options={options}
+                          activeOptions={field.value}
+                          toggleCuisine={handleToggleTags}
+                          className="font-semibold text-sm italic"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Footer with action buttons */}
-        <div className="flex items-center justify-end gap-3 p-6 bg-slate-50 border-t border-slate-200">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleReset}
-            className="border-slate-300 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
-          >
-            Làm mới
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-6 bg-sky-600 hover:bg-sky-500 hoverAnimate transition duration-300 text-white hover:text-white"
-            variant="outline"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Đang tải lên...
-              </>
-            ) : (
-              "Tải lên bài viết"
-            )}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          {/* Footer with action buttons */}
+          <div className="flex items-center justify-end gap-3 p-6 bg-slate-50 border-t border-slate-200">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleReset}
+              className="border-slate-300 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+            >
+              Làm mới
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-6 bg-sky-600 hover:bg-sky-500 hoverAnimate transition duration-300 text-white hover:text-white"
+              variant="outline"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang tải lên...
+                </>
+              ) : (
+                "Tải lên bài viết"
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </>
   );
 }
 
 interface BlogOptionsProps {
   selectPostId: string;
 
-  blogs: BlogPost[];
+  blogs: BlogPost[] | [];
   setSelectPostId: React.Dispatch<React.SetStateAction<string>>;
+
+  onDelete: (blogId: string) => Promise<void>;
 }
 
 const BlogsOptions = ({
   blogs,
   selectPostId,
   setSelectPostId,
+  onDelete,
 }: BlogOptionsProps) => {
-  const searchBlogs = async (blog: string) => {
-    return await blogs;
-  };
+  const data = blogs.map((item) => {
+    return {
+      id: item.id,
+      value: item.id,
+      label: item.title,
+      image: item.thumbnail,
+      tags: item.tagNames,
+    };
+  });
+
+  // console.log({ selectPostId });
 
   return (
-    // <AsyncSelect<BlogPost>
-    //   fetcher={searchBlogs}
-    //   renderOption={(blog) => (
-    //     <div className="flex items-center gap-2">
-    //       <Image
-    //         src={blog.thumbnail}
-    //         alt={blog.title}
-    //         width={24}
-    //         height={24}
-    //         className="rounded-full"
-    //       />
-    //       <div className="flex flex-col">
-    //         <div className="font-semibold">{blog.title}</div>
-    //         {blog.tagNames.map((tag) => {
-    //           return (
-    //             <div
-    //               key={tag}
-    //               className="text-sm font-semibold rounded-full bg-slate-100 px-2 py-1 text-slate-600"
-    //             >
-    //               {tag}
-    //             </div>
-    //           );
-    //         })}
-    //       </div>
-    //     </div>
-    //   )}
-    //   getOptionValue={(blog) => blog.id}
-    //   getDisplayValue={(blog) => (
-    //     <div className="flex items-center gap-2 text-left">
-    //       <Image
-    //         src={blog.thumbnail}
-    //         alt={blog.title}
-    //         width={24}
-    //         height={24}
-    //         className="rounded-full"
-    //       />
-    //       <div className="flex flex-col leading-tight">
-    //         <div className="font-semibold">{blog.title}</div>
-    //         {blog.tagNames.map((tag) => {
-    //           return (
-    //             <div
-    //               key={tag}
-    //               className="text-sm font-semibold rounded-full bg-slate-100 px-2 py-1 text-slate-600"
-    //             >
-    //               {tag}
-    //             </div>
-    //           );
-    //         })}
-    //       </div>
-    //     </div>
-    //   )}
-    //   notFound={<div className="py-6 text-center text-sm">No blogs found</div>}
-    //   label="blog"
-    //   placeholder="Search users..."
-    //   value={selectPostId}
-    //   onChange={setSelectPostId}
-    //   width="375px"
-    // />
-    <div></div>
+    <div className="absolute top-2 right-5 z-10 w-full ">
+      <AnimatedSelect
+        data={data}
+        defaultValue={selectPostId}
+        onChange={setSelectPostId}
+        title="Chọn bài viết"
+        className="w-[600px]"
+        onAction={onDelete}
+      />
+    </div>
   );
 };

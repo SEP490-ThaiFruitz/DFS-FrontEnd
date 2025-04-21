@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { ApiResponse, Profile } from "@/types/types";
 import { getProfile } from "@/actions/user";
 import { USER_KEY } from "@/app/key/user-key";
+import { Skeleton } from "../ui/skeleton";
 
 enum ROLES {
   Administrator = "Administrator",
@@ -176,6 +177,6 @@ export function NavUser() {
       </SidebarMenuItem>
     </SidebarMenu>
   ) : (
-    <SidebarMenuSkeleton />
+    <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />
   );
 }

@@ -44,6 +44,7 @@ interface ProductVariant {
   packagingType: string
   netWeight: number
   quantitySold: number
+  revenue: number
 }
 
 interface ProductDetail {

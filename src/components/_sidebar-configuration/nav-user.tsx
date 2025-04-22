@@ -140,11 +140,23 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem onClick={() => {
+                if (user?.value?.role === ROLES.Administrator) {
+                  router.push("/admin/profile")
+                } else {
+                  router.push("/manage/profile");
+                }
+              }} className="cursor-pointer">
                 <BadgeCheck />
                 Tài khoản
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem onClick={() => {
+                if (user?.value?.role === ROLES.Administrator) {
+                  router.push("/admin/notification")
+                } else {
+                  router.push("/manage/notification");
+                }
+              }} className="cursor-pointer">
                 <Bell />
                 Thông báo
               </DropdownMenuItem>
@@ -154,12 +166,12 @@ export function NavUser() {
               onClick={async () => {
                 await logOut();
                 queryClient.removeQueries({
-                  queryKey: ["authUseruser?.value"],
+                  queryKey: [USER_KEY.PROFILE],
                 });
 
                 if (
-                  user?.value?.role.toLowerCase() === ROLES.Administrator ||
-                  user?.value?.role.toLowerCase() === ROLES.Manager
+                  (user?.value?.role === ROLES.Administrator ||
+                    user?.value?.role === ROLES.Manager)
                 ) {
                   router.push("/manage");
                 } else {

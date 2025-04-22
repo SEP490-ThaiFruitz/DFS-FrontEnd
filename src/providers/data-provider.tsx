@@ -13,6 +13,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { USER_KEY } from "@/app/key/user-key";
 import { CustomComboProduct } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 import { BlogPost } from "@/types/blogs.types";
+import { DiscountRulesTypes } from "@/components/global-components/card/custom-combo/combo-discount-info";
 
 export type DataContextType = {
   products: UseQueryResult<ApiResponse<PageResult<Product>>, Error>;
@@ -21,6 +22,8 @@ export type DataContextType = {
   customCombo: UseQueryResult<ApiResponse<CustomComboProduct[]>, Error>;
 
   blogs: UseQueryResult<ApiResponse<PageResult<BlogPost>>, Error>;
+
+  discountRules: UseQueryResult<ApiResponse<DiscountRulesTypes[]>, Error>;
 };
 
 // export type ProductTransformType = Omit<PageResult<Product>, "items"> & {
@@ -60,6 +63,11 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     [USER_KEY.CUSTOM_COMBO]
   );
 
+  const discountRules = useFetch<ApiResponse<DiscountRulesTypes[]>>(
+    "/Combos/user",
+    [USER_KEY.DISCOUNT_RULES]
+  );
+
   // console.log({ productList });
   // console.log({ carts });
   // if (isLoading) {
@@ -75,6 +83,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         addresses,
         customCombo,
         blogs,
+        discountRules,
       }}
     >
       {children}

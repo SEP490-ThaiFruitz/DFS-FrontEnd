@@ -79,7 +79,10 @@ export const TabContainer = ({ product }: TabContainerProps) => {
           }}
         />
       ) : (
-        <ReviewsTab overallRatingResponse={product.overallRatingResponse} />
+        <ReviewsTab
+          overallRatingResponse={product.overallRatingResponse}
+          productId={product.id}
+        />
       )}
     </div>
   );

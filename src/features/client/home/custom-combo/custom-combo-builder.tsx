@@ -43,6 +43,7 @@ import {
   ComboDiscountInfo,
 } from "@/components/global-components/card/custom-combo/combo-discount-info";
 import { formatVND } from "@/lib/format-currency";
+import { useData } from "@/providers/data-provider";
 
 export type ComboItem = {
   id: string; // Using productVariantId as id
@@ -79,6 +80,8 @@ export const CustomComboBuilder = memo(
     const [activeItem, setActiveItem] = useState<ComboItem | null>(null);
 
     const queryClient = useQueryClient();
+
+    const { discountRules } = useData();
 
     // Get unique categories from all products
     const categories = [
@@ -514,6 +517,7 @@ export const CustomComboBuilder = memo(
                         (count, item) => count + item.quantity,
                         0
                       )}
+                      value={discountRules?.data?.value?.[0]?.value as string}
                     />
                   )}
                 </div>
@@ -537,7 +541,10 @@ export const CustomComboBuilder = memo(
                   />
                 </div>
 
-                <ComboDiscountInfo className="mb-4" />
+                <ComboDiscountInfo
+                  className="mb-4"
+                  value={discountRules?.data?.value?.[0]?.value as string}
+                />
 
                 <Separator className="my-6 bg-slate-100" />
 

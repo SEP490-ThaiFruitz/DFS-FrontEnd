@@ -64,7 +64,7 @@ export const ProductGallery = memo(
       );
     };
 
-    console.log(productCertification);
+    // console.log(productCertification);
 
     return (
       // <div className="p-6 lg:p-8 border-b lg:border-b-0 lg:border-r border-gray-100">
@@ -90,7 +90,7 @@ export const ProductGallery = memo(
                     e.stopPropagation();
                     handlePrevImage();
                   }}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md hover:bg-white transition-colors z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md hover:bg-white z-10 opacity-0 group-hover:opacity-100 transition-all"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -100,7 +100,7 @@ export const ProductGallery = memo(
                     e.stopPropagation();
                     handleNextImage();
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md hover:bg-white transition-colors z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full p-2 shadow-md hover:bg-white  z-10 opacity-0 group-hover:opacity-100 transition-all"
                   aria-label="Next image"
                 >
                   <ChevronRight className="h-5 w-5" />

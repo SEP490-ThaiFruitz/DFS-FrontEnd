@@ -34,6 +34,7 @@ import { RelatedProduct } from "./related-product";
 import { VariantSelector } from "./variant-selector";
 import { ProductInfo } from "./product-info";
 import { useCartStore } from "@/hooks/use-cart-store";
+import { TabContainer } from "../tabs-content";
 
 // Dummy data for testing purposes. Replace with actual data fetching.
 
@@ -296,9 +297,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           frequentlyBoughtTogether={frequentlyBoughtTogether}
         /> */}
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
-          {/* vercel tab */}
-
+        {/* <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
           <VercelTab
             tabs={TABS}
             activeTab={tab}
@@ -323,9 +322,14 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               }}
             />
           ) : (
-            <ReviewsTab overallRatingResponse={product.overallRatingResponse} />
+            <ReviewsTab
+              overallRatingResponse={product.overallRatingResponse}
+              productId={product.id}
+            />
           )}
-        </div>
+        </div> */}
+
+        <TabContainer product={product} />
 
         <RelatedProduct />
 

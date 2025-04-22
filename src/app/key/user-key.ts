@@ -8,4 +8,7 @@ export enum USER_KEY {
   HISTORY_TRANSACTION = "historyTransaction",
 
   WALLET_TRANSACTION = "walletTransaction",
+  DISCOUNT_RULES = "discountRules",
+
+  REQUEST_WITHDRAWAL = "requestWithdrawal",
 }

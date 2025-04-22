@@ -52,6 +52,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { interactApiClient } from "@/actions/client/interact-api-client";
+import { formatAccountNumber } from "./wallet-lib/transaction";
 
 // Dữ liệu ngân hàng Việt Nam
 const banks = [
@@ -168,7 +169,6 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
     const { name, value } = e.target;
     setWithdrawalData((prev) => ({ ...prev, [name]: value }));
 
-    // Xóa lỗi khi người dùng bắt đầu sửa
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -188,7 +188,6 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
     }
   };
 
-  // Xác thực form
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     let isValid = true;
@@ -309,12 +308,6 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
   };
 
   // Định dạng số tài khoản
-  const formatAccountNumber = (value: string) => {
-    return value
-      .replace(/\s/g, "")
-      .replace(/(\d{4})/g, "$1 ")
-      .trim();
-  };
 
   // Các giá trị tiền phổ biến
   const commonAmounts = [
@@ -329,12 +322,12 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
     { label: "5.000.000 ₫", value: "5000000" },
   ];
 
-  const disabledWithdraw = Object.keys(errors).length > 0 || !validateForm();
-  // const disabledWithdraw =
-  //   Object.keys(errors).length > 0 ||
-  //   Object.values(withdrawalData).some((value) => {
-  //     return value === "" || value === undefined;
-  //   });
+  // const disabledWithdraw = Object.keys(errors).length > 0 || !validateForm();
+  const disabledWithdraw =
+    Object.keys(errors).length > 0 ||
+    Object.values(withdrawalData).some((value) => {
+      return value === "" || value === undefined;
+    });
 
   return (
     <div className="w-full mx-auto p-4">
@@ -378,9 +371,7 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
                   )}
                   value={withdrawalData.amount}
                   onChange={(e) => {
-                    // Chỉ cho phép số
                     const value = e.target.value.replace(/\D/g, "");
-                    // Định dạng với dấu phân cách hàng nghìn
                     const formattedValue =
                       value === ""
                         ? ""
@@ -390,7 +381,6 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
                       amount: formattedValue,
                     }));
 
-                    // Xóa lỗi khi người dùng bắt đầu sửa
                     if (errors.amount) {
                       setErrors((prev) => ({ ...prev, amount: undefined }));
                     }

@@ -20,6 +20,13 @@ export enum TransactionTypeEnum {
 //   }
 // }
 
+export const formatAccountNumber = (value: string) => {
+  return value
+    .replace(/\s/g, "")
+    .replace(/(\d{4})/g, "$1 ")
+    .trim();
+};
+
 export const transactionTypeText = (type: string) => {
   switch (type.toLowerCase()) {
     case "buy":

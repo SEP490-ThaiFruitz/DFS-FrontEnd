@@ -18,6 +18,10 @@ import {
   QrCode,
   Wallet2Icon,
   LucideBanknote,
+  GalleryVerticalEndIcon,
+  Loader2Icon,
+  BanknoteIcon,
+  LandmarkIcon,
 } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
@@ -50,6 +54,12 @@ import { TransactionHistoryWallet } from "./wallet-history/history-transaction-w
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { WalletTransactionTypes } from "./wallet-lib/transaction";
 import { WithdrawForm } from "./withdraw-form";
+import { EnhanceDataTableWithAllFeatures } from "@/components/global-components/data-table/enhance-data-table";
+import {
+  requestHistoryColumns,
+  WithdrawalRequest,
+} from "./wallet-history/components/request-column";
+import { NotData } from "@/components/global-components/no-data";
 
 interface SuccessWalletProps {
   user: ApiResponse<Profile> | undefined;
@@ -68,10 +78,16 @@ const TABS = [
     label: "Lịch sử giao dịch",
     icon: BarChart3,
   },
+
   {
     id: "withdraw",
     label: "Yêu cầu rút tiền",
     icon: LucideBanknote,
+  },
+  {
+    id: "request-history",
+    label: "Lịch sử yêu cầu rút tiền",
+    icon: GalleryVerticalEndIcon,
   },
 ];
 export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
@@ -87,6 +103,13 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
   const transactionData = useFetch<
     ApiResponse<PageResult<WalletTransactionTypes>>
   >("/Wallets/wallet-transaction", [USER_KEY.WALLET_TRANSACTION]);
+
+  const requestWithdrawData = useFetch<
+    ApiResponse<PageResult<WithdrawalRequest>>
+  >("/Wallets/request-withdrawal/user", [USER_KEY.REQUEST_WITHDRAWAL]);
+
+
+  // console.log("yeu cau rut tien: ", requestWithdrawData.data)
 
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -331,11 +354,49 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
         <TransactionHistoryWallet
           walletTransactions={transactionData.data?.value?.items ?? []}
         />
+      ) : tab === "withdraw" ? (
+        <WithdrawForm wallet={user?.value?.wallet} />
       ) : (
-        tab === "withdraw" && <WithdrawForm wallet={user?.value?.wallet} />
+        tab === "request-history" && (
+          !requestWithdrawData.isLoading ? (
+           requestWithdrawData.data?.value?.items?.length ? (
+            <EnhanceDataTableWithAllFeatures
+            columns={requestHistoryColumns}
+            initialData={requestWithdrawData.data?.value?.items ?? []}
+            title="Lịch sử yêu cầu rút tiền"
+            description="Theo dõi lịch sử yêu cầu rút tiền của bạn."
+            queryClient={requestWithdrawData}
+            queryKey={[USER_KEY.REQUEST_WITHDRAWAL]}
+            enableEditing={false}
+            enableSelection={false}
+            enableExpansion={false}
+          />
+           ) : (
+           <NotData
+            title="Bạn chưa có lịch sử yêu cầu rút tiền nào"
+            description=" 
+              Nếu có yêu cầu rút tiền hãy quay lại và thực hiện
+            "
+            icons={[BanknoteIcon, Wallet2Icon, LandmarkIcon]}
+
+            action={{
+              label: "Hãy thử tải lại!",
+              onClick: () => requestWithdrawData.refetch()
+            }}
+           
+           />
+           )
+          ): (
+            <div className="flex h-[300px] w-full items-center justify-center rounded-md border border-dashed">
+            <Loader2Icon className="h-8 w-8 animate-spin text-slate-300" />
+            </div>
+          )
+        )
       )}
     </>
   );
 });
+
+
 
 SuccessWallet.displayName = "SuccessWallet";

@@ -1,7 +1,3 @@
-import { EditorState } from "lexical";
-import { Loader2 } from "lucide-react";
-import dynamic from "next/dynamic";
-
 const FindPage = () => {
   return (
     <div className="h-auto py-20 bg-green-500">

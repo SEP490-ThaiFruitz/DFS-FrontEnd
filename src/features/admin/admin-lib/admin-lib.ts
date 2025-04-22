@@ -226,3 +226,9 @@ export const PAYMENT_SELECT: Record<string, string> = {
     Wallet: "Ví điện tử",
     PayOs: "PayOs",
 };
+
+export const STATUS_HIDDEN_SELECT: Record<string, string> = {
+    All: "Tất cả",
+    Active: "Đang hoạt động",
+    IsDeleted: "Đã ẩn",
+};

@@ -127,7 +127,7 @@ function VoucherPage() {
                     </Button>
                 </Link>
             </div>
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8 bg-white cardStyle shadow border">
                 {isLoading ? <DataTableSkeleton /> :
                     <DataTableCustom
                         data={vouchers?.value?.items || []}

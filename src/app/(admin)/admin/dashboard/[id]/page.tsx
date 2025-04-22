@@ -3,16 +3,15 @@ import { useParams } from "next/navigation"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Banknote, CalendarIcon, ChevronDown, MessageSquareMore, Package, ShoppingBag, ShoppingCart } from "lucide-react"
-import Image from "next/image"
+import { Banknote, CalendarIcon, ChevronDown, MessageSquareMore, Package, ShoppingBag } from "lucide-react"
 import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays, subMonths, subWeeks, subYears } from "date-fns"
 import { ApiResponse } from "@/types/types"
 import { formatVND } from "@/lib/format-currency"
 import ImagePreview from "@/components/custom/_custom-image/image-preview"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
-import ProductChart from "./product_statisc/chart"
-import ProductPie from "./product_statisc/pie"
+import ProductChart from "./product-statisc/chart"
+import ProductPie from "./product-statisc/pie"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useMemo, useState } from "react"
 import { PRODUCT_KEY } from "@/app/key/admin-key"
@@ -23,6 +22,7 @@ import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { vi } from "date-fns/locale/vi"
 import { calculateGrowthRate } from "@/lib/calculate"
+import ProductVariantTab from "./product-variant/product-variant"
 
 interface ProductChartData {
   date: string
@@ -40,6 +40,7 @@ interface Feedback {
 }
 
 interface ProductVariant {
+  productVariantId: string
   productVariantImage: string
   packagingType: string
   netWeight: number
@@ -262,12 +263,12 @@ const StatisticProductPage = () => {
         <div className="grid gap-6">
           <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-lg border overflow-hidden flex-shrink-0">
+              <div className="w-28 h-28 cardStyle border overflow-hidden flex-shrink-0">
                 <ImagePreview
                   images={[product?.value?.image ?? '/images/dried-fruit.webp']}
-                  initialHeight={64}
-                  initialWidth={64}
-                  className="object-cover w-full h-full"
+                  initialHeight={1000}
+                  initialWidth={1000}
+                  className="object-center h-full w-full hover:cursor-pointer"
                 />
               </div>
               <div>
@@ -463,43 +464,7 @@ const StatisticProductPage = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="productVariants" className="space-y-4">
-              <Card className="cardStyle">
-                <CardHeader>
-                  <CardTitle>Biến thể sản phẩm</CardTitle>
-                  <CardDescription>Chi tiết về các biến thể và số lượng bán</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {product?.value?.productVariants.map((variant, i) => (
-                      <div key={i} className="flex items-center gap-4 border-b pb-4 last:border-0">
-                        <div className="rounded-md border overflow-hidden h-10 w-10 flex-shrink-0">
-                          <Image
-                            src={variant.productVariantImage || "/placeholder.svg"}
-                            alt={variant.packagingType}
-                            width={40}
-                            height={40}
-                            className="object-cover w-full h-full"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                            <div>
-                              <p className="text-sm font-medium">{variant.packagingType}</p>
-                              <p className="text-xs text-muted-foreground">Trọng lượng: {variant.netWeight} kg</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm font-medium">{variant.quantitySold} đã bán</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+            <ProductVariantTab productVariants={product?.value?.productVariants ?? []} />
           </Tabs>
         </div>
       </main >

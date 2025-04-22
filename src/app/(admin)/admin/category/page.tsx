@@ -114,7 +114,7 @@ const CategoryPage = () => {
         <p className='text-2xl font-semibold leading-none tracking-tight'>Loại sản phẩm</p>
         <CreateCategoryDialog />
       </div>
-      <div className="mt-8 bg-white rounded-lg shadow border">
+      <div className="mt-8 bg-white cardStyle shadow border">
         {isLoading ? <DataTableSkeleton /> :
           <DataTableCustom
             data={categories?.value?.items || []}

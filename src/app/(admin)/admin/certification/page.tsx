@@ -122,7 +122,7 @@ const CertificationPage = () => {
                     Tạo chứng chỉ
                 </Button>
             </div>
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8 bg-white cardStyle shadow border">
                 {isLoading ? <DataTableSkeleton /> :
                     <DataTableCustom
                         data={certifications ?? []} columns={columns} searchFiled="name" placeholder="tên chứng chỉ"

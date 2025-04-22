@@ -172,7 +172,7 @@ function UserPage() {
                 </Button>
             </div>
 
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8 bg-white cardStyle shadow border">
                 {isLoading ? <DataTableSkeleton /> :
                     <DataTableCustom<User> data={users?.value?.items || []} placeholder="tên" columns={columns} searchFiled="name" />}
             </div>

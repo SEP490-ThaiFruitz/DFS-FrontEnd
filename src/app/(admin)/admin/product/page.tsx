@@ -7,7 +7,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatVND } from '@/lib/format-currency'
 import { PageResult, ApiResponse } from '@/types/types'
-import { AlertTriangle, ChartArea, CirclePlus, Eye, Trash2 } from 'lucide-react'
+import {
+    AlertTriangle, ChartArea, CirclePlus, Eye, Trash2, Package,
+    Layers3,
+    Boxes,
+    Archive,
+    RotateCw,
+    ChevronDown
+} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -15,6 +22,24 @@ import { ColumnDef } from '@tanstack/react-table'
 import { DataTableSkeleton } from '@/components/global-components/custom-skeleton/data-table-skeleton'
 import { DataTableCustom } from '@/components/global-components/data-table/data-table-custom'
 import { PRODUCT_KEY } from '@/app/key/admin-key'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { STATUS_HIDDEN_SELECT } from '@/features/admin/admin-lib/admin-lib'
+import CardSkeleton from '@/components/global-components/custom-skeleton/card-skeleton'
+
+
+interface ProductResponse {
+    productsManageResponse: PageResult<Product>
+    productManageStatistic: ProductManageStatistic
+}
+
+interface ProductManageStatistic {
+    totalProduct: number,
+    totalProductVariant: number,
+    totalProductQuantity: number,
+    hide: number
+}
 
 interface ProductVariant {
     id: string;
@@ -37,8 +62,15 @@ interface Product {
 
 function ProductPage() {
     const [product, setProduct] = useState<Product | undefined>(undefined);
-    const { data: products, isLoading } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/manage`, [PRODUCT_KEY.PRODUCT])
+    const { data: products, isLoading } = useFetch<ApiResponse<ProductResponse>>(`/Products/manage`, [PRODUCT_KEY.PRODUCT])
     const [productVariants, setProductVariants] = useState<ProductVariant[] | undefined>(undefined)
+    const [seletedOption, setSeletedOption] = useState<string>("All")
+
+    const filterProducts = products?.value?.productsManageResponse.items.filter((product) => {
+        if (seletedOption === "All") return true
+        if (seletedOption === "Active") return !product.isDeleted
+        if (seletedOption === "IsDeleted") return product.isDeleted
+    })
 
     const StockIndicator = ({ stockQuantity, reOrderPoint }: { stockQuantity: number; reOrderPoint: number }) => {
         const percentage = Math.round((stockQuantity / reOrderPoint) * 100);
@@ -182,13 +214,22 @@ function ProductPage() {
                             <ChartArea />
                         </Button>
                     </Link>
-                    {!row.original.isDeleted && (
+                    {!row.original.isDeleted ? (
                         <Button
                             onClick={() => setProduct(row.original)}
                             variant="outline"
                             className="h-6 w-6 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                         >
                             <Trash2 />
+                        </Button>
+
+                    ) : (
+                        <Button
+                            onClick={() => setProduct(row.original)}
+                            variant="outline"
+                            className="h-6 w-6 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white"
+                        >
+                            <RotateCw />
                         </Button>
                     )}
                 </div>
@@ -208,18 +249,118 @@ function ProductPage() {
                     </Button>
                 </Link>
             </div>
+            {isLoading ? (
+                <div className="w-full mt-8">
+                    <div className="grid gap-8 md:gap-16 md:grid-cols-2 lg:grid-cols-4">
+                        {Array(4)
+                            .fill(0)
+                            .map((_, i) => (
+                                <CardSkeleton key={i + 1} />
+                            ))}
 
-            <div className="mt-8 bg-white rounded-lg shadow border">
-                {isLoading ? <DataTableSkeleton /> :
-                    <DataTableCustom
-                        data={products?.value?.items ?? []}
-                        columns={columns}
-                        searchFiled='name'
-                        placeholder="tên sản phẩm"
-                    />
-                }
-            </div>
+                    </div>
+                    <div className="mt-8">
+                        <Card className="card bg-white shadow border cardStyle">
+                            <CardHeader>
+                                <CardTitle>
+                                    <Skeleton className="h-4 w-24" />
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
+                                    {[...Array(5)].map((_, index) => (
+                                        <div key={index + 1} className="flex items-center">
+                                            <Skeleton className="w-12 h-4 text-sm font-medium" />
+                                            <Skeleton className="w-full h-4" />
+                                            <Skeleton className="w-12 h-4 text-right text-sm font-medium" />
+                                            <Skeleton className="w-16 h-4 text-right text-sm text-muted-foreground" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className="mt-8">
+                        <DataTableSkeleton />
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <div className="grid gap-8 md:gap-16 md:grid-cols-2 lg:grid-cols-4 mt-10">
+                        <Card className="transition-all hover:shadow-md cardStyle">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Tổng sản phẩm</CardTitle>
+                                <div className="bg-green-50 rounded-full p-3 border">
+                                    <Package className="h-4 w-4 text-green-600" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{products?.value?.productManageStatistic.totalProduct ?? 0}</div>
+                            </CardContent>
+                        </Card>
 
+                        <Card className="transition-all hover:shadow-md cardStyle">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Tổng biến thể</CardTitle>
+                                <div className="bg-blue-50 rounded-full p-3 border">
+                                    <Layers3 className="h-4 w-4 text-blue-600" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{products?.value?.productManageStatistic.totalProductVariant ?? 0}</div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="transition-all hover:shadow-md cardStyle">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Tổng số lượng</CardTitle>
+                                <div className="bg-purple-50 rounded-full p-3 border">
+                                    <Boxes className="h-4 w-4 text-purple-600" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{products?.value?.productManageStatistic.totalProductQuantity ?? 0}</div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="transition-all hover:shadow-md cardStyle">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Đã ẩn</CardTitle>
+                                <div className="bg-amber-50 rounded-full p-3 border">
+                                    <Archive className="h-4 w-4 text-amber-600" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{products?.value?.productManageStatistic.hide ?? 0}</div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className="mt-8 bg-white cardStyle shadow border">
+                        <DataTableCustom
+                            data={filterProducts ?? []}
+                            columns={columns}
+                            searchFiled='name'
+                            placeholder="tên sản phẩm"
+                        >
+                            <div className='flex items-center justify-end pr-4'>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="min-w-fit justify-between sm:w-auto">
+                                            {STATUS_HIDDEN_SELECT[seletedOption]}
+                                            <ChevronDown className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="start">
+                                        <DropdownMenuItem onClick={() => setSeletedOption("All")}>Tất cả</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setSeletedOption("Active")}>Hoạt động</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setSeletedOption("IsDeleted")}>Đã ẩn</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </DataTableCustom>
+                    </div>
+                </>
+            )}
             {productVariants && (
                 <Dialog open={productVariants !== undefined} onOpenChange={() => setProductVariants(undefined)}>
                     <DialogContent className="sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px]">
@@ -269,9 +410,10 @@ function ProductPage() {
                     onClose={() => setProduct(undefined)}
                     name={product?.name}
                     deleteFunction={deleteProduct}
+                    message={product?.isDeleted === false ? product.productVariants.length > 0 ? "Ẩn" : "Xóa" : "Hiện"}
                     refreshKey={[[PRODUCT_KEY.PRODUCT]]}
                     content={product.productVariants.length > 0
-                        ? `${product.name} đã có sản phẩm phụ. Bạn có muốn ẩn đi không?`
+                        ? product.isDeleted == false ? `${product.name} đã có sản phẩm phụ. Bạn có muốn ẩn đi không?` : 'Bạn có muốn khôi phục lại sản phẩm này không?'
                         : `Thao tác này không thể hoàn lại. Bạn có muốn xóa ${product.name}`
                     }
                 />

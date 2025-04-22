@@ -11,9 +11,9 @@ import Link from "next/link"
 import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useMemo, useState } from "react"
+import CardSkeleton from "@/components/global-components/custom-skeleton/card-skeleton"
 
 interface ProductBatchItem {
     number: number
@@ -75,7 +75,7 @@ const InventoryPage = () => {
         return items.sort((a, b) => {
             const remainingA = getRemainingDays(a.expirationDate);
             const remainingB = getRemainingDays(b.expirationDate);
-            
+
             if (remainingA <= 0 && remainingB <= 0) return 0;
             if (remainingA <= 0) return 1;
             if (remainingB <= 0) return -1;
@@ -217,19 +217,11 @@ const InventoryPage = () => {
             </div>
             {isLoading ? (
                 <div className="w-full">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-8 md:gap-16 md:grid-cols-2 lg:grid-cols-4">
                         {Array(4)
                             .fill(0)
                             .map((_, i) => (
-                                <Card key={i}>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <Skeleton className="h-4 w-24" />
-                                        <Skeleton className="h-10 w-10 rounded-full" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Skeleton className="h-8 w-28" />
-                                    </CardContent>
-                                </Card>
+                                <CardSkeleton key={i + 1} />
                             ))}
 
                     </div>

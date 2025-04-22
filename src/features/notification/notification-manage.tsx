@@ -47,7 +47,6 @@ function NotificationManage() {
             <CardContent>
                 <div className="flex flex-col">
                     <div className="p-4 border-b">
-                        <h3 className="text-lg font-semibold">Thông báo</h3>
                         {notifications?.value && notifications?.value?.totalUnread > 0 && (
                             <div className="text-sm text-muted-foreground">
                                 Bạn có {notifications.value.totalUnread} thông báo chưa đọc{" "}

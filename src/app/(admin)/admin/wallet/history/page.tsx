@@ -6,7 +6,6 @@ import { DataTableSkeleton } from '@/components/global-components/custom-skeleto
 import { DataTableCustom } from '@/components/global-components/data-table/data-table-custom'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { formatVND } from '@/lib/format-currency'
 import { formatVietnamesePhoneNumber } from '@/lib/format-phone-number'
 import { formatTimeVietNam } from '@/lib/format-time-vietnam'
@@ -16,13 +15,14 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays, subMonths, subWeeks, subYears } from "date-fns"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { ArrowDownLeft, ArrowUpDown, ArrowUpRight, Banknote, CalendarIcon, Check, ChevronDown } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, Banknote, CalendarIcon, Check, ChevronDown } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { vi } from 'date-fns/locale/vi'
 import { calculateGrowthRate } from '@/lib/calculate'
 import TransactionChart from './transaction-chart'
+import CardSkeleton from '@/components/global-components/custom-skeleton/card-skeleton'
 
 
 interface TransactionResponse {
@@ -365,19 +365,11 @@ const WalletHistoryPage = () => {
 
             {isLoading ? (
                 <div className="w-full">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-8 md:gap-16 md:grid-cols-2 lg:grid-cols-4">
                         {Array(4)
                             .fill(0)
                             .map((_, i) => (
-                                <Card key={i}>
-                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                        <Skeleton className="h-4 w-24" />
-                                        <Skeleton className="h-10 w-10 rounded-full" />
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Skeleton className="h-8 w-28" />
-                                    </CardContent>
-                                </Card>
+                                <CardSkeleton key={i + 1} />
                             ))}
 
                     </div>

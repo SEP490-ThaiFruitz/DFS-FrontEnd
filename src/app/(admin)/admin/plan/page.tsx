@@ -232,7 +232,7 @@ const PlanPage = () => {
                     </Button>
                 </Link>
             </div>
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8 bg-white cardStyles shadow border">
                 {isLoading ? <DataTableSkeleton /> :
                     <DataTableCustom
                         data={requests?.value?.items ?? []} columns={columns} searchFiled="name" placeholder="tên"

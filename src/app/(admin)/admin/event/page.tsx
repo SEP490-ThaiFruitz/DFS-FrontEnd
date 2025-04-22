@@ -142,7 +142,7 @@ const EventPage = () => {
                 </Button>
 
             </div>
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8 bg-white cardStyle shadow border">
                 {isLoading ? <DataTableSkeleton /> :
                     <DataTableCustom
                         data={events?.value ?? []} columns={columns} searchFiled="name" placeholder='tên'

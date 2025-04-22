@@ -83,6 +83,8 @@ export const CustomComboBuilder = memo(
 
     const { discountRules } = useData();
 
+    console.log(discountRules);
+
     // Get unique categories from all products
     const categories = [
       { id: "all", name: "Tất cả" },
@@ -372,6 +374,12 @@ export const CustomComboBuilder = memo(
       setActiveItem(null);
     };
 
+    const parsedValue = discountRules?.data?.value?.[0]?.value
+      ? discountRules?.data?.value?.[0]?.value
+      : "[]";
+
+    console.log({ parsedValue });
+
     return (
       <DndContext
         onDragStart={handleDragStart}
@@ -517,7 +525,7 @@ export const CustomComboBuilder = memo(
                         (count, item) => count + item.quantity,
                         0
                       )}
-                      value={discountRules?.data?.value?.[0]?.value as string}
+                      value={parsedValue}
                     />
                   )}
                 </div>
@@ -541,10 +549,7 @@ export const CustomComboBuilder = memo(
                   />
                 </div>
 
-                <ComboDiscountInfo
-                  className="mb-4"
-                  value={discountRules?.data?.value?.[0]?.value as string}
-                />
+                <ComboDiscountInfo className="mb-4" value={parsedValue} />
 
                 <Separator className="my-6 bg-slate-100" />
 

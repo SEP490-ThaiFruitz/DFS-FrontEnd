@@ -6,7 +6,7 @@ import { ApiResponse, PageResult } from "@/types/types";
 import { createContext, useContext } from "react";
 
 import Cookies from "js-cookie";
-import { BLOG_KEY } from "@/app/key/comm-key";
+import { BLOG_KEY, COMBO_KEY } from "@/app/key/comm-key";
 import { AddressTypes } from "@/types/address.types";
 import { Product } from "@/hooks/use-cart-store";
 import { UseQueryResult } from "@tanstack/react-query";
@@ -14,6 +14,7 @@ import { USER_KEY } from "@/app/key/user-key";
 import { CustomComboProduct } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 import { BlogPost } from "@/types/blogs.types";
 import { DiscountRulesTypes } from "@/components/global-components/card/custom-combo/combo-discount-info";
+import { ComboProduct } from "@/components/global-components/card/card-combo";
 
 export type DataContextType = {
   products: UseQueryResult<ApiResponse<PageResult<Product>>, Error>;
@@ -24,6 +25,8 @@ export type DataContextType = {
   blogs: UseQueryResult<ApiResponse<PageResult<BlogPost>>, Error>;
 
   discountRules: UseQueryResult<ApiResponse<DiscountRulesTypes[]>, Error>;
+
+  combos: UseQueryResult<ApiResponse<PageResult<ComboProduct>>, Error>;
 };
 
 // export type ProductTransformType = Omit<PageResult<Product>, "items"> & {
@@ -63,8 +66,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     [USER_KEY.CUSTOM_COMBO]
   );
 
+  const combos = useFetch<ApiResponse<PageResult<ComboProduct>>>("/Combos", [
+    COMBO_KEY.COMBOS,
+  ]);
+
   const discountRules = useFetch<ApiResponse<DiscountRulesTypes[]>>(
-    "/Combos/user",
+    "/Settings/setting-anonymous",
     [USER_KEY.DISCOUNT_RULES]
   );
 
@@ -84,6 +91,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         customCombo,
         blogs,
         discountRules,
+        combos,
       }}
     >
       {children}

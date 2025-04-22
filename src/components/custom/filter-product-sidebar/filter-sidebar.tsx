@@ -3,9 +3,7 @@ import Image from "next/image";
 import {
   Apple,
   ArrowUpDown,
-  BookmarkPlus,
   CheckCircle,
-  ChevronDown,
   CircleCheck,
   DollarSign,
   Filter,
@@ -23,11 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -38,7 +32,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { formatVND } from "@/lib/format-currency";
 import { Dispatch, memo, SetStateAction } from "react";

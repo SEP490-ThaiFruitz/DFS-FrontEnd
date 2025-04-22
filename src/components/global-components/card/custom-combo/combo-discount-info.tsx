@@ -32,7 +32,18 @@ export function ComboDiscountInfo({
   className,
   value,
 }: ComboDiscountInfoProps) {
-  const discounts: ComboDiscount[] = JSON.parse(value);
+  // const discounts: ComboDiscount[] = JSON.parse(value);
+
+  let discounts: ComboDiscount[] = [];
+  try {
+    discounts = value ? JSON.parse(value) : [];
+  } catch (error) {
+    console.error("Error parsing JSON", error);
+  }
+
+  if (discounts.length === 0) {
+    return <p>Không có ưu đãi cho combo này.</p>;
+  }
 
   return (
     <div className={`bg-green-50 rounded-3xl p-4 ${className}`}>
@@ -51,10 +62,12 @@ export function ComboDiscountInfo({
           <div className="space-y-2">
             {discounts.map((item, index) => {
               const lowerBound = parseInt(item.quantity);
-              const upperBound =
-                index < discounts.length - 1
-                  ? parseInt(discounts[index + 1].quantity) - 1
-                  : null;
+
+              const upperBound = parseInt(item.quantity) + 1;
+              // const upperBound =
+              //   index < discounts.length - 1
+              //     ? parseInt(discounts[index + 1].quantity) - 1
+              //     : null;
 
               const rangeLabel = upperBound
                 ? `${lowerBound}-${upperBound} sản phẩm`
@@ -110,9 +123,17 @@ export function ComboDiscountBadge({
   // const value =
   //   '[{"id":2,"quantity":"5","percentage":"6"},{"id":3,"quantity":"9","percentage":"10"},{"id":4,"quantity":"10","percentage":"15"}]';
 
-  const discounts: ComboDiscount[] = JSON.parse(value);
+  // const discounts: ComboDiscount[] = JSON.parse(value);
 
-  // Tìm mức giảm phù hợp với số lượng
+  console.log("values discount rules", value);
+
+  let discounts: ComboDiscount[] = [];
+  try {
+    discounts = value ? JSON.parse(value) : [];
+  } catch (error) {
+    console.error("Error parsing JSON", error);
+  }
+
   let matched = null;
   for (let i = discounts.length - 1; i >= 0; i--) {
     const threshold = parseInt(discounts[i].quantity);
@@ -122,7 +143,10 @@ export function ComboDiscountBadge({
     }
   }
 
-  if (!matched) return null;
+  // if (!matched) return null;
+  if (!matched) {
+    return <p>Không có mức giảm cho số lượng sản phẩm này.</p>;
+  }
 
   const label = (() => {
     const currentIndex = discounts.findIndex((d) => d.id === matched?.id);

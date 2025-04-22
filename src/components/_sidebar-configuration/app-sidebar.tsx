@@ -98,8 +98,13 @@ const data = {
       icon: Wallet,
       items: [
         {
-          title: "Lịch sử ví",
+          title: "Danh sách ví",
           url: "/admin/wallet",
+          icon: Wallet,
+        },
+        {
+          title: "Lịch sử ví",
+          url: "/admin/wallet/history",
           icon: History,
         },
         {

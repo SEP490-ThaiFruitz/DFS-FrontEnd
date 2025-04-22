@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { formatVND } from "@/lib/format-currency"
 import type { ApiResponse } from "@/types/types"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowDown, ArrowUp, Banknote, BarChart, CalendarIcon, ChevronDown, Eye, Minus, Package, ShoppingBag } from "lucide-react"
+import { Banknote, BarChart, CalendarIcon, ChevronDown, Eye, Package, ShoppingBag } from "lucide-react"
 import Image from "next/image"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
@@ -14,12 +14,14 @@ import { Button } from "@/components/ui/button"
 import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ReactNode, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Calendar } from "@/components/ui/calendar"
 import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subDays, subMonths, subWeeks, subYears } from "date-fns"
 import { cn } from "@/lib/utils"
 import { PRODUCT_KEY } from "@/app/key/admin-key"
 import { vi } from 'date-fns/locale/vi'
+import Link from "next/link"
+import { calculateGrowthRate } from "@/lib/calculate"
 
 interface ProductVariant {
     productId: string
@@ -56,45 +58,9 @@ type DateRangeOption = {
 
 const Dashboard = () => {
     const today = new Date()
-    const [isCustomRange, setIsCustomRange] = useState(false)
     const [calendarOpen, setCalendarOpen] = useState(false)
     const [selectedOption, setSelectedOption] = useState<string>("all")
 
-    const calculateGrowthRate = (
-        current: number,
-        previous: number
-    ): ReactNode => {
-        if (previous === 0)
-            return (
-                <span className="text-gray-500 font-semibold flex items-center">
-                    Biến động: <Minus className="size-5 mr-1" /> 0%
-                </span>
-            ); // Avoid division by zero
-
-        const growthRate = ((current - previous) / previous) * 100;
-        const formattedRate = growthRate.toFixed(1);
-
-        if (growthRate > 0) {
-            return (
-                <span className="text-green-500 flex font-semibold items-center">
-                    Biến động: <ArrowUp className="size-5 mr-1" /> {formattedRate}%
-                </span>
-            );
-        } else if (growthRate < 0) {
-            return (
-                <span className="text-rose-500 flex font-semibold items-center">
-                    Giảm: <ArrowDown className="size-5 mr-1" />{" "}
-                    {Math.abs(Number.parseFloat(formattedRate))}%
-                </span>
-            );
-        } else {
-            return (
-                <span className="text-gray-500 flex font-semibold items-center">
-                    Biến động: <Minus className="size-5 mr-1" /> 0%
-                </span>
-            );
-        }
-    };
     const [date, setDate] = useState<DateRange>({
         from: null,
         to: null,
@@ -114,8 +80,7 @@ const Dashboard = () => {
 
     const { data: reportData, refetch, isLoading } = useFetch<ApiResponse<RevenueReport>>(
         formattedUrl,
-        [PRODUCT_KEY.PRODUCT_VARIANT_STATISTIC],
-        { enabled: !!formattedUrl }
+        [PRODUCT_KEY.PRODUCT_VARIANT_STATISTIC]
     );
 
     const formattedOldUrl = useMemo(() => {
@@ -127,8 +92,7 @@ const Dashboard = () => {
 
     const { data: reportDataOld, refetch: refreshOld } = useFetch<ApiResponse<RevenueReport>>(
         formattedOldUrl,
-        [PRODUCT_KEY.PRODUCT_VARIANT_OLD_STATISTIC],
-        { enabled: !!formattedOldUrl }
+        [PRODUCT_KEY.PRODUCT_VARIANT_OLD_STATISTIC]
     );
 
     const dateRangeOptions: Record<string, DateRangeOption> = {
@@ -141,6 +105,17 @@ const Dashboard = () => {
             getValueOld: () => ({
                 from: null,
                 to: null,
+            }),
+        },
+        today: {
+            label: "Hôm nay",
+            getValue: () => ({
+                from: today,
+                to: today,
+            }),
+            getValueOld: () => ({
+                from: subDays(today, 1),
+                to: subDays(today, 1),
             }),
         },
         "3days": {
@@ -202,7 +177,6 @@ const Dashboard = () => {
 
     const handleOptionSelect = (option: string) => {
         setSelectedOption(option)
-        setIsCustomRange(option === "custom")
         if (option === "custom") {
             setCalendarOpen(true)
         } else {
@@ -270,6 +244,19 @@ const Dashboard = () => {
             },
         },
         {
+            accessorKey: "growthRate",
+            header: "Tỉ lệ tăng trưởng",
+            cell: ({ row }) => {
+                const currentQuantity = row.original.quantitySold ?? 0;
+                const oldVariant = reportDataOld?.value?.productVariants.find(
+                    (p: ProductVariant) => p.productVariantId === row.original.productVariantId
+                );
+                const oldQuantity = oldVariant?.quantitySold ?? 0;
+
+                return calculateGrowthRate(currentQuantity, oldQuantity);
+            },
+        },
+        {
             accessorKey: "lastBuyDate",
             header: "Lần mua cuối",
             cell: ({ row }) => {
@@ -285,13 +272,14 @@ const Dashboard = () => {
             accessorKey: "action",
             header: "Hành động",
             cell: ({ row }) =>
-                <Button
-                    variant="outline"
-                    className="h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
-                >
-                    <Eye />
-                </Button>,
-
+                <Link href={`/admin/dashboard/${row.original.productId}`}>
+                    <Button
+                        variant="outline"
+                        className="h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                    >
+                        <Eye />
+                    </Button>
+                </Link>
         },
     ]
 
@@ -311,6 +299,7 @@ const Dashboard = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                     <DropdownMenuItem onClick={() => handleOptionSelect("all")}>Tất cả</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleOptionSelect("today")}>Hôm nay</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleOptionSelect("3days")}>3 ngày</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleOptionSelect("thisWeek")}>Tuần này</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleOptionSelect("thisMonth")}>Tháng này</DropdownMenuItem>

@@ -137,7 +137,7 @@ function ComboPage() {
         },
         {
             id: "actions",
-            header: "Thao tác",
+            header: "Hành động",
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <Link href={`/admin/combo/${row.original.id}`}>

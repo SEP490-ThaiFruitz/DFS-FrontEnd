@@ -33,7 +33,7 @@ const CategoryPage = () => {
   const {
     data: categories,
     isLoading
-  } = useFetch<ApiResponse<PageResult<Category>>>("/Categories?pageIndex=1&pageSize=1000", [CATEGORY_KEY.CATEGORY]);
+  } = useFetch<ApiResponse<PageResult<Category>>>("/Categories", [CATEGORY_KEY.CATEGORY]);
 
   const columns: ColumnDef<Category>[] = [
     {

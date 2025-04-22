@@ -106,7 +106,7 @@ const Variant = ({ combo }: Readonly<VariantProps>) => {
                                         <TableHead>Trọng lượng</TableHead>
                                         <TableHead>Giá gốc</TableHead>
                                         <TableHead>Số lượng</TableHead>
-                                        <TableHead className="text-right">Thao tác</TableHead>
+                                        <TableHead className="text-right">Hành dộng</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>

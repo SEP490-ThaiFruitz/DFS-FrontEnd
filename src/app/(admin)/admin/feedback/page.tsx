@@ -43,7 +43,7 @@ interface Feedback {
 }
 
 function FeedbackPage() {
-    const { data: feedbacks, isLoading } = useFetch<ApiResponse<PageResult<Feedback>>>("/Feedbacks?pageIndex=1&pageSize=100", [FEEDBACK_KEY.FEEDBACK])
+    const { data: feedbacks, isLoading } = useFetch<ApiResponse<PageResult<Feedback>>>("/Feedbacks", [FEEDBACK_KEY.FEEDBACK])
 
     const [feedback, setFeedback] = useState<Feedback>()
     const [isDeleteFeedback, setIsDeleteFeedback] = useState(false)
@@ -173,7 +173,10 @@ function FeedbackPage() {
             accessorKey: "content",
             header: "Nội dung",
             cell: ({ row }) => (
-                <div className="max-w-[250px] truncate" title={row.original.content ?? ""}>
+                <div
+                    className="max-w-[250px] whitespace-pre-wrap break-words"
+                    title={row.original.content ?? ""}
+                >
                     {row.original.content ?? "Không có nội dung"}
                 </div>
             ),
@@ -201,7 +204,7 @@ function FeedbackPage() {
         },
         {
             id: "actions",
-            header: "Thao tác",
+            header: "Hành động",
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     {row.original.images && row.original.images.length > 0 && (

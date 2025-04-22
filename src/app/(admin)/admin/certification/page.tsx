@@ -79,7 +79,7 @@ const CertificationPage = () => {
         },
         {
             id: "actions",
-            header: "Thao tác",
+            header: "Hành động",
             cell: ({ row }) => (
                 <div className="space-x-3">
                     <Button

@@ -53,7 +53,7 @@ export interface ProductVariant {
 }
 
 const PlanPage = () => {
-    const { data: requests, refetch, isLoading } = useFetch<ApiResponse<PageResult<Request>>>("/Requests?pageIndex=1&pageSize=20000", [
+    const { data: requests, refetch, isLoading } = useFetch<ApiResponse<PageResult<Request>>>("/Requests", [
         REQUEST_KEY.REQUEST,
     ])
 
@@ -226,7 +226,7 @@ const PlanPage = () => {
             <div className="flex justify-between items-center mb-6">
                 <div className="text-2xl font-semibold leading-none tracking-tight">Danh sách kế hoạch</div>
                 <Link href={"/admin/plan/create"}>
-                    <Button size={"sm"} className="text-white bg-green-500 hover:bg-green-600">
+                    <Button size={"sm"} className="text-white bg-sky-600 hover:bg-sky-700">
                         <CirclePlus className="mr-2 h-4 w-4" />
                         Tạo kế hoạch
                     </Button>

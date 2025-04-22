@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatVND } from '@/lib/format-currency'
 import { PageResult, ApiResponse } from '@/types/types'
-import { AlertTriangle, CirclePlus, Eye, Trash2 } from 'lucide-react'
+import { AlertTriangle, ChartArea, CirclePlus, Eye, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -37,7 +37,7 @@ interface Product {
 
 function ProductPage() {
     const [product, setProduct] = useState<Product | undefined>(undefined);
-    const { data: products, isLoading } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/manage?pageIndex=1&pageSize=1000`, [PRODUCT_KEY.PRODUCT])
+    const { data: products, isLoading } = useFetch<ApiResponse<PageResult<Product>>>(`/Products/manage`, [PRODUCT_KEY.PRODUCT])
     const [productVariants, setProductVariants] = useState<ProductVariant[] | undefined>(undefined)
 
     const StockIndicator = ({ stockQuantity, reOrderPoint }: { stockQuantity: number; reOrderPoint: number }) => {
@@ -172,6 +172,14 @@ function ProductPage() {
                             className="h-6 w-6 border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
                         >
                             <Eye />
+                        </Button>
+                    </Link>
+                    <Link href={`/admin/dashboard/${row.original.id}`}>
+                        <Button
+                            variant="outline"
+                            className="h-6 w-6 border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white"
+                        >
+                            <ChartArea />
                         </Button>
                     </Link>
                     {!row.original.isDeleted && (

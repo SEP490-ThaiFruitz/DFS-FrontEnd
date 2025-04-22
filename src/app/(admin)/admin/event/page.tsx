@@ -79,8 +79,26 @@ const EventPage = () => {
             },
         },
         {
+            accessorKey: "status",
+            header: "Trạng thái",
+            cell: ({ row }) => {
+                const date = new Date();
+                const startDate = new Date(row.original.startDate).getTime();
+                const endDate = new Date(row.original.endDate).getTime();
+                const now = date.getTime();
+
+                const isOngoing = now >= startDate && now <= endDate;
+
+                return isOngoing ? (
+                    <div className="bg-green-50 text-green-600 w-fit py-1 px-2 rounded-lg">Đang diễn ra</div>
+                ) : (
+                    <div className="bg-red-50 text-red-600 w-fit py-1 px-2 rounded-lg">Đã kết thúc</div>
+                );
+            },
+        },
+        {
             id: "actions",
-            header: "Thao tác",
+            header: "Hành động",
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <Button

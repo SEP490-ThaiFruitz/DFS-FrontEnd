@@ -33,7 +33,7 @@ function UserPage() {
     const [isFormUser, setIsFormUser] = useState<boolean>(false)
     const [user, setUser] = useState<User>()
 
-    const { data: users, isLoading } = useFetch<ApiResponse<PageResult<User>>>("/Users?pageIndex=1&pageSize=10000", [USER_KEY.USER])
+    const { data: users, isLoading } = useFetch<ApiResponse<PageResult<User>>>("/Users", [USER_KEY.USER])
 
     const getGenderDisplay = (gender: string) => {
         switch (gender) {

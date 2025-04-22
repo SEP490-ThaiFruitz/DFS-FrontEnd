@@ -213,3 +213,16 @@ export const EXPORTTYPE_SELECT = [
     { Id: "Other", Name: "Lý do khác" }
 ];
 
+export const STATUS_SELECT: Record<string, string> = {
+    All: "Tất cả",
+    Pending: "Chờ thanh toán",
+    Paid: "Đã thanh toán",
+    Fail: "Thất bại",
+};
+
+export const PAYMENT_SELECT: Record<string, string> = {
+    VnPay: "VnPay",
+    ShipCode: "COD",
+    Wallet: "Ví điện tử",
+    PayOs: "PayOs",
+};

@@ -83,6 +83,7 @@ const ProductBatchPage = () => {
     },
     {
       id: "actions",
+      header: "Hành động",
       cell: ({ row }) => {
         return (
           <div className="flex justify-center">

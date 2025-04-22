@@ -2,7 +2,8 @@
 export enum PAYMENT_KEY {
   VNPAY = "vnpay",
   PAYOS = "payos",
-  PAYEMNT = "payments"
+  PAYEMNT = "payments",
+  PAYEMNT_OLD = "payments_old",
 }
 
 export enum COMBO_KEY {
@@ -11,8 +12,11 @@ export enum COMBO_KEY {
 
 
 export enum WALLET_KEY {
-  REQUEST_WITHDRAWAL = "request-withdrawal",
-  WALLET_TRANSACTION = "wallet-transaction",
+  WALLET = "wallets",
+  REQUEST_WITHDRAWAL = "request_withdrawal",
+  WALLET_TRANSACTION = "wallet_transaction",
+  WALLET_OLD_TRANSACTION = "wallet_old_transaction",
+
 }
 
 export enum PROMOTION_KEY {
@@ -47,5 +51,7 @@ export enum REQUEST_KEY {
 export enum PRODUCT_KEY {
   PRODUCT = "list_products",
   PRODUCT_VARIANT_STATISTIC = "product_variant_statistic",
-  PRODUCT_VARIANT_OLD_STATISTIC = "product_variant_old_statistic"
+  PRODUCT_VARIANT_OLD_STATISTIC = "product_variant_old_statistic",
+  PRODUCT_STATISTIC = "product_statistic",
+  PRODUCT_OLD_STATISTIC = "product__old_statistic"
 }

@@ -28,7 +28,7 @@ export interface Voucher {
 
 
 function VoucherPage() {
-    const { data: vouchers, isLoading } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers?pageIndex=${1}&pageSize=${1000}`, [VOUCHER_KEY.VOUCHER])
+    const { data: vouchers, isLoading } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers`, [VOUCHER_KEY.VOUCHER])
     const [voucher, setVoucher] = useState<Voucher | undefined>(undefined);
 
     const getCouponStatus = (quantity: number, startDate: string, endDate: string) => {

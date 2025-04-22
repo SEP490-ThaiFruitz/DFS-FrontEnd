@@ -171,10 +171,12 @@ function UserPage() {
                     Tạo mới
                 </Button>
             </div>
-
-            <div className="mt-8 bg-white cardStyle shadow border">
+            <div className="mt-8">
                 {isLoading ? <DataTableSkeleton /> :
-                    <DataTableCustom<User> data={users?.value?.items || []} placeholder="tên" columns={columns} searchFiled="name" />}
+                    <div className="bg-white cardStyle shadow border">
+                        <DataTableCustom<User> data={users?.value?.items || []} placeholder="tên" columns={columns} searchFiled="name" />
+                    </div>
+                }
             </div>
 
             <DeleteDialog

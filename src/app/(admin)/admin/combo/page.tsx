@@ -185,14 +185,16 @@ function ComboPage() {
                     </Button>
                 </Link>
             </div>
-            <div className="mt-8 bg-white cardStyle shadow border">
+            <div className="mt-8">
                 {isLoading ? <DataTableSkeleton /> :
-                    <DataTableCustom
-                        data={combos?.value ?? []}
-                        columns={columns}
-                        placeholder="tên gói quà"
-                        searchFiled="name"
-                    />
+                    <div className="bg-white cardStyle shadow border">
+                        <DataTableCustom
+                            data={combos?.value ?? []}
+                            columns={columns}
+                            placeholder="tên gói quà"
+                            searchFiled="name"
+                        />
+                    </div>
                 }
             </div>
             {comboRemove && (

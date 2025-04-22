@@ -136,14 +136,16 @@ const PromotionPage = () => {
                     </Button>
                 </Link>
             </div>
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8">
                 {isLoading ? <DataTableSkeleton /> :
-                    <DataTableCustom
-                        data={promotions?.value ?? []}
-                        columns={columns}
-                        placeholder="tên chương trình"
-                        searchFiled="name"
-                    />
+                    <div className="bg-white cardStyle shadow border">
+                        <DataTableCustom
+                            data={promotions?.value ?? []}
+                            columns={columns}
+                            placeholder="tên chương trình"
+                            searchFiled="name"
+                        />
+                    </div>
                 }
             </div>
 

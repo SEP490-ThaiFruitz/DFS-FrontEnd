@@ -3,13 +3,21 @@
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
 import ImagePreview from "@/components/custom/_custom-image/image-preview";
-import { DataTable } from "@/components/global-components/data-table/data-table";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import type { ApiResponse, PageResult } from "@/types/types";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Eye, EyeOffIcon, Images, Star } from "lucide-react";
+import {
+  ChevronDown,
+  Eye,
+  EyeOff,
+  EyeOffIcon,
+  Gauge,
+  Images,
+  PieChart,
+  Star,
+  ThumbsUp,
+} from "lucide-react";
 import { useState } from "react";
 import { hideShowFeedback } from "@/actions/feedback";
 import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom";
@@ -17,8 +25,36 @@ import { DataTableSkeleton } from "@/components/global-components/custom-skeleto
 import { FEEDBACK_KEY } from "@/app/key/admin-key";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { STATUS_HIDDEN_SELECT } from "@/features/admin/admin-lib/admin-lib";
+import CardSkeleton from "@/components/global-components/custom-skeleton/card-skeleton";
 
-export type Feedback = {
+interface FeedbackResponse {
+  feedbackResponse: PageResult<Feedback>;
+  feedbackStatistic: FeedbackStatistic;
+  rating: Rating[];
+}
+
+interface FeedbackStatistic {
+  totalFeedback: number;
+  average: number;
+  positive: number;
+  hide: number;
+}
+
+interface Rating {
+  stars: number;
+  count: number;
+  percentage: number;
+}
+export interface Feedback {
   id: string;
   user: {
     userId: string;
@@ -40,26 +76,35 @@ export type Feedback = {
   };
   images: string[];
   createdOnUtc: string;
-};
+}
 
 function FeedbackPage() {
   const { data: feedbacks, isLoading } = useFetch<
-    ApiResponse<PageResult<Feedback>>
-  >("/Feedbacks?pageIndex=1&pageSize=100", [FEEDBACK_KEY.FEEDBACK]);
+    ApiResponse<FeedbackResponse>
+  >("/Feedbacks", [FEEDBACK_KEY.FEEDBACK]);
 
   const [feedback, setFeedback] = useState<Feedback>();
   const [isDeleteFeedback, setIsDeleteFeedback] = useState(false);
+  const [seletedOption, setSeletedOption] = useState<string>("All");
+
+  const filterFeedbacks = feedbacks?.value?.feedbackResponse.items.filter(
+    (feedback) => {
+      if (seletedOption === "All") return true;
+      if (seletedOption === "Active") return feedback.isShow;
+      if (seletedOption === "IsDeleted") return !feedback.isShow;
+    }
+  );
 
   const columns: ColumnDef<Feedback>[] = [
     {
       accessorKey: "productFeedback.name",
       header: "Sản phẩm",
-      size: 130,
+      size: 300,
       cell: ({ row }) => (
-        <div>
+        <div className="flex items-center gap-3">
           {row.original.productFeedback.image !== null ? (
             <Image
-              className="h-40 w-full"
+              className="h-40 w-40"
               src={row.original.productFeedback.image}
               alt={row.original.productFeedback.name}
               height={500}
@@ -178,6 +223,7 @@ function FeedbackPage() {
     {
       accessorKey: "stars",
       header: "Đánh giá",
+      size: 90,
       cell: ({ row }) => (
         <div className="flex items-center">
           {Array.from({ length: 5 }).map((_, index) => (
@@ -200,7 +246,7 @@ function FeedbackPage() {
       header: "Nội dung",
       cell: ({ row }) => (
         <div
-          className="max-w-[250px] truncate"
+          className="max-w-[250px] whitespace-pre-wrap break-words"
           title={row.original.content ?? ""}
         >
           {row.original.content ?? "Không có nội dung"}
@@ -212,13 +258,14 @@ function FeedbackPage() {
     {
       accessorKey: "isShow",
       header: "Trạng thái",
+      size: 90,
       cell: ({ row }) =>
         row.original.isShow ? (
-          <div className="bg-green-50 text-green-600 w-fit py-1 px-2 rounded-lg">
+          <div className="bg-green-50 text-green-600 font-semibold w-fit py-1 px-2 rounded-lg">
             Đang hiện
           </div>
         ) : (
-          <div className="bg-red-50 text-red-600 w-fit py-1 px-2 rounded-lg">
+          <div className="bg-red-50 text-red-600 font-semibold w-fit py-1 px-2 rounded-lg">
             Đã ẩn
           </div>
         ),
@@ -238,7 +285,7 @@ function FeedbackPage() {
     },
     {
       id: "actions",
-      header: "Thao tác",
+      header: "Hành động",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           {row.original.images && row.original.images.length > 0 && (
@@ -280,18 +327,176 @@ function FeedbackPage() {
     <div className="m-10">
       <h1 className="text-2xl font-bold">Quản lý đánh giá</h1>
 
-      <div className="mt-8 bg-white rounded-lg shadow border">
-        {isLoading ? (
-          <DataTableSkeleton />
-        ) : (
-          <DataTableCustom
-            placeholder="nội dung"
-            data={feedbacks?.value?.items ?? []}
-            columns={columns}
-            searchFiled="content"
-          />
-        )}
-      </div>
+      {isLoading ? (
+        <div className="w-full mt-8">
+          <div className="grid gap-8 md:gap-16 md:grid-cols-2 lg:grid-cols-4">
+            {Array(4)
+              .fill(0)
+              .map((_, i) => (
+                <CardSkeleton key={i + 1} />
+              ))}
+          </div>
+          <div className="mt-8">
+            <Card className="card bg-white shadow border cardStyle">
+              <CardHeader>
+                <CardTitle>
+                  <Skeleton className="h-4 w-24" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {[...Array(5)].map((_, index) => (
+                    <div key={index + 1} className="flex items-center">
+                      <Skeleton className="w-12 h-4 text-sm font-medium" />
+                      <Skeleton className="w-full h-4" />
+                      <Skeleton className="w-12 h-4 text-right text-sm font-medium" />
+                      <Skeleton className="w-16 h-4 text-right text-sm text-muted-foreground" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="mt-8">
+            <DataTableSkeleton />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-8 md:gap-16 md:grid-cols-2 lg:grid-cols-4 mt-10">
+            <Card className="transition-all hover:shadow-md cardStyle">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Tổng đánh giá
+                </CardTitle>
+                <div className="bg-green-50 rounded-full p-3 border">
+                  <PieChart className="h-4 w-4 text-green-600" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {feedbacks?.value?.feedbackStatistic.totalFeedback ?? 0}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="transition-all hover:shadow-md cardStyle">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Trung bình đánh giá
+                </CardTitle>
+                <div className="bg-blue-50 rounded-full p-3 border">
+                  <Gauge className="h-4 w-4 text-blue-600" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {feedbacks?.value?.feedbackStatistic.average ?? 0}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="transition-all hover:shadow-md cardStyle">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Đánh giá tích cực
+                </CardTitle>
+                <div className="bg-purple-50 rounded-full p-3 border">
+                  <ThumbsUp className="h-4 w-4 text-purple-600" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {feedbacks?.value?.feedbackStatistic.positive ?? 0}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="transition-all hover:shadow-md cardStyle">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Đã ẩn</CardTitle>
+                <div className="bg-amber-50 rounded-full p-3 border">
+                  <EyeOff className="h-4 w-4 text-amber-600" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {feedbacks?.value?.feedbackStatistic.hide ?? 0}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="mt-8">
+            <Card className="card bg-white shadow border cardStyle">
+              <CardHeader>
+                <CardTitle>Tỉ lệ đánh giá</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {feedbacks?.value?.rating?.map((item) => (
+                    <div key={item.stars} className="flex items-center">
+                      <div className="w-12 text-sm font-medium">
+                        {item.stars} sao
+                      </div>
+                      <div className="w-full">
+                        <div className="h-4 w-full overflow-hidden rounded-full bg-gray-100">
+                          <div
+                            className="h-full bg-yellow-400"
+                            style={{ width: `${item.percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                      <div className="w-12 text-right text-sm font-medium">
+                        {item.count}
+                      </div>
+                      <div className="w-16 text-right text-sm text-muted-foreground">
+                        {item.percentage}%
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="mt-8 bg-white cardStyle shadow border">
+            <DataTableCustom
+              placeholder="nội dung"
+              data={filterFeedbacks ?? []}
+              columns={columns}
+              searchFiled="content"
+            >
+              <div className="flex items-center justify-end pr-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="min-w-fit justify-between sm:w-auto"
+                    >
+                      {STATUS_HIDDEN_SELECT[seletedOption]}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem onClick={() => setSeletedOption("All")}>
+                      Tất cả
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setSeletedOption("Active")}
+                    >
+                      Đang hiện
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setSeletedOption("IsDeleted")}
+                    >
+                      Đã ẩn
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </DataTableCustom>
+          </div>
+        </>
+      )}
 
       <DeleteDialog
         id={feedback?.id ?? ""}

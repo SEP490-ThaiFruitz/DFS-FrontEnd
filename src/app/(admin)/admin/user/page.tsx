@@ -33,7 +33,7 @@ function UserPage() {
     const [isFormUser, setIsFormUser] = useState<boolean>(false)
     const [user, setUser] = useState<User>()
 
-    const { data: users, isLoading } = useFetch<ApiResponse<PageResult<User>>>("/Users?pageIndex=1&pageSize=10000", [USER_KEY.USER])
+    const { data: users, isLoading } = useFetch<ApiResponse<PageResult<User>>>("/Users", [USER_KEY.USER])
 
     const getGenderDisplay = (gender: string) => {
         switch (gender) {
@@ -171,10 +171,12 @@ function UserPage() {
                     Tạo mới
                 </Button>
             </div>
-
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8">
                 {isLoading ? <DataTableSkeleton /> :
-                    <DataTableCustom<User> data={users?.value?.items || []} placeholder="tên" columns={columns} searchFiled="name" />}
+                    <div className="bg-white cardStyle shadow border">
+                        <DataTableCustom<User> data={users?.value?.items || []} placeholder="tên" columns={columns} searchFiled="name" />
+                    </div>
+                }
             </div>
 
             <DeleteDialog

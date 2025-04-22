@@ -137,7 +137,7 @@ const DialogProductBatchDetail = ({ onClose, isOpen, id }: Readonly<DialogProduc
                                                 <ImagePreview images={[doc.attachment]} className="object-cover h-20 hover:cursor-pointer" />
 
                                                 <Button variant="outline" size="sm" asChild>
-                                                    <a href={doc.attachment} download>
+                                                    <a href={doc.attachment.replace('/upload/', `/upload/fl_attachment:${doc.name}/`)} download>
                                                         <Download />
                                                     </a>
                                                 </Button>

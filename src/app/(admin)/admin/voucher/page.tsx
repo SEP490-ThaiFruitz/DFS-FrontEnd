@@ -28,7 +28,7 @@ export interface Voucher {
 
 
 function VoucherPage() {
-    const { data: vouchers, isLoading } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers?pageIndex=${1}&pageSize=${1000}`, [VOUCHER_KEY.VOUCHER])
+    const { data: vouchers, isLoading } = useFetch<ApiResponse<PageResult<Voucher>>>(`/Vouchers`, [VOUCHER_KEY.VOUCHER])
     const [voucher, setVoucher] = useState<Voucher | undefined>(undefined);
 
     const getCouponStatus = (quantity: number, startDate: string, endDate: string) => {
@@ -127,14 +127,17 @@ function VoucherPage() {
                     </Button>
                 </Link>
             </div>
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8">
                 {isLoading ? <DataTableSkeleton /> :
-                    <DataTableCustom
-                        data={vouchers?.value?.items || []}
-                        columns={columns}
-                        placeholder='tên mã giả giá'
-                        searchFiled="name"
-                    />}
+                    <div className="bg-white cardStyle shadow border">
+                        <DataTableCustom
+                            data={vouchers?.value?.items || []}
+                            columns={columns}
+                            placeholder='tên mã giả giá'
+                            searchFiled="name"
+                        />
+                    </div>
+                }
             </div>
             <DeleteDialog
                 id={voucher?.id ?? ""}

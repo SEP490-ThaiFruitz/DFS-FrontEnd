@@ -33,7 +33,7 @@ const CategoryPage = () => {
   const {
     data: categories,
     isLoading
-  } = useFetch<ApiResponse<PageResult<Category>>>("/Categories?pageIndex=1&pageSize=1000", [CATEGORY_KEY.CATEGORY]);
+  } = useFetch<ApiResponse<PageResult<Category>>>("/Categories", [CATEGORY_KEY.CATEGORY]);
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -114,14 +114,16 @@ const CategoryPage = () => {
         <p className='text-2xl font-semibold leading-none tracking-tight'>Loại sản phẩm</p>
         <CreateCategoryDialog />
       </div>
-      <div className="mt-8 bg-white rounded-lg shadow border">
+      <div className="mt-8">
         {isLoading ? <DataTableSkeleton /> :
-          <DataTableCustom
-            data={categories?.value?.items || []}
-            columns={columns}
-            placeholder="tên loại"
-            searchFiled="name"
-          />
+          <div className="bg-white cardStyle shadow border">
+            <DataTableCustom
+              data={categories?.value?.items || []}
+              columns={columns}
+              placeholder="tên loại"
+              searchFiled="name"
+            />
+          </div>
         }
       </div>
       {selectedCategoryUpdate && (

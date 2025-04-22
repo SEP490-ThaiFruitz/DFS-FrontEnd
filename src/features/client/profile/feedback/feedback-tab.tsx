@@ -36,7 +36,7 @@ interface Feedback {
 const FeedbackTab = () => {
   const { data: feedbacks, isPending } = useFetch<
     ApiResponse<PageResult<Feedback>>
-  >("/Feedbacks/user?pageIndex=1&pageSize=100", ["feedbacks", "user"]);
+  >("/Feedbacks/user", ["feedbacks", "user"]);
   const [feedback, setFeedback] = useState<Feedback | undefined>(undefined);
   return (
     <>

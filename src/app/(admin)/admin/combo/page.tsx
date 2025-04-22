@@ -137,7 +137,7 @@ function ComboPage() {
         },
         {
             id: "actions",
-            header: "Thao tác",
+            header: "Hành động",
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <Link href={`/admin/combo/${row.original.id}`}>
@@ -185,14 +185,16 @@ function ComboPage() {
                     </Button>
                 </Link>
             </div>
-            <div className="mt-8 bg-white rounded-lg shadow border">
+            <div className="mt-8">
                 {isLoading ? <DataTableSkeleton /> :
-                    <DataTableCustom
-                        data={combos?.value ?? []}
-                        columns={columns}
-                        placeholder="tên gói quà"
-                        searchFiled="name"
-                    />
+                    <div className="bg-white cardStyle shadow border">
+                        <DataTableCustom
+                            data={combos?.value ?? []}
+                            columns={columns}
+                            placeholder="tên gói quà"
+                            searchFiled="name"
+                        />
+                    </div>
                 }
             </div>
             {comboRemove && (

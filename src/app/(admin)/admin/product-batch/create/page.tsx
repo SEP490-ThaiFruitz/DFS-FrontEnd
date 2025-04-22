@@ -60,7 +60,7 @@ export interface ProductVariant {
 }
 
 function CreateProductBatchPage() {
-  const { data: requests, refetch } = useFetch<ApiResponse<PageResult<Request>>>("/Requests?pageIndex=1&pageSize=200000", [
+  const { data: requests, refetch } = useFetch<ApiResponse<PageResult<Request>>>("/Requests", [
     PRODUCT_BATCH_KEY.REQUESTS,
   ])
 

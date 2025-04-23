@@ -1,7 +1,9 @@
 import {
   OrderAddressDelivery,
   OrderItem,
+  OrderItemHaveChild,
 } from "@/features/client/payment/successful/payment-successful.types";
+import { OrderItemDetailsTypes } from "@/features/manager/order-detail-components/order-detail.types";
 
 export type VoucherTypes = {
   id: string;
@@ -109,7 +111,7 @@ export type OrderDetailTypes = {
   // paymentMethod: "VnPay" | "Cash" | "Momo" | string;
   paymentMethod: string;
   buyDate: string; // ISO 8601 date string
-  orderItems: OrderItem[];
+  orderItems: OrderItemHaveChild[];
   delivery: {
     fee: number;
     estimateDate: string | null;
@@ -120,4 +122,6 @@ export type OrderDetailTypes = {
   cancel: any; // Unknown structure, can replace with appropriate type if known
   orderAddressDelivery: OrderAddressDelivery;
   timeline: any[]; // Can refine this type if structure is known
+
+  // orderItemDetails: OrderItemDetailsTypes[];
 };

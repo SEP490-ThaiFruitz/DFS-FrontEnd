@@ -44,8 +44,8 @@ export const FileUpload = ({
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  console.log({ isImages });
-  console.log({ value });
+  // console.log({ isImages });
+  // console.log({ value });
 
   const handleFileChange = (newFiles: File[]) => {
     if (isImages) {

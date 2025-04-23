@@ -31,3 +31,14 @@ export type OrderDetailData = {
   orderAddressDelivery: OrderAddressDelivery;
   timeline: TimelineItem[];
 };
+
+export type OrderItemDetailsTypes = {
+  id: string;
+  productVariantId: string;
+  name: string;
+  image: string;
+  unitPrice: number;
+  discountedPrice: number;
+  discountPercentage: number;
+  quantity: number;
+}[];

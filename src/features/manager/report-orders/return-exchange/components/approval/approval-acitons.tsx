@@ -57,7 +57,9 @@ export function ApprovalActions({
               </p>
               <Button
                 className="w-full bg-emerald-600 hover:bg-emerald-700"
-                onClick={onApproveClick}
+                onClick={() => {
+                  onApproveClick();
+                }}
                 // disabled={disabled}
               >
                 Phê duyệt trả hàng

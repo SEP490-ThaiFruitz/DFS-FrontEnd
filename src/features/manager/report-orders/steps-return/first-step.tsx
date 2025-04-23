@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
@@ -19,18 +19,23 @@ import { FileUpload } from "@/components/global-components/aceternity/file-uploa
 import { ReasonContent } from "../order-action-content/reason-content";
 import { OrderItem as OrderItemTypes } from "@/features/client/payment/successful/payment-successful.types";
 import { GoogleDriveLinkInput } from "@/components/global-components/form/google-drive-link-input";
-import { SelectedItemsDetailsType } from "../return-order-dialog";
+import {
+  ProductInCombo,
+  SelectedItemsDetailsType,
+} from "../return-order-dialog";
+import { useData } from "@/providers/data-provider";
+import { OrderItemDetailsTypes } from "../../order-detail-components/order-detail.types";
+import { SelectProductStatus } from "./components/select-product-status";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FirstStepProps {
   orderId: string;
   orderDetail: any;
   selectedItems: string[];
   setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
-  selectedItemsDetails: any;
+  selectedItemsDetails: SelectedItemsDetailsType;
   setSelectedItemsDetails: React.Dispatch<
-    React.SetStateAction<
-      Record<string, { reason: string; productStatus: string; images: File[] }>
-    >
+    React.SetStateAction<SelectedItemsDetailsType>
   >;
   itemCondition: string;
   setItemCondition: React.Dispatch<React.SetStateAction<string>>;
@@ -46,6 +51,11 @@ interface FirstStepProps {
 
   setGoogleDriveLink?: React.Dispatch<React.SetStateAction<string>>;
   googleDriveLink?: string;
+
+  selectProductInCombo: ProductInCombo[];
+  setSelectProductInCombo: React.Dispatch<
+    React.SetStateAction<ProductInCombo[]>
+  >;
 }
 
 const itemConditions = [
@@ -94,7 +104,48 @@ export const FistStep = memo(
 
     googleDriveLink,
     setGoogleDriveLink,
+
+    selectProductInCombo,
+    setSelectProductInCombo,
   }: FirstStepProps) => {
+    // const { combos, customCombo } = useData();
+
+    console.log("data sau khi duoc lay ve", selectProductInCombo);
+    console.log("san pham don le", selectedItemsDetails);
+
+    const toggleProInductInCombo = (itemId: string, comboId: string) => {
+      const isSelected = selectProductInCombo?.some(
+        (subItem) => subItem.orderItemDetailId === itemId
+      );
+
+      if (isSelected) {
+        setSelectProductInCombo((prev) =>
+          prev.filter((subItem) => subItem.orderItemDetailId !== itemId)
+        );
+      } else {
+        setSelectProductInCombo((prev) => [
+          ...prev,
+          {
+            orderItemId: comboId,
+            orderItemDetailId: itemId,
+            images: null,
+            quantity: 1, // giá trị mặc định, hoặc lấy từ đâu đó nếu có
+            productStatus: "", // giá trị mặc định, ví dụ chuỗi rỗng
+          },
+        ]);
+      }
+    };
+
+    const [expandedCombos, setExpandedCombos] = useState<string[]>([]);
+
+    const toggleComboExpand = (comboId: string) => {
+      setExpandedCombos((prev) =>
+        prev.includes(comboId)
+          ? prev.filter((id) => id !== comboId)
+          : [...prev, comboId]
+      );
+    };
+
     return (
       <div className="p-6 max-h-[60vh] overflow-y-auto motion-preset-focus">
         <div className="mb-4 flex items-center gap-2">
@@ -126,177 +177,263 @@ export const FistStep = memo(
               />
             )}
           </div>
-          <div className="space-y-3">
-            {orderDetail.data?.value?.orderItems.map((item: OrderItemTypes) => (
-              <div
-                key={item.id}
-                className={cn(
-                  "flex items-start w-full gap-3 p-3 rounded-lg border transition-all duration-200",
-                  selectedItems.includes(item.id)
-                    ? "border-sky-200 bg-sky-50"
-                    : "border-gray-200 hover:border-gray-300"
-                )}
-              >
-                <Checkbox
-                  id={`item-${item.id}`}
-                  checked={selectedItems.includes(item.id)}
-                  onCheckedChange={() => toggleItemSelection(item.id)}
-                  className={cn(
-                    selectedItems.includes(item.id)
-                      ? "border-sky-500 text-sky-500"
-                      : ""
-                  )}
-                />
+          <ScrollArea className="h-[400px] md:h-[600px] lg:h-[700px]">
+            {/* // Inside FistStep component */}
+            {orderDetail.data?.value?.orderItems.map(
+              (
+                item: OrderItemTypes & {
+                  orderItemDetails: OrderItemDetailsTypes;
+                }
+              ) => {
+                const isCombo =
+                  item?.itemType?.toLowerCase() === "combo" ||
+                  item?.itemType?.toLowerCase() === "custom";
 
-                <div className="flex flex-col items-start flex-1 w-full ">
-                  <div className="w-full">
-                    <OrderItem item={item} />
-                  </div>
+                return (
+                  <div
+                    key={item.id}
+                    className={cn(
+                      "flex items-start w-full gap-3 p-3 rounded-lg border transition-all duration-200",
+                      selectedItems.includes(item.id)
+                        ? "border-sky-200 bg-sky-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    )}
+                  >
+                    <Checkbox
+                      id={`item-${item.id}`}
+                      checked={
+                        selectedItems.includes(item.id) ||
+                        selectProductInCombo?.some(
+                          (subItem) => subItem.orderItemId === item.id
+                        )
+                      }
+                      onCheckedChange={(checked) => {
+                        if (
+                          item.itemType.toLowerCase() === "combo" ||
+                          item.itemType.toLowerCase() === "custom"
+                        ) {
+                          toggleProInductInCombo("", item.id); // sản phẩm combo
+                        } else {
+                          toggleItemSelection(item.id); // sản phẩm đơn
+                        }
 
-                  {selectedItems.includes(item.id) && (
-                    <>
-                      <div className="flex items-center gap-2 my-2 w-full">
-                        <div className="mb-6 flex-1 w-full">
-                          <h3 className="text-sm font-medium text-gray-700 mb-3">
-                            Tình trạng sản phẩm
-                          </h3>
+                        // item.itemType.toLowerCase() !== "custom" &&
+                        // item.itemType.toLowerCase() !== "combo"
+                        //   ? toggleItemSelection(item.id)
+                        //   : toggleProInductInCombo(item.id, item.id)
+                      }}
+                      className={cn(
+                        selectedItems.includes(item.id)
+                          ? "border-sky-500 text-sky-500"
+                          : ""
+                      )}
+                    />
+                    <div className="flex flex-col items-start flex-1 w-full">
+                      <div className="w-full">
+                        <OrderItem item={item} />
+                      </div>
 
-                          <Select
-                            value={selectedItemsDetails[item.id]?.productStatus}
-                            // onValueChange={setItemCondition}
+                      {/* Handle combo products */}
+                      {isCombo &&
+                        selectProductInCombo.some(
+                          (subItem) => subItem.orderItemId === item.id
+                        ) && (
+                          <div className="w-full">
+                            {item.orderItemDetails.map((itemDetail) => {
+                              const itemDetailEnriched: OrderItemTypes = {
+                                ...itemDetail,
+                                referenceId: itemDetail.id,
+                                image: itemDetail.image,
+                                itemType: "Single",
+                                customImages: null,
+                                discountPrice: itemDetail.discountedPrice,
+                                percentage: itemDetail.discountPercentage,
+                                quantity: itemDetail.quantity,
+                                name: itemDetail.name,
+                                isCanFeedback: true,
+                                unitPrice: itemDetail.unitPrice,
+                              };
 
-                            onValueChange={(value) =>
-                              setSelectedItemsDetails(
-                                (prev: SelectedItemsDetailsType) => {
-                                  // console.log(value);
-                                  return {
+                              const isComboItemSelected =
+                                selectProductInCombo?.some(
+                                  (subItem) =>
+                                    subItem.orderItemDetailId === itemDetail.id
+                                );
+
+                              return (
+                                <div
+                                  key={itemDetail.id}
+                                  className={cn(
+                                    "flex items-start w-full gap-3 p-3 rounded-lg border transition-all duration-200",
+                                    selectProductInCombo?.some(
+                                      (subItem) =>
+                                        subItem.orderItemId === item.id
+                                    )
+                                      ? // ?.productStatus
+                                        "border-sky-200 bg-sky-50"
+                                      : "border-gray-200 hover:border-gray-300"
+                                  )}
+                                >
+                                  <Checkbox
+                                    id={`item-${itemDetail.id}`}
+                                    checked={
+                                      selectProductInCombo?.find(
+                                        (subItem) =>
+                                          subItem.orderItemDetailId ===
+                                          itemDetail.id
+                                      )?.orderItemDetailId === itemDetail.id
+
+                                      // ?.orderItemDetailId === itemDetail.id
+                                    }
+                                    onCheckedChange={() =>
+                                      toggleProInductInCombo(
+                                        itemDetail.id,
+                                        item.id
+                                      )
+                                    }
+                                    className={cn(
+                                      selectProductInCombo?.find(
+                                        (subItem) =>
+                                          subItem.orderItemDetailId ===
+                                          itemDetail.id
+                                      )?.orderItemDetailId === itemDetail.id
+                                        ? "border-sky-500 text-sky-500"
+                                        : ""
+                                    )}
+                                  />
+                                  <div className="w-full">
+                                    <div className="w-full mb-2">
+                                      <OrderItem item={itemDetailEnriched} />
+                                    </div>
+
+                                    {selectProductInCombo?.some(
+                                      (subItem) =>
+                                        subItem.orderItemDetailId ===
+                                        itemDetail.id
+                                    ) && (
+                                      // <div className="w-full ">
+                                      <SelectProductStatus
+                                        item={{
+                                          orderItemDetailId: itemDetail.id,
+                                          orderItemId: item.id,
+                                          quantity: itemDetail.quantity,
+                                        }}
+                                        selectProductInCombo={
+                                          selectProductInCombo
+                                        }
+                                        setSelectProductInCombo={
+                                          setSelectProductInCombo
+                                        }
+                                      />
+                                      // </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                      {/* Handle single products */}
+                      {!isCombo && selectedItems.includes(item.id) && (
+                        <div className="w-full">
+                          <div className="flex items-center gap-2 my-2 w-full">
+                            <div className="mb-6 flex-1 w-full">
+                              <h3 className="text-sm font-medium text-gray-700 mb-3">
+                                Tình trạng sản phẩm
+                              </h3>
+                              <Select
+                                value={
+                                  selectedItemsDetails[item.id]?.productStatus
+                                }
+                                onValueChange={(value) =>
+                                  setSelectedItemsDetails((prev) => ({
                                     ...prev,
                                     [item.id]: {
                                       ...prev[item.id],
                                       productStatus: value,
                                     },
-                                  };
+                                  }))
                                 }
-                              )
-                            }
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Chọn tình trạng sản phẩm" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {itemConditions.map((condition) => (
-                                <SelectItem
-                                  key={condition.value}
-                                  value={condition.value}
-                                >
-                                  {condition.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="mb-6 flex-1 w-full">
-                          <h3 className="text-sm font-medium text-gray-700 mb-3">
-                            Số lượng sản phẩm
-                          </h3>
-
-                          <Select
-                            value={
-                              selectedItemsDetails[item.id]?.quantity ?? "1"
-                            }
-                            // onValueChange={setItemCondition}
-
-                            onValueChange={(value) =>
-                              setSelectedItemsDetails(
-                                (prev: SelectedItemsDetailsType) => {
-                                  // console.log(value);
-                                  return {
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Chọn tình trạng sản phẩm" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {itemConditions.map((condition) => (
+                                    <SelectItem
+                                      key={condition.value}
+                                      value={condition.value}
+                                    >
+                                      {condition.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="mb-6 flex-1 w-full">
+                              <h3 className="text-sm font-medium text-gray-700 mb-3">
+                                Số lượng sản phẩm
+                              </h3>
+                              <Select
+                                value={
+                                  selectedItemsDetails[
+                                    item.id
+                                  ]?.quantity?.toString() ?? "1"
+                                }
+                                onValueChange={(value) =>
+                                  setSelectedItemsDetails((prev) => ({
                                     ...prev,
                                     [item.id]: {
                                       ...prev[item.id],
-                                      quantity: value,
+                                      quantity: parseInt(value),
                                     },
-                                  };
+                                  }))
                                 }
-                              )
-                            }
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Chọn số lượng" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Array.from({ length: item.quantity })
-                                .fill(0)
-                                .map((_, index) => {
-                                  return (
-                                    <SelectItem
-                                      key={index}
-                                      value={(index + 1).toString()}
-                                    >
-                                      {index + 1}
-                                    </SelectItem>
-                                  );
-                                })}
-                            </SelectContent>
-                          </Select>
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Chọn số lượng" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {Array.from({ length: item.quantity })
+                                    .fill(0)
+                                    .map((_, index) => (
+                                      <SelectItem
+                                        key={index}
+                                        value={(index + 1).toString()}
+                                      >
+                                        {index + 1}
+                                      </SelectItem>
+                                    ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <Label className="text-sm font-medium text-slate-700 mb-2">
+                              Tải ảnh minh chứng
+                            </Label>
+                            <FileUpload
+                              onChange={(files: File[]) =>
+                                setSelectedItemsDetails((prev) => ({
+                                  ...prev,
+                                  [item.id]: {
+                                    ...prev[item.id],
+                                    images: files,
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
                         </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <Label className="text-sm font-medium text-slate-700 mb-2">
-                          Tải ảnh minh chứng
-                        </Label>
-                        <FileUpload
-                          onChange={(files: File[]) =>
-                            setSelectedItemsDetails(
-                              (
-                                prev: Record<
-                                  string,
-                                  {
-                                    reason: string;
-                                    productStatus: string;
-                                    images: File[];
-                                  }
-                                >
-                              ) => ({
-                                ...prev,
-                                [item.id]: {
-                                  ...prev[item.id],
-                                  images: files,
-                                },
-                              })
-                            )
-                          }
-                        />
-                      </div>
-
-                      {/* <FileUpload onChange={handleImageChange} /> */}
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </ScrollArea>
         </div>
-
-        {/* <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">
-            Tình trạng sản phẩm
-          </h3>
-          <Select value={itemCondition} onValueChange={setItemCondition}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Chọn tình trạng sản phẩm" />
-            </SelectTrigger>
-            <SelectContent>
-              {itemConditions.map((condition) => (
-                <SelectItem key={condition.value} value={condition.value}>
-                  {condition.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div> */}
 
         <ReasonContent
           reasons={returnReasons}

@@ -1,3 +1,5 @@
+import { OrderItemDetailsTypes } from "@/features/manager/order-detail-components/order-detail.types";
+
 export type OrderItem = {
   id: string;
   referenceId: string;
@@ -11,6 +13,23 @@ export type OrderItem = {
   isCanFeedback?: boolean;
 
   customImages: string[] | null; // Assuming this is an array of image URLs
+};
+
+export type OrderItemHaveChild = {
+  id: string;
+  referenceId: string;
+  name: string;
+  image: string | null;
+  itemType: "Single" | "Combo" | "Custom"; // Assuming there are only these types
+  quantity: number;
+  unitPrice: number;
+  percentage: number;
+  discountPrice: number;
+  isCanFeedback?: boolean;
+
+  customImages: string[] | null; // Assuming this is an array of image URLs
+
+  orderItemDetails: OrderItemDetailsTypes; // Assuming this is an array of OrderItemDetailsTypes
 };
 
 export type Delivery = {

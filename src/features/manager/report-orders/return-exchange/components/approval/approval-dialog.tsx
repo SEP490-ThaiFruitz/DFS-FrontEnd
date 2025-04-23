@@ -117,8 +117,17 @@ export function ApprovalDialog({
   }, 0);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-7xl p-0 overflow-hidden">
+    <Dialog
+      open={isOpen}
+      onOpenChange={(value) => {
+        setIsOpen(value);
+        setTimeout(() => (document.body.style.pointerEvents = ""), 100);
+      }}
+    >
+      <DialogContent
+        className="max-w-7xl p-0 overflow-hidden"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader className="px-6 pt-6 pb-2">
           <div className="flex items-center gap-2">
             <Badge className="bg-amber-500 hover:bg-amber-600 px-2 py-0.5">

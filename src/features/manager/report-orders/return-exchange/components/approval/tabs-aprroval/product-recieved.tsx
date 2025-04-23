@@ -114,6 +114,7 @@ export const ProductReceived = memo(
                                 Number.parseInt(e.target.value) || 0
                               )
                             }
+                            autoFocus
                             className="rounded-none text-center h-9"
                           />
                           <Button

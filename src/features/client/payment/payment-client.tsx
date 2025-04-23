@@ -458,17 +458,19 @@ function PaymentClientPage() {
                       <div className="">
                         {!(balance != null) ? (
                           <div className="flex flex-col gap-2">
-                            <h2 className="font-semibold text-slate-700">
-                              Bạn đã có ví chưa?
+                            <h2 className="font-semibold text-slate-700 text-base">
+                              Tạo ví ngay nhật ngay ưu đãi{" "}
                             </h2>
                             <span className="font-sans italic font-semibold">
-                              Hãy tạo ví và thanh toán để được hưởng ưu đãi
-                              Vouchers!{" "}
+                              Hãy tạo ví để nhận ngay ưu đãi
+                              <span className="font-semibold text-base text-sky-500">
+                                20.000đ
+                              </span>
                             </span>
                           </div>
                         ) : (
                           <div className="flex flex-col gap-2">
-                            <h2 className="font-semibold text-slate-700">
+                            <h2 className="font-semibold text-slate-700 text-base">
                               Bạn đã có VÍ
                             </h2>
 

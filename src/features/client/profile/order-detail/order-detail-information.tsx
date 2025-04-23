@@ -24,6 +24,7 @@ import {
   isExceptionStatus,
 } from "@/features/manager/report-orders/order-status-badge";
 import { vietnameseDate } from "@/utils/date";
+import { ORDERS_KEY } from "@/app/key/manager-key";
 
 interface OrderDetailsProps {
   orderId?: string;
@@ -121,6 +122,14 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
       const response = await API.patch(`/Orders/${orderId}/confirm`, "");
       if (response) {
         queryClient.invalidateQueries({ queryKey: ["OrderDetail", orderId] });
+        queryClient.invalidateQueries({ queryKey: [ORDERS_KEY.ORDERS_LIST] });
+        queryClient.invalidateQueries({
+          queryKey: [ORDERS_KEY.ORDER_LIST_DETAIL],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [ORDERS_KEY.RETURN_EXCHANGE],
+        });
+
         toast.success("Xác nhận nhận hàng thành công");
       } else {
         toast.error("Xác nhận nhận hàng thất bại");
@@ -243,10 +252,16 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
                 Thanh toán ngay
               </Button>
             )}
-          {orderStatus === "Received" && (
-            <Button className="ml-auto" variant={"destructive"}>
-              Hoàn trả
-            </Button>
+          {/* {orderStatus === "Received" && (
+            // <Button className="ml-auto" variant={"destructive"}>
+            //   Hoàn trả
+            // </Button>
+
+            <ReturnOrderDialog orderId={orderId} />
+          )} */}
+
+          {!isExceptionStatus(orderStatus) && (
+            <ReturnOrderDialog orderId={orderId} />
           )}
           {(orderStatus === "Pending" || orderStatus === "Packaging") && (
             <Button
@@ -324,9 +339,9 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
 
       {/* actions to re-status */}
 
-      {!isExceptionStatus(orderStatus) && (
+      {/* {!isExceptionStatus(orderStatus) && (
         <ReturnOrderDialog orderId={orderId} />
-      )}
+      )} */}
 
       {isCancel && (
         <CancelDialog

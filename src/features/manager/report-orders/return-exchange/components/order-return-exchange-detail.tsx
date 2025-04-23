@@ -118,9 +118,6 @@ export const OrderReturnExchangeDetail = memo(
     const [returnRequestData, setReturnRequestData] = useState<
       OrderReturnItem[]
     >([]);
-    const [orderData] = useState<OrderReturnData>();
-    const [selectedTab, setSelectedTab] = useState("all");
-    const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const [adminNote, setAdminNote] = useState("");
     const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +136,7 @@ export const OrderReturnExchangeDetail = memo(
 
     const [images, setImages] = useState<File[]>([]);
 
-    console.log("hinh anh nhan duoc: ", images.length);
+    // console.log("hinh anh nhan duoc: ", images.length);
 
     const handleImageChange = (files: File[]) => {
       setImages(files);
@@ -334,10 +331,19 @@ export const OrderReturnExchangeDetail = memo(
           <ChevronRight className="h-4 w-4" />
         </Button>
 
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet
+          open={open}
+          onOpenChange={(open) => {
+            setOpen(open);
+            setTimeout(() => (document.body.style.pointerEvents = ""), 100);
+          }}
+        >
           {/* <SheetContent className="sm:max-w-[600px] md:max-w-[800px] overflow-y-auto p-0"> */}
 
-          <SheetContent className="min-w-full md:min-w-[60%] lg:min-w-[70%] rounded-3xl mr-2">
+          <SheetContent
+            className="min-w-full md:min-w-[60%] lg:min-w-[70%] rounded-3xl mr-2"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
             {/* Header */}
             {safeOrderReturnData !== undefined &&
             safeOrderReturnData != null ? (

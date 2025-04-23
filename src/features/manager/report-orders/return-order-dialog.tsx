@@ -35,13 +35,15 @@ import { ApiResponse } from "@/types/types";
 import { OrderDetailTypes } from "@/types/report-orders.types";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ORDERS_KEY } from "@/app/key/manager-key";
-import { OrderItem as OrderItemType } from "@/features/client/payment/successful/payment-successful.types";
+import { OrderItem } from "@/features/client/payment/successful/payment-successful.types";
 import { toast } from "sonner";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { API } from "@/app/key/url";
 import { FistStep } from "./steps-return/first-step";
 import { SecondStep } from "./steps-return/second-step";
+import { useData } from "@/providers/data-provider";
+import { OrderItemDetailsTypes } from "../order-detail-components/order-detail.types";
 
 const returnReasons = [
   {
@@ -104,12 +106,28 @@ interface ReturnOrderDialogProps {
 
 export interface SelectedItemsDetailsType {
   [key: string]: {
-    reason: string;
+    // reason: string;
     productStatus: string;
     images: File[];
     quantity?: number;
+
+    // comboId?: string | null;
+    // orderItemDetailId?: string;
   };
 }
+
+export interface ProductInCombo {
+  orderItemId: string;
+  orderItemDetailId: string;
+  quantity: number;
+  productStatus: string;
+
+  images: File[] | null;
+}
+
+export type OrderItemDetails = OrderItem & {
+  orderItemDetails: OrderItemDetailsTypes;
+};
 
 export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
   const [open, setOpen] = useState(false);
@@ -123,12 +141,14 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
 
   const token = Cookies.get("accessToken");
 
-  const [selectedOrderItem, setSelectedOrderItem] = useState<OrderItemType[]>(
-    []
-  );
+  const [selectedOrderItem, setSelectedOrderItem] = useState<OrderItem[]>([]);
 
   const [selectedItemsDetails, setSelectedItemsDetails] =
     useState<SelectedItemsDetailsType>({});
+
+  const [selectProductInCombo, setSelectProductInCombo] = useState<
+    ProductInCombo[]
+  >([]);
 
   const [selectImages, setSelectImages] = useState<File[]>([]);
 
@@ -149,19 +169,81 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     (item) => item.images
   );
 
+  console.log("hinh anh san pham don le", images);
+
+  console.log({ selectedItemsDetails });
+
+  const imagesProductInCombo = selectProductInCombo.flatMap(
+    (item) => item.images
+  );
+
+  console.log("hinh trong combo", imagesProductInCombo);
+
   const handleConfirm = async () => {
     if (step === 1) {
       setStep(2);
       return;
     }
 
-    const isValid = Object.values(selectedItemsDetails).every(
-      (detail) => detail?.productStatus && detail?.images?.length > 0
+    // const isValid = Object.values(selectedItemsDetails).every(
+    //   (detail) => detail?.productStatus && detail?.images?.length > 0
+    // );
+    // if (!isValid) {
+    //   toast.info("Vui lòng điền đầy đủ lý do và tải ảnh cho tất cả sản phẩm.");
+    //   return;
+    // }
+
+    const allItems: {
+      orderItemId: string;
+      orderItemDetailId?: string;
+      quantity: number | undefined;
+      productStatus: string;
+    }[] = [
+      ...selectedItems.map((itemId) => {
+        const detail = selectedItemsDetails[itemId];
+
+        return {
+          orderItemId: itemId,
+          quantity: detail.quantity,
+          productStatus: detail.productStatus,
+        };
+      }),
+      ...selectProductInCombo.map((item) => ({
+        orderItemId: item.orderItemId,
+        orderItemDetailId: item.orderItemDetailId,
+        quantity: item.quantity,
+        productStatus: item.productStatus,
+      })),
+    ];
+
+    console.log({ allItems });
+
+    const transformAllItems = allItems.filter((item) => {
+      return (
+        item.productStatus &&
+        item.productStatus.trim() !== "" &&
+        item?.orderItemDetailId !== ""
+        // item.quantity !== 1
+      );
+    });
+
+    console.log({ transformAllItems });
+
+    const invalidItems = transformAllItems.filter(
+      (item) => !item.productStatus || item.productStatus.trim() === ""
     );
-    if (!isValid) {
-      toast.info("Vui lòng điền đầy đủ lý do và tải ảnh cho tất cả sản phẩm.");
+
+    if (invalidItems.length > 0) {
+      toast.info("Vui lòng chọn tình trạng sản phẩm cho tất cả mục.");
       return;
     }
+
+    const allImages: File[] = [
+      ...selectedItems.map(
+        (itemId) => selectedItemsDetails[itemId].images?.[0]
+      ),
+      ...selectProductInCombo.map((item) => item.images?.[0]),
+    ].filter((img): img is File => Boolean(img));
 
     setIsSubmitting(true);
 
@@ -169,33 +251,25 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
       const formData = new FormData();
 
       formData.append("reason", selectedReason);
+      formData.append("linkDocument", googleDriveLink);
+      formData.append("type", preferredAction);
 
-      formData.append(`type`, preferredAction);
-      formData.append(`LinkDocument`, googleDriveLink);
-
-      images.forEach((image, index) => {
-        formData.append(`Images`, image);
+      // Append items[]
+      transformAllItems.forEach((item, index) => {
+        formData.append(`items[${index}][orderItemId]`, item.orderItemId);
+        if (item.orderItemDetailId) {
+          formData.append(
+            `items[${index}][orderItemDetailId]`,
+            item.orderItemDetailId
+          );
+        }
+        formData.append(`items[${index}][quantity]`, String(item.quantity));
+        formData.append(`items[${index}][productStatus]`, item.productStatus);
       });
 
-      selectedItems.forEach((itemId, index) => {
-        const itemDetail = selectedItemsDetails[itemId];
-
-        formData.append(`items[${index}][orderItemId]`, itemId);
-
-        // Append quantity
-        // formData.append(`items[${index}][quantity]`, "1");
-        formData.append(
-          `items[${index}][quantity]`,
-          String(itemDetail.quantity)
-        );
-
-        // Append tình trạng sản phẩm
-        formData.append(
-          `items[${index}][productStatus]`,
-          itemDetail.productStatus
-        );
-
-        // formData.append(`items[${index}][type]`, preferredAction);
+      // Append Images[] (bên ngoài)
+      allImages.forEach((image) => {
+        formData.append("Images", image); // phải dùng key "Images" nhiều lần
       });
 
       // Gửi yêu cầu đến API
@@ -228,6 +302,13 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     }
   };
 
+  const orderDetail = useFetch<ApiResponse<OrderDetailTypes>>(
+    `/Orders/${orderId}`,
+    [ORDERS_KEY.ORDER_LIST_DETAIL, orderId]
+  );
+
+  console.log({ orderDetail });
+
   const toggleItemSelection = (itemId: string) => {
     setSelectedItems((prev) =>
       prev.includes(itemId)
@@ -239,7 +320,11 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     if (!selectedItemsDetails[itemId]) {
       setSelectedItemsDetails((prev) => ({
         ...prev,
-        [itemId]: { productStatus: "", images: [], reason: "", quantity: 1 },
+        [itemId]: {
+          productStatus: "",
+          images: [],
+          quantity: 1,
+        },
       }));
     } else {
       // Nếu bỏ chọn, xóa khỏi selectedItemsDetails
@@ -258,28 +343,108 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
   //   itemCondition &&
   //   (isOtherSelected ? additionalComments.trim().length > 0 : true);
 
+  const hasValidSingleItem = selectedItems.some((id) => {
+    const detail = selectedItemsDetails[id];
+    return (
+      detail?.productStatus && (detail.images?.length > 0 || googleDriveLink)
+    );
+  });
+
+  const hasValidComboItem = selectProductInCombo.some((item) => {
+    return (
+      item.productStatus &&
+      ((item.images && item.images?.length > 0) || googleDriveLink)
+    );
+  });
+
   const proveCondition =
     selectedItemsDetails[selectedItems[0]]?.images?.length > 0 ||
     !googleDriveLink;
 
+  // const canProceed =
+  //   selectedReason &&
+  //  ( selectedItems.length > 0 ||
+  //   selectProductInCombo.length > 0) &&
+  //   selectedItemsDetails[selectedItems[0]]?.productStatus &&
+  //   proveCondition &&
+  //   (isOtherSelected ? additionalComments.trim().length > 0 : true)
+
   const canProceed =
     selectedReason &&
-    selectedItems.length > 0 &&
-    selectedItemsDetails[selectedItems[0]]?.productStatus &&
-    proveCondition &&
+    (hasValidSingleItem || hasValidComboItem) &&
     (isOtherSelected ? additionalComments.trim().length > 0 : true);
-
-  const orderDetail = useFetch<ApiResponse<OrderDetailTypes>>(
-    `/Orders/${orderId}`,
-    [ORDERS_KEY.ORDER_LIST_DETAIL, orderId]
-  );
 
   useEffect(() => {
     const selectedItemsDetails = orderDetail.data?.value?.orderItems.filter(
       (item) => selectedItems.includes(item.id)
     );
-    setSelectedOrderItem(selectedItemsDetails || []);
-  }, [selectedItems, orderDetail.data?.value?.orderItems]);
+
+    console.log({ selectProductInCombo });
+    const comboItems = orderDetail.data?.value?.orderItems ?? [];
+
+    // const enrichedComboChildren: OrderItem[] = comboItems.flatMap((parent) => {
+    //   return parent?.orderItemDetails
+    //     ?.filter((child) =>
+    //       selectProductInCombo.some(
+    //         (selected) => selected.orderItemDetailId === child.id
+    //       )
+    //     )
+    //     .map((child) => ({
+    //       // ...child,
+    //       referenceId: child.id,
+    //       image: child.image,
+    //       itemType: "Single",
+    //       customImages: null,
+    //       percentage: child.discountPercentage,
+    //       quantity: child.quantity,
+    //       name: child.name,
+    //       isCanFeedback: true,
+    //       unitPrice: child.unitPrice,
+    //       discountPrice: child.discountedPrice,
+    //       discountPercentage: child.discountPercentage,
+    //       id: child.id,
+    //       productVariantId: child.productVariantId,
+    //     }));
+    // }).filter(Boolean);
+
+    const enrichedComboChildren: OrderItem[] = comboItems
+      .flatMap((parent) => {
+        return parent?.orderItemDetails
+          ?.filter((child) =>
+            selectProductInCombo.some(
+              (selected) => selected.orderItemDetailId === child.id
+            )
+          )
+          .map((child) => ({
+            referenceId: child.id,
+            image: child.image,
+            itemType: "Single" as const,
+            customImages: null,
+            percentage: child.discountPercentage,
+            quantity: child.quantity,
+            name: child.name,
+            isCanFeedback: true,
+            unitPrice: child.unitPrice,
+            discountPrice: child.discountedPrice,
+            discountPercentage: child.discountPercentage,
+            id: child.id,
+            productVariantId: child.productVariantId,
+          }));
+      })
+      .filter(Boolean); // 🧼 Loại bỏ phần tử undefined/null
+
+    console.log({ enrichedComboChildren });
+
+    // setSelectedOrderItem(selectedItemsDetails || []);
+    setSelectedOrderItem([
+      ...(selectedItemsDetails || []),
+      ...(enrichedComboChildren || []),
+    ]);
+  }, [
+    selectedItems,
+    orderDetail.data?.value?.orderItems,
+    selectProductInCombo,
+  ]);
 
   return (
     <Dialog
@@ -367,6 +532,8 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
             returnReasons={returnReasons}
             googleDriveLink={googleDriveLink}
             setGoogleDriveLink={setGoogleDriveLink}
+            setSelectProductInCombo={setSelectProductInCombo}
+            selectProductInCombo={selectProductInCombo}
           />
         ) : (
           step === 2 && (

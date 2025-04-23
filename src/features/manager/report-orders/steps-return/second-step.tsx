@@ -71,7 +71,7 @@ export const SecondStep = memo(
         <OrderInformation
           queryFn={orderDetail}
           orderItems={selectedOrderItem}
-          title="Thông đơn hàng sẽ được trả"
+          title="Thông đơn hàng sẽ được đổi/trả"
         />
 
         <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4">

@@ -115,6 +115,8 @@ export const GeneralTab = memo(
               placeholder="Nhập ghi chú cho yêu cầu trả hàng này"
               value={adminNote}
               onChange={(e) => setAdminNote(e.target.value)}
+              autoFocus
+              
               className="min-h-[150px] mt-1.5 resize-none cardStyle"
             />
             <p className="text-xs text-slate-500 mt-1.5">

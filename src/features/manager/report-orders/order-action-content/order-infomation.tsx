@@ -30,7 +30,7 @@ export const OrderInformation = memo(
   }: OrderInformationProps) => {
     // const orderItems = queryFn.data?.value?.orderItems || [];
 
-    console.log({ orderItems });
+    // console.log({ orderItems });
     return (
       <div className="mb-6 w-full">
         <h3 className="text-sm flex items-center gap-1 font-bold text-slate-700 mb-2">

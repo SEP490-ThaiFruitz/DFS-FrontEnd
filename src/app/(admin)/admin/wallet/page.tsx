@@ -183,7 +183,7 @@ function WalletPage() {
           </div>
 
           <div className="mt-8">
-            <div className="bg-white rounded-lg shadow border">
+            <div className="bg-white cardStyle shadow border">
               {isLoading ? <DataTableSkeleton /> :
                 <DataTableCustom data={walllets?.value?.wallets ?? []} columns={columns} placeholder="tên người dùng" searchFiled="user" />}
             </div>

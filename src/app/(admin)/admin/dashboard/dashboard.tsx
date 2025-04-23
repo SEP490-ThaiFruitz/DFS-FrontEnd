@@ -425,7 +425,7 @@ const Dashboard = () => {
 
                     <div className="mt-8">
                         <h2 className="text-xl font-semibold mb-4">Chi tiết sản phẩm</h2>
-                        <div className="bg-white rounded-lg shadow border">
+                        <div className="bg-white cardStyle shadow border">
                             {isLoading ? <DataTableSkeleton /> :
                                 <DataTableCustom data={reportData?.value?.productVariants || []} columns={columns} placeholder="tên sản phẩm" searchFiled="productName">
                                     <SelectDate />

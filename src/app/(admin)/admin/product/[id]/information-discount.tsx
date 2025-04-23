@@ -214,7 +214,7 @@ const InformationDiscount = ({ productVariantId, discounts, productId }: Readonl
                         </Button>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow border">
+                    <div className="bg-white cardStyle shadow border">
                         <DataTableCustom data={discounts} columns={columns} placeholder="mô tả" searchFiled="description" />
                     </div>
 

@@ -12,7 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import ProductChart from "./product-statisc/chart"
 import ProductPie from "./product-statisc/pie"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useMemo, useState } from "react"
 import { PRODUCT_KEY } from "@/app/key/admin-key"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -23,6 +22,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { vi } from "date-fns/locale/vi"
 import { calculateGrowthRate } from "@/lib/calculate"
 import ProductVariantTab from "./product-variant/product-variant"
+import CardSkeleton from "@/components/global-components/custom-skeleton/card-skeleton"
 
 interface ProductChartData {
   date: string
@@ -260,7 +260,7 @@ const StatisticProductPage = () => {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-6">
+        <div className="grid gap-8">
           <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-28 h-28 cardStyle border overflow-hidden flex-shrink-0">
@@ -277,32 +277,25 @@ const StatisticProductPage = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="overview" className="space-y-2">
-            <div className="flex items-center">
+          <Tabs defaultValue="overview">
+            <div className="flex items-center justify-between">
               <TabsList>
                 <TabsTrigger value="overview">Tổng quan</TabsTrigger>
                 <TabsTrigger value="productVariants">Biến thể</TabsTrigger>
               </TabsList>
-              <SelectDate />
+              <TabsContent value="overview">
+                <SelectDate />
+              </TabsContent>
             </div>
-            <TabsContent value="overview" className="space-y-4">
+            <TabsContent value="overview" className="space-y-8">
               {isLoading ? (
                 <div className="w-full">
                   <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     {Array(4)
                       .fill(0)
                       .map((_, i) => (
-                        <Card key={i}>
-                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <Skeleton className="h-4 w-24" />
-                            <Skeleton className="h-10 w-10 rounded-full" />
-                          </CardHeader>
-                          <CardContent>
-                            <Skeleton className="h-8 w-28" />
-                          </CardContent>
-                        </Card>
+                        <CardSkeleton key={i + 1} />
                       ))}
-
                   </div>
                 </div>
               ) : (
@@ -398,23 +391,7 @@ const StatisticProductPage = () => {
                       Array(4)
                         .fill(0)
                         .map((_, i) => (
-                          <div key={i + 1} className="flex items-start gap-4 border-b pb-4 last:border-0">
-                            <div className="rounded-full bg-muted h-10 w-10 flex items-center justify-center">
-                              <Skeleton className="h-8 w-8 rounded-full" />
-                              <Skeleton className="h-8 w-32" />
-                            </div>
-                            <div className="flex-1 space-y-1">
-                              <div className="flex items-center justify-between">
-                                <Skeleton className="h-8 w-32" />
-                                <Skeleton className="h-8 w-32" />
-                              </div>
-                              <Skeleton className="h-8 w-60" />
-                              <Skeleton className="h-8 w-32" />
-                              <div className="flex items-center gap-8">
-                                <Skeleton className="h-24 w-32" />
-                              </div>
-                            </div>
-                          </div>
+                          <CardSkeleton key={i + 1} />
                         ))
                       : product?.value?.feedbacks && product?.value?.feedbacks.length > 0 ? product?.value?.feedbacks.map((feedback, i) => (
                         <div key={i + 1} className="flex items-start gap-4 border-b pb-4 last:border-0">

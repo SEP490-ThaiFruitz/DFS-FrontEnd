@@ -23,6 +23,8 @@ export const FormAddressSafeTypes = z.object({
     tag: z.string().nonempty({
         message: "Vui lòng nhập tên thẻ"
     }),
+    longitude: z.string().optional(),
+    latitude: z.string().optional(),
     isDefault: z.boolean(),
     phone: z.string({
         required_error: "Vui lòng số điện thoại người nhận"

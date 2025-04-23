@@ -157,7 +157,7 @@ const PickingItemPage = () => {
         <div className="text-2xl font-semibold leading-none tracking-tight">Lịch sử sản phẩm trong kho</div>
       </div>
       <div className="mt-8">
-        <div className="bg-white rounded-lg shadow border">
+        <div className="bg-white cardStyle shadow border">
           {isLoading ? <DataTableSkeleton /> :
             <DataTableCustom data={pickingitems?.value ?? []} columns={columns} placeholder="ghi chú" searchFiled="note" />}
         </div>

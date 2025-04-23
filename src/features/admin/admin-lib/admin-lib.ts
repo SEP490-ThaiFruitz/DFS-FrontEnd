@@ -232,3 +232,8 @@ export const STATUS_HIDDEN_SELECT: Record<string, string> = {
     Active: "Đang hoạt động",
     IsDeleted: "Đã ẩn",
 };
+
+export const getRemainingDays = (endDate: string) => {
+    const remainingMilliseconds = new Date(endDate).getTime() - new Date().getTime();
+    return Math.ceil(remainingMilliseconds / (1000 * 60 * 60 * 24));
+};

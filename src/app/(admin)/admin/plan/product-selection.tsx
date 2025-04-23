@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { calculateGrowthRate } from "@/lib/calculate"
 import { formatVND } from "@/lib/format-currency"
 import { cn } from "@/lib/utils"
 import type { ApiResponse } from "@/types/types"
@@ -147,8 +148,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
 
   const { data: apiResponse, refetch } = useFetch<ApiResponse<Product[]>>(
     formattedUrl,
-    ["Combos", "Products"],
-    { enabled: !!formattedUrl }
+    ["Combos", "Products"]
   );
 
   const formattedOldUrl = useMemo(() => {
@@ -160,8 +160,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
 
   const { data: apiOldResponse, refetch: refreshOld } = useFetch<ApiResponse<Product[]>>(
     formattedOldUrl,
-    ["Combos", "Products-Old"],
-    { enabled: !!formattedOldUrl }
+    ["Combos", "Products-Old"]
   );
 
   useEffect(() => {
@@ -477,6 +476,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                         images={[product.image]}
                         initialWidth={80}
                         initialHeight={80}
+                        className="rounded-md object-cover"
                       />
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
@@ -520,9 +520,10 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                               images={[variant.image]}
                               initialWidth={80}
                               initialHeight={80}
+                              className="rounded-md object-cover"
                             />
                           ) : (
-                            <div className="h-20 w-20  bg-muted rounded-md"></div>
+                            <div className="h-20 w-20 bg-muted rounded-md"></div>
                           )}
                         </TableCell>
                         <TableCell className="pl-8 text-sm">
@@ -537,23 +538,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                               ?.find((p) => p.productId === product.productId)
                               ?.productVariants.find((v) => v.productVariantId === variant.productVariantId)
 
-                            if (!oldVariant || oldVariant.revenue === 0) {
-                              return <span className={`font-medium ${variant.revenue > 0 ? "text-green-500" : "text-red-500"}`}>
-                                {variant.revenue > 0 ? "+100%" : "0%"}
-                              </span>
-                            }
-                            console.log(oldVariant.revenue)
-                            console.log(variant.revenue)
-
-                            const growthRate = ((variant.revenue - oldVariant.revenue) / oldVariant.revenue) * 100
-                            const formattedGrowth = growthRate.toFixed(1)
-
-                            return (
-                              <span className={`font-medium ${growthRate >= 0 ? "text-green-500" : "text-red-500"}`}>
-                                {growthRate >= 0 ? "+" : ""}
-                                {formattedGrowth}%
-                              </span>
-                            )
+                            return calculateGrowthRate(variant.revenue, oldVariant?.revenue ?? 0)
                           })()}
                         </TableCell>
                         <TableCell className="text-center">

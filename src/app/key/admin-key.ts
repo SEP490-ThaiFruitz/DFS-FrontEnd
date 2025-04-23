@@ -53,5 +53,7 @@ export enum PRODUCT_KEY {
   PRODUCT_VARIANT_STATISTIC = "product_variant_statistic",
   PRODUCT_VARIANT_OLD_STATISTIC = "product_variant_old_statistic",
   PRODUCT_STATISTIC = "product_statistic",
-  PRODUCT_OLD_STATISTIC = "product__old_statistic"
+  PRODUCT_OLD_STATISTIC = "product_old_statistic",
+  PRODUCT_VARIANT_DETAIL_STATISTIC = "product_variant_detail_statistic",
+  PRODUCT_VARIANT_DETAIL_OLD_STATISTIC = "product_variant_detail_old_statistic"
 }

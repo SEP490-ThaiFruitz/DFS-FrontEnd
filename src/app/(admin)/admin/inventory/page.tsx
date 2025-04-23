@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useMemo, useState } from "react"
 import CardSkeleton from "@/components/global-components/custom-skeleton/card-skeleton"
+import { getRemainingDays } from "@/features/admin/admin-lib/admin-lib"
 
 interface ProductBatchItem {
     number: number
@@ -48,11 +49,6 @@ const InventoryPage = () => {
 
     const handleOptionSelect = (option: keyof typeof dateRangeOptions) => {
         setSelectedOption(option);
-    };
-
-    const getRemainingDays = (endDate: string) => {
-        const remainingMilliseconds = new Date(endDate).getTime() - new Date().getTime();
-        return Math.ceil(remainingMilliseconds / (1000 * 60 * 60 * 24));
     };
 
     const filteredData = useMemo(() => {
@@ -168,12 +164,11 @@ const InventoryPage = () => {
         )
     }
 
-    const getTotalQuantity = (data: ProductBatchItem[], days: number) => {
-        return data.reduce((total, item) => {
+    const getTotalQuantity = (data: ProductBatchItem[], minDays: number, maxDays: number) =>
+        data.reduce((total, item) => {
             const remaining = getRemainingDays(item.expirationDate);
-            return remaining <= days ? total + 1 : total;
+            return remaining > minDays && remaining <= maxDays ? total + item.remainingQuantity : total;
         }, 0);
-    };
 
     const SelectDate = () => (
         <div className="flex items-center py-4 space-x-4 p-4 w-full justify-end">
@@ -240,7 +235,7 @@ const InventoryPage = () => {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 90)}</div>
+                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 30, Infinity)}</div>
                             </CardContent>
                         </Card>
 
@@ -252,7 +247,7 @@ const InventoryPage = () => {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 30)}</div>
+                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 15, 30)}</div>
                             </CardContent>
                         </Card>
 
@@ -264,7 +259,7 @@ const InventoryPage = () => {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 15)}</div>
+                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 7, 15)}</div>
                             </CardContent>
                         </Card>
 
@@ -276,12 +271,12 @@ const InventoryPage = () => {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 7)}</div>
+                                <div className="text-2xl font-bold">{getTotalQuantity(products?.value ?? [], 0, 7)}</div>
                             </CardContent>
                         </Card>
                     </div>
                     <div className="mt-8">
-                        <div className="bg-white rounded-lg shadow border">
+                        <div className="bg-white cardStyle shadow border">
                             <DataTableCustom data={filteredData ?? []} columns={columns} placeholder="tên sản phẩm" searchFiled="productName" >
                                 <SelectDate />
                             </DataTableCustom>

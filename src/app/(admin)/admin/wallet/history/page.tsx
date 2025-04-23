@@ -499,7 +499,7 @@ const WalletHistoryPage = () => {
                     </Card>
 
                     <div className="mt-8">
-                        <div className="bg-white rounded-lg shadow border">
+                        <div className="bg-white cardStyle shadow border">
                             {isLoading ? <DataTableSkeleton /> :
                                 <DataTableCustom data={wallletTransactions?.value?.transactions ?? []} columns={columns} placeholder="nội dung" searchFiled="content" />}
                         </div>

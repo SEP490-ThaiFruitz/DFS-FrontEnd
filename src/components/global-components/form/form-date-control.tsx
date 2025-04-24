@@ -107,7 +107,9 @@ export const FormDateControl = <T extends FieldValues, K>({
                       mode={mode}
                       {...field}
                       selected={field.value}
-                      onSelect={field.onChange}
+                      onSelect={(date: any) => {
+                        if (date) field.onChange(date);
+                      }}
                       locale={vi}
                       disabled={(date) =>
                         (minDate && isBefore(date, minDate)) ||

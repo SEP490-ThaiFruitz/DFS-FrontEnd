@@ -47,8 +47,8 @@ const ComboPage = () => {
 
     const onSubmit = async (data: z.infer<typeof ComboSettingSafeTypes>) => {
         const { quantity, percentage } = data
-        const comboSettingExisted = comboSettings.find((item) => item.quantity === quantity)
-        if(comboSettingExisted){
+        const comboSettingExisted = comboSettings.find((item) => item.quantity === quantity && item.id !== 0)
+        if (comboSettingExisted) {
             form.setError("quantity", { message: "Số lượng đã tồn tại" })
             return
         }
@@ -94,9 +94,9 @@ const ComboPage = () => {
     }
 
     const deleteItem = () => {
-        const comboSettingExisted  = comboSettings.filter((item) => item.id !== comboSettingRemove?.id)
-        setComboSettings(comboSettingExisted )
-        handerSave(comboSettingExisted );
+        const comboSettingExisted = comboSettings.filter((item) => item.id !== comboSettingRemove?.id)
+        setComboSettings(comboSettingExisted)
+        handerSave(comboSettingExisted);
         setComboSettingRemove(undefined)
     }
 
@@ -118,7 +118,7 @@ const ComboPage = () => {
 
     return (
         <div className='m-10'>
-            <Card>
+            <Card className='cardStyle'>
                 <CardHeader>
                     <CardTitle>Cài đặt gói quà</CardTitle>
                 </CardHeader>

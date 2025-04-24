@@ -7,7 +7,6 @@ import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import { CirclePlus, LockKeyhole, LockKeyholeOpen, Pencil } from "lucide-react"
 import { useState } from "react"
 import FormUser from "./form-user"
-import { DataTable } from '@/components/global-components/data-table/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number"
 import { API } from "@/actions/client/api-config"
@@ -176,7 +175,7 @@ function UserPage() {
                 name={user?.name}
                 content={`Bạn có chắc chắn muốn ${user?.isActive ? "khóa tài khoản" : "mở khóa tài khoản"} ${user?.name} không?`}
                 message={user?.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
-                classNameButton={user?.isActive ? "" : "bg-green-500 hover:bg-green-800"}
+                classNameButton={user?.isActive ? "" : "bg-sky-600 hover:bg-sky-700"}
             />
 
             {isFormUser && (

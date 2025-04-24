@@ -226,7 +226,7 @@ export const VerifyDialog = ({ user }: VerifyDialogProps) => {
 
         <ButtonCustomized
           type="submit"
-          className="max-w-fit !h-10 bg-green-500 hover:bg-green-700"
+          className="max-w-fit !h-10 bg-sky-600 hover:bg-sky-700"
           variant="secondary"
           disabled={isPending || isSending}
           label={

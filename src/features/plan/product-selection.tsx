@@ -477,7 +477,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                         images={[product.image]}
                         initialWidth={80}
                         initialHeight={80}
-                        className="rounded-md object-cover"
+                        className="rounded-md object-cover hover:cursor-pointer"
                       />
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
@@ -519,9 +519,9 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                           {variant.image ? (
                             <ImagePreview
                               images={[variant.image]}
-                              initialWidth={80}
-                              initialHeight={80}
-                              className="rounded-md object-cover"
+                              initialWidth={200}
+                              initialHeight={200}
+                              className="rounded-md object-cover hover:cursor-pointer"
                             />
                           ) : (
                             <div className="h-20 w-20 bg-muted rounded-md"></div>

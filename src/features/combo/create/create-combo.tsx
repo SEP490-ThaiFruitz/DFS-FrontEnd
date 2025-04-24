@@ -92,7 +92,7 @@ function CreateCombo() {
     return (
         <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
             <div className="mb-6">
-                <div className="w-full mx-auto border p-5 sm:p-10 rounded-lg">
+                <div className="w-full mx-auto border p-5 sm:p-10 cardStyle">
                     <div className="flex items-center justify-between">
                         {steps.map((step, index) => (
                             <React.Fragment key={step.id}>
@@ -101,7 +101,7 @@ function CreateCombo() {
                                         <div
                                             className={`flex items-center justify-center min-w-8 h-8 rounded-full text-sm font-medium
                                                 ${currentStep >= step.id
-                                                    ? "bg-green-500 text-white"
+                                                    ? "bg-sky-600 text-white"
                                                     : "bg-gray-200 text-gray-500"
                                                 }`}
                                         >
@@ -120,7 +120,7 @@ function CreateCombo() {
                 </div>
             </div>
 
-            <Card>
+            <Card className='cardStyle'>
                 <CardHeader>
                     <CardTitle>{steps[currentStep - 1].title}</CardTitle>
                 </CardHeader>
@@ -153,7 +153,7 @@ function CreateCombo() {
                     <Button
                         type="button"
                         onClick={nextStep}
-                        className="ml-auto flex items-center gap-2 bg-green-500 hover:bg-green-700"
+                        className="ml-auto flex items-center gap-2 bg-sky-600 hover:bg-sky-700"
                     >
                         Tiếp theo
                         <ChevronRight size={16} />

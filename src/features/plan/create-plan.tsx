@@ -68,7 +68,7 @@ function CreatePlan() {
 
     return (
         <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
-            <Card>
+            <Card className='cardStyle'>
                 <CardHeader>
                     <CardTitle>Tạo kế hoạch</CardTitle>
                 </CardHeader>

@@ -17,6 +17,7 @@ import { FormDateControl } from '@/components/global-components/form/form-date-c
 import { FormInputControl } from '@/components/global-components/form/form-input-control'
 import { FormTextareaControl } from '@/components/global-components/form/form-textarea-control'
 import { EVENT_KEY } from '@/app/key/comm-key'
+import { format } from 'date-fns'
 
 interface DialogEventProps {
     isOpen: boolean,
@@ -47,8 +48,8 @@ const DialogEvent = ({ onClose, isOpen, event }: Readonly<DialogEventProps>) => 
             }
             formData.append("name", values.name)
             formData.append("description", values.description)
-            formData.append("startDate", values.startDate.toLocaleDateString())
-            formData.append("endDate", values.endDate.toLocaleDateString())
+            formData.append("startDate", format(values.startDate, 'yyyy-MM-dd'));
+            formData.append("endDate", format(values.endDate, 'yyyy-MM-dd'));
             if (values.image) {
                 formData.append("image", values.image[0])
             }

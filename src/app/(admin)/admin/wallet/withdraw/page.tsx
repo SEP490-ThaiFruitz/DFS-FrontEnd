@@ -29,6 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { vi } from "date-fns/locale/vi"
+import CardSkeleton from "@/components/global-components/custom-skeleton/card-skeleton"
 
 interface RequestWithDrawalResponse {
   totalResponseWithdrawalApproved: number
@@ -401,15 +402,7 @@ const WithdrawalsPage = () => {
             {Array(4)
               .fill(0)
               .map((_, i) => (
-                <Card key={i}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-8 w-28" />
-                  </CardContent>
-                </Card>
+                <CardSkeleton key={i + 1} />
               ))}
 
           </div>

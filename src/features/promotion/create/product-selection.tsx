@@ -331,7 +331,7 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                         images={[product.image]}
                         initialWidth={200}
                         initialHeight={200}
-                        className="h-20"
+                        className="rounded-md object-cover hover:cursor-pointer"
                       />
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
@@ -375,8 +375,9 @@ const ProductSelection = ({ form }: ProductSelectionProps) => {
                         <TableCell>
                           <ImagePreview
                             images={[variant.image]}
-                            initialWidth={80}
-                            initialHeight={80}
+                            initialWidth={200}
+                            initialHeight={200}
+                            className="rounded-md object-cover hover:cursor-pointer"
                           />
                         </TableCell>
                         <TableCell className="pl-8 text-sm">

@@ -110,12 +110,12 @@ const ExportTab = () => {
 
     return (
         <TabsContent value="export">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Xuất kho</CardTitle>
-                    <CardDescription>Xuất sản phẩm ra khỏi kho hàng của bạn</CardDescription>
-                </CardHeader>
-                <FormValues form={form} onSubmit={onSubmit}>
+            <FormValues form={form} onSubmit={onSubmit}>
+                <Card className='cardStyle'>
+                    <CardHeader>
+                        <CardTitle>Xuất kho</CardTitle>
+                        <CardDescription>Xuất sản phẩm ra khỏi kho hàng của bạn</CardDescription>
+                    </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -198,31 +198,29 @@ const ExportTab = () => {
                             />
                         </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                        <ButtonCustomized
-                            type="submit"
-                            className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
-                            variant="secondary"
-                            disabled={
-                                form.formState.isSubmitting
-                            }
-                            label={
-                                form.formState.isSubmitting ? (
-                                    <WaitingSpinner
-                                        variant="pinwheel"
-                                        label="Đang tạo..."
-                                        className="font-semibold"
-                                        classNameLabel="font-semibold text-sm"
-                                    />
-                                ) : (
-                                    "Tạo mới"
-                                )
-                            }
-                        />
-                    </CardFooter>
-                </FormValues>
-            </Card>
-        </TabsContent>
+                </Card>
+                <ButtonCustomized
+                    type="submit"
+                    className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
+                    variant="secondary"
+                    disabled={
+                        form.formState.isSubmitting
+                    }
+                    label={
+                        form.formState.isSubmitting ? (
+                            <WaitingSpinner
+                                variant="pinwheel"
+                                label="Đang tạo..."
+                                className="font-semibold"
+                                classNameLabel="font-semibold text-sm"
+                            />
+                        ) : (
+                            "Tạo mới"
+                        )
+                    }
+                />
+            </FormValues>
+        </TabsContent >
     )
 }
 

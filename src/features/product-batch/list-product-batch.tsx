@@ -121,7 +121,7 @@ const ListProductBatch = () => {
       </div>
       <div className="mt-8">
         {isLoading ? <DataTableSkeleton /> :
-          <div className="bg-white cardStyles shadow border">
+          <div className="bg-white cardStyle shadow border">
             <DataTableCustom
               data={productBatchs?.value ?? []} columns={columns} searchFiled="requestName" placeholder="tên yêu cầu"
             />

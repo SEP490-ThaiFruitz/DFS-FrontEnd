@@ -98,7 +98,7 @@ const CreatePromotion = () => {
     return (
         <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
             <div className="mb-6">
-                <div className="w-full mx-auto border p-5 sm:p-10 rounded-lg">
+                <div className="w-full mx-auto border p-5 sm:p-10 cardStyle">
                     <div className="flex items-center justify-between">
                         {steps.map((step, index) => (
                             <React.Fragment key={step.id}>
@@ -126,7 +126,7 @@ const CreatePromotion = () => {
                 </div>
             </div>
 
-            <Card>
+            <Card className="cardStyle">
                 <CardHeader>
                     <CardTitle>{steps[currentStep - 1].title}</CardTitle>
                 </CardHeader>

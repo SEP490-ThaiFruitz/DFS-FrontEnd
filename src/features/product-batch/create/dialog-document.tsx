@@ -79,7 +79,7 @@ const DialogDocument = ({ form: fromProductPatch, onClose, isOpen }: Readonly<Di
                     <Button type="button" variant="outline" onClick={onClose}>
                         Hủy
                     </Button>
-                    <Button type="button" className='bg-green-700 hover:bg-green-700/60 text-white' onClick={form.handleSubmit(onSubmit)}>
+                    <Button type="button" className='bg-sky-600 hover:bg-sky-700 text-white' onClick={form.handleSubmit(onSubmit)}>
                         Thêm mới
                     </Button>
                 </DialogFooter>

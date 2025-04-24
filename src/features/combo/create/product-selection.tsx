@@ -269,7 +269,7 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                   aria-label="Chọn tất cả"
                 />
               </TableHead>
-              <TableHead className="w-12">Ảnh</TableHead>
+              <TableHead className="w-24">Ảnh</TableHead>
               <TableHead>Tên sản phẩm / Biến thể</TableHead>
               <TableHead className="text-right">Giá gốc</TableHead>
               <TableHead className="text-center">Số lượng</TableHead>
@@ -315,8 +315,9 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                     <TableCell>
                       <ImagePreview
                         images={[product.image]}
-                        initialWidth={40}
-                        initialHeight={40}
+                        initialWidth={200}
+                        initialHeight={200}
+                        className="rounded-md object-cover hover:cursor-pointer"
                       />
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
@@ -347,8 +348,9 @@ const ProductSelection = ({ form, isUpdate }: ProductSelectionProps) => {
                           {variant.image ? (
                             <ImagePreview
                               images={[variant.image]}
-                              initialWidth={40}
-                              initialHeight={40}
+                              initialWidth={80}
+                              initialHeight={80}
+                              className="rounded-md object-cover hover:cursor-pointer"
                             />
                           ) : (
                             <div className="w-10 h-10 bg-muted rounded-md"></div>

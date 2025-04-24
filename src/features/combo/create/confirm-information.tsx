@@ -3,7 +3,7 @@ import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import Image from "next/image"
 import { Separator } from '@/components/ui/separator'
-import { useQuery } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { ApiResponse } from '@/types/types'
 import { Card, CardContent } from '@/components/ui/card'
 import ImagePreview from '@/components/custom/_custom-image/image-preview'
@@ -20,7 +20,8 @@ interface Event {
 }
 
 const ConfirmInformation = ({ formCombo }: Readonly<ConfirmInformationProps>) => {
-    const { data: events } = useQuery<ApiResponse<Event[]>>({ queryKey: [EVENT_KEY.EVENT_MANAGE] })
+    const queryClient = useQueryClient();
+    const events = queryClient.getQueryData<ApiResponse<Event[]>>([EVENT_KEY.EVENT_MANAGE])
     const formValues = formCombo.watch()
     return (
 

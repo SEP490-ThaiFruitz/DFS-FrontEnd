@@ -8,6 +8,7 @@ import { FormTextareaControl } from '@/components/global-components/form/form-te
 import { FormNumberInputControl } from '@/components/global-components/form/form-number-control'
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions'
 import { ApiResponse } from '@/types/types'
+import { EVENT_KEY } from '@/app/key/comm-key'
 
 
 interface FormInformationProps {
@@ -21,7 +22,7 @@ interface Event {
 }
 
 const FormInformation = ({ formCombo }: Readonly<FormInformationProps>) => {
-    const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", ["events"])
+    const { data: events } = useFetch<ApiResponse<Event[]>>("/Events", [EVENT_KEY.EVENT_MANAGE])
     const comboTypes = [
         { id: "Fixed", name: "Cố định" },
         { id: "Custom", name: "Tùy chỉnh" },

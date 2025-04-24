@@ -26,6 +26,7 @@ import { FormDateControl } from "@/components/global-components/form/form-date-c
 import Document from "./document"
 import { format } from "date-fns"
 import { REQUEST_KEY } from "@/app/key/comm-key"
+import { useQueryClient } from "@tanstack/react-query"
 
 export interface Request {
   id: string
@@ -65,7 +66,7 @@ function CreateProductBatch() {
   ])
 
   const [productVariantEditId, setProductVariantEditId] = React.useState<string | null>(null)
-
+  const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof CreateProductBatchSafeTypes>>({
     resolver: zodResolver(CreateProductBatchSafeTypes),
     defaultValues: {
@@ -158,6 +159,7 @@ function CreateProductBatch() {
       if (response) {
         toast.success("Tạo nhập hàng thành công")
         form.reset()
+        queryClient.invalidateQueries({queryKey: [REQUEST_KEY.REQUEST_MANAGE]})
       }
     } catch (error) {
       console.log({ error })
@@ -184,7 +186,7 @@ function CreateProductBatch() {
 
   return (
     <FormValues form={form} onSubmit={onSubmit} classNameForm="m-10">
-      <Card>
+      <Card className="cardStyle">
         <CardHeader>
           <CardTitle>Tạo nhập hàng</CardTitle>
         </CardHeader>
@@ -340,6 +342,7 @@ function CreateProductBatch() {
                                     form={form}
                                     name={`requestItems.${index}.expirationDate`}
                                     disabled={form.formState.isSubmitting}
+                                    defaultValue={undefined}
                                     label="Ngày hết hạn"
                                     classNameLabel="text-muted-foreground font-medium"
                                     require

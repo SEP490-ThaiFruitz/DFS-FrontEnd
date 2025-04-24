@@ -14,6 +14,24 @@ import { z } from 'zod';
 import { TabType, UserForgetPassword } from './form-forget-password';
 import { API } from '@/actions/client/api-config';
 
+const inputOptions = {
+    phone: {
+        name: "phone",
+        label: "Số điện thoại",
+        placeholder: "+84...",
+        switchTo: "email",
+        switchLabel: "Email",
+    },
+    email: {
+        name: "email",
+        label: "Email",
+        placeholder: "example@mail.com",
+        switchTo: "phone",
+        switchLabel: "Số điện thoại",
+    },
+} as const;
+
+type LoginType = keyof typeof inputOptions;
 
 interface FormSendForgetPasswordProps {
     setUsername: (values: UserForgetPassword, nameTab: TabType) => void,
@@ -44,48 +62,49 @@ export const FormSendForgetPassword = ({ setUsername, returnButton }: FormSendFo
             console.log(error)
         }
     };
+    const handleSwitch = (type: LoginType) => {
+        const current = inputOptions[type];
+        const opposite = inputOptions[current.switchTo];
 
+        form.resetField(opposite.name);
+        form.setValue("type", type);
+        form.trigger("type");
+        setForgetType(type);
+
+        setTimeout(() => {
+            const inputElement = document.querySelector(
+                `input[name="${current.name}"]`
+            ) as HTMLInputElement;
+            inputElement?.focus();
+        }, 0);
+    };
+
+    const current = inputOptions[forgetType];
     return (
         <FormValues form={form} onSubmit={onSubmit}>
             <p className="mt-3 w-96 text-center">
                 Nhập email hoặc số điện thoại để nhận mã OTP.
             </p>
-            {forgetType === "phone" ? (
-                <div className="relative">
-                    <FormInputControl
-                        form={form}
-                        name="phone"
-                        disabled={form.formState.isSubmitting}
-                        label="Số điện thoại"
-                        placeholder="+84..."
-                    />
-                    <button type="button" disabled={form.formState.isSubmitting} onMouseDown={() => {
-                        setForgetType("email")
-                        form.resetField("phone")
-                        form.setValue("type", "email")
-                    }} className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer">Email</button>
-                </div>
-            ) : (
-                <div className="relative">
-                    <FormInputControl
-                        form={form}
-                        name="email"
-                        disabled={form.formState.isSubmitting}
-                        label="Email"
-                        placeholder="example@mail.com"
-                    />
-                    <button type="button" disabled={form.formState.isSubmitting} onMouseDown={() => {
-                        setForgetType("phone")
-                        form.resetField("email")
-                        form.setValue("type", "phone")
-                    }} className="absolute right-2.5 top-1 font-bold hover:underline hover:cursor-pointer">Số điện thoại</button>
-                </div>
-            )}
+            <div className="relative">
+                <FormInputControl
+                    key={current.name}
+                    form={form}
+                    name={current.name}
+                    disabled={form.formState.isSubmitting}
+                    label={current.label}
+                    placeholder={current.placeholder}
+                />
+                <button
+                    type="button"
+                    onClick={() => handleSwitch(current.switchTo)}
+                    className="absolute right-2.5 top-1 font-semibold hover:underline hover:cursor-pointer"
+                >
+                    {current.switchLabel}
+                </button>
+            </div>
 
             <DialogFooter>
-                <button disabled={form.formState.isSubmitting}>
-                    {returnButton}
-                </button>
+                {returnButton}
                 <ButtonCustomized
                     type="submit"
                     className="max-w-fit !h-10 bg-sky-600 hover:bg-sky-700"

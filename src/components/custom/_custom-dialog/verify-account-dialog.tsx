@@ -67,7 +67,7 @@ export const VerifyDialog = ({ user }: VerifyDialogProps) => {
   const { isPending, mutate: verifyMutation } = useMutation({
     mutationFn: async ({ code }: { code: string }) => {
       try {
-        const response = await API.post("/Auths/confirm-otp-verification", code);
+        const response = await API.post("/Auths/confirm-otp-verification", {otp: code});
 
         if (response) {
           queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });

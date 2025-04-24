@@ -1,6 +1,5 @@
 "use client";
 
-import { getProfile, updateProfile } from "@/actions/user";
 import { ApiResponse, Profile } from "@/types/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Camera, CircleCheckBig, CircleX } from "lucide-react";
@@ -11,13 +10,15 @@ import { Spinner } from "@/components/global-components/spinner";
 import { formatNumberWithUnit } from "@/lib/format-currency";
 import { USER_KEY } from "@/app/key/user-key";
 import { placeholderImage } from "@/utils/label";
+import { API } from "@/actions/client/api-config";
+import Cookies from "js-cookie";
 
 function ProfileAvatar() {
   const imageRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<(File & { preview: string }) | null>(null);
+  const cookieToken = Cookies.get("accessToken");
 
   const queryClient = useQueryClient();
-  //   const user = queryClient.getQueryData<Profile>(["authUser"]);
 
   const {
     data: user,
@@ -28,14 +29,18 @@ function ProfileAvatar() {
     // queryKey: ["authUser"],
     queryKey: [USER_KEY.PROFILE],
     queryFn: async () => {
-      const response = await getProfile();
+      try {
+        const response = await API.get("/Users/profile");
 
-      if (!response || !response.isSuccess || !response.data) {
-        toast.error("Lỗi hệ thống");
-        return undefined;
+        if (response) {
+          return response;
+        }
+        throw new Error("Lỗi")
+      } catch (error) {
+        console.log(error)
       }
-      return response.data;
     },
+    enabled: cookieToken !== undefined
   });
 
   const { mutate: updateImage, isPending } = useMutation({
@@ -46,23 +51,16 @@ function ProfileAvatar() {
         const formData = new FormData();
         formData.append("avatar", file);
 
-        const res = await updateProfile(formData);
+        const res = await API.update("/Users/profile", formData);
 
-        if (!res?.isSuccess) {
-          throw new Error(res?.message);
+        if (res) {
+          toast.success("Cập nhật ảnh thành công");
+          queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
+          setFile(null);
         }
       } catch (error: any) {
-        throw new Error(error?.message ?? "Lỗi hệ thống");
+        console.log(error)
       }
-    },
-    onSuccess: () => {
-      toast.success("Cập nhật ảnh thành công");
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
-      setFile(null);
-    },
-    onError: (error) => {
-      toast.error(error?.message);
     },
   });
   const handleClick = () => {

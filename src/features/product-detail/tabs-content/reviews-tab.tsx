@@ -22,9 +22,10 @@ import { FEEDBACK_KEY } from "@/app/key/admin-key";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiResponse, PageResult } from "@/types/types";
-import { Feedback } from "@/app/(admin)/admin/feedback/page";
+
 import { NotData } from "@/components/global-components/no-data";
 import ImagePreview from "@/components/custom/_custom-image/image-preview";
+import { Feedback } from "@/features/feedback/list-feedback";
 
 const reviews = [
   {

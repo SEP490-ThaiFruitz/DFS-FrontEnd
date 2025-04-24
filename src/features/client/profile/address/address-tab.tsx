@@ -3,12 +3,13 @@ import React, { useState } from "react";
 import FormAddress from "./form-address";
 import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { CirclePlusIcon, MapPin, MapPinned, Phone, Trash2, User } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getAddresses, deleteAddress } from "@/actions/address";
 import { ApiResponse, PageResult } from "@/types/types";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
 import { AddressTypes } from "@/types/address.types";
 import ViewMap from "@/components/custom/_custom_map/view-map";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { API } from "@/actions/client/api-config";
+import { USER_KEY } from "@/app/key/user-key";
 
 function AddressTab() {
   const [isCreate, setIsCreate] = useState<boolean>(false);
@@ -20,20 +21,12 @@ function AddressTab() {
 
   const [position, setPosition] = useState<{ lat: number; lng: number } | undefined>(undefined)
 
-  const { isPending, data: addresses } = useQuery({
-    queryKey: ["addresses"],
-    queryFn: async () => {
-      try {
-        const response = await getAddresses();
-        if (response?.isSuccess) {
-          const data: ApiResponse<PageResult<AddressTypes>> = response.data;
-          return data;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
+  const { data: addresses } = useFetch<ApiResponse<PageResult<AddressTypes>>>("/Addresses", [USER_KEY.ADDRESS])
+
+  const deleteAddress = async (id: string) => {
+    return await API.remove(`/Addresses/${id}`);
+  };
+
   return (
     <ResizablePanelGroup
       direction="horizontal"
@@ -145,7 +138,7 @@ function AddressTab() {
             setIsDeleteDialog(false);
           }}
           id={addressDelete.id}
-          refreshKey={[["addresses"]]}
+          refreshKey={[[USER_KEY.ADDRESS]]}
         />
       )}
 

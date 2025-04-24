@@ -2,7 +2,7 @@
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { CarouselCustomized } from "@/components/custom/carousel-customized";
 import { CarouselItem } from "@/components/ui/carousel";
-import { Category } from "@/features/admin/category/column";
+import { Category } from "@/features/category/list-category";
 import { ApiResponse } from "@/types/types";
 import Image from "next/image";
 import Link from "next/link";

@@ -65,7 +65,7 @@ export function FancyMultiSelect({
 }: FancyMultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Options[]>([options[1]]);
+  const [selected, setSelected] = React.useState<Options[]>(defaultValues ?? [options[1]]);
   const [inputValue, setInputValue] = React.useState("");
 
   const handleUnselect = React.useCallback((option: Options) => {
@@ -172,7 +172,7 @@ export function FancyMultiSelect({
       <div className="relative mt-2">
         <CommandList>
           {open && selectables.length > 0 ? (
-            <div className="absolute top-0 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
+            <div className="absolute top-0 z-50 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
               <CommandGroup className="max-h-96 overflow-y-auto">
                 {selectables.map((option) => {
                   return (

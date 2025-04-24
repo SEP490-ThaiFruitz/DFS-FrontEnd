@@ -52,18 +52,17 @@ import { useFromStore } from "@/hooks/use-from-store";
 import { useCartStore } from "@/hooks/use-cart-store";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { omit } from "lodash";
-import { API } from "@/app/key/url";
+
 import { ApiResponse, PageResult, Profile } from "@/types/types";
 import { AddressTypes } from "@/types/address.types";
 import { USER_KEY } from "@/app/key/user-key";
-import { interactApiClient } from "@/actions/client/interact-api-client";
 import { useQuery } from "@tanstack/react-query";
 import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { ApplyVoucher, VoucherData } from "./vouchers-events";
-import { getProfile } from "@/actions/user";
 import { ToolTipCustomized } from "@/components/custom/tool-tip-customized";
 import { WalletSheet } from "../wallet/wallet-sheet";
+import { API } from "@/actions/client/api-config";
 
 interface Product {
   id: number;
@@ -100,7 +99,7 @@ const paymentMethods: { value: string; label: string }[] = [
 
 function PaymentClientPage() {
   const { customCombo } = useData();
-
+  const cookieToken = Cookies.get("accessToken");
   const [voucher, setVoucher] = useState<VoucherData | undefined>(undefined);
 
   const deliveryMethods: DeliveryMethodType[] = [
@@ -125,14 +124,18 @@ function PaymentClientPage() {
     // queryKey: ["authUser"],
     queryKey: [USER_KEY.PROFILE],
     queryFn: async () => {
-      const response = await getProfile();
+      try {
+        const response = await API.get("/Users/profile");
 
-      if (!response || !response.isSuccess || !response.data) {
-        toast.error("Lỗi hệ thống");
-        return undefined;
+        if (response) {
+          return response;
+        }
+         throw new Error("Lỗi")
+      } catch (error) {
+        console.log(error)
       }
-      return response.data;
     },
+    enabled: cookieToken !== undefined
   });
 
   const form = useForm<z.infer<typeof PaymentSafeTypes>>({
@@ -177,10 +180,10 @@ function PaymentClientPage() {
   const customComboItem = useMemo(() => {
     return customCombo.data?.value
       ? customCombo.data.value.map((custom) => ({
-          id: custom.id,
-          quantity: 1,
-          type: "combo",
-        }))
+        id: custom.id,
+        quantity: 1,
+        type: "combo",
+      }))
       : [];
   }, [customCombo.data?.value]);
 
@@ -242,7 +245,7 @@ function PaymentClientPage() {
         (curr.variant.promotion
           ? curr.variant.promotion.price
           : curr.variant.price) *
-          Number(curr?.quantityOrder),
+        Number(curr?.quantityOrder),
       0
     ) || 0;
 
@@ -345,16 +348,16 @@ function PaymentClientPage() {
 
   const voucherDiscount = isVoucherValid
     ? (() => {
-        let discount = 0;
+      let discount = 0;
 
-        if (voucher.discountType.toUpperCase() === "PERCENTAGE") {
-          discount = totalBeforeVoucher * (voucher.value / 100);
-        } else if (voucher.discountType.toUpperCase() === "AMOUNT") {
-          discount = voucher.value;
-        }
+      if (voucher.discountType.toUpperCase() === "PERCENTAGE") {
+        discount = totalBeforeVoucher * (voucher.value / 100);
+      } else if (voucher.discountType.toUpperCase() === "AMOUNT") {
+        discount = voucher.value;
+      }
 
-        return Math.min(discount, voucher.maximumDiscountAmount);
-      })()
+      return Math.min(discount, voucher.maximumDiscountAmount);
+    })()
     : 0;
 
   const finalTotal =
@@ -552,12 +555,10 @@ function PaymentClientPage() {
                             />
                           </FormControl>
                           <FormLabel
-                            className={`font-semibold hover:underline transition cursor-pointer ${
-                              paymentMethodWatch === method.value && "underline"
-                            } ${
-                              isWalletDisabled &&
+                            className={`font-semibold hover:underline transition cursor-pointer ${paymentMethodWatch === method.value && "underline"
+                              } ${isWalletDisabled &&
                               "text-gray-400 line-through cursor-not-allowed"
-                            }`}
+                              }`}
                           >
                             {method.label}
                             {isWalletDisabled && (
@@ -638,9 +639,8 @@ function PaymentClientPage() {
 
                   {voucher?.id && (
                     <div
-                      className={`flex justify-between text-sm ${
-                        isVoucherValid ? "text-green-600" : "text-red-500"
-                      }`}
+                      className={`flex justify-between text-sm ${isVoucherValid ? "text-green-600" : "text-red-500"
+                        }`}
                     >
                       <span>Giảm giá</span>
                       {isVoucherValid ? (

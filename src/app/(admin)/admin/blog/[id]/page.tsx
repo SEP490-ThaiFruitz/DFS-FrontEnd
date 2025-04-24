@@ -1,18 +1,45 @@
 "use client";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Blog } from "../page";
 import Image from "next/image";
 import { ApiResponse } from "@/types/types";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
+import { BLOG_KEY } from "@/app/key/admin-key";
+import { SerializedEditorState } from "lexical";
+import dynamic from "next/dynamic";
+import { Badge } from "@/components/ui/badge";
+import { initialValue } from "@/features/manager/blog/blog-form";
+
+const Editor = dynamic(() => import("@/components/blocks/editor-x/editor"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[300px] w-full items-center justify-center rounded-md border border-dashed">
+      <Loader2 className="h-8 w-8 animate-spin text-slate-300" />
+    </div>
+  ),
+});
 
 function BlogDetailPage() {
   const { id } = useParams();
-  const { data: blog } = useFetch<ApiResponse<Blog>>(`/Blogs/${id}`);
-  
+  const [editorState, setEditorState] =
+    useState<SerializedEditorState>(initialValue);
+  const { data: blog } = useFetch<ApiResponse<Blog>>(`/Blogs/${id}`, [BLOG_KEY.BLOG_DETAIL_ADMIN, id as string]);
+
+  useEffect(() => {
+    if (blog) {
+      const content = blog.value?.content;
+      if (typeof content === 'string') {
+        setEditorState(JSON.parse(content));
+      } else {
+        setEditorState(content ?? initialValue);
+      }
+    }
+  }, [blog])
+
   return (
     <div className="m-10">
       <Card>
@@ -52,6 +79,12 @@ function BlogDetailPage() {
                 <p className="font-semibold text-gray-600">Loại bài viết:</p>
                 <p className="text-gray-800">{blog?.value?.blogCategory?.name}</p>
               </div>
+              <div className="flex items-start space-x-2">
+                <div className="font-bold">Tags:</div>
+                <div className="text-base space-x-2">{blog?.value?.tagNames?.map((tag: any) => <Badge className='mb-3' variant={"outline"} key={tag}>
+                  {tag}
+                </Badge>)}</div>
+              </div>
               <div className="grid grid-cols-2">
                 <p className="font-semibold text-gray-600">Ngày tạo:</p>
                 <p className="text-gray-800">
@@ -67,8 +100,13 @@ function BlogDetailPage() {
             </div>
           </div>
           <div>
-            <p className="font-semibold text-gray-600">Nội dung:</p>
-            <p dangerouslySetInnerHTML={{ __html: blog?.value?.content ?? "" }}></p>
+            <p className="font-semibold text-gray-600 mb-2">Nội dung:</p>
+            <Editor
+              maxLength={5000}
+              editorSerializedState={editorState}
+              // onSerializedChange={(value) => setEditorState(value)}
+              readOnly
+            />
           </div>
         </CardContent>
       </Card>

@@ -28,7 +28,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "@/actions/user";
 import { ApiResponse, Profile } from "@/types/types";
 import { toast } from "sonner";
 import { Logo } from "@/components/global-components/logo";

@@ -30,13 +30,13 @@ import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, Profile } from "@/types/types";
 import { USER_KEY } from "@/app/key/user-key";
 import { toast } from "sonner";
-import { getProfile } from "@/actions/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { placeholderImage } from "@/utils/label";
 import Link from "next/link";
 import { HistoryTransactionProfile } from "@/features/client/profile/history/history-transaction-profile";
 import { WalletSheet } from "@/features/client/wallet/wallet-sheet";
-
+import { API } from "@/actions/client/api-config";
+import Cookies from "js-cookie";
 // name: string;
 //     tag: string;
 //     icon: LucideIcon;
@@ -167,7 +167,7 @@ export const TAB_CONTENT: TabContentTypes[] = [
 
 export const SidebarContainer = () => {
   const [tab, setTab] = useState<string>(TAB_CONTENT[0].value);
-
+  const cookieToken = Cookies.get("accessToken");
   const {
     data: user,
     isLoading: isUserLoading,
@@ -177,14 +177,18 @@ export const SidebarContainer = () => {
     // queryKey: ["authUser"],
     queryKey: [USER_KEY.PROFILE],
     queryFn: async () => {
-      const response = await getProfile();
+      try {
+        const response = await API.get("/Users/profile");
 
-      if (!response || !response.isSuccess || !response.data) {
-        // toast.error("Lỗi hệ thống");
-        return undefined; // Handle error case
+        if (response) {
+          return response;
+        }
+        return undefined;
+      } catch (error) {
+        console.log(error)
       }
-      return response.data; // Ensure this matches `Profile`
     },
+    enabled: cookieToken !== undefined
   });
 
   return (

@@ -30,11 +30,12 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createAddress, updateAddress } from "@/actions/address";
 import { FormControl, FormItem } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { AddressTypes } from "@/types/address.types";
 import CustomMap from "@/components/custom/_custom_map/custom-map";
+import { API } from "@/actions/client/api-config";
+import { USER_KEY } from "@/app/key/user-key";
 
 interface FormAddressProps {
   address?: AddressTypes;
@@ -138,33 +139,22 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
 
         const response =
           id === undefined
-            ? await createAddress(payload)
-            : await updateAddress({ id, ...payload });
+            ? await API.post("/Addresses", payload)
+            : await API.update("/Addresses", { id, ...payload });
 
-        if (!response?.isSuccess) {
-          if (response?.status === 409) {
-            throw new Error("Tên thẻ đã tồn tại");
+        if (response) {
+          queryClient.invalidateQueries({ queryKey: [USER_KEY.ADDRESS] });
+          if (form.getFieldState("id") === undefined) {
+            toast.success("Tạo địa chỉ thành công");
+          } else {
+            toast.success("Cập nhật địa chỉ thành công");
           }
-          throw new Error("Lỗi hệ thống");
+          form.reset();
+          onClose();
         }
       } catch (error: unknown) {
-        throw new Error(
-          error instanceof Error ? error?.message : "Lỗi hệ thống"
-        );
+        console.log(error)
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
-      if (form.getFieldState("id") === undefined) {
-        toast.success("Tạo địa chỉ thành công");
-      } else {
-        toast.success("Cập nhật địa chỉ thành công");
-      }
-      form.reset();
-      onClose();
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 

@@ -58,23 +58,23 @@ const data = {
         },
       ],
     },
-    // {
-    //   title: "Bài viết",
-    //   url: "/admin/blog",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Loại bài viết",
-    //       url: "/admin/blog/category",
-    //       icon: BookKey,
-    //     },
-    //     {
-    //       title: "Bài viết",
-    //       url: "/admin/blog",
-    //       icon: BookOpenText,
-    //     },
-    //   ],
-    // },
+    {
+      title: "Bài viết",
+      url: "/admin/blog",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Loại bài viết",
+          url: "/admin/blog/category",
+          icon: BookKey,
+        },
+        {
+          title: "Bài viết",
+          url: "/admin/blog",
+          icon: BookOpenText,
+        },
+      ],
+    },
     {
       title: "Kho",
       url: "/admin/inventory",

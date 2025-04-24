@@ -1,5 +1,7 @@
 "use client"
-import { updateProfile } from '@/actions/user'
+
+import { API } from '@/actions/client/api-config'
+import { USER_KEY } from '@/app/key/user-key'
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized'
 import { FormDateControl } from '@/components/global-components/form/form-date-control'
 import { FormInputControl } from '@/components/global-components/form/form-input-control'
@@ -8,45 +10,40 @@ import { WaitingSpinner } from '@/components/global-components/waiting-spinner'
 import { FormControl, FormItem } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 import { RadioGroupItem } from '@/components/ui/radio-group'
-import { Profile } from '@/types/types'
+import { ApiResponse, Profile } from '@/types/types'
 import { ProfileSafeTypes } from '@/zod-safe-types/user-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { RadioGroup } from '@radix-ui/react-radio-group'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ChevronRight } from 'lucide-react'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import Cookies from "js-cookie";
 
 function InformationPersonal() {
     const queryClient = useQueryClient();
-    const user = queryClient.getQueryData<Profile>(["authUser"]);
-    const { mutate: updateProfileMutation, isPending } = useMutation({
-        mutationFn: async (values: FormData) => {
+    const cookieToken = Cookies.get("accessToken");
+    const {
+        data: user,
+    } = useQuery<ApiResponse<Profile>>({
+        queryKey: [USER_KEY.PROFILE],
+        queryFn: async () => {
             try {
-                const res = await updateProfile(values);
-                if (!res?.isSuccess) {
-                    if (res?.status === 409) {
-                        if (res?.detail.includes("phone")) {
-                            throw new Error("Số điện thoại đã tồn tại")
-                        }
-                        throw new Error("Email đã tồn tại")
-                    }
-                    throw new Error(res?.detail === "Invalid old password" ? "Mật khẩu cũ không đúng" : res?.message)
+                const response = await API.get("/Users/profile");
+
+                if (response) {
+                    return response;
                 }
-            } catch (error: any) {
-                throw new Error(error?.message ?? "Lỗi hệ thống")
+                throw new Error("Lỗi")
+            } catch (error) {
+                console.log(error)
             }
         },
-        onSuccess: () => {
-            toast.success("Cập nhật thông tin thành công")
-            queryClient.invalidateQueries({ queryKey: ["authUser"] })
-        },
-        onError: (error) => {
-            toast.error(error.message)
-        }
-    })
+        enabled: cookieToken !== undefined
+    });
+
     const form = useForm<z.infer<typeof ProfileSafeTypes>>({
         resolver: zodResolver(ProfileSafeTypes),
     });
@@ -59,8 +56,15 @@ function InformationPersonal() {
         formData.append('email', values.email);
         formData.append('birthday', values.birthday.toDateString());
         formData.append('gender', values.gender);
-
-        updateProfileMutation(formData)
+        try {
+            const res = await API.update("/Users/profile", formData);
+            if (res) {
+                toast.success("Cập nhật thông tin thành công")
+                queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] })
+            }
+        } catch (error) {
+            console.log(error)
+        }
     };
     return (
         <>
@@ -72,45 +76,45 @@ function InformationPersonal() {
                     <FormInputControl
                         name='name'
                         form={form}
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label='Họ và tên'
-                        defaultValue={user?.name}
+                        defaultValue={user?.value?.name}
                     />
                     <FormInputControl
                         name='phone'
                         form={form}
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label='Số điện thoại'
-                        defaultValue={user?.phone}
+                        defaultValue={user?.value?.phone}
                     />
                     <FormInputControl
                         name='email'
                         form={form}
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label='Email'
-                        defaultValue={user?.email}
+                        defaultValue={user?.value?.email}
                     />
                     <FormDateControl
                         maxDate={new Date(new Date().setHours(0, 0, 0, 0))}
                         name='birthday'
                         form={form}
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label='Ngày sinh nhật'
-                        defaultValue={user?.birthday}
+                        defaultValue={user?.value?.birthday ? new Date(user?.value?.birthday) : undefined}
                         require
                     />
                 </div>
                 <Controller
                     name="gender"
                     control={form.control}
-                    defaultValue={user?.gender}
+                    defaultValue={user?.value?.gender}
                     render={({ field }) => (
                         <FormItem className="grid sm:grid-cols-2 items-center justify-between gap-2 py-5">
                             <p className="text-sm font-medium">Giới tính</p>
                             <FormControl className="grid sm:grid-cols-3 gap-3 sm:gap-10">
                                 <RadioGroup
                                     onValueChange={(e) => field.onChange(e)}
-                                    defaultValue={user?.gender}
+                                    defaultValue={user?.value?.gender}
                                 >
                                     <div className="flex items-center space-x-2 cursor-pointer">
                                         <RadioGroupItem value="Male" id="r1" />
@@ -131,10 +135,10 @@ function InformationPersonal() {
                 />
 
                 <ButtonCustomized
-                    disabled={isPending}
+                    disabled={form.formState.isSubmitting}
                     type='submit'
                     label={
-                        isPending ? (
+                        form.formState.isSubmitting ? (
                             <WaitingSpinner
                                 variant="pinwheel"
                                 label="Đang cập nhật..."

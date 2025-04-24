@@ -9,15 +9,15 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { ButtonCustomized } from "../_custom-button/button-customized";
 import { VerifySafeTypes } from "@/zod-safe-types/auth-safe-types";
-import { logOut, sendCodeVerifyAccount, verifyAccount } from "@/actions/auth";
+import { logOut } from "@/actions/auth";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { ApiResponse, Profile } from "@/types/types";
+import { Profile } from "@/types/types";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
@@ -28,8 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getProfile } from "@/actions/user";
-import { Skeleton } from "@/components/ui/skeleton";
+import { API } from "@/actions/client/api-config";
+import { USER_KEY } from "@/app/key/user-key";
+
 
 interface VerifyDialogProps {
   user: Profile | undefined;
@@ -66,58 +67,33 @@ export const VerifyDialog = ({ user }: VerifyDialogProps) => {
   const { isPending, mutate: verifyMutation } = useMutation({
     mutationFn: async ({ code }: { code: string }) => {
       try {
-        const response = await verifyAccount(code);
+        const response = await API.post("/Auths/confirm-otp-verification", code);
 
-        if (!response?.isSuccess) {
-          if (response?.status === 400) {
-            if (response?.detail.includes("Invalid otp")) {
-              throw new Error("Mã OTP không đúng");
-            }
-            if (response?.detail.includes("OTP has expired")) {
-              throw new Error("Mã OTP đã hết hạn");
-            }
-            throw new Error("Lỗi hệ thống");
-          }
-          throw new Error(response?.message || "Lỗi hệ thống");
+        if (response) {
+          queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
+          setIsOpen(false);
+          toast.success("Xác thực thành công");
+          form.reset();
+          router.refresh();
         }
       } catch (error: unknown) {
-        throw new Error(
-          error instanceof Error ? error?.message : "Lỗi hệ thống"
-        );
+        console.log(error)
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      setIsOpen(false);
-      toast.success("Xác thực thành công");
-      form.reset();
-      router.refresh();
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 
   const { isPending: isSending, mutate: sendVerifyCodeMutation } = useMutation({
     mutationFn: async () => {
       try {
-        const response = await sendCodeVerifyAccount({ type });
+        const response = await API.post("/Auths/send-otp-verification", { type });
 
-        if (!response?.isSuccess) {
-          throw new Error(response?.message || "Lỗi hệ thống");
+        if (response) {
+          toast.success("Đã gửi lại mã xác thực");
         }
-      } catch (error: unknown) {
-        throw new Error(
-          error instanceof Error ? error?.message : "Lỗi hệ thống"
-        );
+      } catch (error) {
+        console.log(error)
       }
-    },
-    onSuccess: () => {
-      toast.success("Đã gửi lại mã xác thực");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    }
   });
 
   const form = useForm<z.infer<typeof VerifySafeTypes>>({
@@ -169,11 +145,10 @@ export const VerifyDialog = ({ user }: VerifyDialogProps) => {
             sendVerifyCodeMutation();
             setTime(30);
           }}
-          className={`${
-            time > 0 || isPending
-              ? "hover:cursor-not-allowed"
-              : "hover:font-bold hover:underline hover:cursor-pointer "
-          }`}
+          className={`${time > 0 || isPending
+            ? "hover:cursor-not-allowed"
+            : "hover:font-bold hover:underline hover:cursor-pointer "
+            }`}
         >
           Gửi lại OTP
         </button>
@@ -239,7 +214,7 @@ export const VerifyDialog = ({ user }: VerifyDialogProps) => {
             disabled={isPending || isSending}
             onClick={async () => {
               await logOut();
-              queryClient.removeQueries({ queryKey: ["authUser"] });
+              queryClient.removeQueries({ queryKey: [USER_KEY.PROFILE] });
               router.push("/");
               setIsOpen(false);
             }}

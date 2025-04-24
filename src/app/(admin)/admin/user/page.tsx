@@ -14,6 +14,7 @@ import { API } from "@/actions/client/api-config"
 import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
 import { USER_KEY } from "@/app/key/admin-key"
 import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
+import { getRoleDisplay } from "@/features/admin/admin-lib/admin-lib"
 
 interface User {
     id: string
@@ -43,19 +44,6 @@ function UserPage() {
                 return "Nữ"
             default:
                 return "Khác"
-        }
-    }
-
-    const getRoleDisplay = (role: string) => {
-        switch (role) {
-            case "Administrator":
-                return "Quản trị viên"
-            case "Manager":
-                return "Quản lí"
-            case "Staff":
-                return "Nhân viên"
-            default:
-                return "Khách hàng"
         }
     }
 

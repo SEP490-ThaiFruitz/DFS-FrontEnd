@@ -15,8 +15,8 @@ import { FormItem } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Star } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { createFeedback, updateFeedback } from "@/actions/feedback";
 import { useQueryClient } from "@tanstack/react-query";
+import { API } from "@/actions/client/api-config";
 
 interface FeedbackDialogProps {
   orderItemId: string;
@@ -63,22 +63,18 @@ export const FeedbackDialog = ({
       }
       formData.append("stars", values?.stars.toString());
       if (isUpdateFeedback) {
-        const response = await updateFeedback(formData);
+        const response = await API.update("/Feedbacks", formData);
         if (response?.isSuccess) {
           toast.success("Đánh giá đã được cập nhật!");
           queryClient.invalidateQueries({ queryKey: refreshKey });
           onClose();
-        } else {
-          toast.error("Lỗi cập nhật đánh giá!");
         }
       } else {
-        const response = await createFeedback(formData);
+        const response = await API.post("/Feedbacks", formData);
         if (response?.isSuccess) {
           toast.success("Đánh giá thành công!");
           onClose();
           queryClient.invalidateQueries({ queryKey: refreshKey });
-        } else {
-          toast.error("Lỗi đánh giá!");
         }
       }
     } catch (error: unknown) {
@@ -130,11 +126,10 @@ export const FeedbackDialog = ({
                     }}
                     onMouseEnter={() => handleStarHover(star)}
                     onMouseLeave={handleStarLeave}
-                    className={`cursor-pointer h-20 w-20 ${
-                      star <= (hoverRating ?? rating)
-                        ? "text-yellow-600 fill-yellow-600"
-                        : "text-gray-300 fill-none"
-                    }`}
+                    className={`cursor-pointer h-20 w-20 ${star <= (hoverRating ?? rating)
+                      ? "text-yellow-600 fill-yellow-600"
+                      : "text-gray-300 fill-none"
+                      }`}
                   />
                 ))}
               </div>
@@ -168,7 +163,7 @@ export const FeedbackDialog = ({
           </DialogClose>
           <ButtonCustomized
             type="submit"
-            className="max-w-32 bg-green-700 hover:bg-green-800"
+            className="max-w-32 bg-sky-600 hover:bg-sky-700"
             variant="secondary"
             disabled={form.formState.isSubmitting}
             label={

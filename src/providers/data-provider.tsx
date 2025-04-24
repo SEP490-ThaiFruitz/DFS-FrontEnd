@@ -2,14 +2,14 @@
 
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ProductKey } from "@/app/key/product-key";
-import { ApiResponse, PageResult } from "@/types/types";
+import { ApiResponse, PageResult, Profile } from "@/types/types";
 import { createContext, useContext } from "react";
 
 import Cookies from "js-cookie";
 import { BLOG_KEY, COMBO_KEY } from "@/app/key/comm-key";
 import { AddressTypes } from "@/types/address.types";
 import { Product } from "@/hooks/use-cart-store";
-import { UseQueryResult } from "@tanstack/react-query";
+import { useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { USER_KEY } from "@/app/key/user-key";
 import { CustomComboProduct } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 import { BlogPost } from "@/types/blogs.types";
@@ -45,11 +45,14 @@ export const useData = () => {
 
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   // const { token } = useAuth();
-  const cookieToken = Cookies.get("accessToken");
+  // const cookieToken = Cookies.get("accessToken");
+
+  const queryClient = useQueryClient();
+  const profileData = queryClient.getQueryData<ApiResponse<Profile>>([USER_KEY.PROFILE]);
 
   const products = useFetch<ApiResponse<PageResult<Product>>>("/Products", [
     ProductKey.PRODUCTS,
-  ]);
+  ], {}, { enabled: profileData?.value?.role == "Customer" });
   const blogs = useFetch<ApiResponse<PageResult<BlogPost>>>("/Blogs", [
     BLOG_KEY.BLOGS,
   ]);
@@ -59,12 +62,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   const addresses = useFetch<ApiResponse<PageResult<AddressTypes>>>(
     "/Addresses",
     [USER_KEY.ADDRESS]
-  );
+    , {}, { enabled: profileData?.value?.role == "Customer" });
 
   const customCombo = useFetch<ApiResponse<CustomComboProduct[]>>(
     "/Combos/user",
     [USER_KEY.CUSTOM_COMBO]
-  );
+    , {}, { enabled: profileData?.value?.role == "Customer" });
 
   const combos = useFetch<ApiResponse<PageResult<ComboProduct>>>("/Combos", [
     COMBO_KEY.COMBOS,

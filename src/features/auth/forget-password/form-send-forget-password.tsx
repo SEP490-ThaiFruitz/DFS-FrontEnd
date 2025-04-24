@@ -1,5 +1,5 @@
 "use client"
-import { sendForgetPassword } from '@/actions/auth';
+
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized';
 import { FormInputControl } from '@/components/global-components/form/form-input-control';
 import { FormValues } from '@/components/global-components/form/form-values'
@@ -7,12 +7,12 @@ import { WaitingSpinner } from '@/components/global-components/waiting-spinner';
 import { DialogFooter } from '@/components/ui/dialog';
 import { ForgetPasswordSafeTypes } from '@/zod-safe-types/auth-safe-types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { TabType, UserForgetPassword } from './form-forget-password';
+import { API } from '@/actions/client/api-config';
 
 
 interface FormSendForgetPasswordProps {
@@ -30,35 +30,19 @@ export const FormSendForgetPassword = ({ setUsername, returnButton }: FormSendFo
         }
     });
 
-    const { isPending, mutate: sendForgetPasswordCodeMutation } = useMutation({
-        mutationKey: ["ForgetPassword", "Mange"],
-        mutationFn: async (data: { email: string | undefined, phone: string | undefined }) => {
-            try {
-
-                const response = await sendForgetPassword(data);
-
-                if (!response?.isSuccess) {
-                    if (response?.status === 404) {
-                        throw new Error("Không tìm thấy tài khoản")
-                    }
-                    throw new Error(response?.message || "Lỗi hệ thống")
-                }
-            } catch (error: unknown) {
-                throw new Error(error instanceof Error ? error.message : "Unknown error");
-            }
-        },
-        onSuccess: () => {
-            toast.success("Đã gửi lại mã xác thực")
-            const datas = form.getValues();
-            setUsername({ email: datas.email, phone: datas.phone, otp: "" }, "verify")
-        },
-        onError: (error) => {
-            toast.error(error.message)
-        }
-    });
-
     const onSubmit = async (values: z.infer<typeof ForgetPasswordSafeTypes>) => {
-        sendForgetPasswordCodeMutation({ email: values.email, phone: values.phone })
+        try {
+
+            const response = await API.post("/Auths/forgot-password", { email: values.email, phone: values.phone });
+
+            if (response) {
+                toast.success("Đã gửi lại mã xác thực")
+                const datas = form.getValues();
+                setUsername({ email: datas.email, phone: datas.phone, otp: "" }, "verify")
+            }
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     return (
@@ -71,11 +55,11 @@ export const FormSendForgetPassword = ({ setUsername, returnButton }: FormSendFo
                     <FormInputControl
                         form={form}
                         name="phone"
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label="Số điện thoại"
                         placeholder="+84..."
                     />
-                    <button type="button" disabled={isPending} onMouseDown={() => {
+                    <button type="button" disabled={form.formState.isSubmitting} onMouseDown={() => {
                         setForgetType("email")
                         form.resetField("phone")
                         form.setValue("type", "email")
@@ -86,11 +70,11 @@ export const FormSendForgetPassword = ({ setUsername, returnButton }: FormSendFo
                     <FormInputControl
                         form={form}
                         name="email"
-                        disabled={isPending}
+                        disabled={form.formState.isSubmitting}
                         label="Email"
                         placeholder="example@mail.com"
                     />
-                    <button type="button" disabled={isPending} onMouseDown={() => {
+                    <button type="button" disabled={form.formState.isSubmitting} onMouseDown={() => {
                         setForgetType("phone")
                         form.resetField("email")
                         form.setValue("type", "phone")
@@ -99,16 +83,16 @@ export const FormSendForgetPassword = ({ setUsername, returnButton }: FormSendFo
             )}
 
             <DialogFooter>
-                <button disabled={isPending}>
+                <button disabled={form.formState.isSubmitting}>
                     {returnButton}
                 </button>
                 <ButtonCustomized
                     type="submit"
-                    className="max-w-fit !h-10 bg-green-500 hover:bg-green-700"
+                    className="max-w-fit !h-10 bg-sky-600 hover:bg-sky-700"
                     variant="secondary"
-                    disabled={isPending}
+                    disabled={form.formState.isSubmitting}
                     label={
-                        isPending ? (
+                        form.formState.isSubmitting ? (
                             <WaitingSpinner
                                 variant="pinwheel"
                                 label="Đang gửi..."

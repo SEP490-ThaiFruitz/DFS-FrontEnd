@@ -192,17 +192,18 @@ export function ApprovalDialog({
                 totalRefundAmount={totalRefundAmount}
               />
             ) : activeTab === "products" ? (
-              <ProductReceived
-                handleItemAcceptQuantityChange={handleItemAcceptQuantityChange}
-                handleItemNoteChange={handleItemNoteChange}
-                itemsData={itemsData}
-                handleItemReceiveQuantityChange={
-                  handleItemReceiveQuantityChange
-                }
-                returnRequestData={returnRequestData}
-                totalRefundAmount={totalRefundAmount}
-                // shippingFeeResponsibility={shippingFeeResponsibility}
-              />
+              // <ProductReceived
+              //   handleItemAcceptQuantityChange={handleItemAcceptQuantityChange}
+              //   handleItemNoteChange={handleItemNoteChange}
+              //   itemsData={itemsData}
+              //   handleItemReceiveQuantityChange={
+              //     handleItemReceiveQuantityChange
+              //   }
+              //   returnRequestData={returnRequestData}
+              //   totalRefundAmount={totalRefundAmount}
+              //   // shippingFeeResponsibility={shippingFeeResponsibility}
+              // />
+              <div></div>
             ) : (
               activeTab === "images" && (
                 <ImagesTab

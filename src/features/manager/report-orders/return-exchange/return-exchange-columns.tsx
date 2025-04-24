@@ -43,6 +43,7 @@ import {
 import { ReturnExchangeStatusBar } from "./return-exchange-status/return-exchange-status-bar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ApprovalDialogTrigger } from "./components/approval/approval-dialog-trigger";
 
 export type ReturnExchangeOrders = {
   id: string;
@@ -435,7 +436,13 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
             )}
             {/* <DropdownMenuItem>View details</DropdownMenuItem> */}
 
-            <OrderReturnExchangeDetail requestId={request.id} />
+            <OrderReturnExchangeDetail
+              requestId={request.id}
+              requestStatus={request.requestStatus}
+              rowOriginal={request}
+            />
+
+            <ApprovalDialogTrigger requestId={request.id} />
             {/* {request.requestStatus === "Pending" && (
               <>
                 <DropdownMenuSeparator />

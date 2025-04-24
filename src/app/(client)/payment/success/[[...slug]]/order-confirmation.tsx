@@ -289,70 +289,87 @@ const OrderDetailsCard = memo(
 );
 OrderDetailsCard.displayName = "OrderDetailsCard";
 
-export const CustomComboThumbnail = memo(({ images }: { images: string[] }) => {
-  return (
-    <div className="size-20 relative rounded-lg overflow-hidden bg-slate-50 border border-slate-200 shadow-sm group mr-4">
-      {/* Main image */}
-      <div className="absolute inset-0 z-10">
-        <Image
-          src={images[0] || "/placeholder.svg"}
-          alt={`main-thumbnail-image`}
-          width={80}
-          height={80}
-          sizes="(max-width: 640px) 80px, 128px"
-          className="w-full h-full object-cover transition-transform group-hover:scale-105"
-          priority={true}
-          loading="eager"
-          quality={85}
-        />
-        {/* Subtle overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-      </div>
+export const CustomComboThumbnail = memo(
+  ({
+    images,
+    height = 80,
+    width = 80,
+    className,
+  }: {
+    images: string[];
+    className?: string;
+    width?: number;
+    height?: number;
+  }) => {
+    return (
+      <div
+        className={cn(
+          "size-20 relative rounded-lg overflow-hidden bg-slate-50 border border-slate-200 shadow-sm group mr-4",
+          className
+        )}
+      >
+        {/* Main image */}
+        <div className="absolute inset-0 z-10">
+          <Image
+            src={images[0] || "/placeholder.svg"}
+            alt={`main-thumbnail-image`}
+            width={width}
+            height={height}
+            sizes="(max-width: 640px) 80px, 128px"
+            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+            priority={true}
+            loading="eager"
+            quality={85}
+          />
+          {/* Subtle overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        </div>
 
-      {/* Thumbnail stack */}
-      {images.length > 1 && (
-        <div className="absolute right-1 bottom-1 z-20 flex flex-col-reverse gap-1">
-          {images.slice(1, 3).map((image, index) => (
-            <div
-              key={index}
-              className="h-7 w-7 rounded-sm overflow-hidden border border-white/70 shadow-sm"
-              style={{
-                transform: `translateX(${index * -3}px)`,
-                zIndex: 30 - index,
-              }}
-            >
-              <div className="relative h-full w-full">
-                <Image
-                  src={image || "/placeholder.svg"}
-                  alt={`product item  ${index + 1}`}
-                  // fill
-                  // className="object-cover"
-                  // sizes="28px"
-                  width={96}
-                  height={0}
-                  sizes="(max-width: 640px) 96px, 128px"
-                  className="w-24 h-full object-cover transition-transform group-hover:scale-105"
-                  priority={true}
-                  loading="eager"
-                  quality={85}
-                />
+        {/* Thumbnail stack */}
+        {images.length > 1 && (
+          <div className="absolute right-1 bottom-1 z-20 flex flex-col-reverse gap-1">
+            {images.slice(1, 3).map((image, index) => (
+              <div
+                key={index}
+                className="h-7 w-7 rounded-sm overflow-hidden border border-white/70 shadow-sm"
+                style={{
+                  transform: `translateX(${index * -3}px)`,
+                  zIndex: 30 - index,
+                }}
+              >
+                <div className="relative h-full w-full">
+                  <Image
+                    src={image || "/placeholder.svg"}
+                    alt={`product item  ${index + 1}`}
+                    // fill
+                    // className="object-cover"
+                    // sizes="28px"
+                    width={96}
+                    height={0}
+                    sizes="(max-width: 640px) 96px, 128px"
+                    className="w-24 h-full object-cover transition-transform group-hover:scale-105"
+                    priority={true}
+                    loading="eager"
+                    quality={85}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Item count indicator (if more than 3 items) */}
-      {images.length > 3 && (
-        <div className="absolute left-1 bottom-1 z-20">
-          <div className="bg-white/90 backdrop-blur-sm text-[10px] font-medium rounded-sm px-1 shadow-sm">
-            +{images.length - 3}
+            ))}
           </div>
-        </div>
-      )}
-    </div>
-  );
-});
+        )}
+
+        {/* Item count indicator (if more than 3 items) */}
+        {images.length > 3 && (
+          <div className="absolute left-1 bottom-1 z-20">
+            <div className="bg-white/90 backdrop-blur-sm text-[10px] font-medium rounded-sm px-1 shadow-sm">
+              +{images.length - 3}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 CustomComboThumbnail.displayName = "CustomComboThumbnail";
 

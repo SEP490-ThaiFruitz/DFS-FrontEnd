@@ -10,7 +10,20 @@ import { AdvancedColorfulBadges } from "@/components/global-components/badge/adv
 import { JSX } from "react";
 
 interface ReturnItemCardProps {
-  item: OrderReturnItem;
+  // item: OrderReturnItem;
+  item: Pick<
+    OrderReturnItem,
+    | "orderItem"
+    | "requestItemStatus"
+    | "productStatus"
+    | "customerQuantity"
+    | "receiveQuantity"
+    | "acceptQuantity"
+    | "refundAmount"
+    | "note"
+    | "customerImage"
+    | "receiveImage"
+  >;
 }
 
 const RowContent = ({ children }: { children: React.ReactNode }) => {

@@ -45,3 +45,5 @@ export function getUserInitials(name: string): string {
   // Get first letter of first and last parts
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
+
+export const returnExchangeLabel = (type: string) => {};

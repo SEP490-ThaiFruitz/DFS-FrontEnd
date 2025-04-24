@@ -51,6 +51,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { groupItemsByOrder } from "./approval/return-change-product-checked/utils";
+import OrderCard from "./approval/return-change-product-checked/components/order-card";
+import { ReturnExchangeOrders } from "../return-exchange-columns";
 
 interface StatusBadgeProps {
   status: string;
@@ -109,10 +112,14 @@ export function SectionHeader({
 
 interface OrderReturnDetailProps {
   requestId: string;
+
+  requestStatus: string;
+
+  rowOriginal: ReturnExchangeOrders;
 }
 
 export const OrderReturnExchangeDetail = memo(
-  ({ requestId }: OrderReturnDetailProps) => {
+  ({ requestId, requestStatus, rowOriginal }: OrderReturnDetailProps) => {
     const [open, setOpen] = useState(false);
 
     const [returnRequestData, setReturnRequestData] = useState<
@@ -127,14 +134,24 @@ export const OrderReturnExchangeDetail = memo(
     const [itemsData, setItemsData] = useState(
       returnRequestData.map((item) => ({
         returnExchangeRequestItemId: item.returnExchangeRequestItemId,
-        receiveQuantity: item.customerQuantity,
+        receiveQuantity: item.receiveQuantity,
         note: "",
-        acceptQuantity: item.customerQuantity,
+        acceptQuantity: item.acceptQuantity ?? 0,
       }))
     );
     const token = Cookies.get("accessToken");
 
     const [images, setImages] = useState<File[]>([]);
+
+    const [expandedOrders, setExpandedOrders] = useState<
+      Record<string, boolean>
+    >({});
+    const toggleOrderExpand = (orderId: string) => {
+      setExpandedOrders((prev) => ({
+        ...prev,
+        [orderId]: !prev[orderId],
+      }));
+    };
 
     // console.log("hinh anh nhan duoc: ", images.length);
 
@@ -161,9 +178,9 @@ export const OrderReturnExchangeDetail = memo(
         setItemsData(
           safeOrderReturnData.items.map((item) => ({
             returnExchangeRequestItemId: item.returnExchangeRequestItemId,
-            receiveQuantity: item.customerQuantity,
+            receiveQuantity: item.receiveQuantity,
             note: "",
-            acceptQuantity: item.customerQuantity,
+            acceptQuantity: item.acceptQuantity ?? 0,
           }))
         );
       }
@@ -307,17 +324,27 @@ export const OrderReturnExchangeDetail = memo(
       }
     };
 
-    const isApproveDisabled =
-      !shippingFeeResponsibility || // chưa chọn người chịu phí
-      images.length === 0 || // chưa có hình ảnh nhận hàng
-      itemsData.some(
-        (item) =>
-          item.receiveQuantity === undefined ||
-          item.acceptQuantity === undefined ||
-          item.acceptQuantity > item.receiveQuantity || // accept không được lớn hơn nhận
-          item.acceptQuantity < 0 ||
-          item.receiveQuantity < 0
-      );
+    // const isApproveDisabled =
+    //   !shippingFeeResponsibility || // chưa chọn người chịu phí
+    //   images.length === 0 || // chưa có hình ảnh nhận hàng
+    //   itemsData.some(
+    //     (item) =>
+    //       item.receiveQuantity === undefined ||
+    //       item.acceptQuantity === undefined ||
+    //       item.acceptQuantity > item.receiveQuantity || // accept không được lớn hơn nhận
+    //       item.acceptQuantity < 0 ||
+    //       item.receiveQuantity < 0
+    //   );
+
+    const groupedItems = groupItemsByOrder(safeOrderReturnData.items);
+
+    // console.log("data groupedItems: ", groupedItems);
+
+    const productsInCombo = groupedItems.filter(
+      (item) => item.orderInfo.itemType !== "Single"
+    );
+    console.log("data productsInCombo: ", productsInCombo);
+    console.log("data safeOrderReturnData: ", safeOrderReturnData);
 
     return (
       <div>
@@ -348,7 +375,7 @@ export const OrderReturnExchangeDetail = memo(
             {safeOrderReturnData !== undefined &&
             safeOrderReturnData != null ? (
               <>
-                <ApprovalDialog
+                {/* <ApprovalDialog
                   isOpen={isApprovalDialogOpen}
                   setIsOpen={setIsApprovalDialogOpen}
                   requestId={requestId}
@@ -372,7 +399,7 @@ export const OrderReturnExchangeDetail = memo(
                   isLoading={isLoading}
                   onSubmit={handleApproveSubmit}
                   disabledCondition={isApproveDisabled}
-                />
+                /> */}
 
                 <div className="sticky top-0 z-10 bg-white border-b p-6 pb-4 shadow-sm cardStyle">
                   <SheetHeader className="text-left">
@@ -384,24 +411,6 @@ export const OrderReturnExchangeDetail = memo(
                       {/* <StatusBadge status={safeOrderReturnData.requestStatus} /> */}
 
                       <div className="flex items-center gap-2">
-                        {/* <Popover>
-                          <PopoverTrigger>
-                            <Button
-                              variant="outline"
-                              className="bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-800 h-8 rounded-lg font-semibold"
-                            >
-                              <ShieldCheck className="size-6 text-green-500 " />
-                              Phê duyệt yêu cầu
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full cardStyle">
-                            <ApprovalActions
-                              totalRefundAmount={totalRefundAmount}
-                              onApproveClick={handleApproveClick}
-                            />
-                          </PopoverContent>
-                        </Popover> */}
-
                         <Badge
                           className={`font-semibold text-sm ${
                             statusColorMap[
@@ -456,9 +465,49 @@ export const OrderReturnExchangeDetail = memo(
                   {/* Items */}
                   <ScrollArea className="h-[500px] w-full ">
                     <SectionHeader icon={Package} title="Sản phẩm trả lại" />
-                    {safeOrderReturnData?.items?.map((item, index) => (
-                      <ReturnItemCard key={index} item={item} />
-                    ))}
+                    {/* {safeOrderReturnData?.items?.map((item, index) => {
+                      console.log(item);
+
+                      if (item.orderItem.itemType === "Single") {
+                        return <ReturnItemCard key={index} item={item} />;
+                      } else {
+                        return productsInCombo.map((group) => {
+                          return (
+                            <OrderCard
+                              key={group.orderInfo.id}
+                              group={group}
+                              isExpanded={!!expandedOrders[group.orderInfo.id]}
+                              onToggleExpand={() =>
+                                toggleOrderExpand(group.orderInfo.id)
+                              }
+                            />
+                          );
+                        });
+                      }
+                    })} */}
+
+                    <>
+                      {/* Render sản phẩm Single */}
+                      {safeOrderReturnData?.items
+                        ?.filter((item) => item.orderItem.itemType === "Single")
+                        .map((item, index) => (
+                          <ReturnItemCard key={index} item={item} />
+                        ))}
+
+                      {/* Render nhóm sản phẩm Combo (không phải Single) */}
+                      {productsInCombo?.map((group) => (
+                        <OrderCard
+                          key={group?.orderInfo?.id}
+                          group={group}
+                          isExpanded={!!expandedOrders[group?.orderInfo?.id]}
+                          onToggleExpand={() =>
+                            toggleOrderExpand(group?.orderInfo?.id)
+                          }
+                          requestStatus={requestStatus}
+                          rowOriginal={rowOriginal}
+                        />
+                      ))}
+                    </>
                   </ScrollArea>
                 </div>
 

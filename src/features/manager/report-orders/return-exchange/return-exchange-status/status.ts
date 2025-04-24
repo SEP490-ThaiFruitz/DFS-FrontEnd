@@ -86,7 +86,7 @@ export const getStatusReturnExchangeStep = (status: string) => {
   }
 };
 
-const ReturnExchangeFlow = [
+export const ReturnExchangeFlow = [
   "pending",
   "approved",
   "awaitingCustomerReturn",

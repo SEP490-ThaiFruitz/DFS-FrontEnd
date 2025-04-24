@@ -1,3 +1,5 @@
+import { OrderItemDetailsTypes } from "@/features/manager/order-detail-components/order-detail.types";
+
 export interface OrderReturnData {
   id: string;
   orderId: string;
@@ -28,13 +30,18 @@ export interface OrderReturnItem {
     id: string;
     referenceId: string;
     name: string;
-    image: string;
-    customImages: string | null;
+    image: string | null;
+    customImages: string[] | null;
     itemType: string;
     quantity: number;
     unitPrice: number;
     percentage: number;
     discountPrice: number;
+
+    isCanFeedback: boolean;
+
+    // orderItemDetails:
+    orderItemDetails: OrderItemDetailsTypes | null;
   };
   requestItemStatus: string;
   customerQuantity: number;
@@ -45,4 +52,6 @@ export interface OrderReturnItem {
   note: string | null;
   acceptQuantity: number | null;
   refundAmount: number | null;
+
+  createdAt: string;
 }

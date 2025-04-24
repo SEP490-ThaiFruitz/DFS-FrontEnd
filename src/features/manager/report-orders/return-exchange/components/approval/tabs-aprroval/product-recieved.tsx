@@ -11,6 +11,14 @@ import { OrderReturnItem } from "@/types/order-detail.types";
 import { CheckCircleIcon, PackageIcon } from "lucide-react";
 import Image from "next/image";
 import { memo } from "react";
+import { ReturnRequestDataType } from "../approval-dialog-trigger";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProductReceivedProps {
   itemsData: {
@@ -19,7 +27,8 @@ interface ProductReceivedProps {
     note: string;
     acceptQuantity: number;
   }[];
-  returnRequestData: OrderReturnItem[];
+  // returnRequestData: OrderReturnItem[];
+  returnRequestData: ReturnRequestDataType[];
   handleItemReceiveQuantityChange: (id: string, quantity: number) => void;
   handleItemAcceptQuantityChange: (id: string, quantity: number) => void;
   handleItemNoteChange: (id: string, note: string) => void;
@@ -34,14 +43,21 @@ export const ProductReceived = memo(
     handleItemNoteChange,
     totalRefundAmount,
   }: ProductReceivedProps) => {
+    const entichReturnRequestData = returnRequestData.map((data) => {});
+
+    // console.log("data return request data ", returnRequestData);
+    // console.log("gia tri itemsData ", itemsData);
+
     return (
-      <ScrollArea className="max-h-[60vh] sm:max-h-[70vh] lg:max-h-[80vh] overflow-y-auto space-y-4 motion-preset-slide-right motion-duration-300">
+      <ScrollArea className="max-h-[60vh] sm:max-h-[70vh] lg:max-h-[80vh] overflow-y-auto space-y-4 motion-preset-slide-right motion-duration-300 pb-16">
         {itemsData.map((item, index) => {
           const originalItem = returnRequestData.find(
             (original) =>
               original.returnExchangeRequestItemId ===
               item.returnExchangeRequestItemId
           );
+
+          // console.log({ returnRequestData });
 
           return (
             <Card
@@ -84,7 +100,7 @@ export const ProductReceived = memo(
                           htmlFor={`receive-quantity-${index}`}
                           className="text-sm font-medium"
                         >
-                          Số lượng nhận
+                          Số lượng đã nhận
                         </Label>
                         <div className="flex items-center mt-1.5">
                           <Button
@@ -98,7 +114,8 @@ export const ProductReceived = memo(
                                 Math.max(0, item.receiveQuantity - 1)
                               )
                             }
-                            disabled={item.receiveQuantity <= 0}
+                            // disabled={item.receiveQuantity <= 0}
+                            disabled
                           >
                             <span>-</span>
                           </Button>
@@ -106,7 +123,7 @@ export const ProductReceived = memo(
                             id={`receive-quantity-${index}`}
                             type="number"
                             min="0"
-                            max={originalItem?.customerQuantity || 1}
+                            max={originalItem?.orderItem.customerQuantity || 1}
                             value={item.receiveQuantity}
                             onChange={(e) =>
                               handleItemReceiveQuantityChange(
@@ -115,6 +132,7 @@ export const ProductReceived = memo(
                               )
                             }
                             autoFocus
+                            disabled
                             className="rounded-none text-center h-9"
                           />
                           <Button
@@ -126,15 +144,17 @@ export const ProductReceived = memo(
                               handleItemReceiveQuantityChange(
                                 item.returnExchangeRequestItemId,
                                 Math.min(
-                                  originalItem?.customerQuantity || 1,
+                                  originalItem?.orderItem?.customerQuantity ||
+                                    1,
                                   item.receiveQuantity + 1
                                 )
                               )
                             }
-                            disabled={
-                              item.receiveQuantity >=
-                              (originalItem?.customerQuantity || 1)
-                            }
+                            // disabled={
+                            //   item.receiveQuantity >=
+                            //   (originalItem?.orderItem?.customerQuantity || 1)
+                            // }
+                            disabled
                           >
                             <span>+</span>
                           </Button>
@@ -151,7 +171,34 @@ export const ProductReceived = memo(
                           Số lượng chấp nhận
                         </Label>
                         <div className="flex items-center mt-1.5">
-                          <Button
+                          <Select
+                            value={item.acceptQuantity.toString() ?? "1"}
+                            onValueChange={(value) =>
+                              handleItemAcceptQuantityChange(
+                                item.returnExchangeRequestItemId,
+                                Number.parseInt(value) || 0
+                              )
+                            }
+                          >
+                            <SelectTrigger className="w-full h-9">
+                              <SelectValue placeholder="Chọn số lượng" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Array.from({ length: item.receiveQuantity })
+                                .fill(0)
+                                .map((_, index) => {
+                                  return (
+                                    <SelectItem
+                                      key={index}
+                                      value={(index + 1).toString()}
+                                    >
+                                      {index + 1}
+                                    </SelectItem>
+                                  );
+                                })}
+                            </SelectContent>
+                          </Select>
+                          {/* <Button
                             type="button"
                             variant="outline"
                             size="icon"
@@ -170,7 +217,7 @@ export const ProductReceived = memo(
                             id={`accept-quantity-${index}`}
                             type="number"
                             min="0"
-                            max={originalItem?.customerQuantity || 1}
+                            max={originalItem?.orderItem?.customerQuantity || 1}
                             value={item.acceptQuantity}
                             onChange={(e) =>
                               handleItemAcceptQuantityChange(
@@ -189,18 +236,19 @@ export const ProductReceived = memo(
                               handleItemAcceptQuantityChange(
                                 item.returnExchangeRequestItemId,
                                 Math.min(
-                                  originalItem?.customerQuantity || 1,
+                                  originalItem?.orderItem?.customerQuantity ||
+                                    1,
                                   item.acceptQuantity + 1
                                 )
                               )
                             }
                             disabled={
                               item.acceptQuantity >=
-                              (originalItem?.customerQuantity || 1)
+                              (originalItem?.orderItem?.customerQuantity || 1)
                             }
                           >
                             <span>+</span>
-                          </Button>
+                          </Button> */}
                         </div>
                         <p className="text-xs text-slate-500 mt-1.5">
                           Số lượng được chấp nhận để hoàn tiền

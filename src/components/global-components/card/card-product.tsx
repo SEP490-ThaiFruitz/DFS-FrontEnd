@@ -32,6 +32,8 @@ export interface CardProductProps {
   categories: CategoryTypes[];
 
   type: string;
+
+  disabled?: boolean;
 }
 export const CardProduct = ({
   variant,
@@ -43,6 +45,8 @@ export const CardProduct = ({
   categories,
   quantitySold,
   type = "single",
+
+  disabled,
 }: CardProductProps) => {
   const addOrder = useCartStore((state) => state.addOrder);
 
@@ -217,6 +221,7 @@ export const CardProduct = ({
                     type,
                   });
                 }}
+                disabled={disabled}
               />
             </CardItem>
           </div>

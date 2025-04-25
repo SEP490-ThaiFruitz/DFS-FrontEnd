@@ -31,30 +31,37 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { ORDERS_KEY } from "@/app/key/manager-key";
 
-const iconSize = "size-6 hover:scale-110 transition duration-300";
+const iconSize = "size-6 ";
 export const returnExchangeStatusIcon = (
   status: string
 ): JSX.Element | null => {
   switch (status) {
     case "pending":
-      return <Clock className={`${iconSize} text-amber-600`} />;
+      return <Clock className={`${iconSize} hoverAnimated text-amber-600`} />;
     case "approved":
-      return <MailCheck className={`${iconSize} text-green-600`} />;
+      return (
+        <MailCheck className={`${iconSize} hoverAnimated text-green-600`} />
+      );
     case ReturnExchangeRequestStatusText.AwaitingCustomerReturn.toLowerCase():
-      return <Undo2 className={`${iconSize} text-sky-600`} />;
+      return <Undo2 className={`${iconSize} hoverAnimated text-sky-600`} />;
     case ReturnExchangeRequestStatusText.ProductReceived.toLowerCase():
-      return <Package className={`${iconSize} text-sky-600`} />;
+      return <Package className={`${iconSize} hoverAnimated text-sky-600`} />;
     case "processing":
-      return <Settings className={`${iconSize} text-yellow-600`} />;
+      return (
+        <Settings
+          className={`${iconSize} text-yellow-600 animate-spin
+`}
+        />
+      );
     case "completed":
       return (
         <BadgeCheckIcon
-          className={`motion-preset-seesaw text-green-600 ${iconSize}`}
+          className={`motion-preset-seesaw text-green-900 ${iconSize} `}
         />
       );
     case "rejected":
     case "cancelled":
-      return <XCircle className={`${iconSize} text-rose-600`} />;
+      return <XCircle className={`${iconSize} hoverAnimated text-rose-600`} />;
     default:
       return null;
   }

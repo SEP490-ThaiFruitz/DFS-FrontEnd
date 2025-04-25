@@ -71,7 +71,7 @@ export const getStatusIcon = (status: string) => {
     case OrderStatusEnum.PACKAGING:
       return <PackageIcon className={iconSize} />;
     case OrderStatusEnum.SHIPPING:
-      return <Truck className={iconSize} />;
+      return <Truck className={`motion-preset-wobble`} />;
     case OrderStatusEnum.DELIVERING:
       return <CheckCircle2 className={iconSize} />;
     case OrderStatusEnum.DELIVERED:

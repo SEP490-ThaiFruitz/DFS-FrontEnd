@@ -56,6 +56,7 @@ export const RelatedProduct = memo(() => {
                     quantitySold={product.quantitySold}
                     rating={product.rating}
                     variant={variantItem}
+                    disabled={variantItem.stockQuantity < 1}
                     type="single"
                   />
                 </CarouselItem>

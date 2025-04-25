@@ -108,7 +108,6 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
     ApiResponse<PageResult<WithdrawalRequest>>
   >("/Wallets/request-withdrawal/user", [USER_KEY.REQUEST_WITHDRAWAL]);
 
-
   // console.log("yeu cau rut tien: ", requestWithdrawData.data)
 
   const queryClient = useQueryClient();
@@ -317,7 +316,7 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer mt-3">
+                {/* <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer mt-3">
                   <div className="bg-primary/10 p-2 rounded">
                     <Wallet2Icon className="h-5 w-5 text-primary" />
                   </div>
@@ -345,7 +344,7 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
                     </p>
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </div>
+                </div> */}
               </Accordion>
             </div>
           </div>
@@ -357,46 +356,41 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
       ) : tab === "withdraw" ? (
         <WithdrawForm wallet={user?.value?.wallet} />
       ) : (
-        tab === "request-history" && (
-          !requestWithdrawData.isLoading ? (
-           requestWithdrawData.data?.value?.items?.length ? (
+        tab === "request-history" &&
+        (!requestWithdrawData.isLoading ? (
+          requestWithdrawData.data?.value?.items?.length ? (
             <EnhanceDataTableWithAllFeatures
-            columns={requestHistoryColumns}
-            initialData={requestWithdrawData.data?.value?.items ?? []}
-            title="Lịch sử yêu cầu rút tiền"
-            description="Theo dõi lịch sử yêu cầu rút tiền của bạn."
-            queryClient={requestWithdrawData}
-            queryKey={[USER_KEY.REQUEST_WITHDRAWAL]}
-            enableEditing={false}
-            enableSelection={false}
-            enableExpansion={false}
-          />
-           ) : (
-           <NotData
-            title="Bạn chưa có lịch sử yêu cầu rút tiền nào"
-            description=" 
+              columns={requestHistoryColumns}
+              initialData={requestWithdrawData.data?.value?.items ?? []}
+              title="Lịch sử yêu cầu rút tiền"
+              description="Theo dõi lịch sử yêu cầu rút tiền của bạn."
+              queryClient={requestWithdrawData}
+              queryKey={[USER_KEY.REQUEST_WITHDRAWAL]}
+              enableEditing={false}
+              enableSelection={false}
+              enableExpansion={false}
+            />
+          ) : (
+            <NotData
+              title="Bạn chưa có lịch sử yêu cầu rút tiền nào"
+              description=" 
               Nếu có yêu cầu rút tiền hãy quay lại và thực hiện
             "
-            icons={[BanknoteIcon, Wallet2Icon, LandmarkIcon]}
-
-            action={{
-              label: "Hãy thử tải lại!",
-              onClick: () => requestWithdrawData.refetch()
-            }}
-           
-           />
-           )
-          ): (
-            <div className="flex h-[300px] w-full items-center justify-center rounded-md border border-dashed">
-            <Loader2Icon className="h-8 w-8 animate-spin text-slate-300" />
-            </div>
+              icons={[BanknoteIcon, Wallet2Icon, LandmarkIcon]}
+              action={{
+                label: "Hãy thử tải lại!",
+                onClick: () => requestWithdrawData.refetch(),
+              }}
+            />
           )
-        )
+        ) : (
+          <div className="flex h-[300px] w-full items-center justify-center rounded-md border border-dashed">
+            <Loader2Icon className="h-8 w-8 animate-spin text-slate-300" />
+          </div>
+        ))
       )}
     </>
   );
 });
-
-
 
 SuccessWallet.displayName = "SuccessWallet";

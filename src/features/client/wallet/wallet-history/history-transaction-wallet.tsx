@@ -43,7 +43,7 @@ export const getTransactionIcon = (type: string) => {
     case "Deposite":
       return <ArrowDownLeft className="size-6 text-emerald-500" />;
     case "Withdrawals":
-      return <ArrowUpRight className="size-6 text-amber-500" />;
+      return <ArrowUpRight className="size-6 text-rose-500" />;
     case "Refund":
       return <RefreshCcw className="size-6 text-sky-500" />;
     default:

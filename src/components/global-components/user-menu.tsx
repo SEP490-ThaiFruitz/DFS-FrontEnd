@@ -36,6 +36,7 @@ import { WalletSheet } from "@/features/client/wallet/wallet-sheet";
 import { Button } from "../ui/button";
 import { VoucherPopover } from "./vouchers-popover";
 import { useVoucherStore } from "@/hooks/use-vouchers-store";
+import { WishlistPopover } from "./wishlist-popover";
 
 export const UserMenu = memo(() => {
   const {
@@ -69,12 +70,14 @@ export const UserMenu = memo(() => {
     <>
       {/* Notification Popover */}
       <Notification />
-      <Link
+      {/* <Link
         href="/favorites"
         className="h-11 w-10 flex items-center justify-center hover:bg-neutral-500/20 rounded-[14px]"
       >
         <Heart className="size-4" />
-      </Link>
+      </Link> */}
+
+      <WishlistPopover />
 
       <WalletSheet user={user} isUserLoading={isUserLoading} />
 

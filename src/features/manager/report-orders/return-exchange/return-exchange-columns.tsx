@@ -202,12 +202,13 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
                   )}
                 </span>
               </div>
-              {rowData?.requestStatus?.toLowerCase() !== "completed" && (
-                <UpdateReturnExchangeStatus
-                  status={rowData?.requestStatus as string}
-                  requestId={rowData.id}
-                />
-              )}
+              {rowData?.requestStatus?.toLowerCase() === "processing" ||
+                (rowData?.requestStatus?.toLowerCase() !== "completed" && (
+                  <UpdateReturnExchangeStatus
+                    status={rowData?.requestStatus as string}
+                    requestId={rowData.id}
+                  />
+                ))}
             </div>
           </div>
 
@@ -361,6 +362,8 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
     cell: ({ row }) => {
       const handler = row.original.handler;
 
+      // const orriginal = row.original;
+
       return (
         <div className="flex items-center gap-2">
           {handler ? (
@@ -382,7 +385,7 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
               </div>
             </div>
           ) : (
-            <span className="text-slate-700 flex items-center gap-1">
+            <span className="text-slate-700 font-semibold flex items-center gap-1">
               <User className="h-4 w-4" />
               Chưa được xử lý
             </span>
@@ -396,6 +399,36 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
       export: { pdf: { header: "Người xử lý" } },
     },
   },
+
+  {
+    id: "Phê duyệt",
+    // accessorKey: "",
+    header: ({ column }) => {
+      return (
+        <div>
+          <div className="flex items-center gap-2 font-semibold">
+            <UserRoundCogIcon className="size-6" />
+            Phê duyệt
+          </div>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const censor = row.original;
+
+      return censor.requestStatus?.toLowerCase() === "processing" ? (
+        <ApprovalDialogTrigger requestId={censor.id} />
+      ) : (
+        ""
+      );
+    },
+
+    meta: {
+      align: "center",
+      export: { pdf: { header: "Phê duyệt" } },
+    },
+  },
+
   {
     id: "Hành động",
     cell: ({ row }) => {
@@ -405,7 +438,7 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Mở tùy chọn</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

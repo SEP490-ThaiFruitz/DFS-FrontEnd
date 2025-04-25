@@ -992,6 +992,7 @@ export const ProductFilterSidebar = memo(
                           rating={product.rating}
                           variant={variantItem}
                           type="single"
+                          disabled={variantItem.stockQuantity < 1}
                         />
                       );
                     });

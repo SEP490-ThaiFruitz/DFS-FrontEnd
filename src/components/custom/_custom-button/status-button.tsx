@@ -13,6 +13,8 @@ interface StatusButtonProps {
   className?: string;
   classNameIcon?: string;
   label?: string;
+
+  disabled?: boolean;
 }
 
 export default function StatusButton({
@@ -20,6 +22,7 @@ export default function StatusButton({
   className,
   classNameIcon,
   label,
+  disabled,
 }: StatusButtonProps) {
   const [status, setStatus] = useState<
     "loading" | "Add to cart" | "Added to cart"
@@ -57,11 +60,14 @@ export default function StatusButton({
         e.preventDefault();
         changeStatus(e);
       }}
-      disabled={!isEnabled}
+      disabled={!isEnabled || disabled}
+      // disabled
       className={cn(
         `group relative overflow-hidden rounded-md text-sm bg-[#0284c7] hover:bg-[#0369a1] size-10
         font-semibold text-white transition-colors duration-300 flex items-center
-        justify-center hoverAnimate`,
+        justify-center hoverAnimate ${
+          disabled ? "opacity-50 cursor-not-allowed" : ""
+        } `,
         className
       )}
     >

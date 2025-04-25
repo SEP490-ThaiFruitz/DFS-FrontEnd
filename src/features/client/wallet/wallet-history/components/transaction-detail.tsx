@@ -83,7 +83,7 @@ export const TransactionDetail = memo(
                       : "text-rose-600"
                   }`}
                 >
-                  {selectedTransaction.amount > 0 ? "+" : ""}
+                  {/* {selectedTransaction.amount > 0 ? "" : ""} */}
                   {formatVND(selectedTransaction.amount)}
                 </span>
               </div>

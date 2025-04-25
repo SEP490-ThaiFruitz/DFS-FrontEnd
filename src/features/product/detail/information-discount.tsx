@@ -209,7 +209,7 @@ const InformationDiscount = ({ productVariantId, discounts, productId }: Readonl
                 <AccordionTrigger className="font-bold text-2xl">Danh sách giảm giá</AccordionTrigger>
                 <AccordionContent>
                     <div className="mb-4 flex justify-end">
-                        <Button onClick={() => setIsFormDiscount(true)} size={"sm"} className='text-white bg-green-500 hover:bg-green-600'>
+                        <Button onClick={() => setIsFormDiscount(true)} size={"sm"} className='text-white bg-sky-600 hover:bg-sky-700'>
                             <CirclePlus className="mr-1 h-4 w-4" />
                             Tạo giảm giá
                         </Button>

@@ -129,29 +129,33 @@ const NutritionFact = ({ formProduct }: Readonly<NutritionFactProps>) => {
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <Controller
-                                        name="amount"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <FormItem className='mt-4'>
-                                                <FancySelect
-                                                    placeholder='Chọn hoặc nhập số lượng mới'
-                                                    classNameSelect='!max-h-32'
-                                                    options={QUANTITY_SELECT}
-                                                    onChangeValue={(selectedValues: any) => {
-                                                        field.onChange(selectedValues?.value)
-                                                    }}
-                                                    unit={handleUnit()}
-                                                    isNumber
-                                                    defaultValue={{
-                                                        label: String(form.getValues("amount") ?? ""),
-                                                        value: String(form.getValues("amount") ?? "")
-                                                    }}
-                                                />
-                                                <FormMessage>{fieldState.error?.message}</FormMessage>
-                                            </FormItem>
-                                        )}
-                                    />
+                                    {form.watch("nutrientId") && (
+                                        <div>
+                                            <Controller
+                                                name="amount"
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <FormItem className='mt-4'>
+                                                        <FancySelect
+                                                            placeholder='Chọn hoặc nhập số lượng mới'
+                                                            classNameSelect='!max-h-32'
+                                                            options={QUANTITY_SELECT}
+                                                            onChangeValue={(selectedValues: any) => {
+                                                                field.onChange(selectedValues?.value)
+                                                            }}
+                                                            unit={handleUnit()}
+                                                            defaultValue={{
+                                                                label: String(form.getValues("amount") ?? ""),
+                                                                value: String(form.getValues("amount") ?? "")
+                                                            }}
+                                                            isNumber
+                                                        />
+                                                        <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                    )}
                                 </TableCell>
                                 <TableCell className='flex space-x-3'>
                                     <Button onClick={form.handleSubmit(onSubmit)} type='button' size="sm" variant="outline">

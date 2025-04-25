@@ -199,7 +199,7 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <Controller
                                             name="packagingLength"
@@ -256,6 +256,9 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                             )}
                                         />
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <Controller
                                             name="packagingHeight"
@@ -284,9 +287,6 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                             )}
                                         />
                                     </div>
-                                </div>
-
-                                <div>
                                     <Controller
                                         name="shelfLife"
                                         control={form.control}
@@ -316,6 +316,32 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <Controller
+                                            name="stockQuantity"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <FormItem className="pt-1">
+                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                        Số lượng
+                                                    </FormLabel>
+                                                    <FancySelect
+                                                        placeholder='Chọn số lượng hoặc nhập mới'
+                                                        options={QUANTITY_SELECT}
+                                                        onChangeValue={(selectedValues: any) => {
+                                                            field.onChange(selectedValues.value)
+                                                        }}
+                                                        defaultValue={{
+                                                            label: form.getValues("stockQuantity") ?? "0",
+                                                            value: form.getValues("stockQuantity") ?? "0"
+                                                        }}
+                                                        disabled={form.formState.isSubmitting}
+                                                    />
+                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Controller
                                             name="reOrderPoint"
                                             control={form.control}
                                             render={({ field, fieldState }) => (
@@ -340,32 +366,32 @@ function FormVariant({ isOpen, onClose, productId, productVariantDetail }: Reado
                                             )}
                                         />
                                     </div>
-                                    <div>
-                                        <Controller
-                                            name="preservationMethod"
-                                            control={form.control}
-                                            render={({ field, fieldState }) => (
-                                                <FormItem className="pt-1">
-                                                    <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
-                                                        Cách bảo quản
-                                                    </FormLabel>
-                                                    <FancySelect
-                                                        placeholder='Chọn cách bảo quản hoặc nhập mới'
-                                                        options={PRESERVATION_SELECT}
-                                                        onChangeValue={(selectedValues: any) => {
-                                                            field.onChange(selectedValues.value)
-                                                        }}
-                                                        defaultValue={{
-                                                            label: form.getValues("preservationMethod"),
-                                                            value: form.getValues("preservationMethod")
-                                                        }}
-                                                        disabled={form.formState.isSubmitting}
-                                                    />
-                                                    <FormMessage>{fieldState.error?.message}</FormMessage>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                </div>
+                                <div>
+                                    <Controller
+                                        name="preservationMethod"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                            <FormItem className="pt-1">
+                                                <FormLabel className="text-text-foreground after:content-['*'] after:text-red-500 after:ml-1">
+                                                    Cách bảo quản
+                                                </FormLabel>
+                                                <FancySelect
+                                                    placeholder='Chọn cách bảo quản hoặc nhập mới'
+                                                    options={PRESERVATION_SELECT}
+                                                    onChangeValue={(selectedValues: any) => {
+                                                        field.onChange(selectedValues.value)
+                                                    }}
+                                                    defaultValue={{
+                                                        label: form.getValues("preservationMethod"),
+                                                        value: form.getValues("preservationMethod")
+                                                    }}
+                                                    disabled={form.formState.isSubmitting}
+                                                />
+                                                <FormMessage>{fieldState.error?.message}</FormMessage>
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <FormSelectControl

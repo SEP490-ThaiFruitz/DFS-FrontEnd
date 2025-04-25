@@ -4,6 +4,7 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { ReportOrdersListClient } from "@/features/manager/report-orders/report-orders-clients";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import { toast } from "sonner";
 
 const OrderListPage = () => {
   const [dateRange, setDateRange] = useState<{
@@ -16,6 +17,10 @@ const OrderListPage = () => {
 
   const HeaderTitle = () => {
     const handleDateRangeChange = (values: { range: DateRange }) => {
+      if (!values.range.from || !values.range.to) {
+        toast.warning("Vui lòng chọn khoảng thời gian hợp lệ");
+        return;
+      }
       setDateRange(values.range);
     };
 

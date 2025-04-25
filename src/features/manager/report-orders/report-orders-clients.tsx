@@ -128,7 +128,7 @@ export const ReportOrdersListClient = ({
   // Define the previous period date range
   const previousFrom = new Date(currentFrom as Date);
   previousFrom.setDate(
-    previousFrom.getDate() - (currentTo.getDate() - currentFrom.getDate() + 1)
+    previousFrom.getDate() - (currentTo?.getDate() - currentFrom.getDate() + 1)
   );
 
   const previousTo = new Date(currentFrom as Date);

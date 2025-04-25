@@ -141,7 +141,10 @@ export const ShoppingBagSheet = () => {
               <div className="container mx-auto p-4 md:p-6 w-full">
                 <>
                   <h1 className="text-2xl font-semibold">
-                    Giỏ hàng ({cart?.length})
+                    Giỏ hàng (
+                    {(cart?.length ?? 0) +
+                      (customCombo?.data?.value?.length ?? 0)}
+                    )
                   </h1>
                   <ScrollArea className="w-full h-[200px] md:h-[250px] lg:h-[400px]">
                     {cart?.map((product) => (
@@ -177,6 +180,7 @@ export const ShoppingBagSheet = () => {
                     <CartSummary
                       cart={cart as CartData[]}
                       customComboPrice={customComboPrice}
+                      numberOfCustom={customCombo?.data?.value?.length ?? 0}
                       close={close}
                     />
                   </div>

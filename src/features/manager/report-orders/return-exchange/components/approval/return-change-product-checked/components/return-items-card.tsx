@@ -22,24 +22,11 @@ export default function ReturnItemCard({ item }: ReturnItemCardProps) {
     item.orderItem.image ||
     (item.orderItem.customImages && item.orderItem.customImages[0]);
 
-  // const hasImages = item?.orderItem?.customImages?.length;
-
-  // const images: string[] = (
-  //   hasImages ? item.orderItem?.customImages ?? [] : [item.orderItem?.image]
-  // ).filter(Boolean) as string[];
-
   return (
     <Card className="overflow-hidden border  transition-colors">
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
           <div className="flex items-center justify-center p-4">
-            {/* <CustomComboThumbnail
-              images={images}
-              className="size-full"
-              height={300}
-              width={300}
-            /> */}
-            {/* <div className="relative h-36 w-36 md:h-40 md:w-40 rounded-3xl overflow-hidden group"> */}
             {productImage ? (
               <>
                 {/* <Image

@@ -19,10 +19,12 @@ interface CartSummaryProps {
   close: () => void;
 
   customComboPrice: number;
+
+  numberOfCustom: number;
 }
 
 export const CartSummary = memo(
-  ({ cart, customComboPrice, close }: CartSummaryProps) => {
+  ({ cart, customComboPrice, close, numberOfCustom }: CartSummaryProps) => {
     const { subtotal, discount, total } = useMemo(() => {
       const subtotal = cart.reduce(
         (acc, item) =>
@@ -81,7 +83,7 @@ export const CartSummary = memo(
               className="w-full bg-sky-600 hover:bg-sky-400 transition-colors  duration-300 font-bold text-white"
               variant="secondary"
               size="lg"
-              label={`Thanh toán (${cart.length} sản phẩm)`}
+              label={`Thanh toán (${cart.length + numberOfCustom} sản phẩm)`}
             />
           </Link>
         </CardFooter>

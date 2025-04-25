@@ -34,6 +34,8 @@ import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { placeholderImage } from "@/utils/label";
 import { WalletSheet } from "@/features/client/wallet/wallet-sheet";
 import { Button } from "../ui/button";
+import { VoucherPopover } from "./vouchers-popover";
+import { useVoucherStore } from "@/hooks/use-vouchers-store";
 
 export const UserMenu = memo(() => {
   const {
@@ -59,6 +61,8 @@ export const UserMenu = memo(() => {
   const queryClient = useQueryClient();
   const loginDialog = useLoginDialog();
 
+  const { clearVouchers } = useVoucherStore();
+
   return isUserLoading ? (
     <Skeleton className="h-10 w-10 rounded-full" />
   ) : user?.isSuccess && user?.value ? (
@@ -73,6 +77,8 @@ export const UserMenu = memo(() => {
       </Link>
 
       <WalletSheet user={user} isUserLoading={isUserLoading} />
+
+      <VoucherPopover />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">
@@ -156,6 +162,7 @@ export const UserMenu = memo(() => {
                 await logOut();
                 queryClient.removeQueries({ queryKey: ["authUser"] });
                 queryClient.removeQueries({ queryKey: [USER_KEY.PROFILE] });
+                clearVouchers();
 
                 queryClient.removeQueries({
                   queryKey: [USER_KEY.ADDRESS],

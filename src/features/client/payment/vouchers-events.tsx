@@ -39,7 +39,9 @@ export interface VoucherData {
   id: string;
   name: string;
   code: string;
+  image: string | null;
   value: number;
+
   discountType: string;
   startDate: string;
   endDate: string;

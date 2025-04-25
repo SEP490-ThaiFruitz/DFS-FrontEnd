@@ -51,7 +51,7 @@ import { useRouter } from "next/navigation";
 import { useFromStore } from "@/hooks/use-from-store";
 import { useCartStore } from "@/hooks/use-cart-store";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
-import { omit } from "lodash";
+import { divide, omit } from "lodash";
 import { API } from "@/app/key/url";
 import { ApiResponse, PageResult, Profile } from "@/types/types";
 import { AddressTypes } from "@/types/address.types";
@@ -64,6 +64,7 @@ import { ApplyVoucher, VoucherData } from "./vouchers-events";
 import { getProfile } from "@/actions/user";
 import { ToolTipCustomized } from "@/components/custom/tool-tip-customized";
 import { WalletSheet } from "../wallet/wallet-sheet";
+import { VoucherPopover } from "@/components/global-components/vouchers-popover";
 
 interface Product {
   id: number;
@@ -143,6 +144,8 @@ function PaymentClientPage() {
 
       voucherId: null,
     },
+
+    mode: "onChange",
   });
 
   const addresses = useFetch<ApiResponse<PageResult<AddressTypes>>>(
@@ -151,6 +154,15 @@ function PaymentClientPage() {
   );
 
   const balance = user?.value?.wallet?.balance;
+
+  const points = user?.value?.point ?? 0;
+
+  const watchPointUsed = form.watch("pointUsed");
+  const toggleUsePoints = () => {
+    if (points > 0) {
+      form.setValue("pointUsed", watchPointUsed > 0 ? 0 : points);
+    }
+  };
 
   // this work
   // const test2 = useQuery({
@@ -335,6 +347,7 @@ function PaymentClientPage() {
 
   const isVoucherValid =
     voucher && totalBeforeVoucher >= voucher.minimumOrderAmount;
+
   useEffect(() => {
     if (voucher?.id && isVoucherValid) {
       form.setValue("voucherId", voucher.id);
@@ -358,7 +371,10 @@ function PaymentClientPage() {
     : 0;
 
   const finalTotal =
-    totalBeforeVoucher + Number(shippingFee?.totalFee ?? 0) - voucherDiscount;
+    totalBeforeVoucher +
+    Number(shippingFee?.totalFee ?? 0) -
+    voucherDiscount -
+    (watchPointUsed ?? 0);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 ">
@@ -488,41 +504,6 @@ function PaymentClientPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* <FormRadioControl
-                  form={form}
-                  name="paymentMethod"
-                  label="Chọn Phương Thức Thanh Toán"
-                  disabled={form.formState.isSubmitting}
-                  className="space-y-2"
-                >
-                  {paymentMethods.map((method) => {
-                    return (
-                      <RadioItem
-                        key={method.value}
-                        className="flex justify-between"
-                        disabled={form.formState.isSubmitting}
-                      >
-                        <div className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value={method.value} />
-                          </FormControl>
-                          <FormLabel
-                            className={`font-semibold hover:underline transition cursor-pointer ${
-                              paymentMethodWatch === method.value && "underline"
-                            }`}
-                          >
-                            {method.label}
-                          </FormLabel>
-                        </div>
-
-                        {paymentMethodWatch === method.value && (
-                          <Check className="text-green-500 mr-2" />
-                        )}
-                      </RadioItem>
-                    );
-                  })}
-                </FormRadioControl> */}
-
                 <FormRadioControl
                   form={form}
                   name="paymentMethod"
@@ -586,9 +567,16 @@ function PaymentClientPage() {
           <div className="pt-9">
             <Card className="sticky top-8 cardStyle">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingCart className="size-8" />
-                  Tổng quan đơn hàng của bạn
+                <CardTitle className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <ShoppingCart className="size-8" />
+                    Tổng quan đơn hàng của bạn
+                  </div>
+
+                  <VoucherPopover
+                    setSelectVoucher={setVoucher}
+                    totalBeforeVoucher={totalBeforeVoucher}
+                  />
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -621,6 +609,66 @@ function PaymentClientPage() {
 
                 <ApplyVoucher setVoucher={setVoucher} />
 
+                {points > 0 && (
+                  <ToolTipCustomized
+                    trigger={
+                      <div className="flex items-center gap-2 mt-4">
+                        <span>
+                          Bạn đang có{" "}
+                          <span className="text-sky-500 p-2 rounded-full font-semibold bg-slate-50">
+                            {points}
+                          </span>{" "}
+                          điểm
+                        </span>
+
+                        <div
+                          onClick={toggleUsePoints}
+                          className="cursor-pointer underline text-sky-600 font-semibold"
+                        >
+                          {watchPointUsed > 0
+                            ? "Bỏ sử dụng điểm"
+                            : "Sử dụng điểm"}
+                        </div>
+                      </div>
+                    }
+                    delayDuration={100}
+                    sideOffset={10}
+                    content={
+                      <div className="flex flex-col gap-2">
+                        <h2 className="font-semibold text-slate-700 text-base">
+                          Sử dụng điểm thưởng
+                        </h2>
+                        <span className="font-sans text-sm text-slate-600">
+                          Bạn có thể dùng điểm để giảm giá cho đơn hàng.
+                        </span>
+                        <div className="flex items-center gap-1 text-sm">
+                          <span>Quy đổi:</span>
+                          <span className="font-semibold text-sky-500">
+                            1000 điểm = 1000đ
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm">
+                          <span>Quy đổi:</span>
+                          <span className="font-semibold text-sky-500">
+                            50000 điểm = 50.000đ
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-500 italic">
+                          Bạn đang có{" "}
+                          <span className="text-sky-500 font-semibold">
+                            {points.toLocaleString()}
+                          </span>{" "}
+                          điểm ≈{" "}
+                          <span className="text-sky-500 font-semibold">
+                            {formatVND(points)}
+                          </span>{" "}
+                          giảm giá
+                        </div>
+                      </div>
+                    }
+                  />
+                )}
+
                 <div className="mt-6 space-y-2 border-t pt-4">
                   <div className="flex justify-between text-sm font-semibold">
                     <span className="text-slate-700">Tạm tính</span>
@@ -628,13 +676,13 @@ function PaymentClientPage() {
                       {formatVND(subtotal + customComboPrice + voucherDiscount)}
                     </span>
                   </div>
+
                   <div className="flex justify-between text-sm font-semibold">
                     <span className="text-slate-700">Vận chuyển</span>
                     <span className="font-semibold text-sky-500">
                       {calculating
                         ? "Đang tính..."
                         : formatVND(shippingFee?.totalFee ?? 0)}
-                      {/* {formatVND(shippingFee)} */}
                     </span>
                   </div>
 
@@ -646,7 +694,6 @@ function PaymentClientPage() {
                     >
                       <span>Giảm giá</span>
                       {isVoucherValid ? (
-                        // <span>-{formatVND(voucher.maximumDiscountAmount)}</span>
                         <span>-{formatVND(voucherDiscount)}</span>
                       ) : (
                         <span>
@@ -657,18 +704,21 @@ function PaymentClientPage() {
                     </div>
                   )}
 
+                  {watchPointUsed > 0 && (
+                    <div className="flex justify-between text-sm font-semibold">
+                      <span className="text-slate-700">Điểm</span>
+                      <span className="font-semibold text-rose-500">
+                        -{formatVND(points)}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between text-lg font-bold pt-2">
                     <span>Tổng</span>
                     <AdvancedColorfulBadges
                       color="amber"
                       className="text-sky-500 text-xl"
                     >
-                      {/* {formatVND(
-                        total +
-                          customComboPrice +
-                          Number(shippingFee?.totalFee ?? 0)
-                      )} */}
-
                       {formatVND(finalTotal)}
                     </AdvancedColorfulBadges>
                   </div>
@@ -679,6 +729,12 @@ function PaymentClientPage() {
                   type="submit"
                   className="w-full bg-sky-400/75 hover:bg-sky-600/80 font-semibold text-lg hover:motion-preset-confetti "
                   label="Tiến hành thanh toán"
+                  disabled={
+                    !token ||
+                    calculating ||
+                    (!cart?.length && !customComboItem.length) ||
+                    !addressId
+                  }
                 />
               </CardFooter>
             </Card>

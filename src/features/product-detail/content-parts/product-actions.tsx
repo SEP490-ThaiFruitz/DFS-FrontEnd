@@ -11,6 +11,7 @@ import { useCartStore } from "@/hooks/use-cart-store";
 import { ProductVariantTypes } from "../product-detail.types";
 import { formatVND } from "@/lib/format-currency";
 import { useFromStore } from "@/hooks/use-from-store";
+import { useWishlistStore } from "@/hooks/use-wishlist-store";
 
 interface ProductActionsProps {
   selectedVariant: ProductVariantTypes;
@@ -31,7 +32,7 @@ export const ProductActions = memo(
     handleQuantityChange,
     handleAddToCart,
     handleToggleWishlist,
-    isInWishlist,
+    // isInWishlist,
     handleDecreaseQuantity,
     formatPrice,
     calculateDiscountedPrice,
@@ -42,6 +43,17 @@ export const ProductActions = memo(
       (item) =>
         item.variant.productVariantId === selectedVariant.productVariantId
     );
+
+    const { wishlist, addToWishlist, removeFromWishlist, isInWishlist } =
+      useWishlistStore();
+
+    const handleToggleWishlistF = (variant: ProductVariantTypes) => {
+      if (isInWishlist(variant.productVariantId)) {
+        removeFromWishlist(variant.productVariantId);
+      } else {
+        addToWishlist(variant);
+      }
+    };
 
     // console.log({ findCart });
 
@@ -169,14 +181,18 @@ export const ProductActions = memo(
           <Button
             variant="outline"
             className="w-full h-12 text-lg gap-2 border-sky-200 text-sky-600 hover:bg-sky-50"
-            onClick={handleToggleWishlist}
+            onClick={() => handleToggleWishlistF(selectedVariant)}
           >
             <Heart
               className={`h-5 w-5 ${
-                isInWishlist ? "fill-rose-500 text-rose-500" : ""
+                isInWishlist(selectedVariant.productVariantId)
+                  ? "fill-rose-500 text-rose-500"
+                  : ""
               }`}
             />
-            {isInWishlist ? "Đã thêm vào yêu thích" : "Thêm vào yêu thích"}
+            {isInWishlist(selectedVariant.productVariantId)
+              ? "Đã thêm vào yêu thích"
+              : "Thêm vào yêu thích"}
           </Button>
         </div>
       </div>

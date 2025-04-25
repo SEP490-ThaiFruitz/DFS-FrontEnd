@@ -154,44 +154,25 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
 
   const [googleDriveLink, setGoogleDriveLink] = useState<string>("");
 
-  // console.log({ selectImages });
-
-  // const handleImageChange = (files: File[]) => {
-  //   setSelectImages((prev: File[]) => {
-  //     const newFiles = files.filter(
-  //       (file) => !prev.some((f) => f.name === file.name)
-  //     );
-  //     return [...prev, ...newFiles];
-  //   });
-  // };
-
   const images = Object.values(selectedItemsDetails).flatMap(
     (item) => item.images
   );
 
-  console.log("hinh anh san pham don le", images);
+  // console.log("hinh anh san pham don le", images);
 
-  console.log({ selectedItemsDetails });
+  // console.log({ selectedItemsDetails });
 
   const imagesProductInCombo = selectProductInCombo.flatMap(
     (item) => item.images
   );
 
-  console.log("hinh trong combo", imagesProductInCombo);
+  // console.log("hinh trong combo", imagesProductInCombo);
 
   const handleConfirm = async () => {
     if (step === 1) {
       setStep(2);
       return;
     }
-
-    // const isValid = Object.values(selectedItemsDetails).every(
-    //   (detail) => detail?.productStatus && detail?.images?.length > 0
-    // );
-    // if (!isValid) {
-    //   toast.info("Vui lòng điền đầy đủ lý do và tải ảnh cho tất cả sản phẩm.");
-    //   return;
-    // }
 
     const allItems: {
       orderItemId: string;
@@ -307,7 +288,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     [ORDERS_KEY.ORDER_LIST_DETAIL, orderId]
   );
 
-  console.log({ orderDetail });
+  // console.log({ orderDetail });
 
   const toggleItemSelection = (itemId: string) => {
     setSelectedItems((prev) =>
@@ -379,7 +360,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
       (item) => selectedItems.includes(item.id)
     );
 
-    console.log({ selectProductInCombo });
+    // console.log({ selectProductInCombo });
     const comboItems = orderDetail.data?.value?.orderItems ?? [];
 
     // const enrichedComboChildren: OrderItem[] = comboItems.flatMap((parent) => {
@@ -433,7 +414,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
       })
       .filter(Boolean); // 🧼 Loại bỏ phần tử undefined/null
 
-    console.log({ enrichedComboChildren });
+    // console.log({ enrichedComboChildren });
 
     // setSelectedOrderItem(selectedItemsDetails || []);
     setSelectedOrderItem([

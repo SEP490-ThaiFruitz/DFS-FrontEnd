@@ -8,6 +8,7 @@ import { orderTypeLabel, placeholderImage } from "@/utils/label";
 import { formatVND } from "@/lib/format-currency";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { JSX } from "react";
+import StatusBadge from "./approval/return-change-product-checked/components/status-badge";
 
 interface ReturnItemCardProps {
   // item: OrderReturnItem;
@@ -36,12 +37,14 @@ export function ReturnItemCard({ item }: ReturnItemCardProps) {
       <CardContent className="p-0">
         <div className="p-4 bg-gradient-to-r from-slate-50 to-white border-b flex justify-between items-center">
           <h3 className="font-semibold text-sky-500">{item?.orderItem.name}</h3>
-          <Badge
+          {/* <Badge
             variant="outline"
             className="bg-white border-emerald-200 text-emerald-700"
           >
             {item?.requestItemStatus}
-          </Badge>
+          </Badge> */}
+
+          <StatusBadge status={item.requestItemStatus} />
         </div>
 
         <div className="p-5">

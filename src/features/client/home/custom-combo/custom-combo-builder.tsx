@@ -273,7 +273,7 @@ export const CustomComboBuilder = memo(
       const comboData: CustomCombo = {
         comboId: null,
         name: comboName,
-        description: "test description",
+        description: "Những sản phẩm của bạn",
         comboItems: selectedItems.map((item) => ({
           productVariantId: item.productVariantId,
           quantity: item.quantity,
@@ -635,7 +635,7 @@ export const CustomComboBuilder = memo(
                 )}
 
                 <Button
-                  className={`w-full bg-sky-500/70 hover:bg-sky-700 text-white hoverAnimate ${
+                  className={`w-full bg-sky-500 hover:bg-sky-700 text-white transition duration-200 hoverAnimate ${
                     selectedItems.length === 0 ||
                     selectedItems.length < 4 ||
                     comboName.trim() === ""

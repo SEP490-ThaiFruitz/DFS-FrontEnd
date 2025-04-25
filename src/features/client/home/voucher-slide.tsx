@@ -5,18 +5,19 @@ import React from "react";
 import CardVoucher from "./card-voucher";
 import { CarouselCustomized } from "@/components/custom/carousel-customized";
 import { CarouselItem } from "@/components/ui/carousel";
+import { Voucher } from "@/hooks/use-vouchers-store";
 
-export interface Voucher {
-  id: string;
-  name: string;
-  value: number;
-  image?: string;
-  discountType: "Amount" | "Percentage";
-  minimumOrderAmount: number;
-  maximumDiscountAmount: number;
-  startDate: string;
-  endDate: string;
-}
+// export interface Voucher {
+//   id: string;
+//   name: string;
+//   value: number;
+//   image?: string;
+//   discountType: "Amount" | "Percentage";
+//   minimumOrderAmount: number;
+//   maximumDiscountAmount: number;
+//   startDate: string;
+//   endDate: string;
+// }
 
 export type VoucherResponse = {
   value: Voucher[];

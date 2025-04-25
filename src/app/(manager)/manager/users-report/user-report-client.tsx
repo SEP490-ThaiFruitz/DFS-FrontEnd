@@ -41,6 +41,7 @@ import { NotData } from "@/components/global-components/no-data";
 import AnimatedLoadingSkeleton from "@/components/global-components/custom-skeleton/animated-loading-skeleton";
 import { calculateGrowthRate } from "@/lib/calculate";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 const UserReportClient = () => {
   const [dateRange, setDateRange] = useState<{
@@ -72,6 +73,10 @@ const UserReportClient = () => {
   );
 
   const handleDateRangeChange = (values: { range: DateRange }) => {
+    if (!values.range.from || !values.range.to) {
+      toast.warning("Vui lòng chọn khoảng thời gian hợp lệ");
+      return;
+    }
     setDateRange(values.range);
   };
 

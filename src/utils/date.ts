@@ -3,13 +3,23 @@ import {
   eachDayOfInterval,
   format,
   formatDistanceToNow,
+  isValid,
 } from "date-fns";
 import { vi } from "date-fns/locale";
 
 export const YYYY_MM_DD = "yyyy-MM-dd";
 
-export const formatDateString = (date: Date) => {
-  return format(date, YYYY_MM_DD);
+// export const formatDateString = (date: Date) => {
+//   return format(date, YYYY_MM_DD);
+// };
+
+export const formatDateString = (date: Date | string) => {
+  const parsedDate = new Date(date);
+  if (!isValid(parsedDate)) {
+    console.warn("Invalid date passed to formatDateString:", date);
+    return ""; // hoặc return null, hoặc throw tùy logic của bạn
+  }
+  return format(parsedDate, YYYY_MM_DD);
 };
 
 export const createDateRange = (
@@ -150,7 +160,7 @@ export const filterDataByDateRange = <T>(
   // Calculate the previous period date range
   const previousFrom = new Date(currentFrom);
   previousFrom.setDate(
-    previousFrom.getDate() - (currentTo.getDate() - currentFrom.getDate() + 1)
+    previousFrom.getDate() - (currentTo?.getDate() - currentFrom.getDate() + 1)
   );
 
   const previousTo = new Date(currentFrom);
@@ -175,7 +185,7 @@ export const getPreviousDate = (dateRange: {
   // Define the previous period date range
   const previousFrom = new Date(currentFrom as Date);
   previousFrom.setDate(
-    previousFrom.getDate() - (currentTo.getDate() - currentFrom.getDate() + 1)
+    previousFrom.getDate() - (currentTo?.getDate() - currentFrom.getDate() + 1)
   );
 
   const previousTo = new Date(currentFrom as Date);

@@ -48,6 +48,7 @@ import { customerRevenueColumns } from "@/features/manager/report-revenue/user-t
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { calculateGrowthRate } from "@/lib/calculate";
+import { toast } from "sonner";
 
 type TopProductRevenueStatistics = {
   type: "Single" | "Combo" | "Custom";
@@ -83,8 +84,6 @@ type RevenueData = {
 };
 
 export default function RevenueDashboard() {
-  const [timeRange, setTimeRange] = useState("14d");
-
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
     to?: Date | undefined;
@@ -94,6 +93,11 @@ export default function RevenueDashboard() {
   });
 
   const handleDateRangeChange = (values: { range: DateRange }) => {
+    if (!values.range.from || !values.range.to) {
+      toast.warning("Vui lòng chọn khoảng thời gian hợp lệ");
+      return;
+    }
+
     setDateRange(values.range);
   };
 

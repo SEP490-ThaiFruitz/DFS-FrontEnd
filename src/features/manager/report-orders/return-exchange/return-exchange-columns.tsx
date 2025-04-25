@@ -44,6 +44,7 @@ import { ReturnExchangeStatusBar } from "./return-exchange-status/return-exchang
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ApprovalDialogTrigger } from "./components/approval/approval-dialog-trigger";
+import { RejectRequestReturnExchangeDialog } from "./components/cancel-censor-order";
 
 export type ReturnExchangeOrders = {
   id: string;
@@ -441,6 +442,8 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
               requestStatus={request.requestStatus}
               rowOriginal={request}
             />
+
+            <RejectRequestReturnExchangeDialog requestId={request.id} />
 
             <ApprovalDialogTrigger requestId={request.id} />
             {/* {request.requestStatus === "Pending" && (

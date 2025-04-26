@@ -67,6 +67,7 @@
     "@types/lodash": "^4.17.14",
     "ai": "4.2.5",
     "axios": "^1.7.9",
+    "balloons-js": "^0.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",

@@ -23,6 +23,8 @@ interface ProductActionsProps {
   isInWishlist: boolean;
   formatPrice: (price: number) => string;
   calculateDiscountedPrice: (price: number, percentage: number) => number;
+
+  productId: string;
 }
 
 export const ProductActions = memo(
@@ -36,6 +38,8 @@ export const ProductActions = memo(
     handleDecreaseQuantity,
     formatPrice,
     calculateDiscountedPrice,
+
+    productId,
   }: ProductActionsProps) => {
     const cart = useFromStore(useCartStore, (state) => state.orders);
 
@@ -51,7 +55,7 @@ export const ProductActions = memo(
       if (isInWishlist(variant.productVariantId)) {
         removeFromWishlist(variant.productVariantId);
       } else {
-        addToWishlist(variant);
+        addToWishlist({ ...variant, productId: productId });
       }
     };
 

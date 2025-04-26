@@ -62,7 +62,7 @@ export const WishlistPopover = () => {
                   className="flex items-center gap-3 rounded-xl border p-3 bg-muted/30 w-full"
                 >
                   <Link
-                    href={`/product/${product.productVariantId}`}
+                    href={`/product/${product.productId}`}
                     className="flex items-center gap-3 rounded-xl border p-3 bg-muted/30 w-full"
                   >
                     <Image

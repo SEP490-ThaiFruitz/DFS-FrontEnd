@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   Heart,
+  MessageCircleHeartIcon,
   MessageCircleQuestionIcon,
   MessageSquareHeartIcon,
   Star,
@@ -158,14 +159,14 @@ export const ReviewsTab = memo(
                 {starRecord.map(({ star, key }) => {
                   const total = overallRatingResponse?.quantityFeedback || 0;
                   const count = overallRatingResponse?.[key] || 0;
-                  const percent =
-                    total > 0 ? Math.round((count / total) * 100) : 0;
+                  // const percent =
+                  //   total > 0 ? Math.round((count / total) * 100) : 0;
 
                   return (
                     <div key={star} className="flex items-center gap-2">
                       <div className="text-sm w-2">{star}</div>
-                      <Progress value={percent} className="h-2 flex-1" />
-                      <div className="text-sm w-8">{percent}%</div>
+                      <Progress value={count} className="h-2 flex-1" />
+                      <div className="text-sm w-8">{count}%</div>
                     </div>
                   );
                 })}
@@ -216,7 +217,10 @@ export const ReviewsTab = memo(
           </div>
 
           <div className="md:col-span-2">
-            <h3 className="text-lg font-medium mb-4">Đánh giá từ khách hàng</h3>
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-1">
+              <MessageCircleHeartIcon className="size-6" />
+              Đánh giá từ khách hàng
+            </h3>
             {safeFeedbackData.length > 0 ? (
               <div className="space-y-4">
                 {safeFeedbackData.map((review, index) => (
@@ -254,7 +258,7 @@ export const ReviewsTab = memo(
                               <span className="text-base font-semibold text-slate-700">
                                 {vietnameseDate(review.createdOnUtc, true)}
                               </span>
-                              <span className="text-sm text-sky-500 font-semibold">
+                              <span className="text-sm text-sky-500 font-semibold underline">
                                 {formatRelativeTime(review.createdOnUtc)}
                               </span>
                             </div>
@@ -264,7 +268,12 @@ export const ReviewsTab = memo(
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`h-4 w-4 ${
+                              className={`h-4 w-4  ${
+                                i < review.stars
+                                  ? "fill-amber-500"
+                                  : "fill-gray-200"
+                              }`}
+                              fill={`${
                                 i < review.stars
                                   ? "fill-amber-500"
                                   : "fill-gray-200"
@@ -303,7 +312,7 @@ export const ReviewsTab = memo(
               <NotData
                 title="Chưa có đánh giá nào"
                 description="Hãy là người đầu tiên đánh giá sản phẩm này!"
-                className="p-6 lg:p-8 motion-opacity-in-0 motion-preset-slide-right motion-blur-in-md rounded-b-3xl w-full h-full"
+                className="p-6 lg:p-8 motion-opacity-in-0 motion-preset-slide-right motion-blur-in-md rounded-b-3xl min-w-full h-full"
                 icons={[
                   StarIcon,
                   MessageSquareHeartIcon,
@@ -350,7 +359,10 @@ export default function ReviewSkeleton() {
         </div>
 
         <div className="md:col-span-2">
-          <h3 className="text-lg font-medium mb-4">Đánh giá từ khách hàng</h3>
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-1">
+            <MessageCircleHeartIcon className="size-5" />
+            Đánh giá từ khách hàng
+          </h3>
           <div className="space-y-4">
             {[...Array(3)].map((_, index) => (
               <Card key={index} className="shadow-sm cardStyle">

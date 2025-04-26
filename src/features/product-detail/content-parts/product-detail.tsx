@@ -14,12 +14,6 @@ import {
   ProductVariantTypes,
 } from "../product-detail.types";
 import { ProductActions } from "./product-actions";
-import FrequentlyBoughtTogether from "./frequency-bought-together";
-import { VercelTab } from "@/components/custom/_custom_tabs/vercel-tabs";
-import { DetailTab } from "../tabs-content/detail-tab";
-import { NutritionTab } from "../tabs-content/nutrition-tab";
-import { CertificateTab } from "../tabs-content/certificate-tab";
-import { ReviewsTab } from "../tabs-content/reviews-tab";
 import { Button } from "@/components/ui/button";
 import {
   FlaskConical,
@@ -259,6 +253,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               handleToggleWishlist={handleToggleWishlist}
               handleShare={handleShare}
               isInWishlist={isInWishlist}
+              numberOfReviews={
+                product?.overallRatingResponse?.quantityFeedback ?? 0
+              }
             >
               {/* Variant Selection */}
               <VariantSelector
@@ -280,6 +277,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 isInWishlist={isInWishlist}
                 formatPrice={formatPrice}
                 calculateDiscountedPrice={calculateDiscountedPrice}
+                productId={product.id}
               />
             </ProductInfo>
           </div>

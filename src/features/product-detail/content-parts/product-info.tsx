@@ -23,6 +23,8 @@ interface ProductInfoProps {
   handleShare: () => void;
   isInWishlist: boolean;
   children: ReactNode;
+
+  numberOfReviews: number;
 }
 
 export const ProductInfo = memo(
@@ -33,6 +35,7 @@ export const ProductInfo = memo(
     handleShare,
     isInWishlist,
     children,
+    numberOfReviews,
   }: ProductInfoProps) => {
     return (
       <div className="p-6 lg:p-8">
@@ -94,7 +97,9 @@ export const ProductInfo = memo(
                 <Star className="h-4 w-4 fill-amber-500" />
                 <Star className="h-4 w-4 fill-amber-500" />
                 <Star className="h-4 w-4 fill-gray-200" />
-                <span className="text-gray-600 text-sm ml-1">(3 đánh giá)</span>
+                <span className="text-gray-600 text-sm ml-1">
+                  ({numberOfReviews} đánh giá)
+                </span>
               </div>
             </div>
           </div>

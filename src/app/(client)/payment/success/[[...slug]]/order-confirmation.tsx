@@ -48,6 +48,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { orderTypeLabel } from "@/utils/label";
 import { useReactToPrint } from "react-to-print";
 import { cn } from "@/lib/utils";
+import { Balloons } from "./balloons";
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -618,6 +619,8 @@ OrderSummaryCard.displayName = "OrderSummaryCard";
 export default function OrderConfirmation() {
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const balloonsRef = useRef<{ launchAnimation: () => void } | null>(null);
+
   const searchParams = useSearchParams();
   const [orderData, setOrderData] = useState<
     PaymentOrderValue | Record<string, any>
@@ -628,6 +631,12 @@ export default function OrderConfirmation() {
 
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
+
+  const handleLaunch = () => {
+    if (balloonsRef.current) {
+      balloonsRef.current.launchAnimation();
+    }
+  };
 
   useEffect(() => {
     const fetchPaymentData = async () => {
@@ -671,11 +680,13 @@ export default function OrderConfirmation() {
     };
 
     fetchPaymentData();
+
+    if (orderData.orderId && balloonsRef.current) {
+      balloonsRef.current.launchAnimation();
+    }
     const timer = setTimeout(() => setProgress(100), 500);
     return () => clearTimeout(timer);
-  }, [searchParams]);
-
-  // console.log({ orderData });
+  }, [searchParams, orderData.orderId]);
 
   if (isLoaded || !orderData.orderId) {
     return <ImprovedLoadingPage />;
@@ -702,6 +713,17 @@ export default function OrderConfirmation() {
           <OrderSummaryCard order={orderData as PaymentOrderValue} />
         </div>
       </div>
+
+      <Balloons
+        ref={balloonsRef}
+        type="text"
+        text="🎈ThaiFruitz Cảm ơn bạn🧾"
+        fontSize={110}
+        // color="#000000"
+        // color="#d97706"
+        color="#14532d"
+        className="text-wrap"
+      />
     </div>
   );
 }

@@ -1,21 +1,24 @@
 "use client"
 
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
-import { deleteBlog } from "@/actions/blog"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
-import { DataTable } from "@/components/global-components/data-table/data-table"
 import { Button } from "@/components/ui/button"
 import { formatTimeVietNam } from "@/lib/format-time-vietnam"
 import type { ApiResponse, PageResult } from "@/types/types"
 import { CirclePlus, Eye, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { BLOG_KEY } from "@/app/key/admin-key"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
+import { API } from "@/actions/client/api-config"
 
 export interface Blog {
   id: string
   title: string
   content: string
   thumbnail: string
+  tagNames: string[]
   user: {
     email: string
     avatar: string
@@ -31,10 +34,13 @@ export interface Blog {
 }
 
 function BlogPage() {
-  const { data: blogs } = useFetch<ApiResponse<PageResult<Blog>>>("/Blogs", ["Blogs", "admin"])
+  const { data: blogs, isLoading } = useFetch<ApiResponse<PageResult<Blog>>>("/Blogs", [BLOG_KEY.BLOG_ADMIN])
   const [blog, setBlog] = useState<Blog | undefined>(undefined)
   const [isOpenDelete, setIsOpenDelete] = useState(false)
 
+  const deleteBlog = async (id: string) => {
+    return await API.remove(`/Blogs/${id}`);
+  };
   // Define columns for the DataTable
   const columns = [
     {
@@ -121,8 +127,14 @@ function BlogPage() {
         </Link>
       </div>
 
-      <div className="mt-3">
-        <DataTable data={blogs?.value?.items || []} columns={columns} searchFiled="title" />
+      <div className="mt-8">
+        {isLoading ? <DataTableSkeleton /> :
+          <div className="bg-white cardStyle shadow border">
+            <DataTableCustom
+              data={blogs?.value?.items || []} columns={columns} placeholder="tên bài viết" searchFiled="title"
+            />
+          </div>
+        }
       </div>
 
       <DeleteDialog
@@ -131,7 +143,7 @@ function BlogPage() {
         onClose={() => setIsOpenDelete(!isOpenDelete)}
         name={blog?.title}
         deleteFunction={deleteBlog}
-        refreshKey={[["Blogs", "admin"]]}
+        refreshKey={[[BLOG_KEY.BLOG_ADMIN]]}
       />
     </div>
   )

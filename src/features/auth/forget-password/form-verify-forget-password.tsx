@@ -1,5 +1,5 @@
 "use client";
-import { verifyForgetPassword } from "@/actions/auth";
+
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { DialogFooter } from "@/components/ui/dialog";
@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { TabType, UserForgetPassword } from "./form-forget-password";
+import { API } from "@/actions/client/api-config";
 
 interface FormVerifyProps {
   user: UserForgetPassword;
@@ -41,29 +42,14 @@ export const FormVerify = ({
   const { isPending: isVerifying, mutate: verifyMutation } = useMutation({
     mutationFn: async () => {
       try {
-        const response = await verifyForgetPassword({ ...user, otp });
+        const response = await API.post("/Auths/confirm-otp-reset-password", { ...user, otp });
 
-        if (!response?.isSuccess) {
-          if (response?.status === 400) {
-            if (response?.detail.includes("Invalid otp")) {
-              throw new Error("Mã OTP không đúng");
-            }
-            if (response?.detail.includes("OTP has expired")) {
-              throw new Error("Mã OTP đã hết hạn");
-            }
-            throw new Error("Lỗi hệ thống");
-          }
-          throw new Error(response?.message || "Lỗi hệ thống");
+        if (response) {
+          setOtpValue({ ...user, otp }, "new");
         }
-      } catch (error: any) {
-        throw new Error(error?.message ?? "");
+      } catch (error) {
+        console.log(error)
       }
-    },
-    onSuccess: () => {
-      setOtpValue({ ...user, otp }, "new");
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
   return (
@@ -101,11 +87,10 @@ export const FormVerify = ({
             sendForgetPasswordCodeMutation();
             setTime(30);
           }}
-          className={`${
-            time > 0 || isPending || isVerifying
-              ? "hover:cursor-not-allowed"
-              : "hover:font-bold hover:underline hover:cursor-pointer "
-          }`}
+          className={`${time > 0 || isPending || isVerifying
+            ? "hover:cursor-not-allowed"
+            : "hover:font-bold hover:underline hover:cursor-pointer "
+            }`}
         >
           Gửi lại OTP
         </button>
@@ -124,7 +109,7 @@ export const FormVerify = ({
       <DialogFooter>
         {returnButton}
         <ButtonCustomized
-          className="max-w-fit !h-10 bg-green-500 hover:bg-green-700"
+          className="max-w-fit !h-10 bg-sky-600 hover:bg-sky-700"
           variant="secondary"
           onClick={verifyMutation}
           disabled={isPending || isVerifying}

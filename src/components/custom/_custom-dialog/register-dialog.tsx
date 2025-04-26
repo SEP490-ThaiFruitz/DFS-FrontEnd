@@ -84,7 +84,7 @@ export const RegisterDialog = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
       queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
       queryClient.invalidateQueries({ queryKey: [USER_KEY.CUSTOM_COMBO] });
       queryClient.invalidateQueries({ queryKey: [USER_KEY.ADDRESS] });

@@ -30,10 +30,12 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { createAddress, updateAddress } from "@/actions/address";
 import { FormControl, FormItem } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { AddressTypes } from "@/types/address.types";
+import CustomMap from "@/components/custom/_custom_map/custom-map";
+import { API } from "@/actions/client/api-config";
+import { USER_KEY } from "@/app/key/user-key";
 
 interface FormAddressProps {
   address?: AddressTypes;
@@ -52,6 +54,8 @@ const useAddressForm = (address?: FormAddressProps["address"]) => {
       province: "",
       district: "",
       ward: "",
+      latitude: undefined,
+      longitude: undefined,
       isDefault: false,
     },
   });
@@ -63,15 +67,14 @@ const useAddressForm = (address?: FormAddressProps["address"]) => {
         name: address.receiverName || "",
         phone: address.receiverPhone || "",
         address: address.receiverAddress?.split(",")[0] || "",
-        province: `${address.provinceID}-${
-          address.receiverAddress?.split(",")[3]?.trim() ?? ""
-        }`,
-        district: `${address.districtID}-${
-          address.receiverAddress?.split(",")[2]?.trim() ?? ""
-        }`,
-        ward: `${address.wardID}-${
-          address.receiverAddress?.split(",")[1]?.trim() ?? ""
-        }`,
+        province: `${address.provinceID}-${address.receiverAddress?.split(",")[3]?.trim() ?? ""
+          }`,
+        district: `${address.districtID}-${address.receiverAddress?.split(",")[2]?.trim() ?? ""
+          }`,
+        ward: `${address.wardID}-${address.receiverAddress?.split(",")[1]?.trim() ?? ""
+          }`,
+        latitude: address.latitude?.toString() ?? "",
+        longitude: address.longtitude?.toString() ?? "",
         isDefault: address.isDefault ?? false,
       });
     }
@@ -88,6 +91,7 @@ const useAddressForm = (address?: FormAddressProps["address"]) => {
 
 function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
   const { form, onSubmit } = useAddressForm(address);
+
   const queryClient = useQueryClient();
   const { data: provinces } = useFetch<ApiResponse<SelectData[]>>(
     "/Addresses/province",
@@ -105,6 +109,8 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
       tag,
       isDefault,
       phone,
+      latitude,
+      longitude
     }: {
       id: string;
       province: string;
@@ -115,50 +121,40 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
       tag: string;
       isDefault: boolean;
       phone: string;
+      latitude: string;
+      longitude: string;
     }) => {
       try {
         const payload = {
           tagName: tag,
           receiverName: name,
           receiverPhone: phone,
-          receiverAddress: `${address}, ${ward.split("-")[1]}, ${
-            district.split("-")[1]
-          }, ${province.split("-")[1]}`,
-          longtitude: null,
-          latitude: null,
+          receiverAddress: `${address}, ${ward.split("-")[1]}, ${district.split("-")[1]
+            }, ${province.split("-")[1]}`,
+          longtitude: longitude,
+          latitude: latitude,
           isDefault: isDefault,
           wardId: Number(ward?.split("-")[0]) || 0,
         };
 
         const response =
           id === undefined
-            ? await createAddress(payload)
-            : await updateAddress({ id, ...payload });
+            ? await API.post("/Addresses", payload)
+            : await API.update("/Addresses", { id, ...payload });
 
-        if (!response?.isSuccess) {
-          if (response?.status === 409) {
-            throw new Error("Tên thẻ đã tồn tại");
+        if (response) {
+          queryClient.invalidateQueries({ queryKey: [USER_KEY.ADDRESS] });
+          if (form.getFieldState("id") === undefined) {
+            toast.success("Tạo địa chỉ thành công");
+          } else {
+            toast.success("Cập nhật địa chỉ thành công");
           }
-          throw new Error("Lỗi hệ thống");
+          form.reset();
+          onClose();
         }
       } catch (error: unknown) {
-        throw new Error(
-          error instanceof Error ? error?.message : "Lỗi hệ thống"
-        );
+        console.log(error)
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
-      if (form.getFieldState("id") === undefined) {
-        toast.success("Tạo địa chỉ thành công");
-      } else {
-        toast.success("Cập nhật địa chỉ thành công");
-      }
-      form.reset();
-      onClose();
-    },
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 
@@ -206,6 +202,15 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
     );
   }
 
+  const handlerChooseLocation = (location: {
+    lat: number;
+    lng: number;
+  }) => {
+    console.log("location", location);
+    form.setValue("latitude", location.lat.toString());
+    form.setValue("longitude", location.lng.toString());
+  }
+
   const isEditMode = !!address;
   const title = isEditMode
     ? "Cập nhật địa chỉ người nhận"
@@ -227,24 +232,28 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
               <FormInputControl
                 disabled={isPending}
                 form={form}
+                require
                 name="tag"
                 label="Tên thẻ"
               />
               <FormInputControl
                 disabled={isPending}
                 form={form}
+                require
                 name="name"
                 label="Tên"
               />
               <FormInputControl
                 disabled={isPending}
                 form={form}
+                require
                 name="phone"
                 label="Số điện thoại"
               />
               <FormSelectControl
                 disabled={isPending}
                 form={form}
+                require
                 name="province"
                 label="Tỉnh / Thành phố"
                 placeholder="Chọn tỉnh / thành phố"
@@ -254,6 +263,7 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
               <FormSelectControl
                 disabled={isPending}
                 form={form}
+                require
                 name="district"
                 label="Quận / Huyện"
                 placeholder="Chọn quận / huyện"
@@ -263,6 +273,7 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
               <FormSelectControl
                 disabled={isPending}
                 form={form}
+                require
                 name="ward"
                 label="Phường / Xã"
                 placeholder="Chọn phường / xã"
@@ -273,9 +284,17 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
             <FormTextareaControl
               disabled={isPending}
               form={form}
+              require
               name="address"
               label="Địa chỉ"
             />
+            <div>
+              <p className="text-sm font-medium mb-2">Tọa độ</p>
+              <CustomMap defaultLocation={{
+                lat: Number(form.getValues("latitude")) || 0,
+                lng: Number(form.getValues("longitude")) || 0,
+              }} onLocationChange={handlerChooseLocation} />
+            </div>
             <Controller
               name="isDefault"
               control={form.control}
@@ -284,9 +303,8 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
                   <p className="text-sm font-medium">Địa chỉ mặc định</p>
                   <FormControl>
                     <Switch
-                      className={`${
-                        field.value ? "!bg-green-500" : "!bg-red-500"
-                      }`}
+                      className={`${field.value ? "!bg-green-500" : "!bg-red-500"
+                        }`}
                       onCheckedChange={(checked) => field.onChange(checked)}
                       checked={field.value}
                     />
@@ -294,6 +312,7 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
                 </FormItem>
               )}
             />
+
             <div className="pt-5 pb-3 flex flex-row-reverse justify-between">
               <Button
                 className="h-10"

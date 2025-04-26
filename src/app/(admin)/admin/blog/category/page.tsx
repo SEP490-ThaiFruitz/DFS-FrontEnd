@@ -1,9 +1,12 @@
 "use client"
-import { createBlogCategory, deleteBlogCategory, updateBlogCategory } from "@/actions/blog-category"
+
+import { API } from "@/actions/client/api-config"
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
+import { BLOG_KEY } from "@/app/key/admin-key"
 import { ButtonCustomized } from "@/components/custom/_custom-button/button-customized"
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog"
-import { DataTable } from "@/components/global-components/data-table/data-table"
+import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
+import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
 import { FormInputControl } from "@/components/global-components/form/form-input-control"
 import { FormValues } from "@/components/global-components/form/form-values"
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner"
@@ -20,7 +23,7 @@ import {
 import type { ApiResponse } from "@/types/types"
 import { FormCategoryBlogSafeTypes } from "@/zod-safe-types/blog-safe-types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { CirclePlus, Pencil, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -44,38 +47,23 @@ function BlogCategoryPage() {
     resolver: zodResolver(FormCategoryBlogSafeTypes),
   })
 
-  const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", ["BlogCategories", "admin"])
-
-  const { isPending, mutate: createOrUpdateBlogCategory } = useMutation({
-    mutationFn: async ({ name }: { name: string }) => {
-      try {
-        const res =
-          blogCategory === undefined
-            ? await createBlogCategory({ name })
-            : await updateBlogCategory({ id: blogCategory.id, name })
-        if (!res?.isSuccess) {
-          if (res?.status === 409) {
-            throw new Error(`${name} đã tồn tại`)
-          }
-          throw new Error("Lỗi thống")
-        }
-        return blogCategory === undefined ? "Tạo mới loại bài viết thành công" : "Cập nhật loại bài viết thành công"
-      } catch (error: any) {
-        throw new Error(error?.message)
-      }
-    },
-    onSuccess: (message: string) => {
-      handlerCloseForm()
-      toast.success(message)
-      queryClient.invalidateQueries({ queryKey: ["BlogCategories", "admin"] })
-    },
-    onError: (error) => {
-      toast.error(error.message)
-    },
-  })
+  const { data: blogCategories, isLoading } = useFetch<ApiResponse<BlogCategory[]>>("/BlogCategories", [BLOG_KEY.BLOG_CATEGORY_ADMIN])
 
   const onSubmit = async (values: z.infer<typeof FormCategoryBlogSafeTypes>) => {
-    createOrUpdateBlogCategory({ name: values?.name })
+    try {
+      const res =
+        blogCategory === undefined
+          ? await API.post("/BlogCategories", { name: values.name })
+          : await API.update("/BlogCategories", { id: blogCategory.id, name: values.name })
+      if (res) {
+        const meessage = blogCategory === undefined ? "Tạo mới loại bài viết thành công" : "Cập nhật loại bài viết thành công"
+        handlerCloseForm()
+        toast.success(meessage)
+        queryClient.invalidateQueries({ queryKey: [BLOG_KEY.BLOG_CATEGORY_ADMIN] })
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handlerCloseForm = () => {
@@ -83,6 +71,11 @@ function BlogCategoryPage() {
     form.reset()
     setBlogCategory(undefined)
   }
+
+  const deleteBlogCategory = async (id: string) => {
+    return await API.remove(`/BlogCategories/${id}`);
+  };
+
 
   // Define columns for the DataTable
   const columns = [
@@ -161,31 +154,30 @@ function BlogCategoryPage() {
               <DialogHeader>
                 <DialogTitle>{blogCategory ? "Cập nhật " : "Tạo "}loại bài viết</DialogTitle>
               </DialogHeader>
-              <FormValues form={form} onSubmit={onSubmit} classNameForm="grid gap-4 py-4">
+              <FormValues form={form} onSubmit={onSubmit} classNameForm="grid gap-4">
                 <FormInputControl
                   form={form}
                   name="name"
-                  disabled={isPending}
+                  disabled={form.formState.isSubmitting}
                   label="Tên loại bài viết"
                   defaultValue={blogCategory?.name}
                   require
                 />
                 <DialogFooter>
-                  <DialogClose asChild>
-                    <ButtonCustomized
-                      className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
-                      variant="outline"
-                      label="Hủy"
-                    />
-                  </DialogClose>
+                  <ButtonCustomized
+                    onClick={() => setIsOpen(false)}
+                    className="w-32 bg-slate-100 text-slate-900 hover:bg-slate-300"
+                    variant="outline"
+                    label="Hủy"
+                  />
 
                   <ButtonCustomized
                     type="submit"
                     className="px-2 min-w-32 max-w-fit bg-sky-600 hover:bg-sky-700"
                     variant="secondary"
-                    disabled={isPending}
+                    disabled={form.formState.isSubmitting}
                     label={
-                      isPending ? (
+                      form.formState.isSubmitting ? (
                         <WaitingSpinner
                           variant="pinwheel"
                           label="Đang tạo..."
@@ -204,12 +196,18 @@ function BlogCategoryPage() {
         </Dialog>
       </div>
 
-      <div className="mt-10">
-        <DataTable data={blogCategories?.value || []} columns={columns} searchFiled="name" />
+      <div className="mt-8">
+        {isLoading ? <DataTableSkeleton /> :
+          <div className="bg-white cardStyle shadow border">
+            <DataTableCustom
+              data={blogCategories?.value || []} columns={columns} placeholder="tên loại bài viết" searchFiled="name"
+            />
+          </div>
+        }
       </div>
 
       <DeleteDialog
-        refreshKey={[["BlogCategories", "admin"]]}
+        refreshKey={[[BLOG_KEY.BLOG_CATEGORY_ADMIN]]}
         id={blogCategory?.id?.toString() ?? ""}
         onClose={() => {
           form.reset()

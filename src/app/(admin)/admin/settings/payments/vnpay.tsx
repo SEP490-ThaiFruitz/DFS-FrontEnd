@@ -66,12 +66,12 @@ const VnPayCard = () => {
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Cài đặt VnPay</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <FormValues form={form} onSubmit={onSubmit}>
+        <FormValues form={form} onSubmit={onSubmit}>
+            <Card className='cardStyle'>
+                <CardHeader>
+                    <CardTitle>Cài đặt VnPay</CardTitle>
+                </CardHeader>
+                <CardContent>
                     <div className='grid sm:grid-cols-2 gap-10'>
                         <FormInputControl
                             form={form}
@@ -116,27 +116,27 @@ const VnPayCard = () => {
                             require
                         />
                     </div>
-                    <ButtonCustomized
-                        type="submit"
-                        className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
-                        variant="secondary"
-                        disabled={form.formState.isSubmitting}
-                        label={
-                            form.formState.isSubmitting ? (
-                                <WaitingSpinner
-                                    variant="pinwheel"
-                                    label="Đang cập nhật..."
-                                    className="font-semibold"
-                                    classNameLabel="font-semibold text-sm"
-                                />
-                            ) : (
-                                "Cập nhật"
-                            )
-                        }
-                    />
-                </FormValues>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+            <ButtonCustomized
+                type="submit"
+                className="min-w-32 px-2 max-w-fit bg-sky-600 hover:bg-sky-700"
+                variant="secondary"
+                disabled={form.formState.isSubmitting}
+                label={
+                    form.formState.isSubmitting ? (
+                        <WaitingSpinner
+                            variant="pinwheel"
+                            label="Đang cập nhật..."
+                            className="font-semibold"
+                            classNameLabel="font-semibold text-sm"
+                        />
+                    ) : (
+                        "Cập nhật"
+                    )
+                }
+            />
+        </FormValues>
     )
 }
 

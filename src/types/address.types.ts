@@ -5,7 +5,7 @@ export interface AddressTypes {
   receiverName: string;
   receiverPhone: string;
   receiverAddress: string;
-  longitude: number | null;
+  longtitude: number | null;
   latitude: number | null;
   isDefault: boolean;
   provinceID: number;

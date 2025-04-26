@@ -52,19 +52,19 @@ import { useFromStore } from "@/hooks/use-from-store";
 import { useCartStore } from "@/hooks/use-cart-store";
 import { useLoginDialog } from "@/hooks/use-login-dialog";
 import { divide, omit } from "lodash";
-import { API } from "@/app/key/url";
+import { API as API_URL } from "@/app/key/url";
+
 import { ApiResponse, PageResult, Profile } from "@/types/types";
 import { AddressTypes } from "@/types/address.types";
 import { USER_KEY } from "@/app/key/user-key";
-import { interactApiClient } from "@/actions/client/interact-api-client";
 import { useQuery } from "@tanstack/react-query";
 import { CustomComboProductCard } from "@/components/global-components/card/custom-combo/card-combo-custom-item";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { ApplyVoucher, VoucherData } from "./vouchers-events";
-import { getProfile } from "@/actions/user";
 import { ToolTipCustomized } from "@/components/custom/tool-tip-customized";
 import { WalletSheet } from "../wallet/wallet-sheet";
 import { VoucherPopover } from "@/components/global-components/vouchers-popover";
+import { API } from "@/actions/client/api-config";
 
 interface Product {
   id: number;
@@ -101,7 +101,7 @@ const paymentMethods: { value: string; label: string }[] = [
 
 function PaymentClientPage() {
   const { customCombo } = useData();
-
+  const cookieToken = Cookies.get("accessToken");
   const [voucher, setVoucher] = useState<VoucherData | undefined>(undefined);
 
   const deliveryMethods: DeliveryMethodType[] = [
@@ -126,14 +126,18 @@ function PaymentClientPage() {
     // queryKey: ["authUser"],
     queryKey: [USER_KEY.PROFILE],
     queryFn: async () => {
-      const response = await getProfile();
+      try {
+        const response = await API.get("/Users/profile");
 
-      if (!response || !response.isSuccess || !response.data) {
-        toast.error("Lỗi hệ thống");
-        return undefined;
+        if (response) {
+          return response;
+        }
+        throw new Error("Lỗi");
+      } catch (error) {
+        console.log(error);
       }
-      return response.data;
     },
+    enabled: cookieToken !== undefined,
   });
 
   const form = useForm<z.infer<typeof PaymentSafeTypes>>({
@@ -321,7 +325,7 @@ function PaymentClientPage() {
     setCalculating(true);
     try {
       const response = await axios.post(
-        `${API}/Orders/calculate-ship-fee/${addressId}`,
+        `${API_URL}/Orders/calculate-ship-fee/${addressId}`,
         // items,
         values,
         {

@@ -510,7 +510,7 @@ const PaymentPage = () => {
                     </div>
 
                     <div className="mt-8">
-                        <div className="bg-white rounded-lg shadow border">
+                        <div className="bg-white cardStyle shadow border">
                             {isLoading ? <DataTableSkeleton /> :
                                 <DataTableCustom data={payments?.value?.payments ?? []} columns={columns} searchFiled="transactionNo" placeholder="mã giao dịch" />}
                         </div>

@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import FormAddress from "./form-address";
 import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { CirclePlusIcon, MapPin, Phone, Trash2, User } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getAddresses, deleteAddress } from "@/actions/address";
+import { CirclePlusIcon, MapPin, MapPinned, Phone, Trash2, User } from "lucide-react";
 import { ApiResponse, PageResult } from "@/types/types";
 import { DeleteDialog } from "@/components/custom/_custom-dialog/delete-dialog";
 import { AddressTypes } from "@/types/address.types";
+import ViewMap from "@/components/custom/_custom_map/view-map";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { API } from "@/actions/client/api-config";
+import { USER_KEY } from "@/app/key/user-key";
 
 function AddressTab() {
   const [isCreate, setIsCreate] = useState<boolean>(false);
@@ -17,20 +19,14 @@ function AddressTab() {
     { id: string; name: string } | undefined
   >(undefined);
 
-  const { isPending, data: addresses } = useQuery({
-    queryKey: ["addresses"],
-    queryFn: async () => {
-      try {
-        const response = await getAddresses();
-        if (response?.isSuccess) {
-          const data: ApiResponse<PageResult<AddressTypes>> = response.data;
-          return data;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
+  const [position, setPosition] = useState<{ lat: number; lng: number } | undefined>(undefined)
+
+  const { data: addresses } = useFetch<ApiResponse<PageResult<AddressTypes>>>("/Addresses", [USER_KEY.ADDRESS])
+
+  const deleteAddress = async (id: string) => {
+    return await API.remove(`/Addresses/${id}`);
+  };
+
   return (
     <ResizablePanelGroup
       direction="horizontal"
@@ -45,9 +41,8 @@ function AddressTab() {
                 setIsCreate(false);
                 setAddress(item);
               }}
-              className={`relative group text-left border shadow-sm rounded-xl p-2 hover:cursor-pointer ${
-                item.id == address?.id ? "border-purple-700" : ""
-              }`}
+              className={`relative group text-left border shadow-sm rounded-xl p-2 hover:cursor-pointer ${item.id == address?.id ? "border-purple-700" : ""
+                }`}
             >
               <div className="flex justify-between items-center mb-3">
                 <h3 className="font-bold text-lg">{item.tagName}</h3>
@@ -82,6 +77,19 @@ function AddressTab() {
                     {item.receiverAddress}
                   </span>
                 </div>
+
+                {item.longtitude && item.latitude && (
+                  <button onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    e.stopPropagation()
+                    setPosition({
+                      lat: item.latitude ?? 0,
+                      lng: item.longtitude ?? 0,
+                    })
+                  }} className="flex items-center gap-2">
+                    <MapPinned className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                    <span className="hover:underline hover:font-semibold">Xem chi tiết</span>
+                  </button>
+                )}
               </div>
 
               <button
@@ -130,9 +138,17 @@ function AddressTab() {
             setIsDeleteDialog(false);
           }}
           id={addressDelete.id}
-          refreshKey={[["addresses"]]}
+          refreshKey={[[USER_KEY.ADDRESS]]}
         />
       )}
+
+      {position && (<ViewMap
+        isOpen={!!position}
+        onClose={() => setPosition(undefined)}
+        longtitude={position.lng}
+        latitude={position.lat}
+      />)}
+
     </ResizablePanelGroup>
   );
 }

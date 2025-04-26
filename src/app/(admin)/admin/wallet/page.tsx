@@ -2,6 +2,7 @@
 
 import { useFetch } from '@/actions/tanstack/use-tanstack-actions';
 import { WALLET_KEY } from '@/app/key/admin-key';
+import CardSkeleton from '@/components/global-components/custom-skeleton/card-skeleton';
 import { DataTableSkeleton } from '@/components/global-components/custom-skeleton/data-table-skeleton';
 import { DataTableCustom } from '@/components/global-components/data-table/data-table-custom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -114,15 +115,7 @@ function WalletPage() {
             {Array(4)
               .fill(0)
               .map((_, i) => (
-                <Card key={i}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-8 w-28" />
-                  </CardContent>
-                </Card>
+                <CardSkeleton key={i + 1}/>
               ))}
 
           </div>
@@ -183,7 +176,7 @@ function WalletPage() {
           </div>
 
           <div className="mt-8">
-            <div className="bg-white rounded-lg shadow border">
+            <div className="bg-white cardStyle shadow border">
               {isLoading ? <DataTableSkeleton /> :
                 <DataTableCustom data={walllets?.value?.wallets ?? []} columns={columns} placeholder="tên người dùng" searchFiled="user" />}
             </div>

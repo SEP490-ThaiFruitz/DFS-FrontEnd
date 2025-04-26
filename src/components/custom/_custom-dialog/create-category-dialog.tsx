@@ -3,7 +3,7 @@
 import { DialogReused } from "@/components/global-components/dialog-reused";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
-import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 import { CreateCategorySafeTypes } from "@/zod-safe-types/category-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
@@ -18,7 +18,7 @@ import { FormFileControl } from "@/components/global-components/form/form-file-c
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { API } from "@/actions/client/api-config";
-import { CATEGORY_KEY } from "@/app/key/admin-key";
+import { CATEGORY_KEY } from "@/app/key/comm-key";
 
 export const CreateCategoryDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +41,7 @@ export const CreateCategoryDialog = () => {
         form.reset();
         setIsOpen(false);
         toast.success("Tạo loại sản phẩm thành công")
-        queryClient.invalidateQueries({ queryKey: [CATEGORY_KEY.CATEGORY] })
+        queryClient.invalidateQueries({ queryKey: [CATEGORY_KEY.CATEGORY_MANAGE] })
       }
 
     } catch (error) {

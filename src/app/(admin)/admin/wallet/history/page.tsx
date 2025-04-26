@@ -493,13 +493,13 @@ const WalletHistoryPage = () => {
                                 <SelectDate />
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pl-2">
+                        <CardContent>
                             <TransactionChart chartData={wallletTransactions?.value?.chart ?? []} />
                         </CardContent>
                     </Card>
 
                     <div className="mt-8">
-                        <div className="bg-white rounded-lg shadow border">
+                        <div className="bg-white cardStyle shadow border">
                             {isLoading ? <DataTableSkeleton /> :
                                 <DataTableCustom data={wallletTransactions?.value?.transactions ?? []} columns={columns} placeholder="nội dung" searchFiled="content" />}
                         </div>

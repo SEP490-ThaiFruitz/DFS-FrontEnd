@@ -13,6 +13,13 @@ import {
   Settings,
   MessageSquareMore,
   NewspaperIcon,
+  NotebookPen,
+  Import,
+  ShieldCheck,
+  Fan,
+  Gift,
+  ChartPie,
+  History
 } from "lucide-react";
 
 import { NavMain } from "@/components/_sidebar-configuration/nav-main";
@@ -27,7 +34,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "@/actions/user";
+
 import { ApiResponse, Profile } from "@/types/types";
 import { toast } from "sonner";
 import { Logo } from "@/components/global-components/logo";
@@ -47,39 +54,43 @@ const data = {
     },
     {
       title: "Quản lý sản phẩm",
-      url: "/manager/blog",
+      url: "/manager/product",
       icon: BookOpen,
       items: [
         {
           title: "Sản phẩm trong kho",
-          url: "#",
+          url: "/manager/inventory",
           icon: BookKey,
         },
         {
-          title: "Tình trạng sản phẩm",
-          url: "#",
-          icon: BookOpenText,
+          title: "Lịch sử kho",
+          url: "/manager/picking-item",
+          icon: History,
         },
-
-        {
-          title: "Phương pháp sấy",
-          url: "#",
-          icon: BookOpenText,
-        },
+        // {
+        //   title: "Tình trạng sản phẩm",
+        //   url: "#",
+        //   icon: BookOpenText,
+        // },
+        // {
+        //   title: "Phương pháp sấy",
+        //   url: "#",
+        //   icon: BookOpenText,
+        // },
       ],
     },
-    {
-      title: "Cài đặt",
-      url: "/admin/settings",
-      icon: Settings,
-      items: [
-        {
-          title: "Thanh trượt",
-          url: "/admin/settings/sliders",
-          icon: GalleryHorizontal,
-        },
-      ],
-    },
+    // {
+    //   title: "Cài đặt",
+    //   url: "/admin/settings",
+    //   icon: Settings,
+    //   items: [
+    //     {
+    //       title: "Thanh trượt",
+    //       url: "/admin/settings/sliders",
+    //       icon: GalleryHorizontal,
+    //     },
+    //   ],
+    // },
   ],
   projects: [
     {
@@ -99,13 +110,53 @@ const data = {
     },
     {
       name: "Quản Lý Sự Kiện",
-      url: "#",
+      url: "/manager/event",
       icon: TicketPercent,
     },
     {
       name: "Các phản hồi",
-      url: "#",
+      url: "/manager/feedback",
       icon: MessageSquareMore,
+    },
+    {
+      name: "Kế hoạch",
+      url: "/manager/plan",
+      icon: NotebookPen,
+    },
+    {
+      name: "Nhập hàng",
+      url: "/manager/product-batch",
+      icon: Import,
+    },
+    {
+      name: "Chứng chỉ",
+      url: "/manager/certification",
+      icon: ShieldCheck,
+    },
+    {
+      name: "Khuyến mãi",
+      url: "/manager/promotion",
+      icon: Fan,
+    },
+    {
+      name: "Gói quà",
+      url: "/manager/combo",
+      icon: Gift,
+    },
+    {
+      name: "Báo cáo biến thể",
+      url: "/manager/dashboard",
+      icon: ChartPie,
+    },
+    {
+      name: "Loại sản phẩm",
+      url: "/manager/category",
+      icon: TableProperties,
+    },
+    {
+      name: "Mã giảm giá",
+      url: "/manager/voucher",
+      icon: TicketPercent,
     },
   ],
 };
@@ -120,7 +171,7 @@ export function ManagerAppSidebar({
       collapsible="icon"
       {...props}
       variant="inset"
-      // classNameChildren="border-[2px] rounded-3xl border-gray-200 shadow-lg bg-zinc-50"
+    // classNameChildren="border-[2px] rounded-3xl border-gray-200 shadow-lg bg-zinc-50"
     >
       <SidebarHeader>
         <Logo height={100} width={100} isTextHidden={!sidebar.open} />

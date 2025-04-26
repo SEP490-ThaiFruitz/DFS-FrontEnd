@@ -1,12 +1,10 @@
-import { updatePassword } from '@/actions/user'
+import { API } from '@/actions/client/api-config'
 import { ButtonCustomized } from '@/components/custom/_custom-button/button-customized'
-import { FormInputControl } from '@/components/global-components/form/form-input-control'
 import { FormPassword } from '@/components/global-components/form/form-password'
 import { FormValues } from '@/components/global-components/form/form-values'
 import { WaitingSpinner } from '@/components/global-components/waiting-spinner'
 import { UpdatePasswordSafeTypes } from '@/zod-safe-types/auth-safe-types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { Lock } from 'lucide-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
@@ -14,35 +12,27 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 function ProfilePassword() {
-    const { mutate: updatePasswordMutation, isPending } = useMutation({
-        mutationFn: async ({ oldPassword, newPassword }: { oldPassword: string, newPassword: string }) => {
-            try {
-                const res = await updatePassword({ oldPassword, newPassword });
-                if (!res?.isSuccess) {
-                    throw new Error(res?.detail === "Invalid old password" ? "Mật khẩu cũ không đúng" : res?.message)
-                }
-            } catch (error: any) {
-                throw new Error(error?.message ?? "Lỗi hệ thống")
-            }
-        },
-        onSuccess: () => {
-            toast.success("Cập nhật mẩu khẩu thành công")
-            form.reset({
-                oldPassword: "",
-                newPassword: "",
-                confirmNewPassword: "",
-            });
-        },
-        onError: (error) => {
-            toast.error(error.message)
-        }
-    })
     const form = useForm<z.infer<typeof UpdatePasswordSafeTypes>>({
         resolver: zodResolver(UpdatePasswordSafeTypes),
     });
 
     const onSubmit = async (values: z.infer<typeof UpdatePasswordSafeTypes>) => {
-        updatePasswordMutation(values)
+        try {
+            const res = await API.update("/Auths/change-password", {
+                oldPassword: values.oldPassword,
+                newPassword: values.newPassword,
+            });
+            if (res) {
+                toast.success("Cập nhật mẩu khẩu thành công")
+                form.reset({
+                    oldPassword: "",
+                    newPassword: "",
+                    confirmNewPassword: "",
+                });
+            }
+        } catch (error) {
+            console.log(error)
+        }
     };
     return (
         <div className="space-y-4">
@@ -54,25 +44,25 @@ function ProfilePassword() {
                     form={form}
                     name='oldPassword'
                     label='Mật khẩu cũ'
-                    disabled={isPending}
+                    disabled={form.formState.isSubmitting}
                 />
                 <FormPassword
                     form={form}
                     name='newPassword'
                     label='Mật khẩu mới'
-                    disabled={isPending}
+                    disabled={form.formState.isSubmitting}
                 />
                 <FormPassword
                     form={form}
                     name='confirmNewPassword'
                     label='Xác nhận mật khẩu mới'
-                    disabled={isPending}
+                    disabled={form.formState.isSubmitting}
                 />
                 <ButtonCustomized
-                    disabled={isPending}
+                    disabled={form.formState.isSubmitting}
                     type='submit'
                     label={
-                        isPending ? (
+                        form.formState.isSubmitting ? (
                             <WaitingSpinner
                                 variant="pinwheel"
                                 label="Đang cập nhật..."

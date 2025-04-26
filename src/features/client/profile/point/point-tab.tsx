@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatNumberWithUnit } from "@/lib/format-currency";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import { ApiResponse, PageResult } from "@/types/types";
-import Image from "next/image";
 import React from "react";
 
 interface Point {
@@ -41,7 +40,7 @@ const PointTab = () => {
       {pointsHistory?.value?.items.map((point: Point) => (
         <div
           key={point.id}
-          className="p-4 grid grid-cols-3 items-center gap-6 hover:cursor-pointer hover:bg-slate-50 bg-white mb-2"
+          className="p-4 grid grid-cols-3 items-center gap-6 hover:cursor-pointer hover:bg-slate-50 bg-white mb-2 border-t-2 transition-colors"
         >
           <p className="text-center md:text-left">{point.content}</p>
           <p

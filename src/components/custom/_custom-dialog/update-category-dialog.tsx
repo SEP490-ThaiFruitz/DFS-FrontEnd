@@ -2,7 +2,7 @@
 import { DialogReused } from "@/components/global-components/dialog-reused";
 import { FormValues } from "@/components/global-components/form/form-values";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
-import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 import { UpdateCategorySafeTypes } from "@/zod-safe-types/category-safe-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -14,11 +14,14 @@ import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormTextareaControl } from "@/components/global-components/form/form-textarea-control";
 import { FormFileControl } from "@/components/global-components/form/form-file-control";
-import { Category } from "@/features/admin/category/column";
+
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { API } from "@/actions/client/api-config";
-import { CATEGORY_KEY } from "@/app/key/admin-key";
+import { CATEGORY_KEY } from "@/app/key/comm-key";
+import { Category } from "@/features/category/list-category";
+
+
 
 interface UpdateCategoryDialogProps {
   category: Category;
@@ -49,7 +52,7 @@ export const UpdateCategoryDialog = ({
       if (response) {
         form.reset();
         onClose();
-        queryClient.invalidateQueries({ queryKey: [CATEGORY_KEY.CATEGORY] })
+        queryClient.invalidateQueries({ queryKey: [CATEGORY_KEY.CATEGORY_MANAGE] })
         toast.success("Cập nhập loại sản phẩm thành công")
       }
 

@@ -7,13 +7,13 @@ import { useFetch } from "@/actions/tanstack/use-tanstack-actions"
 import { CirclePlus, LockKeyhole, LockKeyholeOpen, Pencil } from "lucide-react"
 import { useState } from "react"
 import FormUser from "./form-user"
-import { DataTable } from '@/components/global-components/data-table/data-table'
 import { ColumnDef } from '@tanstack/react-table'
 import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number"
 import { API } from "@/actions/client/api-config"
 import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton"
 import { USER_KEY } from "@/app/key/admin-key"
 import { DataTableCustom } from "@/components/global-components/data-table/data-table-custom"
+import { getRoleDisplay } from "@/features/admin/admin-lib/admin-lib"
 
 interface User {
     id: string
@@ -43,19 +43,6 @@ function UserPage() {
                 return "Nữ"
             default:
                 return "Khác"
-        }
-    }
-
-    const getRoleDisplay = (role: string) => {
-        switch (role) {
-            case "Administrator":
-                return "Quản trị viên"
-            case "Manager":
-                return "Quản lí"
-            case "Staff":
-                return "Nhân viên"
-            default:
-                return "Khách hàng"
         }
     }
 
@@ -188,7 +175,7 @@ function UserPage() {
                 name={user?.name}
                 content={`Bạn có chắc chắn muốn ${user?.isActive ? "khóa tài khoản" : "mở khóa tài khoản"} ${user?.name} không?`}
                 message={user?.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}
-                classNameButton={user?.isActive ? "" : "bg-green-500 hover:bg-green-800"}
+                classNameButton={user?.isActive ? "" : "bg-sky-600 hover:bg-sky-700"}
             />
 
             {isFormUser && (

@@ -1,6 +1,5 @@
 "use client";
 
-import { getProfile } from "@/actions/user";
 import { ApiResponse, Profile } from "@/types/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
@@ -37,8 +36,11 @@ import { Button } from "../ui/button";
 import { VoucherPopover } from "./vouchers-popover";
 import { useVoucherStore } from "@/hooks/use-vouchers-store";
 import { WishlistPopover } from "./wishlist-popover";
+import { API } from "@/actions/client/api-config";
+import Cookies from "js-cookie";
 
 export const UserMenu = memo(() => {
+  const cookieToken = Cookies.get("accessToken");
   const {
     data: user,
     isLoading: isUserLoading,
@@ -48,14 +50,18 @@ export const UserMenu = memo(() => {
     // queryKey: ["authUser"],
     queryKey: [USER_KEY.PROFILE],
     queryFn: async () => {
-      const response = await getProfile();
+      try {
+        const response = await API.get("/Users/profile");
 
-      if (!response || !response.isSuccess || !response.data) {
-        toast.error("Lỗi hệ thống");
-        return undefined; // Handle error case
+        if (response) {
+          return response;
+        }
+        throw new Error("Lỗi");
+      } catch (error) {
+        console.log(error);
       }
-      return response.data; // Ensure this matches `Profile`
     },
+    enabled: cookieToken !== undefined,
   });
 
   const router = useRouter();
@@ -163,7 +169,6 @@ export const UserMenu = memo(() => {
               className="w-full"
               onClick={async () => {
                 await logOut();
-                queryClient.removeQueries({ queryKey: ["authUser"] });
                 queryClient.removeQueries({ queryKey: [USER_KEY.PROFILE] });
                 clearVouchers();
 

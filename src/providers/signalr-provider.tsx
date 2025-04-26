@@ -1,7 +1,8 @@
 "use client";
 
-import { getProfile } from "@/actions/user";
-import { ApiResponse, Profile } from "@/types/types";
+import { API } from "@/actions/client/api-config";
+import { USER_KEY } from "@/app/key/user-key";
+import Cookies from "js-cookie";
 import {
   HubConnection,
   HubConnectionBuilder,
@@ -10,6 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { ApiResponse, Profile } from "@/types/types";
 
 type Props = {
   children: ReactNode;
@@ -23,23 +25,27 @@ interface Payment {
 
 export default function SignalRProvider({ children }: Props) {
   const connection = useRef<HubConnection | null>(null);
-  const { data: user } = useQuery({
-    queryKey: ["authUser"],
+  const cookieToken = Cookies.get("accessToken");
+  const { data: user } = useQuery<ApiResponse<Profile>>({
+    queryKey: [USER_KEY.PROFILE],
     queryFn: async () => {
       try {
-        const res = await getProfile();
-        if (res?.isSuccess) {
-          const data: ApiResponse<Profile> = res?.data;
-          return data.value;
+        try {
+          const response = await API.get("/Users/profile");
+
+          if (response) {
+            return response;
+          }
+          throw new Error("Lỗi")
+        } catch (error) {
+          console.log(error)
         }
-        return null;
       } catch (error) {
-        // console.log(error);
-        toast.error("Lỗi hệ thống");
+        console.log(error);
       }
     },
     retry: false,
-    initialData: null,
+    enabled: cookieToken !== undefined,
   });
 
   const notifyUrl = process.env.NEXT_PUBLIC_NOTIFY_URL!;
@@ -47,11 +53,11 @@ export default function SignalRProvider({ children }: Props) {
   const handlePayment = useCallback(
     (payment: Payment) => {
       //   console.log("PaymentReturn", payment);
-      if (user?.id === payment.userId) {
+      if (user?.value?.id === payment.userId) {
         return toast.success(payment.orderId);
       }
     },
-    [user?.id]
+    [user?.value?.id]
   );
 
   useEffect(() => {
@@ -76,8 +82,8 @@ export default function SignalRProvider({ children }: Props) {
         connection.current
           .send(
             "RegistHook",
-            user.id,
-            user.role,
+            user.value?.id,
+            user.value?.role,
             connection.current.connectionId
           )
           .catch((error) => console.log(error));

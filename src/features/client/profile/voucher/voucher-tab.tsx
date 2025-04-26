@@ -92,7 +92,7 @@ const VoucherTab = () => {
       {vouchers?.value?.map((voucher: Voucher, index) => (
         <div
           key={index + 1}
-          className="p-4 grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 items-center gap-4 bg-white hover:bg-gray-50 transition-colors"
+          className="p-4 grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 items-center gap-4 bg-white hover:bg-gray-50 transition-colors border-t-2"
         >
           <div className="relative w-full h-24 flex-shrink-0 mx-auto md:mx-0">
             {voucher.image ? (

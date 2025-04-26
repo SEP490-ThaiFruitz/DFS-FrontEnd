@@ -23,9 +23,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { logOut } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 import { ApiResponse, Profile } from "@/types/types";
-import { getProfile } from "@/actions/user";
 import { USER_KEY } from "@/app/key/user-key";
 import { Skeleton } from "../ui/skeleton";
+import { API } from "@/actions/client/api-config";
+import Cookies from "js-cookie";
 
 enum ROLES {
   Administrator = "Administrator",
@@ -38,7 +39,7 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  const cookieToken = Cookies.get("accessToken");
   // const { data: user } = useQuery({
   //   queryKey: ["authUser"],
   //   queryFn: async () => {
@@ -66,14 +67,18 @@ export function NavUser() {
     // queryKey: ["authUser"],
     queryKey: [USER_KEY.PROFILE],
     queryFn: async () => {
-      const response = await getProfile();
-
-      if (!response || !response.isSuccess || !response.data) {
-        // toast.error("Lỗi hệ thống");
-        return undefined; // Handle error case
+      try {
+        const response = await API.get("/Users/profile");
+        console.log("dsadsa", response)
+        if (response) {
+          return response;
+        }
+        throw new Error("Lỗi")
+      } catch (error) {
+        console.log(error)
       }
-      return response.data; // Ensure this matches `Profile`
     },
+    enabled: cookieToken !== undefined
   });
 
   const getRoleLabel = (role: string | undefined) => {
@@ -144,8 +149,10 @@ export function NavUser() {
               <DropdownMenuItem onClick={() => {
                 if (user?.value?.role === ROLES.Administrator) {
                   router.push("/admin/profile")
+                } else if (user?.value?.role === ROLES.Customer) {
+                  router.push("/profile")
                 } else {
-                  router.push("/manage/profile");
+                  router.push("/manager/profile")
                 }
               }} className="cursor-pointer">
                 <BadgeCheck />
@@ -154,8 +161,10 @@ export function NavUser() {
               <DropdownMenuItem onClick={() => {
                 if (user?.value?.role === ROLES.Administrator) {
                   router.push("/admin/notification")
+                } else if (user?.value?.role === ROLES.Customer) {
+                  router.push("/notification")
                 } else {
-                  router.push("/manage/notification");
+                  router.push("/manager/notification")
                 }
               }} className="cursor-pointer">
                 <Bell />

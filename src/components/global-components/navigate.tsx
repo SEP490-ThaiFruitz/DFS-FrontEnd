@@ -9,7 +9,7 @@ import { ShoppingBagSheet } from "../custom/_custom-sheet/shopping-bag-sheet";
 import { HoveredLink, Menu, MenuItem, ProductItem } from "../ui/navbar-menu";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { BlogCategory } from "@/app/(admin)/admin/blog/category/page";
-import { Event } from "@/app/(admin)/admin/event/page";
+
 
 import { ApiResponse, Profile } from "@/types/types";
 import Link from "next/link";
@@ -42,7 +42,7 @@ import { logOut } from "@/actions/auth";
 import Notification from "@/features/notification/notification";
 import { Skeleton } from "../ui/skeleton";
 import { USER_KEY } from "@/app/key/user-key";
-import { getProfile } from "@/actions/user";
+
 import { toast } from "sonner";
 import { UserMenu } from "./user-menu";
 import { DeliveryPolicy } from "./footer/policy/delivery-policy";
@@ -50,6 +50,7 @@ import { PaymentPolicy } from "./footer/policy/payment-policy";
 import { PrivacyPolicy } from "./footer/policy/privacy-policy";
 import { ReturnPolicy } from "./footer/policy/return-policy";
 import { ServicePolicy } from "./footer/policy/service-policy";
+import { Event } from "@/features/event/list-event";
 
 export const Navigate = () => {
   const { data: blogCategories } = useFetch<ApiResponse<BlogCategory[]>>(

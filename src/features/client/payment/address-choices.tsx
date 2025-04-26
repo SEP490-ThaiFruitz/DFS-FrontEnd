@@ -83,7 +83,7 @@ export default function AddressChoices<T extends FieldValues>({
     receiverName: "",
     receiverPhone: "",
     receiverAddress: "",
-    longitude: null,
+    longtitude: null,
     latitude: null,
     isDefault: false,
     provinceID: 0,

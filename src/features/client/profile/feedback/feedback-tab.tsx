@@ -66,10 +66,10 @@ const FeedbackTab = () => {
           {feedbacks?.value?.items?.map((feedback: Feedback) => (
             <div
               key={feedback.id}
-              className="p-4 grid grid-cols-1 md:grid-cols-6 lg:grid-cols-7 items-center gap-4 bg-white hover:bg-gray-50 transition-colors"
+              className="p-4 grid grid-cols-1 md:grid-cols-6 lg:grid-cols-7 items-center gap-4 bg-white hover:bg-gray-50 transition-colors border-t-2"
             >
               <Link
-                href={`/product-detail/${feedback.productId}`}
+                href={`/product/${feedback.productId}`}
                 className="mx-auto md:ml-0"
               >
                 <Image

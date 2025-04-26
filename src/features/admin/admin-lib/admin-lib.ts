@@ -199,6 +199,24 @@ export const TAGS_SELECT = [
     { value: "Thực phẩm tiện lợi", label: "Thực phẩm tiện lợi" },
 ];
 
+export const BLOG_TAGS = [
+    { value: "Giàu chất xơ", label: "Giàu chất xơ" },
+    { value: "Không chất bảo quản", label: "Không chất bảo quản" },
+    { value: "Hỗ trợ tiêu hóa", label: "Hỗ trợ tiêu hóa" },
+    { value: "Tốt cho làn da", label: "Tốt cho làn da" },
+    { value: "Thân thiện với người ăn kiêng", label: "Thân thiện với người ăn kiêng" },
+    { value: "Tăng cường sức đề kháng", label: "Tăng cường sức đề kháng" },
+    { value: "Tự nhiên 100%", label: "Tự nhiên 100%" },
+    { value: "Không đường hóa học", label: "Không đường hóa học" },
+    { value: "Ăn vặt hàng ngày", label: "Ăn vặt hàng ngày" },
+    { value: "Mang đi học", label: "Mang đi học" },
+    { value: "Ăn khi tập gym", label: "Ăn khi tập gym" },
+    { value: "Quà tặng sức khỏe", label: "Quà tặng sức khỏe" },
+    { value: "Đồ ăn cho bé", label: "Đồ ăn cho bé" },
+    { value: "Snack văn phòng", label: "Snack văn phòng" },
+    { value: "Thực phẩm cho người ăn kiêng", label: "Thực phẩm cho người ăn kiêng" },
+    { value: "Dùng trong salad/sữa chua", label: "Dùng trong salad/sữa chua" },
+];
 
 export const QUANTITY_SELECT: { label: string, value: string }[] = Array.from({ length: 10 }, (_, index) => ({
     label: `${index * 10}`,
@@ -232,3 +250,21 @@ export const STATUS_HIDDEN_SELECT: Record<string, string> = {
     Active: "Đang hoạt động",
     IsDeleted: "Đã ẩn",
 };
+
+export const getRemainingDays = (endDate: string) => {
+    const remainingMilliseconds = new Date(endDate).getTime() - new Date().getTime();
+    return Math.ceil(remainingMilliseconds / (1000 * 60 * 60 * 24));
+};
+
+export const getRoleDisplay = (role: string) => {
+    switch (role) {
+        case "Administrator":
+            return "Quản trị viên"
+        case "Manager":
+            return "Quản lí"
+        case "Staff":
+            return "Nhân viên"
+        default:
+            return "Khách hàng"
+    }
+}

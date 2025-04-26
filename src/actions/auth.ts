@@ -95,22 +95,22 @@ export const logOut = async () => {
   // });
 };
 
-export const verifyAccount = async (otp: string) => {
-  return await interactApi.post("/Auths/confirm-otp-verification", { otp });
-};
+// export const verifyAccount = async (otp: string) => {
+//   return await interactApi.post("/Auths/confirm-otp-verification", { otp });
+// };
 
-export const sendCodeVerifyAccount = async <TValues>(values: TValues) => {
-  return await interactApi.post("/Auths/send-otp-verification", values);
-};
+// export const sendCodeVerifyAccount = async <TValues>(values: TValues) => {
+//   return await interactApi.post("/Auths/send-otp-verification", values);
+// };
 
-export const sendForgetPassword = async <TValues>(values: TValues) => {
-  return await interactApi.post("/Auths/forgot-password", values);
-};
+// export const sendForgetPassword = async <TValues>(values: TValues) => {
+//   return await interactApi.post("/Auths/forgot-password", values);
+// };
 
-export const verifyForgetPassword = async <TValues>(values: TValues) => {
-  return await interactApi.post("/Auths/confirm-otp-reset-password", values);
-};
+// export const verifyForgetPassword = async <TValues>(values: TValues) => {
+//   return await interactApi.post("/Auths/confirm-otp-reset-password", values);
+// };
 
-export const updateNewPassword = async <TValues>(values: TValues) => {
-  return await interactApi.put("/Auths/reset-password", values);
-};
+// export const updateNewPassword = async <TValues>(values: TValues) => {
+//   return await interactApi.put("/Auths/reset-password", values);
+// };

@@ -17,6 +17,7 @@ import { z } from "zod";
 import Cookies from "js-cookie";
 import { DecodeData } from "@/actions/checkrole";
 import { jwtDecode } from "jwt-decode";
+import { USER_KEY } from "@/app/key/user-key";
 
 enum ROLES {
   Administrator = "Administrator",
@@ -94,8 +95,7 @@ export const AdminFormLogin = () => {
 
       // console.log({ admin, manager });
 
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      queryClient.invalidateQueries({ queryKey: ["mange"] });
+      queryClient.invalidateQueries({ queryKey: [USER_KEY.PROFILE] });
 
       if (admin) {
         window.location.href = "/admin/dashboard";

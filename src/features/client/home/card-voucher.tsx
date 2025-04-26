@@ -5,7 +5,6 @@ import { formatVND } from "@/lib/format-currency";
 import Image from "next/image";
 import { WaitingSpinner } from "@/components/global-components/waiting-spinner";
 import { useMutation } from "@tanstack/react-query";
-import { collectVoucher } from "@/actions/voucher";
 import { toast } from "sonner";
 import { formatTimeVietNam } from "@/lib/format-time-vietnam";
 import { useVoucherStore, Voucher } from "@/hooks/use-vouchers-store";
@@ -36,8 +35,8 @@ const CardVoucher = ({ voucher }: Readonly<CardVoucherProps>) => {
       <div className="relative w-72 flex items-center justify-center bg-green-700">
         {voucher.image ? (
           <Image
-            src="/images/dried-fruit.webp"
-            alt={"tes"}
+            src={voucher.image ?? "/images/dried-fruit.webp"}
+            alt={voucher.name}
             width={1000}
             height={1000}
             className="h-16 w-16 object-fill"
@@ -90,7 +89,7 @@ const CardVoucher = ({ voucher }: Readonly<CardVoucherProps>) => {
           <button
             // disabled={isPending}
             onClick={handleSave}
-            className="bg-green-700 hover:bg-green-600 transition-all duration-300 text-white py-1 px-4 rounded-lg text-sm font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+            className="bg-sky-600 hover:bg-sky-700 transition-all duration-300 text-white py-1 px-4 rounded-lg text-sm font-medium disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isPending ? (
               <WaitingSpinner

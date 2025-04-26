@@ -65,8 +65,6 @@ export function FancySelect({
     (option) => option.label.includes(inputValue.toLowerCase())
   );
 
-  console.log(filteredItems, selected, inputValue);
-
 
   React.useEffect(() => {
     if (selected) {

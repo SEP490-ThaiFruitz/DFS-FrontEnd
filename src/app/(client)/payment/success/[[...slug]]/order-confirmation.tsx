@@ -27,7 +27,7 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { useSearchParams } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 import {
   OrderItem as OrderItemType,
   PaymentOrderValue,
@@ -692,38 +692,76 @@ export default function OrderConfirmation() {
     return <ImprovedLoadingPage />;
   }
 
-  if (!searchParams.has("vnp_TxnRef") && !searchParams.has("orderCode")) {
-    return <NotFound />;
-  }
+  // if (!searchParams.has("vnp_TxnRef") && !searchParams.has("orderCode")) {
+  //   return notFound();
+  // }
+
+  const noValidParams =
+    !searchParams.has("vnp_TxnRef") && !searchParams.has("orderCode");
 
   return (
     <div
-      className="min-h-screen pt-10  bg-gradient-to-b from-emerald-50 via-white to-white"
+      className="min-h-screen pt-10 bg-gradient-to-b from-emerald-50 via-white to-white"
       ref={contentRef}
     >
-      <div className="py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <SuccessBanner />
-          <OrderProgress status={orderData.status} />
-          <OrderDetailsCard
-            order={orderData as PaymentOrderValue}
-            print={reactToPrintFn}
-          />
-          <OrderItemsCard items={orderData.orderItems} />
-          <OrderSummaryCard order={orderData as PaymentOrderValue} />
+      {isLoaded || !orderData.orderId ? (
+        <ImprovedLoadingPage />
+      ) : noValidParams ? (
+        <NotFound />
+      ) : (
+        <div className="py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <SuccessBanner />
+            <OrderProgress status={orderData.status} />
+            <OrderDetailsCard
+              order={orderData as PaymentOrderValue}
+              print={reactToPrintFn}
+            />
+            <OrderItemsCard items={orderData.orderItems} />
+            <OrderSummaryCard order={orderData as PaymentOrderValue} />
+          </div>
         </div>
-      </div>
-
+      )}
       <Balloons
         ref={balloonsRef}
         type="text"
         text="🎈ThaiFruitz Cảm ơn bạn🧾"
         fontSize={110}
-        // color="#000000"
-        // color="#d97706"
         color="#14532d"
         className="text-wrap"
       />
     </div>
   );
+
+  // return (
+
+  //   <div
+  //     className="min-h-screen pt-10  bg-gradient-to-b from-emerald-50 via-white to-white"
+  //     ref={contentRef}
+  //   >
+  //     <div className="py-8 px-4 sm:px-6 lg:px-8">
+  //       <div className="max-w-4xl mx-auto">
+  //         <SuccessBanner />
+  //         <OrderProgress status={orderData.status} />
+  //         <OrderDetailsCard
+  //           order={orderData as PaymentOrderValue}
+  //           print={reactToPrintFn}
+  //         />
+  //         <OrderItemsCard items={orderData.orderItems} />
+  //         <OrderSummaryCard order={orderData as PaymentOrderValue} />
+  //       </div>
+  //     </div>
+
+  //     <Balloons
+  //       ref={balloonsRef}
+  //       type="text"
+  //       text="🎈ThaiFruitz Cảm ơn bạn🧾"
+  //       fontSize={110}
+  //       // color="#000000"
+  //       // color="#d97706"
+  //       color="#14532d"
+  //       className="text-wrap"
+  //     />
+  //   </div>
+  // );
 }

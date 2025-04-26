@@ -3,9 +3,11 @@ import { toast } from "sonner";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+type ProductTypes = ProductVariantTypes & { productId: string };
+
 interface WishlistStore {
-  wishlist: ProductVariantTypes[];
-  addToWishlist: (product: ProductVariantTypes) => void;
+  wishlist: ProductTypes[];
+  addToWishlist: (product: ProductTypes) => void;
   removeFromWishlist: (productVariantId: string) => void;
   clearWishlist: () => void;
   isInWishlist: (productVariantId: string) => boolean;

@@ -48,11 +48,13 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   // const cookieToken = Cookies.get("accessToken");
 
   const queryClient = useQueryClient();
-  const profileData = queryClient.getQueryData<ApiResponse<Profile>>([USER_KEY.PROFILE]);
+  const profileData = queryClient.getQueryData<ApiResponse<Profile>>([
+    USER_KEY.PROFILE,
+  ]);
 
   const products = useFetch<ApiResponse<PageResult<Product>>>("/Products", [
     ProductKey.PRODUCTS,
-  ], {}, { enabled: profileData?.value?.role == "Customer" });
+  ]);
   const blogs = useFetch<ApiResponse<PageResult<BlogPost>>>("/Blogs", [
     BLOG_KEY.BLOGS,
   ]);
@@ -61,13 +63,17 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addresses = useFetch<ApiResponse<PageResult<AddressTypes>>>(
     "/Addresses",
-    [USER_KEY.ADDRESS]
-    , {}, { enabled: profileData?.value?.role == "Customer" });
+    [USER_KEY.ADDRESS],
+    {},
+    { enabled: profileData?.value?.role == "Customer" }
+  );
 
   const customCombo = useFetch<ApiResponse<CustomComboProduct[]>>(
     "/Combos/user",
-    [USER_KEY.CUSTOM_COMBO]
-    , {}, { enabled: profileData?.value?.role == "Customer" });
+    [USER_KEY.CUSTOM_COMBO],
+    {},
+    { enabled: profileData?.value?.role == "Customer" }
+  );
 
   const combos = useFetch<ApiResponse<PageResult<ComboProduct>>>("/Combos", [
     COMBO_KEY.COMBOS,

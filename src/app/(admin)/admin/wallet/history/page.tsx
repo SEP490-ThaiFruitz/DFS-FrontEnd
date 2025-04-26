@@ -493,7 +493,7 @@ const WalletHistoryPage = () => {
                                 <SelectDate />
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pl-2">
+                        <CardContent>
                             <TransactionChart chartData={wallletTransactions?.value?.chart ?? []} />
                         </CardContent>
                     </Card>

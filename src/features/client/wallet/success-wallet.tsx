@@ -60,6 +60,7 @@ import {
   WithdrawalRequest,
 } from "./wallet-history/components/request-column";
 import { NotData } from "@/components/global-components/no-data";
+import { GlareCard } from "@/components/global-components/aceternity/glare-card";
 
 interface SuccessWalletProps {
   user: ApiResponse<Profile> | undefined;
@@ -154,7 +155,7 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
       <VercelTab tabs={TABS} activeTab={tab} onTabChange={setTab} />
 
       {tab === "success-wallet" ? (
-        <div className="flex flex-col items-center justify-center py-8 space-y-6">
+        <div className="flex flex-col items-center justify-center py-8 space-y-6 w-full">
           <div className="rounded-full bg-green-100 p-6">
             <ShieldCheck className="h-12 w-12 text-green-600" />
           </div>
@@ -168,35 +169,42 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
           </div>
 
           {/* Wallet Overview */}
-          <div className="w-full bg-gradient-to-br from-sky-50 via-amber-50 to-slate-400 cardStyle p-5 text-slate-700">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h3 className="text-lg font-bold"> Ví Của Bạn</h3>
+
+          <GlareCard className=" w-full">
+            {/* <div className="w-full bg-gradient-to-br from-sky-50 via-amber-50 to-slate-400 cardStyle p-5 text-slate-700"> */}
+            <div className="w-full h-full bg-gradient-to-br from-slate-500 via-zinc-500 to-slate-700  p-5 text-white">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-lg font-bold">
+                    {" "}
+                    Ví Của {user?.value?.name}
+                  </h3>
+                </div>
+                <CreditCard className="h-8 w-8 " />
               </div>
-              <CreditCard className="h-8 w-8 " />
-            </div>
-            <div className="mb-4">
-              <span className="text-sm font-semibold ">Số Dư Khả Dụng</span>
-              <h2 className="text-2xl font-bold text-sky-500">
-                {formatVND(user?.value?.wallet?.balance ?? 0)}
-              </h2>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-semibold">
-                Mã Ví:{" "}
-                <span className="text-base">
-                  •••• {user?.value?.wallet?.walletId?.slice(-4)}
+              <div className="mb-4">
+                <span className="text-sm font-semibold ">Số Dư Khả Dụng</span>
+                <h2 className="text-2xl font-bold text-sky-500">
+                  {formatVND(user?.value?.wallet?.balance ?? 0)}
+                </h2>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-semibold">
+                  Mã Ví:{" "}
+                  <span className="text-base">
+                    •••• {user?.value?.wallet?.walletId?.slice(-4)}
+                  </span>
                 </span>
-              </span>
-              <AdvancedColorfulBadges
-                color="green"
-                size="md"
-                className="rounded-full"
-              >
-                Sẵn sàng
-              </AdvancedColorfulBadges>
+                <AdvancedColorfulBadges
+                  color="green"
+                  size="md"
+                  className="rounded-full"
+                >
+                  Sẵn sàng
+                </AdvancedColorfulBadges>
+              </div>
             </div>
-          </div>
+          </GlareCard>
 
           <Separator />
 
@@ -207,39 +215,41 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
             </h4>
 
             <div className="grid gap-3">
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion type="single" collapsible className="w-full ">
                 <AccordionItem
                   value="deposit"
-                  className="border rounded-lg overflow-hidden"
+                  className="cardStyle overflow-hidden"
                 >
                   <AccordionTrigger className=" px-3 py-4 ">
-                    <div className="flex items-center gap-3 w-full transition-colors">
+                    <div className="flex items-center gap-3 w-full transition-colors ">
                       <div className="bg-primary/10 p-2 rounded">
-                        <Wallet className="h-5 w-5 text-primary" />
+                        <Wallet className="h-5 w-5 text-primary motion-preset-seesaw" />
                       </div>
                       <div className="flex-1 text-left">
-                        <h5 className="font-medium text-sm">Nạp Tiền</h5>
+                        <h5 className="font-semibold text-sm">Nạp Tiền</h5>
                         <p className="text-sm text-muted-foreground">
                           Nạp tiền vào ví của bạn
                         </p>
                       </div>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4">
+                  <AccordionContent className="px-4 pb-4 motion-preset-bounce ">
                     <div className="space-y-4">
                       <div className="grid gap-3">
                         <div
                           className={cn(
-                            "flex items-center gap-3 p-4 border rounded-lg transition-colors cursor-pointer",
+                            "flex items-center gap-3 p-4 cardStyle transition-colors cursor-pointer",
                             selectedMethod === "vnpay"
                               ? "border-primary bg-primary/5"
                               : "hover:bg-accent"
                           )}
                           onClick={() => setSelectedMethod("vnpay")}
                         >
-                          <Wallet2Icon className="h-5 w-5 text-primary" />
+                          <Wallet2Icon className="h-5 w-5 text-primary motion-preset-seesaw" />
                           <div className="flex-1">
-                            <h6 className="font-medium">VNPay</h6>
+                            <h6 className="font-semibold text-sky-500">
+                              VNPay
+                            </h6>
                             <p className="text-sm text-muted-foreground">
                               Thanh toán qua thẻ ngân hàng
                             </p>
@@ -253,16 +263,18 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
 
                         <div
                           className={cn(
-                            "flex items-center gap-3 p-4 border rounded-lg transition-colors cursor-pointer",
+                            "flex items-center gap-3 p-4 cardStyle transition-colors cursor-pointer",
                             selectedMethod === "payos"
                               ? "border-primary bg-primary/5"
                               : "hover:bg-accent"
                           )}
                           onClick={() => setSelectedMethod("payos")}
                         >
-                          <QrCode className="h-5 w-5 text-primary" />
+                          <QrCode className="h-5 w-5 text-primary motion-preset-seesaw" />
                           <div className="flex-1">
-                            <h6 className="font-medium">PayOS</h6>
+                            <h6 className="font-semibold text-sky-500">
+                              PayOS
+                            </h6>
                             <p className="text-sm text-muted-foreground">
                               Thanh toán qua QR Code
                             </p>
@@ -276,7 +288,7 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-sm font-medium">
+                        <label className="text-sm font-semibold">
                           Số tiền muốn nạp
                         </label>
                         <Input
@@ -315,36 +327,6 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-
-                {/* <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer mt-3">
-                  <div className="bg-primary/10 p-2 rounded">
-                    <Wallet2Icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h5 className="font-medium text-sm">
-                      Liên Kết Phương Thức Thanh Toán
-                    </h5>
-                    <p className="text-xs text-muted-foreground">
-                      Kết nối ngân hàng hoặc thẻ của bạn
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-
-                <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer mt-3">
-                  <div className="bg-primary/10 p-2 rounded">
-                    <Fingerprint className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h5 className="font-medium text-sm">
-                      Bật Tính Năng Bảo Mật
-                    </h5>
-                    <p className="text-xs text-muted-foreground">
-                      Thiết lập bảo vệ bổ sung
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </div> */}
               </Accordion>
             </div>
           </div>
@@ -381,6 +363,7 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
                 label: "Hãy thử tải lại!",
                 onClick: () => requestWithdrawData.refetch(),
               }}
+              className="min-w-full h-full"
             />
           )
         ) : (

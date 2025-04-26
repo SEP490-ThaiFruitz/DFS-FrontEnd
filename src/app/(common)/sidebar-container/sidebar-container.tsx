@@ -36,6 +36,7 @@ import { placeholderImage } from "@/utils/label";
 import Link from "next/link";
 import { HistoryTransactionProfile } from "@/features/client/profile/history/history-transaction-profile";
 import { WalletSheet } from "@/features/client/wallet/wallet-sheet";
+import ReturnRequestHistory from "@/features/client/profile/request-history/request-history";
 
 // name: string;
 //     tag: string;
@@ -136,13 +137,13 @@ export const TAB_CONTENT: TabContentTypes[] = [
     title: "Lịch sử tích lũy điểm",
     description: "Theo dõi số điểm đã tích lũy và đổi thưởng một cách dễ dàng!",
   },
-  {
-    icon: Ticket,
-    value: "voucher",
-    component: <VoucherTab />,
-    title: "Mã giảm giá của bạn",
-    description: "Xem và sử dụng mã giảm giá để tiết kiệm khi mua hàng!",
-  },
+  // {
+  //   icon: Ticket,
+  //   value: "voucher",
+  //   component: <VoucherTab />,
+  //   title: "Mã giảm giá của bạn",
+  //   description: "Xem và sử dụng mã giảm giá để tiết kiệm khi mua hàng!",
+  // },
   {
     icon: ChartAreaIcon,
     value: "statistic",
@@ -150,6 +151,14 @@ export const TAB_CONTENT: TabContentTypes[] = [
     title: "Báo cáo chi tiêu",
     description:
       "Theo dõi tổng số tiền bạn đã chi tiêu để quản lý tài chính hiệu quả hơn.",
+  },
+  {
+    icon: ChartAreaIcon,
+    value: "request-history",
+    component: <ReturnRequestHistory />,
+    title: "Lịch sử yêu cầu đổi/trả",
+    description:
+      "Bạn đã gửi yêu cầu đổi/trả hàng, hãy theo dõi tình trạng yêu cầu của bạn tại đây.",
   },
   {
     icon: MessageCircleIcon,

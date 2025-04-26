@@ -45,12 +45,6 @@ import { ConfirmWallet } from "./confirm-wallet";
 import { useQueryClient } from "@tanstack/react-query";
 import { USER_KEY } from "@/app/key/user-key";
 import { SuccessWallet } from "./success-wallet";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 
 interface WalletSheetProps {
   user: ApiResponse<Profile> | undefined;

@@ -2,7 +2,7 @@
 
 import { vietnameseDate } from "@/utils/date";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, Star } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
@@ -148,6 +148,22 @@ export const AnimatedTestimonials = ({
                 </motion.span>
               ))}
             </motion.p>
+
+            <motion.div className="flex text-amber-500">
+              {[...Array(5)].map((_, i) => {
+                const rating = testimonials[active].rating || 0;
+                return (
+                  <Star
+                    key={i}
+                    className={`h-5 w-5 ${
+                      i < Math.floor(rating)
+                        ? "fill-amber-500"
+                        : "fill-gray-200 text-gray-200"
+                    }`}
+                  />
+                );
+              })}
+            </motion.div>
           </motion.div>
           <div className="flex gap-4 pt-12 md:pt-0">
             <button

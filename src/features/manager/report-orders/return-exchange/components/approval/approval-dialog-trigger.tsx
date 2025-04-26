@@ -370,7 +370,7 @@ ApprovalDialogProps) {
 
   const groupedItems = groupItemsByOrder(safeOrderReturnData.items);
 
-  console.log("data groupedItems: ", groupedItems);
+  // console.log("data groupedItems: ", groupedItems);
 
   return (
     <Dialog
@@ -383,7 +383,7 @@ ApprovalDialogProps) {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="bg-amber-300 hover:bg-amber-600 transition-colors text-black w-full flex items-center gap-1"
+          className="bg-amber-300 hover:opacity-10 transition-colors text-black w-full flex items-center gap-1"
           onClick={handleApproveClick}
         >
           <ListTodo className="size-5" />
@@ -397,7 +397,7 @@ ApprovalDialogProps) {
       >
         <DialogHeader className="px-6 pt-6 pb-2">
           <div className="flex items-center gap-2">
-            <Badge className="bg-amber-500 hover:bg-amber-600 px-2 py-0.5">
+            <Badge className="bg-gradient-to-r from-[#90C67C] to-[#67AE6E] hover:bg-amber-600 px-2 py-0.5">
               Phê duyệt
             </Badge>
             <DialogTitle className="text-xl">

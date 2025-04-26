@@ -110,6 +110,8 @@ export const ReviewsTab = memo(
     //   );
     // }
 
+    const safeFeedbackData = feedbackData.data?.value?.items ?? [];
+
     const total = overallRatingResponse?.quantityFeedback || 0;
 
     const getPercent = (count: number) =>
@@ -123,24 +125,6 @@ export const ReviewsTab = memo(
           <div className="md:col-span-1">
             <div className="bg-gradient-to-br from-gray-50 to-slate-50 p-5 rounded-lg shadow-sm cardStyle">
               <h3 className="text-lg font-semibold mb-4">Đánh giá tổng quan</h3>
-              {/* <div className="flex items-center gap-4 mb-6">
-                <div className="text-4xl font-bold text-sky-600">
-                  {overallRatingResponse?.overallRating ?? 0}
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex text-amber-500">
-                    <Star className="h-5 w-5 fill-amber-500" />
-                    <Star className="h-5 w-5 fill-amber-500" />
-                    <Star className="h-5 w-5 fill-amber-500" />
-                    <Star className="h-5 w-5 fill-amber-500" />
-                    <Star className="h-5 w-5 fill-amber-500 text-gray-200" />
-                  </div>
-                  <span className="text-sm text-slate-600">
-                    Dựa trên {overallRatingResponse?.quantityFeedback ?? 0} đánh
-                    giá
-                  </span>
-                </div>
-              </div> */}
 
               <div className="flex items-center gap-4 mb-6">
                 <div className="text-4xl font-bold text-sky-600">
@@ -233,9 +217,9 @@ export const ReviewsTab = memo(
 
           <div className="md:col-span-2">
             <h3 className="text-lg font-medium mb-4">Đánh giá từ khách hàng</h3>
-            {reviews.length > 0 ? (
+            {safeFeedbackData.length > 0 ? (
               <div className="space-y-4">
-                {reviews.map((review, index) => (
+                {safeFeedbackData.map((review, index) => (
                   <Card
                     key={index}
                     className="shadow-sm hover:shadow-md transition-shadow cardStyle"
@@ -243,19 +227,9 @@ export const ReviewsTab = memo(
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-3">
-                          {/* <Avatar>
-                       <AvatarImage
-                         src={review.user.avatar ?? placeholderImage}
-                         alt={review.user.name}
-                       />
-                       <AvatarFallback>
-                         {review.user.name.charAt(0)}
-                       </AvatarFallback>
-                     </Avatar> */}
-
                           <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
                             <AvatarImage
-                              src={review.user.avatar || "/placeholder.svg"}
+                              src={review.user.avatar || placeholderImage}
                               alt={review.user.name}
                             />
                             <AvatarFallback className="bg-gradient-to-br from-sky-500 to-indigo-500 text-white">
@@ -291,7 +265,7 @@ export const ReviewsTab = memo(
                             <Star
                               key={i}
                               className={`h-4 w-4 ${
-                                i < review.rating
+                                i < review.stars
                                   ? "fill-amber-500"
                                   : "fill-gray-200"
                               }`}
@@ -309,14 +283,6 @@ export const ReviewsTab = memo(
                               key={index}
                               className="w-16 h-16 rounded-md overflow-hidden"
                             >
-                              {/* <Image
-                                src={image || placeholderImage}
-                                alt={`Review image ${index + 1}`}
-                                width={64}
-                                height={64}
-                                className="w-full h-full object-cover"
-                              /> */}
-
                               <ImagePreview
                                 images={review.images}
                                 initialIndex={index}
@@ -329,24 +295,6 @@ export const ReviewsTab = memo(
                           ))}
                         </div>
                       )}
-
-                      {/* <div className="flex justify-between items-center text-sm text-gray-500">
-                   <Button
-                     variant="ghost"
-                     size="sm"
-                     className="text-gray-500 hover:text-sky-600"
-                   >
-                     <Heart className="h-4 w-4 mr-1" /> Hữu ích ({review.likes}
-                     )
-                   </Button>
-                   <Button
-                     variant="ghost"
-                     size="sm"
-                     className="text-gray-500 hover:text-sky-600"
-                   >
-                     Báo cáo
-                   </Button>
-                 </div> */}
                     </CardContent>
                   </Card>
                 ))}

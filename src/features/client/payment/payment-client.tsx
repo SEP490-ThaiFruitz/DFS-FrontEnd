@@ -199,15 +199,16 @@ function PaymentClientPage() {
   const onPaymentSubmit = async (values: z.infer<typeof PaymentSafeTypes>) => {
     // console.log({ values });
 
-    const mergeValue = [...values.items, ...customComboItem];
+    // const mergeValue = [...values.items, ...customComboItem];
 
     const omitValue = {
       ...omit(values, ["shipType"]),
-      items: mergeValue,
+      // items: mergeValue,
+      // items: values.items,
       paymentMethod: paymentMethodWatch,
     };
 
-    // console.log({ omitValue });
+    console.log({ omitValue });
 
     try {
       const response = await axios.post(
@@ -258,27 +259,38 @@ function PaymentClientPage() {
       0
     ) || 0;
 
-  // console.log({ total });
+  // useEffect(() => {
+  //   if (
+  //     (cart && cart.length > 0) ||
+  //     (customComboItem && customComboItem.length > 0)
+  //   ) {
+  //     form.setValue(
+  //       "items",
 
-  const isAuth = Boolean(token);
-
-  const loginModal = useLoginDialog();
-
-  // console.log(cart);
+  //       [
+  //         ...(cart?.map((product) => ({
+  //           id: product.variant.productVariantId,
+  //           quantity: Number(product.quantityOrder),
+  //           type: product.type,
+  //         })) ?? []),
+  //         ...customComboItem,
+  //       ]
+  //     );
+  //   }
+  // }, [cart, customComboItem]);
 
   useEffect(() => {
-    if (cart && cart.length > 0) {
-      form.setValue(
-        "items",
+    const items = [
+      ...(cart?.map((product) => ({
+        id: product.variant.productVariantId,
+        quantity: Number(product.quantityOrder),
+        type: product.type,
+      })) ?? []),
+      ...customComboItem,
+    ];
 
-        cart.map((product) => ({
-          id: product.variant.productVariantId,
-          quantity: Number(product.quantityOrder),
-          type: product.type,
-        }))
-      );
-    }
-  }, [cart]);
+    form.setValue("items", items);
+  }, [cart, customComboItem]);
 
   const [shippingFee, setShippingFee] = useState<{
     totalFee: number;

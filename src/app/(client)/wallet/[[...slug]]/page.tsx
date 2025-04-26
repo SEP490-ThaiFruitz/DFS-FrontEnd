@@ -84,7 +84,7 @@ const WalletPage = () => {
         const orderCode = searchParams.get("orderCode");
         const result = await interactApiClient.get<
           ApiResponse<DepositWalletResponse>
-        >(`/Wallets/information-deposit/${orderCode}`);
+        >(`/Wallets/information-deposite/${orderCode}`);
         if (result?.isSuccess) {
           setData(result?.value as DepositWalletResponse);
         } else {

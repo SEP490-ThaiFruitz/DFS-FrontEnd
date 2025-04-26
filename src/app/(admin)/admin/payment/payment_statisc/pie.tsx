@@ -34,10 +34,9 @@ function PaymentPie({ paymentStatus }: Readonly<PaymentPieProps>) {
   const CustomTooltip = ({ active, payload }: TooltipProps<any, any>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
-      const className = `border-l-[${data.fill}] px-2 border-l-4 flex flex-col space-y-2`
       return (
         <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-2 space-x-3">
-          <div className={className}>
+          <div className='px-2 border-l-4 flex flex-col space-y-2'   style={{ borderLeftColor: data.fill }}>
             <p className="font-semibold">{data.name}</p>
             <p>{`Số giao dịch: ${data.value}`}</p>
             <p>{`Số tiền: ${formatVND(data.amount)}`}</p>

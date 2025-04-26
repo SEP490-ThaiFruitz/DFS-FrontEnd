@@ -62,7 +62,7 @@ function TransactionChart({ chartData }: Readonly<TransactionChartProps>) {
     } satisfies ChartConfig;
 
     return (
-        <ChartContainer config={chartConfig}>
+        <ChartContainer className='max-h-[800px] w-full' config={chartConfig}>
             <LineChart
                 accessibilityLayer
                 data={formattedData}

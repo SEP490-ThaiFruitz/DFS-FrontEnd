@@ -17,7 +17,7 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Inventory from './inventory'
 import ChartProductBatch from './chart'
-import ProductChart from '../product-statisc/chart'
+import ProductChart from '../product-statistic/chart'
 import { PRODUCT_KEY } from '@/app/key/comm-key'
 
 interface ProductVariant {

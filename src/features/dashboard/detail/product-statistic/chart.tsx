@@ -20,10 +20,9 @@ function ProductChart({ productCharts }: Readonly<ProductChartProps>) {
     const CustomTooltip = ({ active, payload }: TooltipProps<any, any>) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload
-            const className = `border-l-[${data.color}] px-2 border-l-4 flex flex-col space-y-2`
             return (
                 <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-2 space-x-3">
-                    <div className={className}>
+                    <div className='px-2 border-l-4 flex flex-col space-y-2'   style={{ borderLeftColor: data.color }}>
                         <p className="font-semibold">{data.date}</p>
                         <p>{`Số lượng: ${data.quantity}`}</p>
                         <p>{`Số tiền: ${formatVND(data.revenue)}`}</p>

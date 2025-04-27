@@ -142,7 +142,7 @@ export const ReportOrdersListClient = ({
       (sum, order) => sum + order?.shipFee,
       0
     );
-    const confirmedOrders = orders.filter(
+    const confirmedOrders = orders?.filter(
       (order) =>
         order?.status?.toLowerCase() !== "pending" &&
         order?.status?.toLowerCase() !== "packaging"

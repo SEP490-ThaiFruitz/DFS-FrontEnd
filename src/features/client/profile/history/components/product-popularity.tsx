@@ -23,7 +23,7 @@ interface ProductPopularityProps {
 export const ProductPopularity = memo(
   ({ orderData }: ProductPopularityProps) => {
     // Count items by type
-    const itemTypeCount = orderData.value.orders.reduce((acc, order) => {
+    const itemTypeCount = orderData.value?.orders?.reduce((acc, order) => {
       order.orderItems.forEach((item) => {
         if (!acc[item.itemType]) {
           acc[item.itemType] = 0;

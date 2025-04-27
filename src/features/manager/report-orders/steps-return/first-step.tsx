@@ -27,6 +27,8 @@ import { useData } from "@/providers/data-provider";
 import { OrderItemDetailsTypes } from "../../order-detail-components/order-detail.types";
 import { SelectProductStatus } from "./components/select-product-status";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { TerminalIcon } from "lucide-react";
 
 interface FirstStepProps {
   orderId: string;
@@ -148,6 +150,17 @@ export const FistStep = memo(
 
     return (
       <div className="p-6 max-h-[60vh] overflow-y-auto motion-preset-focus">
+        <Alert className="border-amber-200 mb-2">
+          <TerminalIcon className="h-4 w-4" />
+          <AlertTitle className="font-semibold text-amber-300">
+            Lưu ý!
+          </AlertTitle>
+          <AlertDescription className="italic underline">
+            Trước khi bạn tiến hành yêu cầu đổi trả, hãy đảm bảo rằng thông tin
+            bạn gửi lên chính xác với các sản phẩm bạn đã chọn với yêu cầu
+          </AlertDescription>
+        </Alert>
+
         <div className="mb-4 flex items-center gap-2">
           <Badge
             variant="outline"

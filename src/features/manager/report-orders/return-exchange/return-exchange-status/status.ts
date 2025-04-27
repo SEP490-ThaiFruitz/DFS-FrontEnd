@@ -121,3 +121,18 @@ export const statusColorMap: Record<ReturnExchangeRequestStatus, string> = {
 // Returned,          // Đơn hàng đã được trả lại
 //     Exchanged,
 //     Completed
+
+export const justReturnExchangeLabel = (type: string) => {
+  const typeLower = type?.toLowerCase();
+
+  switch (typeLower) {
+    case "return":
+      return "Trả hàng";
+    case "exchange":
+      return "Đổi hàng";
+    case "completed":
+      return "Hoàn tất";
+    default:
+      return type;
+  }
+};

@@ -452,7 +452,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
           className="group flex items-center gap-2 text-sky-500 border-sky-200 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300  w-full"
         >
           <RefreshCw className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-          Trả hàng
+          Đổi/Trả hàng
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[850px] p-0 overflow-hidden rounded-3xl border-0 shadow-xl cardStyle">

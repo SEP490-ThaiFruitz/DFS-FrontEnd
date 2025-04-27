@@ -94,22 +94,6 @@ export default function OrderDetails({ orderId }: OrderDetailsProps) {
         </SheetHeader>
 
         <div className="max-w-6xl  mx-auto ">
-          {/* <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" className="mr-2">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <h1 className="text-2xl font-bold">Chi Tiết Đơn Hàng</h1>
-            </div>
-            <Button
-              onClick={openOrderDetails}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md hover:shadow-lg transition-all duration-300"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Xem Chi Tiết
-            </Button>
-          </div> */}
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left column - Order info and items */}
             <div className="lg:col-span-2 space-y-6">

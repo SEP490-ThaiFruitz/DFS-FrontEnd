@@ -62,6 +62,7 @@ import { API } from "@/app/key/url";
 import { useQueryClient } from "@tanstack/react-query";
 import { groupItemsByOrder } from "./return-change-product-checked/utils";
 import { placeholderImage } from "@/utils/label";
+import { ReturnExchangeOrders } from "../../return-exchange-columns";
 
 export type ReturnRequestDataType = {
   returnExchangeRequestItemId: string;
@@ -84,10 +85,12 @@ type ItemDataType = {
 
 interface ApprovalDialogProps {
   requestId: string;
+  rowOriginal: ReturnExchangeOrders;
 }
 
 export function ApprovalDialogTrigger({
   requestId,
+  rowOriginal,
 }: // adminNote,
 
 ApprovalDialogProps) {
@@ -184,11 +187,10 @@ ApprovalDialogProps) {
 
       // Format itemsData
       const formattedItemsData = safeOrderReturnData.items.flatMap((item) => {
-        // Kiểm tra nếu là Custom hoặc Combo
         if (["Custom", "Combo"].includes(item.orderItem.itemType)) {
           return (
             item.orderItem?.orderItemDetails?.map((detail) => ({
-              returnExchangeRequestItemId: item.returnExchangeRequestItemId, // Tạo ID duy nhất cho từng sản phẩm con
+              returnExchangeRequestItemId: item.returnExchangeRequestItemId,
               receiveQuantity: item.customerQuantity || 0,
               acceptQuantity: item.acceptQuantity || 0,
               note: item.note || "",
@@ -196,16 +198,14 @@ ApprovalDialogProps) {
           );
         }
 
-        // Trường hợp không phải Custom hoặc Combo
         return {
           returnExchangeRequestItemId: item.returnExchangeRequestItemId,
-          receiveQuantity: item.receiveQuantity || 0,
+          receiveQuantity: item.customerQuantity || 0,
           acceptQuantity: item.acceptQuantity || 0,
           note: item.note || "",
         };
       });
 
-      // Cập nhật state
       setReturnRequestData(formattedReturnRequestData);
       setItemsData(formattedItemsData);
     }
@@ -292,6 +292,8 @@ ApprovalDialogProps) {
         receiveImages: images,
       };
 
+      console.log("payload is sending to server: ", requestBody);
+
       const formData = new FormData();
 
       images.forEach((image) => {
@@ -363,7 +365,15 @@ ApprovalDialogProps) {
         item.returnExchangeRequestItemId
     );
     if (originalItem) {
-      return total + originalItem.orderItem.discountPrice * item.acceptQuantity;
+      const hasDiscount =
+        originalItem.orderItem.discountPrice < originalItem.orderItem.unitPrice;
+
+      const price = hasDiscount
+        ? originalItem.orderItem.unitPrice -
+          originalItem.orderItem.discountPrice
+        : originalItem.orderItem.unitPrice;
+
+      return total + price * item.acceptQuantity;
     }
     return total;
   }, 0);
@@ -383,7 +393,7 @@ ApprovalDialogProps) {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="bg-amber-300 hover:opacity-10 transition-colors text-black w-full flex items-center gap-1"
+          className="bg-[#FAD59A] hover:bg-[#E9A319] transition-colors hoverAnimate text-black w-full flex items-center gap-1"
           onClick={handleApproveClick}
         >
           <ListTodo className="size-5" />
@@ -457,6 +467,7 @@ ApprovalDialogProps) {
                 setShippingFeeResponsibility={setShippingFeeResponsibility}
                 itemsData={itemsData}
                 totalRefundAmount={totalRefundAmount}
+                requestType={rowOriginal.requestType}
               />
             ) : activeTab === "products" ? (
               <ProductReceived
@@ -468,6 +479,8 @@ ApprovalDialogProps) {
                 }
                 returnRequestData={returnRequestData}
                 totalRefundAmount={totalRefundAmount}
+                requestType={rowOriginal.requestType}
+
                 // shippingFeeResponsibility={shippingFeeResponsibility}
               />
             ) : (

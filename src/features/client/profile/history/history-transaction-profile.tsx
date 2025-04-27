@@ -11,6 +11,13 @@ import { ApiResponse } from "@/types/types";
 import { HistoryApiResponse, HistoryTransaction } from "./types/history.type";
 import { omit } from "lodash";
 import { NotData } from "@/components/global-components/no-data";
+import {
+  SearchX,
+  PackageX,
+  FileQuestion,
+  Inbox,
+  FolderOpen,
+} from "lucide-react";
 
 export const HistoryTransactionProfile = () => {
   const historyTransactionProfile = useFetch<HistoryApiResponse>(
@@ -24,12 +31,33 @@ export const HistoryTransactionProfile = () => {
     );
   }
 
-  if (historyTransactionProfile.data?.value.orders.length === 0) {
+  // if (!historyTransactionProfile?.data) {
+  //   return (
+  //     <NotData
+  //       title="Không có dữ liệu"
+  //       description="Bạn chưa có đơn hàng nào."
+  //       className="py-6 motion-preset-slide-right motion-duration-500 w-full h-full"
+  //       action={{
+  //         label: "Mua ngay",
+  //         onClick() {
+  //           window.location.href = "/";
+  //         },
+  //       }}
+  //     />
+  //   );
+  // }
+
+  if (
+    !historyTransactionProfile?.data ||
+    !historyTransactionProfile.data.isSuccess ||
+    historyTransactionProfile.data.value.orders.length === 0
+  ) {
     return (
       <NotData
         title="Không có dữ liệu"
         description="Bạn chưa có đơn hàng nào."
-        className="py-6 motion-preset-slide-right motion-duration-500 w-full h-full"
+        className="py-6 motion-preset-slide-right motion-duration-500 min-w-full min-h-full"
+        icons={[SearchX, PackageX, FileQuestion, Inbox, FolderOpen]}
         action={{
           label: "Mua ngay",
           onClick() {
@@ -40,6 +68,8 @@ export const HistoryTransactionProfile = () => {
     );
   }
 
+  console.log("data test: ", historyTransactionProfile.data);
+
   // const safeData = omit(historyTransactionProfile.data, "error", "isSuccess");
 
   return (
@@ -48,7 +78,7 @@ export const HistoryTransactionProfile = () => {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <OrdersOverview
             orderData={
-              (historyTransactionProfile.data as HistoryApiResponse) ?? []
+              (historyTransactionProfile?.data as HistoryApiResponse) ?? []
             }
           />
         </div>
@@ -56,14 +86,14 @@ export const HistoryTransactionProfile = () => {
           <div className="md:col-span-2">
             <SpendingTrends
               orderData={
-                (historyTransactionProfile.data as HistoryApiResponse) ?? []
+                (historyTransactionProfile?.data as HistoryApiResponse) ?? []
               }
             />
           </div>
           <div>
             <OrderStatusDistribution
               orderData={
-                (historyTransactionProfile.data as HistoryApiResponse) ?? []
+                (historyTransactionProfile?.data as HistoryApiResponse) ?? []
               }
             />
           </div>
@@ -71,7 +101,7 @@ export const HistoryTransactionProfile = () => {
         <div className="grid gap-6 mt-6 md:grid-cols-2">
           <ProductPopularity
             orderData={
-              (historyTransactionProfile.data as HistoryApiResponse) ?? []
+              (historyTransactionProfile?.data as HistoryApiResponse) ?? []
             }
           />
           <TopProducts />
@@ -79,7 +109,7 @@ export const HistoryTransactionProfile = () => {
         <div className="mt-6">
           <RecentOrders
             orderData={
-              (historyTransactionProfile.data as HistoryApiResponse) ?? []
+              (historyTransactionProfile?.data as HistoryApiResponse) ?? []
             }
           />
         </div>

@@ -11,25 +11,22 @@ import { DynamicBreadcrumb } from "@/components/_sidebar-configuration/dynamic-b
 import { JSX, useState } from "react";
 import {
   ChartAreaIcon,
-  FlameIcon,
+  GalleryVerticalEndIcon,
   HomeIcon,
   LucideIcon,
   MapPin,
   MessageCircleIcon,
   PackageIcon,
-  Ticket,
   User,
 } from "lucide-react";
 import InformationTab from "@/features/client/profile/information/information";
 import { OrderTrackingPage } from "@/features/client/profile/order-tracking/order-tracking-page";
 import AddressTab from "@/features/client/profile/address/address-tab";
 import PointTab from "@/features/client/profile/point/point-tab";
-import VoucherTab from "@/features/client/profile/voucher/voucher-tab";
 import FeedbackTab from "@/features/client/profile/feedback/feedback-tab";
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, Profile } from "@/types/types";
 import { USER_KEY } from "@/app/key/user-key";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { placeholderImage } from "@/utils/label";
 import Link from "next/link";
@@ -39,9 +36,6 @@ import ReturnRequestHistory from "@/features/client/profile/request-history/requ
 
 import { API } from "@/actions/client/api-config";
 import Cookies from "js-cookie";
-// name: string;
-//     tag: string;
-//     icon: LucideIcon;
 
 export type TabContentTypes = {
   icon: LucideIcon;
@@ -50,61 +44,6 @@ export type TabContentTypes = {
   title: string;
   description: string;
 };
-
-//  const TAB_CONTENT: {
-//   icon?: LucideIcon;
-//   value: string;
-//   component: JSX.Element;
-//   title: string;
-//   description: string;
-// }[] = [
-//   {
-//     value: "profile",
-//     component: <InformationTab />,
-//     title: "Thông tin cá nhân của bạn",
-//     description:
-//       "Hãy điền thông tin cá nhân của bạn để chúng tôi có thể phục vụ bạn tốt hơn.",
-//   },
-//   {
-//     value: "order-tracking",
-//     component: <OrderTrackingPage />,
-//     title: "Đơn hàng của bạn",
-//     description: "Theo dõi đơn đặt hàng và quản lý mua sắm hiệu quả hơn!",
-//   },
-//   {
-//     value: "address",
-//     component: <AddressTab />,
-//     title: "Địa chỉ giao hàng của bạn",
-//     description:
-//       " Cung cấp thông tin địa chị giao hàng thuận tiện cho việc mua hàng sau này!",
-//   },
-//   {
-//     value: "point",
-//     component: <PointTab />,
-//     title: "Lịch sử tích lũy điểm",
-//     description: "Theo dõi số điểm đã tích lũy và đổi thưởng một cách dễ dàng!",
-//   },
-//   {
-//     value: "voucher",
-//     component: <VoucherTab />,
-//     title: " Mã giảm giá của bạn",
-//     description: "Xem và sử dụng mã giảm giá để tiết kiệm khi mua hàng!.",
-//   },
-//   {
-//     value: "statistic",
-//     component: <div>Statistic</div>,
-//     title: "Báo cáo chi tiêu",
-//     description:
-//       "Theo dõi tổng số tiền bạn đã chi tiêu để quản lý tài chính hiệu quả hơn.",
-//   },
-//   {
-//     value: "feedback",
-//     component: <FeedbackTab />,
-//     title: "Phản hồi & Đánh giá",
-//     description:
-//       "Xem và quản lý phản hồi của bạn để cải thiện trải nghiệm sử dụng.",
-//   },
-// ];
 
 export const TAB_CONTENT: TabContentTypes[] = [
   {
@@ -154,7 +93,7 @@ export const TAB_CONTENT: TabContentTypes[] = [
       "Theo dõi tổng số tiền bạn đã chi tiêu để quản lý tài chính hiệu quả hơn.",
   },
   {
-    icon: ChartAreaIcon,
+    icon: GalleryVerticalEndIcon,
     value: "request-history",
     component: <ReturnRequestHistory />,
     title: "Lịch sử yêu cầu đổi/trả",
@@ -195,10 +134,10 @@ export const SidebarContainer = () => {
         }
         return undefined;
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     },
-    enabled: cookieToken !== undefined
+    enabled: cookieToken !== undefined,
   });
 
   return (

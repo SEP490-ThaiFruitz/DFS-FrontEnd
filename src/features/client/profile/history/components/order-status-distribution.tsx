@@ -36,7 +36,7 @@ interface OrderStatusDistributionProps {
 export const OrderStatusDistribution = memo(
   ({ orderData }: OrderStatusDistributionProps) => {
     // Count orders by status
-    const statusCount = orderData.value.orders.reduce((acc, order) => {
+    const statusCount = orderData.value?.orders?.reduce((acc, order) => {
       if (!acc[order.orderStatus]) {
         acc[order.orderStatus] = 0;
       }

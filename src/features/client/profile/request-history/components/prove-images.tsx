@@ -46,7 +46,7 @@ export const ProveImages = ({
               icons={[ImageIcon, ShieldAlertIcon, ImageOffIcon]}
               title="Chưa có hình ảnh từ chứng minh"
               description="Có vẻ như chưa có hình ảnh từ chứng minh từ bạn cho sản phẩm này"
-              className="w-full"
+              className="min-w-full"
             />
           )}
         </div>
@@ -69,7 +69,7 @@ export const ProveImages = ({
               icons={[ImageIcon, ShieldAlertIcon, ImageOffIcon]}
               title="Đang chờ hình ảnh xác nhận từ nhân viên"
               description="Quá trình xác nhận đang diễn ra, vui lòng chờ đợi"
-              className="w-full"
+              className="min-w-full"
             />
           )}
         </div>

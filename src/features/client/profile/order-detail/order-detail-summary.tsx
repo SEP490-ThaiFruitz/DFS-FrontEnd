@@ -5,9 +5,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { formatVND } from "@/lib/format-currency";
 import { Banknote, ShoppingCart } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { OrderItem as OrderItemTypes } from "../../payment/successful/payment-successful.types";
 import { OrderItem } from "@/app/(client)/payment/success/[[...slug]]/order-confirmation";
+import { FeedbackDialog } from "@/components/custom/_custom-dialog/feedback-dialog";
 
 interface OrderDetaiSummaryProps {
   totalPrice: number;
@@ -33,6 +34,18 @@ const OrderDetaiSummary = ({
   const totalDiscountPriceProducts = orderItems.reduce((total, item) => {
     return total + item.discountPrice * item.quantity;
   }, 0);
+
+  const [isOpenFeedback, setIsOpenFeedback] = useState<Record<string, boolean>>(
+    {}
+  );
+
+  const handleFeedbackOpen = (orderItemId: string) => {
+    setIsOpenFeedback((prev) => ({
+      ...prev,
+      [orderItemId]: !prev[orderItemId],
+    }));
+  };
+
   return (
     <div className="flex flex-col-reverse lg:flex-col gap-4">
       <Card className="top-8 cardStyle">
@@ -108,7 +121,18 @@ const OrderDetaiSummary = ({
           <ScrollArea className="max-h-fit overflow-auto">
             <div className="mr-5">
               {orderItems.map((item: OrderItemTypes) => (
-                <OrderItem key={item.id} item={item} />
+                <React.Fragment key={item.id}>
+                  <OrderItem item={item} />
+                  <Separator />
+
+                  {orderStatus?.toLowerCase() === "completed" && (
+                    <FeedbackDialog
+                      orderItemId={item.id}
+                      isOpen={isOpenFeedback[item.id]}
+                      onClose={() => handleFeedbackOpen(item.id)}
+                    />
+                  )}
+                </React.Fragment>
 
                 // <ViewCardProduct
                 //   key={item.referenceId}

@@ -18,6 +18,7 @@ import {
   SquareMenuIcon,
 } from "lucide-react";
 import { memo } from "react";
+import { justReturnExchangeLabel } from "../../../return-exchange-status/status";
 
 interface GeneralTabProps {
   requestId: string;
@@ -32,6 +33,8 @@ interface GeneralTabProps {
     acceptQuantity: number;
   }[]; // Replace with the actual type of itemsData
   totalRefundAmount: number;
+
+  requestType: string;
 }
 export const GeneralTab = memo(
   ({
@@ -42,6 +45,7 @@ export const GeneralTab = memo(
     setAdminNote,
     itemsData,
     totalRefundAmount,
+    requestType,
   }: GeneralTabProps) => {
     return (
       <div className="m-0 p-4 space-y-6 motion-preset-slide-right motion-duration-300">
@@ -116,7 +120,6 @@ export const GeneralTab = memo(
               value={adminNote}
               onChange={(e) => setAdminNote(e.target.value)}
               autoFocus
-              
               className="min-h-[150px] mt-1.5 resize-none cardStyle"
             />
             <p className="text-xs text-slate-500 mt-1.5">
@@ -133,12 +136,12 @@ export const GeneralTab = memo(
             </div>
             <div>
               <h4 className="font-semibold text-slate-700 text-sm">
-                Tổng quan yêu cầu
+                Tổng quan yêu cầu {justReturnExchangeLabel(requestType)}
               </h4>
               <p className="text-sm text-slate-600 mt-1 underline">
                 Yêu cầu này bao gồm {itemsData.length} sản phẩm với tổng giá trị
-                hoàn tiền là {formatVND(totalRefundAmount)}. Vui lòng xem lại
-                thông tin sản phẩm trong tab Sản phẩm trước khi phê duyệt.
+                là {formatVND(totalRefundAmount)}. Vui lòng xem lại thông tin
+                sản phẩm trong tab Sản phẩm trước khi phê duyệt.
               </p>
             </div>
           </div>

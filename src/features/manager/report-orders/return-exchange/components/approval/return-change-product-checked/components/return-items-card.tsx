@@ -29,16 +29,6 @@ export default function ReturnItemCard({ item }: ReturnItemCardProps) {
           <div className="flex items-center justify-center p-4">
             {productImage ? (
               <>
-                {/* <Image
-                  src={productImage || "/placeholder.svg"}
-                  alt={productDetail?.name || item.orderItem.name}
-                  // fill
-                  height={150}
-                  width={150}
-                  // sizes="160px"
-                  className="object-cover size-full transition-transform group-hover:scale-105 "
-                /> */}
-
                 <div className="relative">
                   <Image
                     // src="/images/third-background.png"

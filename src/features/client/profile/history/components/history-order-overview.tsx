@@ -10,14 +10,14 @@ interface OrderOverviewProps {
   orderData: HistoryApiResponse;
 }
 export const OrdersOverview = memo(({ orderData }: OrderOverviewProps) => {
-  const totalOrders = orderData.value.orders.length;
-  const totalItems = orderData.value.orders.reduce(
+  const totalOrders = orderData?.value?.orders?.length;
+  const totalItems = orderData?.value?.orders.reduce(
     (sum, order) => sum + order.orderQuantity,
     0
   );
-  const totalSpent = orderData.value.moneySpend.toLocaleString("vi-VN");
+  const totalSpent = orderData?.value?.moneySpend.toLocaleString("vi-VN");
   const averageOrderValue = Math.round(
-    orderData.value.moneySpend / totalOrders
+    orderData?.value?.moneySpend / totalOrders
   ).toLocaleString("vi-VN");
 
   const stats = [

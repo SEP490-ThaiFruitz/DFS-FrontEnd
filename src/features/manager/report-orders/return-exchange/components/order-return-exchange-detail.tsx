@@ -33,6 +33,7 @@ import { ApiResponse } from "@/types/types";
 import { NotData } from "@/components/global-components/no-data";
 import {
   getStatusReturnExchangeStep,
+  justReturnExchangeLabel,
   returnExchangeLabel,
   ReturnExchangeRequestStatus,
   statusColorMap,
@@ -196,60 +197,6 @@ export const OrderReturnExchangeDetail = memo(
       );
     }
 
-    // console.log("safeOrderReturnData", safeOrderReturnData);
-
-    // if (!safeOrderReturnData) {
-    //   return (
-    //     <NotData
-    //       action={{
-    //         label: "Thử tải lại",
-    //         onClick: () => orderReturnExchangeDetailData.refetch(),
-    //       }}
-    //       icons={[CopyXIcon, FileWarningIcon, InfoIcon]}
-    //       className="min-w-full h-full"
-    //     />
-    //   );
-    // }
-
-    // Calculate total refund amount
-    const totalRefundAmount = returnRequestData.reduce((total, item) => {
-      return total + item.orderItem.discountPrice * item.customerQuantity;
-    }, 0);
-
-    const handleApproveClick = () => {
-      setIsApprovalDialogOpen(true);
-    };
-
-    const handleItemReceiveQuantityChange = (id: string, value: number) => {
-      setItemsData(
-        itemsData.map((item) =>
-          item.returnExchangeRequestItemId === id
-            ? { ...item, receiveQuantity: value }
-            : item
-        )
-      );
-    };
-
-    const handleItemAcceptQuantityChange = (id: string, value: number) => {
-      setItemsData(
-        itemsData.map((item) =>
-          item.returnExchangeRequestItemId === id
-            ? { ...item, acceptQuantity: value }
-            : item
-        )
-      );
-    };
-
-    const handleItemNoteChange = (id: string, value: string) => {
-      setItemsData(
-        itemsData.map((item) =>
-          item.returnExchangeRequestItemId === id
-            ? { ...item, note: value }
-            : item
-        )
-      );
-    };
-
     const handleApproveSubmit = async () => {
       setIsLoading(true);
 
@@ -315,18 +262,6 @@ export const OrderReturnExchangeDetail = memo(
       }
     };
 
-    // const isApproveDisabled =
-    //   !shippingFeeResponsibility || // chưa chọn người chịu phí
-    //   images.length === 0 || // chưa có hình ảnh nhận hàng
-    //   itemsData.some(
-    //     (item) =>
-    //       item.receiveQuantity === undefined ||
-    //       item.acceptQuantity === undefined ||
-    //       item.acceptQuantity > item.receiveQuantity || // accept không được lớn hơn nhận
-    //       item.acceptQuantity < 0 ||
-    //       item.receiveQuantity < 0
-    //   );
-
     const groupedItems = groupItemsByOrder(safeOrderReturnData.items);
 
     // console.log("data groupedItems: ", groupedItems);
@@ -366,38 +301,13 @@ export const OrderReturnExchangeDetail = memo(
             {safeOrderReturnData !== undefined &&
             safeOrderReturnData != null ? (
               <>
-                {/* <ApprovalDialog
-                  isOpen={isApprovalDialogOpen}
-                  setIsOpen={setIsApprovalDialogOpen}
-                  requestId={requestId}
-                  adminNote={adminNote}
-                  setAdminNote={setAdminNote}
-                  shippingFeeResponsibility={shippingFeeResponsibility}
-                  setShippingFeeResponsibility={setShippingFeeResponsibility}
-                  itemsData={itemsData}
-                  returnRequestData={returnRequestData}
-                  handleItemReceiveQuantityChange={
-                    handleItemReceiveQuantityChange
-                  }
-                  handleItemAcceptQuantityChange={
-                    handleItemAcceptQuantityChange
-                  }
-                  handleItemNoteChange={handleItemNoteChange}
-                  receiveImages={receiveImages}
-                  setImages={setImages}
-                  images={images}
-                  // removeImage={removeImage}
-                  isLoading={isLoading}
-                  onSubmit={handleApproveSubmit}
-                  disabledCondition={isApproveDisabled}
-                /> */}
-
                 <div className="sticky top-0 z-10 bg-white border-b p-6 pb-4 shadow-sm cardStyle">
                   <SheetHeader className="text-left">
                     <div className="flex items-center justify-between">
                       <SheetTitle className="text-xl font-bold flex items-center gap-2">
                         <ClipboardList className="size-8 text-emerald-600" />
-                        Chi tiết yêu cầu trả hàng
+                        Chi tiết yêu cầu{" "}
+                        {justReturnExchangeLabel(requestStatus)}
                       </SheetTitle>
                       {/* <StatusBadge status={safeOrderReturnData.requestStatus} /> */}
 
@@ -454,7 +364,7 @@ export const OrderReturnExchangeDetail = memo(
                   </div>
 
                   {/* Items */}
-                  <ScrollArea className="h-[500px] w-full ">
+                  <ScrollArea className="h-[400px] md:h-[600px] w-full ">
                     <SectionHeader icon={Package} title="Sản phẩm trả lại" />
                     {/* {safeOrderReturnData?.items?.map((item, index) => {
                       console.log(item);
@@ -502,10 +412,10 @@ export const OrderReturnExchangeDetail = memo(
                   </ScrollArea>
                 </div>
 
-                <ApprovalActions
+                {/* <ApprovalActions
                   totalRefundAmount={totalRefundAmount}
                   onApproveClick={handleApproveClick}
-                />
+                /> */}
               </>
             ) : (
               <NotData

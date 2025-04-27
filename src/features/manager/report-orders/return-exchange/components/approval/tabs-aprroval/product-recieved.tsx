@@ -16,9 +16,13 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { justReturnExchangeLabel } from "../../../return-exchange-status/status";
+import { placeholderImage } from "@/utils/label";
+import StatusBadge from "../return-change-product-checked/components/status-badge";
 
 interface ProductReceivedProps {
   itemsData: {
@@ -33,6 +37,8 @@ interface ProductReceivedProps {
   handleItemAcceptQuantityChange: (id: string, quantity: number) => void;
   handleItemNoteChange: (id: string, note: string) => void;
   totalRefundAmount: number;
+
+  requestType: string;
 }
 export const ProductReceived = memo(
   ({
@@ -42,11 +48,9 @@ export const ProductReceived = memo(
     handleItemAcceptQuantityChange,
     handleItemNoteChange,
     totalRefundAmount,
+    requestType,
   }: ProductReceivedProps) => {
     const entichReturnRequestData = returnRequestData.map((data) => {});
-
-    // console.log("data return request data ", returnRequestData);
-    // console.log("gia tri itemsData ", itemsData);
 
     return (
       <ScrollArea className="max-h-[60vh] sm:max-h-[70vh] lg:max-h-[80vh] overflow-y-auto space-y-4 motion-preset-slide-right motion-duration-300 pb-16">
@@ -57,7 +61,9 @@ export const ProductReceived = memo(
               item.returnExchangeRequestItemId
           );
 
-          // console.log({ returnRequestData });
+          const discountPrice = originalItem?.orderItem?.discountPrice ?? 0;
+          const originalPrice = originalItem?.orderItem?.unitPrice ?? 0;
+          const hasDiscount = discountPrice < originalPrice;
 
           return (
             <Card
@@ -79,8 +85,8 @@ export const ProductReceived = memo(
                 </div>
               </CardHeader>
               <CardContent className="p-4">
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-12 md:col-span-3">
+                <div className="flex w-full gap-2">
+                  {/* <div className="col-span-12 md:col-span-3">
                     <div className="relative h-24 w-24 rounded-md overflow-hidden border">
                       <Image
                         src={
@@ -91,19 +97,37 @@ export const ProductReceived = memo(
                         className="object-cover"
                       />
                     </div>
+                  </div> */}
+
+                  <div className="relative">
+                    <Image
+                      // src="/images/third-background.png"
+                      src={originalItem?.orderItem.image ?? placeholderImage}
+                      alt={originalItem?.orderItem.name || "Sản phẩm"}
+                      width={500}
+                      height={240}
+                      className="h-60 w-full object-cover rounded-xl z-40 group-hover/card:scale-105 cursor-pointer transition duration-300"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={false}
+                      quality={85}
+                    />
+
+                    <div className="absolute top-2 right-2">
+                      <StatusBadge status={requestType} />
+                    </div>
                   </div>
 
-                  <div className="col-span-12 md:col-span-9 space-y-4">
+                  <div className=" space-y-4 w-full">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label
                           htmlFor={`receive-quantity-${index}`}
-                          className="text-sm font-medium"
+                          className="text-sm font-semibold text-slate-700"
                         >
                           Số lượng đã nhận
                         </Label>
                         <div className="flex items-center mt-1.5">
-                          <Button
+                          {/* <Button
                             type="button"
                             variant="outline"
                             size="icon"
@@ -118,7 +142,7 @@ export const ProductReceived = memo(
                             disabled
                           >
                             <span>-</span>
-                          </Button>
+                          </Button> */}
                           <Input
                             id={`receive-quantity-${index}`}
                             type="number"
@@ -135,7 +159,7 @@ export const ProductReceived = memo(
                             disabled
                             className="rounded-none text-center h-9"
                           />
-                          <Button
+                          {/* <Button
                             type="button"
                             variant="outline"
                             size="icon"
@@ -157,7 +181,7 @@ export const ProductReceived = memo(
                             disabled
                           >
                             <span>+</span>
-                          </Button>
+                          </Button> */}
                         </div>
                         <p className="text-xs text-slate-500 mt-1.5">
                           Số lượng thực tế nhận được từ khách hàng
@@ -166,7 +190,7 @@ export const ProductReceived = memo(
                       <div>
                         <Label
                           htmlFor={`accept-quantity-${index}`}
-                          className="text-sm font-medium"
+                          className="text-sm font-semibold text-slate-700"
                         >
                           Số lượng chấp nhận
                         </Label>
@@ -198,57 +222,6 @@ export const ProductReceived = memo(
                                 })}
                             </SelectContent>
                           </Select>
-                          {/* <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9 rounded-r-none"
-                            onClick={() =>
-                              handleItemAcceptQuantityChange(
-                                item.returnExchangeRequestItemId,
-                                Math.max(0, item.acceptQuantity - 1)
-                              )
-                            }
-                            disabled={item.acceptQuantity <= 0}
-                          >
-                            <span>-</span>
-                          </Button>
-                          <Input
-                            id={`accept-quantity-${index}`}
-                            type="number"
-                            min="0"
-                            max={originalItem?.orderItem?.customerQuantity || 1}
-                            value={item.acceptQuantity}
-                            onChange={(e) =>
-                              handleItemAcceptQuantityChange(
-                                item.returnExchangeRequestItemId,
-                                Number.parseInt(e.target.value) || 0
-                              )
-                            }
-                            className="rounded-none text-center h-9"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9 rounded-l-none"
-                            onClick={() =>
-                              handleItemAcceptQuantityChange(
-                                item.returnExchangeRequestItemId,
-                                Math.min(
-                                  originalItem?.orderItem?.customerQuantity ||
-                                    1,
-                                  item.acceptQuantity + 1
-                                )
-                              )
-                            }
-                            disabled={
-                              item.acceptQuantity >=
-                              (originalItem?.orderItem?.customerQuantity || 1)
-                            }
-                          >
-                            <span>+</span>
-                          </Button> */}
                         </div>
                         <p className="text-xs text-slate-500 mt-1.5">
                           Số lượng được chấp nhận để hoàn tiền
@@ -259,7 +232,7 @@ export const ProductReceived = memo(
                     <div>
                       <Label
                         htmlFor={`item-note-${index}`}
-                        className="text-sm font-medium"
+                        className="text-sm font-semibold text-slate-700"
                       >
                         Ghi chú cho sản phẩm
                       </Label>
@@ -282,31 +255,48 @@ export const ProductReceived = memo(
                         <span className="text-sm font-semibold text-slate-600">
                           Đơn giá:
                         </span>
-                        <span className="font-medium">
+                        <div className="flex items-center gap-x-2 font-semibold text-amber-500">
                           {formatVND(originalItem?.orderItem.unitPrice || 0)}
-                        </span>
+                        </div>
                       </div>
                       {(originalItem?.orderItem.percentage || 0) > 0 && (
                         <div className="flex justify-between items-center mt-1">
                           <span className="text-sm font-semibold text-slate-600">
                             Giảm giá:
                           </span>
-                          <span className="text-rose-500">
+                          <span className="text-rose-500 font-semibold">
                             -{originalItem?.orderItem.percentage}%
                           </span>
                         </div>
                       )}
+
+                      {hasDiscount && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-semibold text-slate-600">
+                            Giá đã giảm:
+                          </span>
+                          <div className="flex items-center gap-x-2 font-semibold text-green-500">
+                            {formatVND(discountPrice || 0)}
+                          </div>
+                        </div>
+                      )}
+
                       <Separator className="my-2" />
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">
-                          Hoàn tiền cho sản phẩm:
+                        <span className="text-sm font-semibold">
+                          {justReturnExchangeLabel(requestType)} sản phẩm:
                         </span>
-                        <span className="text-emerald-600 font-semibold">
-                          {formatVND(
-                            (originalItem?.orderItem.discountPrice || 0) *
-                              item.acceptQuantity
-                          )}
-                        </span>
+                        <div className="flex items-center gap-1 text-sky-500 text-base font-semibold">
+                          <span>x{item.receiveQuantity}</span>
+
+                          <SelectSeparator className="h-4 w-[1px] mx-1 bg-slate-500 " />
+                          <span>
+                            {formatVND(
+                              (hasDiscount ? discountPrice : originalPrice) *
+                                item.receiveQuantity
+                            )}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -316,17 +306,19 @@ export const ProductReceived = memo(
           );
         })}
 
-        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mt-4">
+        {/* <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CheckCircleIcon className="size-8 text-green-500" />
-              <span className="font-medium">Tổng số tiền hoàn lại</span>
+              <span className="font-semibold text-slate-700">
+                <StatusBadge status={requestType} />
+              </span>
             </div>
             <span className="text-lg font-semibold text-green-600">
               {formatVND(totalRefundAmount)}
             </span>
           </div>
-        </div>
+        </div> */}
       </ScrollArea>
     );
   }

@@ -1,5 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatVietnamesePhoneNumber } from "@/lib/format-phone-number";
 
 interface DeliveryAddressCardProps {
   address: {
@@ -26,9 +27,13 @@ export default function DeliveryAddressCard({
             <MapPin className="h-6 w-6 text-amber-600" />
           </div>
           <div className="space-y-1">
-            <p className="font-medium text-lg">{address.receiverName}</p>
-            <p className="text-sm">{address.receiverPhone}</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="font-semibold text-sky-500 text-lg">
+              {address.receiverName}
+            </p>
+            <p className="text-sm">
+              {formatVietnamesePhoneNumber(address.receiverPhone)}
+            </p>
+            <p className="text-sm font-semibold underline text-muted-foreground">
               {address.receiverAddress}
             </p>
           </div>

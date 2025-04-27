@@ -43,7 +43,10 @@ export const SpendingTrends = memo(({ orderData }: SpendingTrendsProps) => {
   //     .replace(/Dec/g, "Tháng 12"),
   // }));
 
-  const monthlyData = groupOrdersByMonth(orderData.value.orders, "buyDate");
+  const monthlyData = groupOrdersByMonth(
+    orderData?.value?.orders ?? [],
+    "buyDate"
+  );
   const translatedData = translateMonthsToVietnamese(monthlyData);
 
   return (

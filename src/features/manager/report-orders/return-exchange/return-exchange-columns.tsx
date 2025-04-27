@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   BarcodeIcon,
   Calendar,
+  CircleXIcon,
   ExternalLink,
   LinkIcon,
   ListCheckIcon,
@@ -258,8 +259,8 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
     header: ({}) => {
       return (
         <div className="flex items-center gap-2 font-semibold">
-          <TextIcon className="size-6" />
-          Lý do
+          <CircleXIcon className="size-6" />
+          Lý do từ chối
         </div>
       );
     },
@@ -268,7 +269,7 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
 
       return reason ? (
         <div
-          className="max-w-[200px] font-semibold truncate underline"
+          className=" text-violet-500 font-semibold line-clamp-3 underline"
           title={reason}
         >
           {reason}
@@ -334,7 +335,7 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
       const requestDate = row.original.requestDate as string;
 
       return (
-        <div className="flex items-center gap-2 text-slate-700">
+        <div className="flex items-center gap-2 text-slate-700 font-semibold">
           <Calendar className="size-6" />
           {vietnameseDate(requestDate, true)}
         </div>
@@ -362,12 +363,14 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
       const processedDate = row.original.processedDate as string | null;
 
       return (
-        <div className="flex items-center gap-2 text-slate-700">
+        <div className="flex items-center gap-2 text-slate-700 font-semibold">
           <Calendar className="size-6" />
           {processedDate ? (
             vietnameseDate(processedDate, true)
           ) : (
-            <span className="text-slate-700">Chưa được xử lý</span>
+            <span className="text-slate-700 font-semibold">
+              Chưa được xử lý
+            </span>
           )}
         </div>
       );
@@ -449,7 +452,7 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
       const censor = row.original;
 
       return censor.requestStatus?.toLowerCase() === "processing" ? (
-        <ApprovalDialogTrigger requestId={censor.id} />
+        <ApprovalDialogTrigger requestId={censor.id} rowOriginal={censor} />
       ) : (
         ""
       );
@@ -508,9 +511,15 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
               rowOriginal={request}
             />
 
-            <RejectRequestReturnExchangeDialog requestId={request.id} />
+            {request?.requestStatus !== "Completed" &&
+              request?.requestStatus !== "Cancelled" && (
+                <RejectRequestReturnExchangeDialog requestId={request.id} />
+              )}
 
-            <ApprovalDialogTrigger requestId={request.id} />
+            {/* <ApprovalDialogTrigger requestId={request.id} 
+            
+            rowOriginal={request}
+            /> */}
             {/* {request.requestStatus === "Pending" && (
               <>
                 <DropdownMenuSeparator />

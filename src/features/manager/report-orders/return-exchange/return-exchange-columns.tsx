@@ -253,6 +253,38 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   },
 
   {
+    id: "Lý do từ chối",
+    accessorKey: "reasonReject",
+    header: ({}) => {
+      return (
+        <div className="flex items-center gap-2 font-semibold">
+          <TextIcon className="size-6" />
+          Lý do
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const reason = row.original?.reasonReject as string | null;
+
+      return reason ? (
+        <div
+          className="max-w-[200px] font-semibold truncate underline"
+          title={reason}
+        >
+          {reason}
+        </div>
+      ) : null;
+    },
+    meta: {
+      align: "center",
+      export: {
+        pdf: { header: "Lý do từ chối" },
+        csv: { header: "Lý do từ chối" },
+      },
+    },
+  },
+
+  {
     id: "linkDocument",
     accessorKey: "linkDocument",
     header: ({ column }) => {

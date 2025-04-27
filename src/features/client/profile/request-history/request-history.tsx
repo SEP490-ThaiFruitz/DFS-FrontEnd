@@ -5,11 +5,19 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
+  BadgeCheckIcon,
   ChevronDown,
   ChevronUp,
+  CircleXIcon,
   Clock,
+  GalleryVerticalEndIcon,
+  GroupIcon,
   Package,
+  PackageMinusIcon,
   RefreshCw,
+  ReplaceIcon,
+  SendToBackIcon,
+  SettingsIcon,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +34,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderItem as OrderItemTypes } from "../../payment/successful/payment-successful.types";
 import { OrderItem } from "@/app/(client)/payment/success/[[...slug]]/order-confirmation";
 import { ProveImages } from "./components/prove-images";
+import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
+import { USER_KEY } from "@/app/key/user-key";
+import ImprovedLoadingPage from "@/app/(client)/loading";
+import { ApiResponse } from "@/types/types";
+import { NotData } from "@/components/global-components/no-data";
+import { VercelTab } from "@/components/custom/_custom_tabs/vercel-tabs";
+import { formatRelativeTime, vietnameseDate } from "@/utils/date";
+import { RequestHistoryContent } from "./components/request-history-content";
 
 // Define types based on the provided data structure
 interface OrderItemDetail {
@@ -311,22 +327,29 @@ const sampleData: { value: ReturnExchangeRequest[] } = {
 };
 
 // Helper function to format currency
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
 
-// Helper function to format date
-const formatDate = (dateString: string) => {
-  try {
-    const date = new Date(dateString);
-    return format(date, "dd/MM/yyyy HH:mm", { locale: vi });
-  } catch (error) {
-    return "Không xác định";
-  }
-};
+const TABS = [
+  {
+    id: "all",
+    label: "Tất cả",
+    icon: GalleryVerticalEndIcon,
+  },
+  {
+    id: "processing",
+    label: "Đang xử lý",
+    icon: SettingsIcon,
+  },
+  {
+    id: "completed",
+    label: "Đã duyệt",
+    icon: BadgeCheckIcon,
+  },
+  {
+    id: "rejected",
+    label: "Bị từ chối",
+    icon: CircleXIcon,
+  },
+];
 
 // Status badge component
 const StatusBadge = ({ status }: { status: string }) => {
@@ -350,12 +373,19 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export default function ReturnRequestHistory() {
+  const [activeTab, setActiveTab] = useState<string>("all");
+
   // State to track expanded items
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
     {}
   );
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
     {}
+  );
+
+  const requestHistory = useFetch<ApiResponse<ReturnExchangeRequest[]>>(
+    "/Orders/user/request-exchange",
+    [USER_KEY.REQUEST_ORDER_HISTORY]
   );
 
   // Group items by referenceId
@@ -389,243 +419,78 @@ export default function ReturnRequestHistory() {
     }));
   };
 
+  if (requestHistory.isLoading) {
+    return <ImprovedLoadingPage />;
+  }
+
+  if (requestHistory?.data?.value?.length === 0) {
+    return (
+      <NotData
+        title="Có vẻ như bạn chưa có yêu cầu đổi trả đơn hàng nào"
+        description="Bạn có thể theo dõi những đơn hàng bạn đã yêu cầu đổi trả tại đây!"
+        className="min-w-full h-full"
+        icons={[PackageMinusIcon, SendToBackIcon, GroupIcon, ReplaceIcon]}
+      />
+    );
+  }
+
+  const safeRequestHistory = requestHistory.data?.value ?? [];
+
   return (
     // <div className="container mx-auto py-6 px-4 max-w-5xl">
     <div className="p-4 w-full">
       <h1 className="text-2xl font-bold mb-6">Lịch sử yêu cầu đổi/trả hàng</h1>
 
-      <Tabs defaultValue="all" className="w-full">
+      <VercelTab
+        tabs={TABS}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        className="mb-2"
+      />
+
+      {activeTab === "all" ? (
+        <div className="space-y-6">
+          {safeRequestHistory.map((request) => {
+            const groupedItems = groupItemsByReferenceId(
+              request.returnExchangeRequestItems
+            );
+
+            return (
+              <RequestHistoryContent
+                key={request.id}
+                expandedGroups={expandedGroups}
+                expandedItems={expandedItems}
+                groupedItems={groupedItems}
+                request={request}
+                toggleGroup={toggleGroup}
+                toggleItemDetails={toggleItemDetails}
+              />
+            );
+          })}
+        </div>
+      ) : activeTab === "processing" ? (
+        <Card className="p-8 text-center">
+          <p className="text-muted-foreground">Không có yêu cầu đang xử lý</p>
+        </Card>
+      ) : activeTab === "approved" ? (
+        <Card className="p-8 text-center">
+          <p className="text-muted-foreground">Không có yêu cầu đã duyệt</p>
+        </Card>
+      ) : (
+        activeTab === "rejected" && (
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">Không có yêu cầu đã từ chối</p>
+          </Card>
+        )
+      )}
+
+      {/* <Tabs defaultValue="all" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="all">Tất cả</TabsTrigger>
           <TabsTrigger value="pending">Đang xử lý</TabsTrigger>
           <TabsTrigger value="approved">Đã duyệt</TabsTrigger>
           <TabsTrigger value="rejected">Đã từ chối</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="all" className="space-y-6">
-          {sampleData.value.map((request) => {
-            const groupedItems = groupItemsByReferenceId(
-              request.returnExchangeRequestItems
-            );
-
-            return (
-              <Card key={request.id} className="overflow-hidden cardStyle">
-                <CardHeader className="bg-muted/30">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <RefreshCw className="h-5 w-5" />
-                        Yêu cầu {request.requestType} #{request.orderId}
-                      </CardTitle>
-                      <CardDescription className="mt-1">
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          Ngày yêu cầu: {formatDate(request.requestDate)}
-                        </span>
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-col md:items-end gap-2">
-                      <StatusBadge status={request.requestStatus} />
-                      <span className="text-sm font-medium">
-                        Lý do: {request.reason}
-                      </span>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="p-0">
-                  {Object.entries(groupedItems).map(([referenceId, items]) => {
-                    // const hasImages= items[0].
-
-                    // items[0].
-
-                    const firstChild = items[0].orderItem;
-
-                    const combo: OrderItemTypes = {
-                      customImages: firstChild.customImages,
-                      discountPrice: firstChild.discountPrice,
-                      id: firstChild.id,
-                      referenceId: firstChild.referenceId,
-                      image: firstChild.image,
-                      itemType: firstChild.itemType,
-                      name: firstChild.name,
-                      percentage: firstChild.percentage,
-                      quantity: firstChild.quantity,
-                      unitPrice: firstChild.unitPrice,
-                      isCanFeedback: firstChild.isCanFeedback,
-                    };
-
-                    return (
-                      <div
-                        key={referenceId}
-                        className="border-b last:border-b-0"
-                      >
-                        <div
-                          className="p-4 flex  flex-col cursor-pointer hover:bg-muted/20 transition-colors w-full"
-                          onClick={() => toggleGroup(referenceId)}
-                        >
-                          <OrderItem item={combo} />
-                          <div className="w-full"></div>
-
-                          <div className="flex items-center gap-2 mt-1.5">
-                            {/* <span className="text-sm font-medium">
-                              {formatCurrency(items[0].orderItem.discountPrice)}
-                            </span> */}
-                            {expandedGroups[referenceId] ? (
-                              <div className="flex items-center gap-x-1 motion-preset-shake ">
-                                <ChevronUp className="h-5 w-5" />
-                                <span className="font-semibold text-slate-700">
-                                  Thu gọn chi tiết
-                                </span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-x-1 motion-preset-shake ">
-                                <ChevronDown className="h-5 w-5" />
-                                <span className="font-semibold text-slate-700">
-                                  Xem chi tiết
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {expandedGroups[referenceId] && (
-                          <div className="px-4 pb-4 motion-preset-bounce">
-                            {items.map((item) => (
-                              <div
-                                key={item.returnExchangeRequestItemId}
-                                className="mt-3 pl-4 border-l-2 border-muted"
-                              >
-                                {/* <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-                                  <div className="flex items-center gap-2">
-                                    <Package className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-sm font-medium">
-                                      {item.productStatus}
-                                    </span>
-                                  </div>
-                                  <Badge variant="outline" className="w-fit">
-                                    {item.requestItemStatus}
-                                  </Badge>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                                  <div className="space-y-2">
-                                    <p className="text-sm font-medium">
-                                      Hình ảnh từ khách hàng:
-                                    </p>
-                                    <div className="relative h-40 w-full rounded-md overflow-hidden border">
-                                      <Image
-                                        src={
-                                          item.customerImage ||
-                                          "/placeholder.svg"
-                                        }
-                                        alt="Customer provided image"
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    </div>
-                                  </div>
-
-                                  {item.receiveImage && (
-                                    <div className="space-y-2">
-                                      <p className="text-sm font-medium">
-                                        Hình ảnh khi nhận:
-                                      </p>
-                                      <div className="relative h-40 w-full rounded-md overflow-hidden border">
-                                        <Image
-                                          src={
-                                            item.receiveImage ||
-                                            "/placeholder.svg"
-                                          }
-                                          alt="Received item image"
-                                          fill
-                                          className="object-cover"
-                                        />
-                                      </div>
-                                    </div>
-                                  )}
-                                </div> */}
-
-                                <ProveImages
-                                  customerImage={item.customerImage}
-                                  productStatus={item.productStatus}
-                                  receiveImage={item.receiveImage}
-                                />
-
-                                {item.orderItem.orderItemDetails &&
-                                  item.orderItem.orderItemDetails.length >
-                                    0 && (
-                                    <div className="mt-4">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="flex items-center gap-1 mb-2 h-8 font-semibold hover:underline"
-                                        onClick={() =>
-                                          toggleItemDetails(
-                                            item.returnExchangeRequestItemId
-                                          )
-                                        }
-                                      >
-                                        {expandedItems[
-                                          item.returnExchangeRequestItemId
-                                        ] ? (
-                                          <ChevronUp className="h-4 w-4" />
-                                        ) : (
-                                          <ChevronDown className="h-4 w-4" />
-                                        )}
-                                        Chi tiết sản phẩm
-                                      </Button>
-
-                                      {expandedItems[
-                                        item.returnExchangeRequestItemId
-                                      ] && (
-                                        <div className="bg-muted/20 rounded-md p-3 space-y-3 motion-preset-focus">
-                                          {item.orderItem.orderItemDetails.map(
-                                            (detail) => {
-                                              const orderItem: OrderItemTypes =
-                                                {
-                                                  id: detail.id,
-                                                  referenceId:
-                                                    detail.productVariantId,
-                                                  customImages: null,
-                                                  discountPrice:
-                                                    detail.discountedPrice,
-                                                  image: detail.image,
-                                                  quantity: detail.quantity,
-                                                  itemType: "Single",
-                                                  name: detail.name,
-                                                  percentage:
-                                                    detail.discountPercentage,
-                                                  unitPrice: detail.unitPrice,
-                                                  isCanFeedback: false,
-                                                };
-
-                                              return (
-                                                <OrderItem
-                                                  item={orderItem}
-                                                  key={detail.id}
-                                                />
-                                              );
-                                            }
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-
-                                <Separator className="my-4" />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </TabsContent>
 
         <TabsContent value="pending">
           <Card className="p-8 text-center">
@@ -644,7 +509,7 @@ export default function ReturnRequestHistory() {
             <p className="text-muted-foreground">Không có yêu cầu đã từ chối</p>
           </Card>
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 }

@@ -13,7 +13,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { type Cell, type Row, flexRender } from "@tanstack/react-table";
-import { Edit2 } from "lucide-react";
+import { CircleSlash2Icon, Edit2 } from "lucide-react";
 import React, { type CSSProperties, useState } from "react";
 import { useTableContext } from "../../table-context";
 import { getAlignment } from "../utils";
@@ -140,9 +140,12 @@ export function TableBody({ customRowStyles }: TableBodyProps) {
         <TableRow>
           <TableCell
             colSpan={table.getAllColumns().length}
-            className="h-24 text-center"
+            className="h-24 font-semibold w-full"
           >
-            No results.
+            <div className="flex items-center justify-center w-full text-lg gap-1">
+              <CircleSlash2Icon className="size-6" />
+              Chưa có dữ liệu!
+            </div>
           </TableCell>
         </TableRow>
       )}

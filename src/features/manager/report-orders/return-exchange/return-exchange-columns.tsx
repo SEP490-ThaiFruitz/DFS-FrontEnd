@@ -253,7 +253,7 @@ export const returnExchangeColumns: ColumnDef<ReturnExchangeOrders>[] = [
   },
 
   {
-    id: "Tài liệu chứng minh",
+    id: "linkDocument",
     accessorKey: "linkDocument",
     header: ({ column }) => {
       return (

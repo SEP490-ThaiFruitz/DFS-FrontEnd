@@ -13,10 +13,23 @@ import {
 import { DataTableSkeleton } from "@/components/global-components/custom-skeleton/data-table-skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import { TotalCard } from "@/app/(manager)/manager/components/total-card";
-import { Banknote, ListCheckIcon, ListOrderedIcon } from "lucide-react";
+import {
+  BadgeCheckIcon,
+  Banknote,
+  CheckCircle2,
+  Clock,
+  ListCheckIcon,
+  ListOrderedIcon,
+  PackageIcon,
+  PackageOpen,
+  SendToBackIcon,
+  Truck,
+  Undo2,
+  XCircle,
+} from "lucide-react";
 import { formatVND } from "@/lib/format-currency";
 import { OrderAreaChart } from "./order-area-chart";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { VercelTab } from "@/components/custom/_custom_tabs/vercel-tabs";
 import {
   returnExchangeColumns,
@@ -25,41 +38,18 @@ import {
 import { calculateGrowthRate } from "@/lib/calculate";
 
 const ORDER_STATUS_TAB = [
-  {
-    id: "all",
-    label: "Tất cả",
-    icon: ListOrderedIcon,
-  },
-  // {
-  //   id: "pending",
-  //   label: "Chờ xác nhận",
-  //   icon: ListOrderedIcon,
-  // },
-  // {
-  //   id: "confirmed",
-  //   label: "Đã xác nhận",
-  //   icon: ListOrderedIcon,
-  // },
-  // {
-  //   id: "shipping",
-  //   label: "Đang giao hàng",
-  //   icon: ListOrderedIcon,
-  // },
-  // {
-  //   id: "completed",
-  //   label: "Hoàn thành",
-  //   icon: ListOrderedIcon,
-  // },
-  // {
-  //   id: "cancelled",
-  //   label: "Đã hủy",
-  //   icon: ListOrderedIcon,
-  // },
-  {
-    id: "return-exchange",
-    label: "Đổi trả",
-    icon: ListCheckIcon,
-  },
+  { id: "all", label: "Tất cả", icon: ListOrderedIcon },
+  { id: "pending", label: "Chờ xác nhận", icon: Clock },
+  { id: "packaging", label: "Đang đóng gói", icon: PackageIcon },
+  { id: "shipping", label: "Đang giao", icon: Truck },
+  { id: "delivering", label: "Đang giao tới", icon: CheckCircle2 },
+  { id: "delivered", label: "Đã giao", icon: PackageOpen },
+  { id: "received", label: "Đã nhận", icon: PackageOpen },
+  { id: "completed", label: "Hoàn thành", icon: BadgeCheckIcon },
+  { id: "cancelled", label: "Đã hủy", icon: XCircle },
+  { id: "returned", label: "Đã trả hàng", icon: Undo2 },
+  { id: "exchanged", label: "Đổi hàng", icon: SendToBackIcon },
+  { id: "return-exchange", label: "Yêu cầu đổi/trả", icon: ListOrderedIcon },
 ];
 
 interface ReportOrdersListClientProps {
@@ -84,18 +74,9 @@ export const ReportOrdersListClient = ({
     [ORDERS_KEY.RETURN_EXCHANGE]
   );
 
-  if (orderList.isLoading && returnExchange.isLoading) {
-    return <DataTableSkeleton />;
-  }
-
   const data = orderList.data?.value;
 
   const returnExchangeData = returnExchange.data?.value;
-
-  // Đếm số đơn hàng đã xác nhận
-  const confirmedOrders = data?.items.filter(
-    (order) => order?.status?.toLowerCase() === "received"
-  ).length;
 
   // const chartData = data?.items.map((order) => {
   //   return {
@@ -107,6 +88,10 @@ export const ReportOrdersListClient = ({
   // });
 
   // growth calculate
+
+  if (orderList.isLoading && returnExchange.isLoading) {
+    return <DataTableSkeleton />;
+  }
 
   const filterOrdersByDateRange = (
     orders: OrderData[],
@@ -157,9 +142,14 @@ export const ReportOrdersListClient = ({
       (sum, order) => sum + order?.shipFee,
       0
     );
-    const confirmedOrders = data?.items.filter(
-      (order) => order?.status?.toLowerCase() === "received"
+    const confirmedOrders = orders.filter(
+      (order) =>
+        order?.status?.toLowerCase() !== "pending" &&
+        order?.status?.toLowerCase() !== "packaging"
     ).length;
+    // const confirmedOrders = data?.items.filter(
+    //   (order) => order?.status?.toLowerCase() === "received"
+    // ).length;
 
     return { totalOrders, totalSales, totalShipFee, confirmedOrders };
   };
@@ -189,7 +179,7 @@ export const ReportOrdersListClient = ({
   );
 
   const confirmedOrdersGrowthRate = calculateGrowthRate(
-    confirmedOrders ?? 0,
+    currentMetrics.confirmedOrders ?? 0,
     previousMetrics.confirmedOrders ?? 0
   );
 
@@ -256,6 +246,27 @@ export const ReportOrdersListClient = ({
     };
   });
 
+  const filterOrdersByStatus = (orders: OrderData[], status: string) => {
+    if (status === "all") return orders;
+    return orders?.filter((order) => order.status?.toLowerCase() === status);
+  };
+
+  const filterReturnExchangeOrdersByStatus = (
+    orders: ReturnExchangeOrders[],
+    status: string
+  ) => {
+    if (status === "all") return orders;
+    return orders?.filter(
+      (order) => order.requestStatus?.toLowerCase() === status
+    );
+  };
+
+  const filteredOrders = filterOrdersByStatus(data?.items || [], tab);
+  const filteredReturnExchangeOrders = filterReturnExchangeOrdersByStatus(
+    returnExchangeData || [],
+    tab
+  );
+
   return (
     <div className="flex-1 space-y-6 p-6">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -302,20 +313,7 @@ export const ReportOrdersListClient = ({
 
       <VercelTab tabs={ORDER_STATUS_TAB} activeTab={tab} onTabChange={setTab} />
 
-      {tab === "all" ? (
-        <EnhanceDataTableWithAllFeatures
-          columns={orderListColumns}
-          initialData={data?.items || []}
-          queryKey={[ORDERS_KEY.ORDERS_LIST]}
-          title="Danh sách đơn hàng đã đặt"
-          description="Danh sách đơn hàng đã đặt của khách hàng"
-          queryClient={{
-            refetch: orderList.refetch,
-            isFetching: orderList.isFetching,
-            isLoading: orderList.isLoading,
-          }}
-        />
-      ) : (
+      {tab === "return-exchange" ? (
         <EnhanceDataTableWithAllFeatures
           columns={returnExchangeColumns}
           initialData={returnExchangeData || []}
@@ -328,32 +326,48 @@ export const ReportOrdersListClient = ({
           title="Danh sách đơn hàng yêu cầu đổi trả"
           description="Danh sách đơn hàng yêu cầu đổi trả của khách hàng"
         />
+      ) : (
+        <EnhanceDataTableWithAllFeatures
+          columns={orderListColumns}
+          initialData={filteredOrders}
+          queryKey={[ORDERS_KEY.ORDERS_LIST]}
+          title="Danh sách đơn hàng đã đặt"
+          description="Danh sách đơn hàng đã đặt của khách hàng"
+          queryClient={{
+            refetch: orderList.refetch,
+            isFetching: orderList.isFetching,
+            isLoading: orderList.isLoading,
+          }}
+        />
       )}
 
-      {/* 
-      <EnhanceDataTableWithAllFeatures
-        columns={returnExchangeColumns}
-        initialData={returnExchangeData || []}
-        queryKey={[ORDERS_KEY.RETURN_EXCHANGE]}
-        queryClient={{
-          refetch: returnExchange.refetch,
-          isFetching: returnExchange.isFetching,
-          isLoading: returnExchange.isLoading,
-        }}
-        title="Danh sách đơn hàng"
-        description="Danh sách đơn hàng đã đặt của khách hàng"
-      /> */}
-
-      {/* <EnhanceDataTable
-        columns={orderListColumns}
-        initialData={orderList.data?.value?.items || []}
-        queryKey={[ORDERS_KEY.ORDERS_LIST]}
-        queryClient={{
-          refetch: orderList.refetch,
-          isFetching: orderList.isFetching,
-          isLoading: orderList.isLoading,
-        }}
-      /> */}
+      {/* {tab === "all" ? (
+        <EnhanceDataTableWithAllFeatures
+          columns={orderListColumns}
+          initialData={data?.items || []}
+          queryKey={[ORDERS_KEY.ORDERS_LIST]}
+          title="Danh sách đơn hàng đã đặt"
+          description="Danh sách đơn hàng đã đặt của khách hàng"
+          queryClient={{
+            refetch: orderList.refetch,
+            isFetching: orderList.isFetching,
+            isLoading: orderList.isLoading,
+          }}
+        />
+      ) :  (
+        <EnhanceDataTableWithAllFeatures
+          columns={returnExchangeColumns}
+          initialData={returnExchangeData || []}
+          queryKey={[ORDERS_KEY.RETURN_EXCHANGE]}
+          queryClient={{
+            refetch: returnExchange.refetch,
+            isFetching: returnExchange.isFetching,
+            isLoading: returnExchange.isLoading,
+          }}
+          title="Danh sách đơn hàng yêu cầu đổi trả"
+          description="Danh sách đơn hàng yêu cầu đổi trả của khách hàng"
+        />
+      )} */}
     </div>
   );
 };

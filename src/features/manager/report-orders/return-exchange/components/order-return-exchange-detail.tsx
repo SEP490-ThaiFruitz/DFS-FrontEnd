@@ -130,7 +130,6 @@ export const OrderReturnExchangeDetail = memo(
     const [isLoading, setIsLoading] = useState(false);
     const [shippingFeeResponsibility, setShippingFeeResponsibility] =
       useState("");
-    const [receiveImages, setReceiveImages] = useState<string[]>([]);
     const [itemsData, setItemsData] = useState(
       returnRequestData.map((item) => ({
         returnExchangeRequestItemId: item.returnExchangeRequestItemId,
@@ -151,14 +150,6 @@ export const OrderReturnExchangeDetail = memo(
         ...prev,
         [orderId]: !prev[orderId],
       }));
-    };
-
-    // console.log("hinh anh nhan duoc: ", images.length);
-
-    const handleImageChange = (files: File[]) => {
-      setImages(files);
-      const imageUrls = files.map((file) => URL.createObjectURL(file));
-      // setReceiveImages(imageUrls);
     };
 
     const orderReturnExchangeDetailData = useFetch<
@@ -343,8 +334,8 @@ export const OrderReturnExchangeDetail = memo(
     const productsInCombo = groupedItems.filter(
       (item) => item.orderInfo.itemType !== "Single"
     );
-    console.log("data productsInCombo: ", productsInCombo);
-    console.log("data safeOrderReturnData: ", safeOrderReturnData);
+    // console.log("data productsInCombo: ", productsInCombo);
+    // console.log("data safeOrderReturnData: ", safeOrderReturnData);
 
     return (
       <div>

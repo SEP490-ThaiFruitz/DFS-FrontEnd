@@ -11,4 +11,6 @@ export enum USER_KEY {
   DISCOUNT_RULES = "discountRules",
 
   REQUEST_WITHDRAWAL = "requestWithdrawal",
+
+  REQUEST_ORDER_HISTORY = "requestOrderHistory",
 }

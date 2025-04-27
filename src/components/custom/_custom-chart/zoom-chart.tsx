@@ -27,6 +27,8 @@ type DataPoint = {
 
 type ZoomableChartProps = {
   data?: DataPoint[];
+  title?: string;
+  subTitle?: string;
 };
 
 const chartConfig = {
@@ -72,7 +74,11 @@ export function simulateData(
   return simulatedData;
 }
 
-export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
+export function ZoomableChart({
+  data: initialData,
+  title = "Zoom thông kê",
+  subTitle = "Zoom thông kê theo sự kiện",
+}: ZoomableChartProps) {
   const [data, setData] = useState<DataPoint[]>(initialData || []);
   const [refAreaLeft, setRefAreaLeft] = useState<string | null>(null);
   const [refAreaRight, setRefAreaRight] = useState<string | null>(null);

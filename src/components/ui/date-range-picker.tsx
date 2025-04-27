@@ -81,7 +81,7 @@ const PRESETS: Preset[] = [
   { name: "last7", label: "7 ngày trước" },
   { name: "last14", label: "14 ngày trước" },
   { name: "last30", label: "30 ngày trước" },
-  { name: "thisWeek", label: "Tuần này" },
+  // { name: "thisWeek", label: "Tuần này" },
   { name: "lastWeek", label: "Tuần trước" },
   { name: "thisMonth", label: "Tháng này" },
   { name: "lastMonth", label: "Tháng trước" },
@@ -183,11 +183,14 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
-      case "thisWeek":
-        from.setDate(first);
-        from.setHours(0, 0, 0, 0);
-        to.setHours(23, 59, 59, 999);
-        break;
+      // case "thisWeek":
+      //   const currentDay = from.getDay();
+      //   const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+      //   from.setDate(from.getDate() + diffToMonday);
+      //   from.setHours(0, 0, 0, 0);
+      //   to.setDate(from.getDate() + 6);
+      //   to.setHours(23, 59, 59, 999);
+      //   break;
       case "lastWeek":
         from.setDate(from.getDate() - 7 - from.getDay());
         to.setDate(to.getDate() - to.getDay() - 1);

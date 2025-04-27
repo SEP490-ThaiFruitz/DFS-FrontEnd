@@ -552,8 +552,13 @@ export default function RevenueDashboard() {
                     <DataTable
                       columns={productTopRevenueColumn}
                       data={
-                        reportRevenue.data?.value
-                          ?.topProductRevenueStatistics || []
+                        reportRevenue.data?.value?.topProductRevenueStatistics
+                          ?.sort((a, b) => {
+                            const revenueA = a.revenueDiscount || a.revenue;
+                            const revenueB = b.revenueDiscount || b.revenue;
+                            return revenueB - revenueA;
+                          })
+                          ?.slice(0, 5) || []
                       }
                       searchFiled="name"
                       isLoading={reportRevenue.isLoading}

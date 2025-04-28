@@ -194,14 +194,15 @@ export default function ReturnRequestHistory() {
 
   const safeRequestHistory = requestHistory.data?.value ?? [];
 
-  const filteredRequestHistory = safeRequestHistory.filter((request) =>
-    allowedStatuses.includes(
-      request.requestStatus as ReturnExchangeRequestStatusText
-    )
+  const filteredRequestHistory = safeRequestHistory.filter(
+    (request: ReturnExchangeRequest) =>
+      allowedStatuses.includes(
+        request.requestStatus as ReturnExchangeRequestStatusText
+      )
   );
 
   const filteredByTabRequestHistory = filteredRequestHistory.filter(
-    (request) => {
+    (request: ReturnExchangeRequest) => {
       if (activeTab === "processing")
         return (
           request.requestStatus === ReturnExchangeRequestStatusText.Processing
@@ -236,7 +237,7 @@ export default function ReturnRequestHistory() {
 
       {filteredByTabRequestHistory.length > 0 ? (
         <div className="space-y-6">
-          {filteredByTabRequestHistory.map((request) => {
+          {filteredByTabRequestHistory.map((request: ReturnExchangeRequest) => {
             const groupedItems = groupItemsByReferenceId(
               request.returnExchangeRequestItems
             );

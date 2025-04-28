@@ -182,15 +182,17 @@ export function ApprovalDialog({
 
           <ScrollArea className="max-h-[60vh] px-6 py-4">
             {activeTab === "general" ? (
-              <GeneralTab
-                requestId={requestId}
-                adminNote={adminNote}
-                setAdminNote={setAdminNote}
-                shippingFeeResponsibility={shippingFeeResponsibility}
-                setShippingFeeResponsibility={setShippingFeeResponsibility}
-                itemsData={itemsData}
-                totalRefundAmount={totalRefundAmount}
-              />
+              // <GeneralTab
+              //   requestId={requestId}
+              //   adminNote={adminNote}
+              //   setAdminNote={setAdminNote}
+              //   shippingFeeResponsibility={shippingFeeResponsibility}
+              //   setShippingFeeResponsibility={setShippingFeeResponsibility}
+              //   itemsData={itemsData}
+              //   totalRefundAmount={totalRefundAmount}
+              //   requestType={}
+              // />
+              <div></div>
             ) : activeTab === "products" ? (
               // <ProductReceived
               //   handleItemAcceptQuantityChange={handleItemAcceptQuantityChange}

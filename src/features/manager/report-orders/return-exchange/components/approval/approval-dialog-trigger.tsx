@@ -304,8 +304,23 @@ ApprovalDialogProps) {
       formData.append("note", adminNote);
       formData.append("shippingFeeResponsibility", shippingFeeResponsibility);
 
+      // itemsData.forEach((item, index) => {
+      //   formData.append(`items[${index}]`, JSON.stringify(item));
+      // });
       itemsData.forEach((item, index) => {
-        formData.append(`items[${index}]`, JSON.stringify(item));
+        formData.append(
+          `items[${index}][returnExchangeRequestItemId]`,
+          item.returnExchangeRequestItemId
+        );
+        formData.append(
+          `items[${index}][receiveQuantity]`,
+          String(item.receiveQuantity)
+        );
+        formData.append(
+          `items[${index}][acceptQuantity]`,
+          String(item.acceptQuantity)
+        );
+        formData.append(`items[${index}][note]`, item.note ?? "");
       });
 
       // console.log("Sending approval request:", requestBody);

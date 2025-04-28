@@ -23,7 +23,8 @@ export default function OrderHeaderCard({ orderData }: OrderHeaderCardProps) {
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-xl font-bold text-slate-700">
-              Đơn Hàng <span className="underlined">#{orderData.orderId}</span>
+              Đơn Hàng{" "}
+              <span className="underlined">#{orderData?.orderId ?? "N/A"}</span>
             </h2>
             <p className="text-sm text-slate-700 mt-1 flex items-center">
               <Calendar className="h-4 w-4 inline mr-1" />

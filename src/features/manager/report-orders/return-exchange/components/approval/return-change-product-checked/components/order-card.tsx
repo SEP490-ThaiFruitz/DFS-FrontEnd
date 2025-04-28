@@ -93,41 +93,6 @@ export default function OrderCard({
                   />
                 )
               )}
-
-              {/* <Tabs defaultValue="items" className="w-full">
-                <TabsList className="mb-4 bg-slate-100 p-1">
-                  <TabsTrigger
-                    value="items"
-                    className="data-[state=active]:bg-white"
-                  >
-                    Sản phẩm
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="status"
-                    className="data-[state=active]:bg-white"
-                  >
-                    Trạng thái
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="timeline"
-                    className="data-[state=active]:bg-white"
-                  >
-                    Tiến trình
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="items">
-                  <ItemsTabContent items={group.items} />
-                </TabsContent>
-
-                <TabsContent value="status">
-                  <StatusTabContent items={group.items} />
-                </TabsContent>
-
-                <TabsContent value="timeline">
-                  <TimelineTabContent createdAt={group.orderInfo.createdAt} />
-                </TabsContent>
-              </Tabs> */}
             </CardContent>
           </motion.div>
         )}

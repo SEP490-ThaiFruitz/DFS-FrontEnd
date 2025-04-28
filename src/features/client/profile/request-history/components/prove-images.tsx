@@ -1,6 +1,7 @@
 import ImagePreview from "@/components/custom/_custom-image/image-preview";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { NotData } from "@/components/global-components/no-data";
+import { cn } from "@/lib/utils";
 import { ImageIcon, ImageOffIcon, Info, ShieldAlertIcon } from "lucide-react";
 
 interface ProveImagesProps {
@@ -9,11 +10,23 @@ interface ProveImagesProps {
   customerImage: string | null;
 
   receiveImage: string | null;
+
+  titleReceiveImage?: string;
+
+  initialHeight?: number;
+  initialWidth?: number;
+
+  className?: string;
 }
 export const ProveImages = ({
   customerImage,
   productStatus,
   receiveImage,
+  titleReceiveImage = "Hình ảnh xác nhận từ nhân viên",
+
+  initialHeight = 130,
+  initialWidth = 130,
+  className,
 }: ProveImagesProps) => {
   return (
     <div className="cardStyle p-6">
@@ -37,9 +50,12 @@ export const ProveImages = ({
             <ImagePreview
               images={[customerImage]}
               alt="Customer provided image"
-              initialHeight={130}
-              initialWidth={130}
-              className="object-cover size-32 rounded-3xl"
+              initialHeight={initialHeight}
+              initialWidth={initialWidth}
+              className={cn(
+                "object-cover size-32 rounded-3xl hover:opacity-90 cursor-pointer",
+                className
+              )}
             />
           ) : (
             <NotData
@@ -54,15 +70,18 @@ export const ProveImages = ({
         <div>
           <h4 className=" font-semibold mb-2 flex items-center gap-1 text-base">
             <ImageIcon className="size-6 text-slate-400" />
-            Hình ảnh xác nhận từ nhân viên
+            {titleReceiveImage}
           </h4>
           {receiveImage ? (
             <ImagePreview
               images={[receiveImage]}
               alt="Customer provided image"
-              initialHeight={130}
-              initialWidth={130}
-              className="object-cover size-32 rounded-3xl"
+              initialHeight={initialHeight}
+              initialWidth={initialHeight}
+              className={cn(
+                "object-cover size-32 rounded-3xl hover:opacity-90 cursor-pointer",
+                className
+              )}
             />
           ) : (
             <NotData

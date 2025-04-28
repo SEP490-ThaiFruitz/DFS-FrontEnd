@@ -197,80 +197,11 @@ export const OrderReturnExchangeDetail = memo(
       );
     }
 
-    const handleApproveSubmit = async () => {
-      setIsLoading(true);
-
-      try {
-        // Prepare request body
-        const requestBody = {
-          requestId: requestId,
-          note: adminNote,
-          shippingFeeResponsibility: shippingFeeResponsibility,
-          items: itemsData,
-          receiveImages: images,
-        };
-
-        const formData = new FormData();
-
-        images.forEach((image) => {
-          formData.append("receiveImages", image);
-        });
-
-        formData.append("requestId", requestId);
-        formData.append("note", adminNote);
-        formData.append("shippingFeeResponsibility", shippingFeeResponsibility);
-
-        itemsData.forEach((item, index) => {
-          formData.append(`items[${index}]`, JSON.stringify(item));
-        });
-
-        // console.log("Sending approval request:", requestBody);
-
-        const response = await axios.patch(
-          `${API}/Orders/${requestId}/return-exchange`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        // console.log({ response });
-
-        if (response.status === 200) {
-          queryClient.invalidateQueries({
-            queryKey: [ORDERS_KEY.RETURN_EXCHANGE],
-          });
-          queryClient.invalidateQueries({
-            queryKey: [ORDERS_KEY.ORDERS_LIST],
-          });
-          toast.success("Yêu cầu đã được phê duyệt thành công.");
-
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          toast.success("Yêu cầu trả hàng đã được phê duyệt thành công.");
-
-          setIsApprovalDialogOpen(false);
-        }
-      } catch (error) {
-        console.error("Error approving return request:", error);
-        toast("Đã xảy ra lỗi khi phê duyệt yêu cầu trả hàng.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     const groupedItems = groupItemsByOrder(safeOrderReturnData.items);
-
-    // console.log("data groupedItems: ", groupedItems);
 
     const productsInCombo = groupedItems.filter(
       (item) => item.orderInfo.itemType !== "Single"
     );
-    // console.log("data productsInCombo: ", productsInCombo);
-    // console.log("data safeOrderReturnData: ", safeOrderReturnData);
 
     return (
       <div>
@@ -366,27 +297,6 @@ export const OrderReturnExchangeDetail = memo(
                   {/* Items */}
                   <ScrollArea className="h-[400px] md:h-[600px] w-full ">
                     <SectionHeader icon={Package} title="Sản phẩm trả lại" />
-                    {/* {safeOrderReturnData?.items?.map((item, index) => {
-                      console.log(item);
-
-                      if (item.orderItem.itemType === "Single") {
-                        return <ReturnItemCard key={index} item={item} />;
-                      } else {
-                        return productsInCombo.map((group) => {
-                          return (
-                            <OrderCard
-                              key={group.orderInfo.id}
-                              group={group}
-                              isExpanded={!!expandedOrders[group.orderInfo.id]}
-                              onToggleExpand={() =>
-                                toggleOrderExpand(group.orderInfo.id)
-                              }
-                            />
-                          );
-                        });
-                      }
-                    })} */}
-
                     <>
                       {/* Render sản phẩm Single */}
                       {safeOrderReturnData?.items

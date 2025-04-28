@@ -133,32 +133,18 @@ ApprovalDialogProps) {
     ?.value as OrderReturnData;
 
   useEffect(() => {
-    // if (safeOrderReturnData) {
-    //   setReturnRequestData(safeOrderReturnData.items);
-
-    //   setItemsData(
-    //     safeOrderReturnData.items.map((item) => ({
-    //       returnExchangeRequestItemId: item.returnExchangeRequestItemId,
-    //       receiveQuantity: item.customerQuantity,
-    //       note: "",
-    //       acceptQuantity: item.customerQuantity,
-    //     }))
-    //   );
-    // }
-
     if (safeOrderReturnData) {
       // Format returnRequestData
       const formattedReturnRequestData = safeOrderReturnData.items.flatMap(
         (item) => {
-          // Kiểm tra nếu là Custom hoặc Combo
           if (["Custom", "Combo"].includes(item.orderItem.itemType)) {
             return (
               item.orderItem?.orderItemDetails?.map((detail) => ({
-                returnExchangeRequestItemId: item.returnExchangeRequestItemId, // Tạo ID duy nhất cho từng sản phẩm con
+                returnExchangeRequestItemId: item.returnExchangeRequestItemId,
                 orderItem: {
                   name: detail.name,
                   image: detail.image || placeholderImage,
-                  customerQuantity: item.customerQuantity * detail.quantity, // Số lượng khách hàng yêu cầu nhân với số lượng của sản phẩm con
+                  customerQuantity: item.customerQuantity * detail.quantity,
                   unitPrice: detail.unitPrice,
                   percentage: detail.discountPercentage,
                   discountPrice: detail.discountedPrice,
@@ -229,21 +215,6 @@ ApprovalDialogProps) {
       />
     );
   }
-
-  // console.log("safeOrderReturnData", safeOrderReturnData);
-
-  // if (!safeOrderReturnData) {
-  //   return (
-  //     <NotData
-  //       action={{
-  //         label: "Thử tải lại",
-  //         onClick: () => orderReturnExchangeDetailData.refetch(),
-  //       }}
-  //       icons={[CopyXIcon, FileWarningIcon, InfoIcon]}
-  //       className="min-w-full h-full"
-  //     />
-  //   );
-  // }
 
   const handleApproveClick = () => {
     setIsApprovalDialogOpen(true);
@@ -362,8 +333,8 @@ ApprovalDialogProps) {
   };
 
   const isApproveDisabled =
-    !shippingFeeResponsibility || // chưa chọn người chịu phí
-    images.length === 0 || // chưa có hình ảnh nhận hàng
+    !shippingFeeResponsibility ||
+    images.length === 0 ||
     itemsData.some(
       (item) =>
         item.receiveQuantity === undefined ||

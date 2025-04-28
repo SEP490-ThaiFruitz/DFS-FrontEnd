@@ -9,6 +9,7 @@ import { formatVND } from "@/lib/format-currency";
 import { AdvancedColorfulBadges } from "@/components/global-components/badge/advanced-badge";
 import { JSX } from "react";
 import StatusBadge from "./approval/return-change-product-checked/components/status-badge";
+import { ProveImages } from "@/features/client/profile/request-history/components/prove-images";
 
 interface ReturnItemCardProps {
   // item: OrderReturnItem;
@@ -193,8 +194,7 @@ export function ReturnItemCard({ item }: ReturnItemCardProps) {
             </div>
           </div>
 
-          {/* Customer Image */}
-          {item?.customerImage && (
+          {/* {item?.customerImage && (
             <ImageDisplay
               src={item.customerImage || placeholderImage}
               alt="Hình ảnh khách hàng cung cấp"
@@ -202,14 +202,23 @@ export function ReturnItemCard({ item }: ReturnItemCardProps) {
             />
           )}
 
-          {/* Received Image */}
           {item?.receiveImage && (
             <ImageDisplay
               src={item.receiveImage || placeholderImage}
               alt="Hình ảnh sản phẩm nhận lại"
               title="Hình ảnh sản phẩm nhận lại"
             />
-          )}
+          )} */}
+
+          <ProveImages
+            customerImage={item.customerImage}
+            productStatus={item.productStatus}
+            receiveImage={item.receiveImage}
+            titleReceiveImage="Hình ảnh sản phẩm nhận lại"
+            initialHeight={400}
+            initialWidth={500}
+            className="h-[400px] w-full"
+          />
         </div>
       </CardContent>
     </Card>

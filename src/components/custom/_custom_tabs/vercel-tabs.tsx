@@ -22,6 +22,8 @@ interface VercelTabProps extends React.HTMLAttributes<HTMLDivElement> {
   classNameIcon?: string;
 
   classNameContent?: string;
+
+  classNameContainer?: string;
 }
 
 const VercelTab = React.forwardRef<HTMLDivElement, VercelTabProps>(
@@ -33,6 +35,7 @@ const VercelTab = React.forwardRef<HTMLDivElement, VercelTabProps>(
       onTabChange,
       classNameContent,
       classNameIcon,
+      classNameContainer,
       ...props
     },
     ref
@@ -102,7 +105,12 @@ const VercelTab = React.forwardRef<HTMLDivElement, VercelTabProps>(
           />
 
           {/* Tabs */}
-          <div className="relative flex space-x-[6px] items-center">
+          <div
+            className={cn(
+              "relative flex space-x-[6px] items-center",
+              classNameContainer
+            )}
+          >
             {tabs.map((tab, index) => (
               <div
                 key={tab.id}

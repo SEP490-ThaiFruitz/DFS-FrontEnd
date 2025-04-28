@@ -35,7 +35,10 @@ import { ApiResponse } from "@/types/types";
 import { OrderDetailTypes } from "@/types/report-orders.types";
 import { useFetch } from "@/actions/tanstack/use-tanstack-actions";
 import { ORDERS_KEY } from "@/app/key/manager-key";
-import { OrderItem } from "@/features/client/payment/successful/payment-successful.types";
+import {
+  OrderItem,
+  OrderItemHaveChild,
+} from "@/features/client/payment/successful/payment-successful.types";
 import { toast } from "sonner";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -357,7 +360,7 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
 
   useEffect(() => {
     const selectedItemsDetails = orderDetail.data?.value?.orderItems.filter(
-      (item) => selectedItems.includes(item.id)
+      (item: OrderItemHaveChild) => selectedItems.includes(item.id)
     );
 
     // console.log({ selectProductInCombo });
@@ -389,14 +392,14 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
     // }).filter(Boolean);
 
     const enrichedComboChildren: OrderItem[] = comboItems
-      .flatMap((parent) => {
+      .flatMap((parent: OrderItemHaveChild) => {
         return parent?.orderItemDetails
-          ?.filter((child) =>
+          ?.filter((child: any) =>
             selectProductInCombo.some(
               (selected) => selected.orderItemDetailId === child.id
             )
           )
-          .map((child) => ({
+          .map((child: any) => ({
             referenceId: child.id,
             image: child.image,
             itemType: "Single" as const,
@@ -412,11 +415,8 @@ export function ReturnOrderDialog({ orderId }: ReturnOrderDialogProps) {
             productVariantId: child.productVariantId,
           }));
       })
-      .filter(Boolean); // 🧼 Loại bỏ phần tử undefined/null
+      .filter(Boolean);
 
-    // console.log({ enrichedComboChildren });
-
-    // setSelectedOrderItem(selectedItemsDetails || []);
     setSelectedOrderItem([
       ...(selectedItemsDetails || []),
       ...(enrichedComboChildren || []),

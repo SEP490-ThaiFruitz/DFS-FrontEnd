@@ -62,13 +62,13 @@ export const OrderHeader = ({
           </h2>
         </div>
         <div className="flex gap-2">
-          <Button
+          {/* <Button
             size="sm"
             variant="secondary"
             className="bg-white/20 hover:bg-white/30 text-white border-none sm:inline-flex hidden"
           >
             <ScrollTextIcon className="w-4 h-4 mr-1" /> Hoá Đơn
-          </Button>
+          </Button> */}
           <Button
             size="sm"
             variant="secondary"

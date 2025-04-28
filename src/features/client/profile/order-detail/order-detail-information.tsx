@@ -260,7 +260,8 @@ const OrderDetailInformation: React.FC<Readonly<OrderDetailsProps>> = ({
             <ReturnOrderDialog orderId={orderId} />
           )} */}
 
-          {!isExceptionStatus(orderStatus) && (
+          {/* {!isExceptionStatus(orderStatus) && ( */}
+          {orderStatus?.toLowerCase() === "received" && (
             <ReturnOrderDialog orderId={orderId} />
           )}
           {(orderStatus === "Pending" || orderStatus === "Packaging") && (

@@ -36,6 +36,7 @@ import {
   ReturnExchangeOrders,
 } from "./return-exchange/return-exchange-columns";
 import { calculateGrowthRate } from "@/lib/calculate";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const ORDER_STATUS_TAB = [
   { id: "all", label: "Tất cả", icon: ListOrderedIcon },
@@ -311,7 +312,16 @@ export const ReportOrdersListClient = ({
         />
       </div>
 
-      <VercelTab tabs={ORDER_STATUS_TAB} activeTab={tab} onTabChange={setTab} />
+      <ScrollArea className="w-full h-[60px] whitespace-nowrap">
+        <VercelTab
+          tabs={ORDER_STATUS_TAB}
+          activeTab={tab}
+          onTabChange={setTab}
+          // classNameContainer="overflow-x-auto whitespace-nowrap"
+        />
+
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
       {tab === "return-exchange" ? (
         <EnhanceDataTableWithAllFeatures

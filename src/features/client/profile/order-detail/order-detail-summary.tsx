@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { formatVND } from "@/lib/format-currency";
-import { Banknote, ShoppingCart } from "lucide-react";
+import { Banknote, MessageCircleHeartIcon, ShoppingCart } from "lucide-react";
 import React, { useState } from "react";
 import { OrderItem as OrderItemTypes } from "../../payment/successful/payment-successful.types";
 import { OrderItem } from "@/app/(client)/payment/success/[[...slug]]/order-confirmation";
@@ -120,33 +120,48 @@ const OrderDetaiSummary = ({
         <CardContent>
           <ScrollArea className="max-h-fit overflow-auto">
             <div className="mr-5">
-              {orderItems.map((item: OrderItemTypes) => (
-                <React.Fragment key={item.id}>
-                  <OrderItem item={item} />
-                  <Separator />
+              {orderItems.map((item: OrderItemTypes) => {
+                // console.log("is can feedback`, ", item.isCanFeedback);
 
-                  {orderStatus?.toLowerCase() === "completed" && (
-                    <FeedbackDialog
-                      orderItemId={item.id}
-                      isOpen={isOpenFeedback[item.id]}
-                      onClose={() => handleFeedbackOpen(item.id)}
-                    />
-                  )}
-                </React.Fragment>
+                return (
+                  <div key={item.id}>
+                    <OrderItem item={item} />
+                    {/* <Separator /> */}
 
-                // <ViewCardProduct
-                //   key={item.referenceId}
-                //   orderItemId={item.id}
-                //   productName={item.name}
-                //   isCanFeedback={item.isCanFeedback}
-                //   orderStatus={orderStatus}
-                //   productPrice={item.unitPrice}
-                //   productQuantity={item.quantity}
-                //   productImage={item.image | null}
-                //   productPercentage={item.percentage}
-                //   productDiscountPrice={item.discountPrice}
-                // />
-              ))}
+                    {/* {orderStatus?.toLowerCase() === "completed" && ( */}
+                    {item.isCanFeedback && (
+                      <div
+                        className="text-sm text-sky-500 hover:underline flex items-center font-semibold cursor-pointer mt-1"
+                        onClick={() => handleFeedbackOpen(item.id)}
+                      >
+                        <MessageCircleHeartIcon className="size-6 mr-1" />
+                        Đánh giá sản phẩm
+                      </div>
+                    )}
+
+                    {item.isCanFeedback && (
+                      <FeedbackDialog
+                        orderItemId={item.id}
+                        isOpen={isOpenFeedback[item.id]}
+                        onClose={() => handleFeedbackOpen(item.id)}
+                      />
+                    )}
+                  </div>
+
+                  // <ViewCardProduct
+                  //   key={item.referenceId}
+                  //   orderItemId={item.id}
+                  //   productName={item.name}
+                  //   isCanFeedback={item.isCanFeedback}
+                  //   orderStatus={orderStatus}
+                  //   productPrice={item.unitPrice}
+                  //   productQuantity={item.quantity}
+                  //   productImage={item.image | null}
+                  //   productPercentage={item.percentage}
+                  //   productDiscountPrice={item.discountPrice}
+                  // />
+                );
+              })}
             </div>
           </ScrollArea>
         </CardContent>

@@ -139,6 +139,11 @@ export const RequestHistoryContent = memo(
                           customerImage={item.customerImage}
                           productStatus={item.productStatus}
                           receiveImage={item.receiveImage}
+                          note={item.note}
+                          acceptQuantity={item.acceptQuantity}
+                          refundAmount={item.refundAmount}
+                          receiveQuantity={item.receiveQuantity}
+                          customerQuantity={item.customerQuantity}
                         />
 
                         {item.orderItem.orderItemDetails &&

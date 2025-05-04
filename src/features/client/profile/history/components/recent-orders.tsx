@@ -87,6 +87,7 @@ export const RecentOrders = memo(({ orderData }: RecentOrdersProps) => {
                           | "Single",
                       }}
                       key={item.referenceId}
+                      className="min-w-[600px] w-full"
                     />
                   ))}
                 </div>

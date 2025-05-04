@@ -218,6 +218,11 @@ export function ReturnItemCard({ item }: ReturnItemCardProps) {
             initialHeight={400}
             initialWidth={500}
             className="h-[400px] w-full"
+            acceptQuantity={item.acceptQuantity}
+            refundAmount={item.refundAmount}
+            receiveQuantity={item.receiveQuantity}
+            customerQuantity={item.customerQuantity}
+            note={item.note}
           />
         </div>
       </CardContent>

@@ -22,6 +22,7 @@ import {
   Loader2Icon,
   BanknoteIcon,
   LandmarkIcon,
+  LockKeyholeIcon,
 } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
@@ -61,6 +62,7 @@ import {
 } from "./wallet-history/components/request-column";
 import { NotData } from "@/components/global-components/no-data";
 import { GlareCard } from "@/components/global-components/aceternity/glare-card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface SuccessWalletProps {
   user: ApiResponse<Profile> | undefined;
@@ -89,6 +91,11 @@ const TABS = [
     id: "request-history",
     label: "Lịch sử yêu cầu rút tiền",
     icon: GalleryVerticalEndIcon,
+  },
+  {
+    id: "update-security",
+    label: "Cập nhật bảo mật",
+    icon: LockKeyholeIcon,
   },
 ];
 export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
@@ -152,7 +159,17 @@ export const SuccessWallet = memo(({ user }: SuccessWalletProps) => {
 
   return (
     <>
-      <VercelTab tabs={TABS} activeTab={tab} onTabChange={setTab} />
+      {/* <VercelTab tabs={TABS} activeTab={tab} onTabChange={setTab} /> */}
+      <ScrollArea className="w-full h-[60px] whitespace-nowrap">
+        <VercelTab
+          tabs={TABS}
+          activeTab={tab}
+          onTabChange={setTab}
+          // classNameContainer="overflow-x-auto whitespace-nowrap"
+        />
+
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
       {tab === "success-wallet" ? (
         <div className="flex flex-col items-center justify-center py-8 space-y-6 w-full">

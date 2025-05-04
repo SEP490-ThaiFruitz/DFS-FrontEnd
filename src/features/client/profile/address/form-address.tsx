@@ -36,6 +36,8 @@ import { AddressTypes } from "@/types/address.types";
 import CustomMap from "@/components/custom/_custom_map/custom-map";
 import { API } from "@/actions/client/api-config";
 import { USER_KEY } from "@/app/key/user-key";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { MapPinHouseIcon } from "lucide-react";
 
 interface FormAddressProps {
   address?: AddressTypes;
@@ -67,12 +69,15 @@ const useAddressForm = (address?: FormAddressProps["address"]) => {
         name: address.receiverName || "",
         phone: address.receiverPhone || "",
         address: address.receiverAddress?.split(",")[0] || "",
-        province: `${address.provinceID}-${address.receiverAddress?.split(",")[3]?.trim() ?? ""
-          }`,
-        district: `${address.districtID}-${address.receiverAddress?.split(",")[2]?.trim() ?? ""
-          }`,
-        ward: `${address.wardID}-${address.receiverAddress?.split(",")[1]?.trim() ?? ""
-          }`,
+        province: `${address.provinceID}-${
+          address.receiverAddress?.split(",")[3]?.trim() ?? ""
+        }`,
+        district: `${address.districtID}-${
+          address.receiverAddress?.split(",")[2]?.trim() ?? ""
+        }`,
+        ward: `${address.wardID}-${
+          address.receiverAddress?.split(",")[1]?.trim() ?? ""
+        }`,
         latitude: address.latitude?.toString() ?? "",
         longitude: address.longtitude?.toString() ?? "",
         isDefault: address.isDefault ?? false,
@@ -98,6 +103,8 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
     ["provinces"]
   );
 
+  const [isShowMap, setIsShowMap] = useState<boolean>(false);
+
   const { isPending, mutate: addressMutation } = useMutation({
     mutationFn: async ({
       id,
@@ -110,7 +117,7 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
       isDefault,
       phone,
       latitude,
-      longitude
+      longitude,
     }: {
       id: string;
       province: string;
@@ -129,8 +136,9 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
           tagName: tag,
           receiverName: name,
           receiverPhone: phone,
-          receiverAddress: `${address}, ${ward.split("-")[1]}, ${district.split("-")[1]
-            }, ${province.split("-")[1]}`,
+          receiverAddress: `${address}, ${ward.split("-")[1]}, ${
+            district.split("-")[1]
+          }, ${province.split("-")[1]}`,
           longtitude: longitude,
           latitude: latitude,
           isDefault: isDefault,
@@ -153,7 +161,7 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
           onClose();
         }
       } catch (error: unknown) {
-        console.log(error)
+        console.log(error);
       }
     },
   });
@@ -202,14 +210,11 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
     );
   }
 
-  const handlerChooseLocation = (location: {
-    lat: number;
-    lng: number;
-  }) => {
-    console.log("location", location);
+  const handlerChooseLocation = (location: { lat: number; lng: number }) => {
+    // console.log("location", location);
     form.setValue("latitude", location.lat.toString());
     form.setValue("longitude", location.lng.toString());
-  }
+  };
 
   const isEditMode = !!address;
   const title = isEditMode
@@ -221,14 +226,15 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
   return (
     <>
       <ResizableHandle withHandle className="bg-purple-200" />
-      <ResizablePanel defaultSize={60} minSize={40} className="p-4">
+      <ResizablePanel defaultSize={40} minSize={30} className="p-4">
         <h4 className="text-xl font-semibold mb-6 text-purple-700">{title}</h4>
         <FormValues<z.infer<typeof FormAddressSafeTypes>>
           form={form}
           onSubmit={(values) => onSubmit(values, addressMutation)}
         >
-          <div className="space-y-5">
-            <div className="grid sm:grid-cols-2 gap-10">
+          {/* <ScrollArea className="space-y-5 h-[calc(100vh-10rem)] overflow-y-auto"> */}
+          <ScrollArea className="space-y-5 h-[600px] overflow-y-auto p-4">
+            <div className="grid sm:grid-cols-2 gap-10 p-4">
               <FormInputControl
                 disabled={isPending}
                 form={form}
@@ -281,30 +287,46 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
                 isCustomValue
               />
             </div>
-            <FormTextareaControl
-              disabled={isPending}
-              form={form}
-              require
-              name="address"
-              label="Địa chỉ"
-            />
-            <div>
-              <p className="text-sm font-medium mb-2">Tọa độ</p>
-              <CustomMap defaultLocation={{
-                lat: Number(form.getValues("latitude")) || 0,
-                lng: Number(form.getValues("longitude")) || 0,
-              }} onLocationChange={handlerChooseLocation} />
+            <div className="p-4">
+              <FormTextareaControl
+                disabled={isPending}
+                form={form}
+                require
+                name="address"
+                label="Địa chỉ"
+              />
+            </div>
+            <div className="p-4">
+              <span
+                className="text-sm font-semibold my-2 flex items-center gap-2 hover:underline cursor-pointer transition"
+                onClick={() => {
+                  setIsShowMap((prev) => !prev);
+                }}
+              >
+                <MapPinHouseIcon className="size-6" />
+                Địa chỉ hiện tại?
+              </span>
+              {isShowMap && (
+                <CustomMap
+                  defaultLocation={{
+                    lat: Number(form.getValues("latitude")) || 0,
+                    lng: Number(form.getValues("longitude")) || 0,
+                  }}
+                  onLocationChange={handlerChooseLocation}
+                />
+              )}
             </div>
             <Controller
               name="isDefault"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between">
-                  <p className="text-sm font-medium">Địa chỉ mặc định</p>
+                  <p className="text-sm font-semibold">Địa chỉ mặc định?</p>
                   <FormControl>
                     <Switch
-                      className={`${field.value ? "!bg-green-500" : "!bg-red-500"
-                        }`}
+                      className={`${
+                        field.value ? "!bg-green-500" : "!bg-amber-200"
+                      }`}
                       onCheckedChange={(checked) => field.onChange(checked)}
                       checked={field.value}
                     />
@@ -353,7 +375,7 @@ function FormAddress({ address, onClose }: Readonly<FormAddressProps>) {
                 }
               />
             </div>
-          </div>
+          </ScrollArea>
         </FormValues>
       </ResizablePanel>
     </>

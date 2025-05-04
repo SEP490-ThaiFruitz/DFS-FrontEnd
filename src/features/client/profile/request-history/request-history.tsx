@@ -219,7 +219,7 @@ export default function ReturnRequestHistory() {
         return (
           request.requestStatus === ReturnExchangeRequestStatusText.Approved
         );
-      return true; // "all" thì không lọc thêm
+      return true;
     }
   );
 

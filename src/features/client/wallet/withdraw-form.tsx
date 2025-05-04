@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   AlertCircle,
   Check,
@@ -238,7 +238,6 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
       return;
     }
 
-    // Chuẩn bị dữ liệu để gửi đến API
     const payload = {
       amount: Number(withdrawalData.amount.replace(/\D/g, "")),
       bankName: withdrawalData.bankName,
@@ -329,14 +328,40 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
       return value === "" || value === undefined;
     });
 
+  const isEligibleToWithdraw = useMemo(() => {
+    if (!wallet?.balance) return false;
+    const balance = wallet.balance;
+
+    const isInCommonAmounts = commonAmounts.some(
+      (amount) => Number(amount.value) <= balance
+    );
+
+    return balance >= 10000 || isInCommonAmounts;
+  }, [wallet?.balance]);
+
+  console.log({ isEligibleToWithdraw });
+
   return (
-    <div className="w-full mx-auto p-4">
-      <Card className=" overflow-hidden cardStyle w-full relative">
+    <div className="w-full mx-auto p-4 relative">
+      <Card
+        className={cn(
+          "overflow-hidden cardStyle w-full relative",
+          !isEligibleToWithdraw && "blur-sm pointer-events-none"
+        )}
+      >
         <CardHeader className="bg-gradient-to-br from-sky-50 via-amber-50 to-slate-400">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 dark:bg-sky-900 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50"></div>
-          <CardTitle className="text-2xl flex items-center gap-2 relative">
-            <Wallet className="h-6 w-6 text-sky-600 dark:text-sky-400" />
-            Yêu cầu rút Tiền
+          <CardTitle className=" flex items-center justify-between gap-2 relative">
+            <span className="flex items-center gap-2 font-semibold text-slate-900 dark:text-slate-100">
+              <Wallet className="h-6 w-6 text-sky-600 dark:text-sky-400" />
+              Yêu cầu rút Tiền
+            </span>
+            <div className="flex items-center gap-1">
+              <span className="text-base">Số dư hiện tại: </span>
+              <span className="text-lg text-sky-500 font-semibold">
+                {wallet?.balance ? formatVND(wallet.balance) : "0 ₫"}
+              </span>
+            </div>
           </CardTitle>
           <CardDescription className="relative">
             Chuyển tiền từ ví của bạn đến tài khoản ngân hàng
@@ -406,29 +431,38 @@ export const WithdrawForm = memo(({ wallet }: WithdrawFormProps) => {
 
               {/* Các giá trị phổ biến */}
               <div className="flex flex-wrap gap-2 mt-2">
-                {commonAmounts.map((amount) => (
-                  <Button
-                    key={amount.value}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-xs font-semibold"
-                    onClick={() => {
-                      const formattedValue = new Intl.NumberFormat(
-                        "vi-VN"
-                      ).format(Number(amount.value));
-                      setWithdrawalData((prev) => ({
-                        ...prev,
-                        amount: formattedValue,
-                      }));
-                      if (errors.amount) {
-                        setErrors((prev) => ({ ...prev, amount: undefined }));
-                      }
-                    }}
-                  >
-                    {amount.label}
-                  </Button>
-                ))}
+                {commonAmounts.map((amount) => {
+                  const balance = wallet?.balance || 0;
+
+                  const isDisabled = balance < Number(amount.value);
+
+                  return (
+                    <Button
+                      key={amount.value}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={`text-xs font-semibold ${
+                        isDisabled ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      onClick={() => {
+                        const formattedValue = new Intl.NumberFormat(
+                          "vi-VN"
+                        ).format(Number(amount.value));
+                        setWithdrawalData((prev) => ({
+                          ...prev,
+                          amount: formattedValue,
+                        }));
+                        if (errors.amount) {
+                          setErrors((prev) => ({ ...prev, amount: undefined }));
+                        }
+                      }}
+                      disabled={isDisabled}
+                    >
+                      {amount.label}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
 

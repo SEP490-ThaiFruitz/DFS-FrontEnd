@@ -1,5 +1,8 @@
 import type React from "react";
 import { BadgeAlertIcon, Box, Truck } from "lucide-react";
+import { ReturnPolicy } from "@/components/global-components/footer/policy/return-policy";
+import { DeliveryPolicy } from "@/components/global-components/footer/policy/delivery-policy";
+import { ServicePolicy } from "@/components/global-components/footer/policy/service-policy";
 
 export const Policies = () => {
   return (
@@ -8,9 +11,13 @@ export const Policies = () => {
         Chính sách quan tâm
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <PolicyItem icon={BadgeAlertIcon} text="Vấn đề về sản phẩm" />
-        <PolicyItem icon={Truck} text="Phương thức giao hàng" />
-        <PolicyItem icon={Box} text="Đổi trả" />
+        <ReturnPolicy />
+        <DeliveryPolicy />
+        <ServicePolicy />
+
+        {/* <PolicyItem icon={BadgeAlertIcon} text="Vấn đề về sản phẩm" /> */}
+        {/* <PolicyItem icon={Truck} text="Phương thức giao hàng" /> */}
+        {/* <PolicyItem icon={Box} text="Đổi trả" /> */}
       </div>
     </div>
   );

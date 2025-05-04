@@ -29,6 +29,36 @@ interface TransactionTableProps {
 }
 export const TransactionTable = memo(
   ({ filteredTransactions, handleTransactionClick }: TransactionTableProps) => {
+    const matchSign = (type: string) => {
+      switch (type) {
+        case "Buy":
+          return "-";
+        case "Deposite":
+          return "+";
+        case "Withdrawals":
+          return "-";
+        case "Refund":
+          return "+";
+        default:
+          return "";
+      }
+    };
+
+    const matchColor = (type: string) => {
+      switch (type) {
+        case "Buy":
+          return "text-rose-500";
+        case "Deposite":
+          return "text-emerald-500";
+        case "Withdrawals":
+          return "text-amber-500";
+        case "Refund":
+          return "text-sky-500";
+        default:
+          return "";
+      }
+    };
+
     return (
       <div className="cardStyle">
         <Table className="w-full table-auto ">
@@ -78,12 +108,16 @@ export const TransactionTable = memo(
                   </TableCell>
                   <TableCell
                     className={
-                      transaction.amount > 0
-                        ? "text-emerald-600 font-semibold "
-                        : "text-rose-600 font-semibold "
+                      // transaction.amount > 0
+                      //   ? "text-emerald-600 font-semibold "
+                      //   : "text-rose-600 font-semibold "
+                      `${matchColor(
+                        transaction.transactionType
+                      )} font-semibold `
                     }
                   >
-                    {transaction.amount > 0 ? "+" : ""}
+                    {/* {transaction.amount > 0 ? "+" : ""} */}
+                    {matchSign(transaction.transactionType)}
                     {formatVND(transaction.amount)}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell font-semibold text-sky-500">

@@ -106,7 +106,7 @@ export const ReturnPolicy = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-3">
+            {/* <AccordionItem value="item-3">
               <AccordionTrigger className="text-lg font-semibold">
                 <div className="flex items-center gap-2">
                   <Truck className="w-5 h-5" />
@@ -119,6 +119,28 @@ export const ReturnPolicy = () => {
                     Trong tất cả các trường hợp đổi trả hợp lệ, ThaiFruiz sẽ
                     chịu hoàn toàn chi phí vận chuyển, giúp khách hàng an tâm và
                     thuận tiện hơn trong quá trình đổi trả.
+                  </p>
+                </div>
+              </AccordionContent>
+            </AccordionItem> */}
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-lg font-semibold">
+                <div className="flex items-center gap-2">
+                  <Truck className="w-5 h-5" />
+                  <span>Chi phí vận chuyển đổi trả</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="bg-muted p-4 rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    - Nếu lỗi phát sinh từ phía ThaiFruiz (sản xuất, đóng gói,
+                    vận chuyển...),{" "}
+                    <strong>
+                      ThaiFruiz sẽ chịu toàn bộ chi phí vận chuyển.
+                    </strong>
+                    <br />- Nếu khách hàng đổi sản phẩm do thay đổi nhu cầu cá
+                    nhân (không áp dụng cho hàng đã mở), vui lòng thanh toán phí
+                    vận chuyển hai chiều.
                   </p>
                 </div>
               </AccordionContent>
